@@ -3,7 +3,14 @@
     "allow": [
       "Bash(gunzip -c webfetch-1778060651760-jlegz7.bin)",
       "Bash(python3 -m http.server 3000)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/)",
+      "Bash(npx create-next-app@latest . --js --tailwind --eslint --app --no-src-dir --no-import-alias)",
+      "Bash(export PATH=\"/usr/local/bin:$PATH\")",
+      "Bash(npx --version)",
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }

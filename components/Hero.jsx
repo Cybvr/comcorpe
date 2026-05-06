@@ -1,237 +1,67 @@
-/* global React */
-const heroStyles = {
-  wrap: {
-    padding: '96px var(--grid-gutter) 0',
-    borderBottom: '1px solid var(--ink)',
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  topRow: {
-    display: 'flex',
-    alignItems: 'baseline',
-    gap: 24,
-    marginBottom: 56,
-  },
-  eyebrow: {
-    fontFamily: 'var(--font-text)',
-    fontSize: 12,
-    fontWeight: 600,
-    letterSpacing: '0.12em',
-    textTransform: 'uppercase',
-    color: 'var(--ink)',
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 10,
-  },
-  tick: { width: 24, height: 1, background: 'var(--ink)', display: 'inline-block' },
-  index: {
-    marginLeft: 'auto',
-    fontFamily: 'var(--font-mono)',
-    fontSize: 12,
-    color: 'var(--ink-60)',
-  },
-  headline: {
-    fontFamily: 'var(--font-display)',
-    fontWeight: 900,
-    fontSize: 'clamp(72px, 11vw, 184px)',
-    lineHeight: 0.88,
-    letterSpacing: '-0.05em',
-    color: 'var(--ink)',
-    margin: 0,
-    textWrap: 'balance',
-  },
-  notLine: {
-    display: 'block',
-    color: 'var(--ink-40)',
-  },
-  weAre: { display: 'block' },
-  growthLine: {
-    display: 'block',
-  },
-  italic: { fontStyle: 'italic', fontWeight: 400, fontFamily: 'var(--font-text)', letterSpacing: '-0.02em' },
-  bottomRow: {
-    display: 'grid',
-    gridTemplateColumns: '5fr 7fr',
-    gap: 96,
-    marginTop: 80,
-    paddingBottom: 56,
-    alignItems: 'end',
-  },
-  lede: {
-    fontFamily: 'var(--font-text)',
-    fontSize: 22,
-    lineHeight: 1.4,
-    color: 'var(--ink-60)',
-    margin: 0,
-    letterSpacing: '-0.005em',
-    maxWidth: '34ch',
-  },
-  rhs: { display: 'flex', flexDirection: 'column', gap: 32 },
-  ctaRow: {
-    display: 'flex',
-    gap: 14,
-    alignItems: 'center',
-    flexWrap: 'wrap',
-  },
-  primary: {
-    fontFamily: 'var(--font-text)',
-    fontSize: 14,
-    fontWeight: 600,
-    padding: '14px 24px',
-    background: 'var(--blue)',
-    color: '#fff',
-    borderRadius: 999,
-    border: 'none',
-    cursor: 'pointer',
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 10,
-    transition: 'background var(--dur-fast) var(--ease)',
-  },
-  secondary: {
-    fontFamily: 'var(--font-text)',
-    fontSize: 14,
-    fontWeight: 600,
-    padding: '14px 24px',
-    background: 'transparent',
-    color: 'var(--ink)',
-    border: '1px solid var(--ink)',
-    cursor: 'pointer',
-    transition: 'background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease)',
-  },
-  meta: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(4, 1fr)',
-    gap: 32,
-    paddingTop: 32,
-    borderTop: '1px solid var(--ink-10)',
-    fontFamily: 'var(--font-mono)',
-    fontSize: 12,
-    color: 'var(--ink-60)',
-  },
-  metaItem: { display: 'flex', flexDirection: 'column', gap: 6 },
-  metaValue: {
-    color: 'var(--ink)',
-    fontFamily: 'var(--font-display)',
-    fontWeight: 900,
-    fontSize: 36,
-    letterSpacing: '-0.03em',
-    lineHeight: 1,
-  },
-  ticker: {
-    marginTop: 64,
-    borderTop: '1px solid var(--ink)',
-    borderBottom: '1px solid var(--ink)',
-    overflow: 'hidden',
-    padding: '14px 0',
-    marginLeft: 'calc(var(--grid-gutter) * -1)',
-    marginRight: 'calc(var(--grid-gutter) * -1)',
-    whiteSpace: 'nowrap',
-  },
-  tickerInner: {
-    display: 'inline-block',
-    animation: 'ccticker 40s linear infinite',
-    fontFamily: 'var(--font-display)',
-    fontWeight: 900,
-    fontSize: 32,
-    letterSpacing: '-0.03em',
-    color: 'var(--ink)',
-  },
-  tickerItem: { display: 'inline-block', padding: '0 32px' },
-  tickerDot: { color: 'var(--blue)', display: 'inline-block', padding: '0 8px' },
-};
-
-function Hero({ onPrimary, onSecondary }) {
-  const [pHover, setPHover] = React.useState(false);
-  const [sHover, setSHover] = React.useState(false);
-
+export default function Hero() {
   const tickerWords = [
     'ARCHITECT', 'ASSEMBLE', 'OPERATE',
     'TECHNOLOGY & FINTECH', 'PUBLIC INFRASTRUCTURE', 'CONSUMER & BRAND',
     'GROWTH PLAYS', 'SPECIALIST PODS', 'INTERNATIONAL BOARD',
-  ];
+  ]
 
   return (
-    <section id="top" data-screen-label="01 Hero" style={heroStyles.wrap}>
-      <style>{`
-        @keyframes ccticker {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-      `}</style>
-
-      <div style={heroStyles.topRow}>
-        <span style={heroStyles.eyebrow}><span style={heroStyles.tick} />A Growth Systems Company</span>
-        <span style={heroStyles.index}>00 / Manifesto · Lagos / London / Singapore</span>
+    <section id="top" className="px-24 pt-24 pb-0 border-b border-ink overflow-hidden relative">
+      <div className="flex items-baseline gap-6 mb-14">
+        <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-ink inline-flex items-center gap-2.5">
+          <span className="w-6 h-px bg-ink inline-block" />
+          A Growth Systems Company
+        </span>
+        <span className="ml-auto font-mono text-xs text-ink-60">00 / Manifesto · Lagos / London / Singapore</span>
       </div>
 
-      <h1 style={heroStyles.headline}>
-        <span style={heroStyles.notLine}><span style={heroStyles.italic}>not&nbsp;</span>an agency.</span>
-        <span style={heroStyles.notLine}><span style={heroStyles.italic}>not&nbsp;</span>a consultancy.</span>
-        <span style={heroStyles.growthLine}>A system for<br/>building growth<span style={{color:'var(--blue)'}}>.</span></span>
+      <h1 className="font-display font-black text-[clamp(72px,11vw,184px)] leading-[0.88] tracking-[-0.05em] text-ink m-0 text-balance">
+        <span className="block text-ink-40"><em className="not-italic font-text font-normal tracking-[-0.02em]">not&nbsp;</em>an agency.</span>
+        <span className="block text-ink-40"><em className="not-italic font-text font-normal tracking-[-0.02em]">not&nbsp;</em>a consultancy.</span>
+        <span className="block">A system for<br />building growth<span className="text-blue">.</span></span>
       </h1>
 
-      <div style={heroStyles.bottomRow}>
-        <p style={heroStyles.lede}>
+      <div className="grid grid-cols-[5fr_7fr] gap-24 mt-20 pb-14 items-end">
+        <p className="font-text text-[22px] leading-lede text-ink-60 m-0 tracking-body max-w-[34ch]">
           Comcorpᵉ orchestrates data, creativity, technology and strategy into unified growth systems —
           designed not just to communicate, but to perform.
         </p>
-        <div style={heroStyles.rhs}>
-          <div style={heroStyles.ctaRow}>
-            <button
-              onClick={onPrimary}
-              onMouseEnter={() => setPHover(true)}
-              onMouseLeave={() => setPHover(false)}
-              style={{ ...heroStyles.primary, background: pHover ? 'var(--blue-hover)' : 'var(--blue)' }}
+        <div className="flex flex-col gap-8">
+          <div className="flex gap-3.5 items-center flex-wrap">
+            <a
+              href="#closing"
+              className="font-text text-sm font-semibold px-6 py-3.5 bg-blue text-white rounded-full inline-flex items-center gap-2.5 hover:bg-blue-hover transition-colors duration-[120ms]"
             >
               Request a brief
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-            </button>
-            <button
-              onClick={onSecondary}
-              onMouseEnter={() => setSHover(true)}
-              onMouseLeave={() => setSHover(false)}
-              style={{
-                ...heroStyles.secondary,
-                background: sHover ? 'var(--ink)' : 'transparent',
-                color: sHover ? 'var(--paper)' : 'var(--ink)',
-              }}
+            </a>
+            <a
+              href="#model"
+              className="font-text text-sm font-semibold px-6 py-3.5 bg-transparent text-ink border border-ink hover:bg-ink hover:text-paper transition-colors duration-[120ms]"
             >
               See the model
-            </button>
+            </a>
           </div>
-          <div style={heroStyles.meta}>
-            <div style={heroStyles.metaItem}>
-              <span style={heroStyles.metaValue}>03</span>
-              <span>Arenas</span>
-            </div>
-            <div style={heroStyles.metaItem}>
-              <span style={heroStyles.metaValue}>17</span>
-              <span>Active pods</span>
-            </div>
-            <div style={heroStyles.metaItem}>
-              <span style={heroStyles.metaValue}>12</span>
-              <span>Growth plays</span>
-            </div>
-            <div style={heroStyles.metaItem}>
-              <span style={heroStyles.metaValue}>09</span>
-              <span>Markets</span>
-            </div>
+          <div className="grid grid-cols-4 gap-8 pt-8 border-t border-ink-10 font-mono text-xs text-ink-60">
+            {[['03','Arenas'],['17','Active pods'],['12','Growth plays'],['09','Markets']].map(([val, label]) => (
+              <div key={label} className="flex flex-col gap-1.5">
+                <span className="font-display font-black text-[36px] tracking-[-0.03em] leading-none text-ink">{val}</span>
+                <span>{label}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      <div style={heroStyles.ticker}>
-        <div style={heroStyles.tickerInner}>
+      <div className="mt-16 border-t border-ink border-b -mx-24 overflow-hidden py-3.5 whitespace-nowrap">
+        <div className="inline-block animate-ticker font-display font-black text-[32px] tracking-[-0.03em] text-ink">
           {[...tickerWords, ...tickerWords].map((w, i) => (
-            <span key={i} style={heroStyles.tickerItem}>
-              {w}<span style={heroStyles.tickerDot}>●</span>
+            <span key={i} className="inline-block px-8">
+              {w}<span className="text-blue inline-block px-2">●</span>
             </span>
           ))}
         </div>
       </div>
     </section>
-  );
+  )
 }
-
-window.Hero = Hero;

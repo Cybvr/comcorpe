@@ -1,146 +1,63 @@
-/* global React */
-const ucStyles = {
-  section: {
-    padding: '128px var(--grid-gutter)',
-    background: 'var(--paper)',
-    borderBottom: '1px solid var(--ink)',
-  },
-  topRow: { display: 'flex', alignItems: 'baseline', gap: 24, marginBottom: 56 },
-  eyebrow: {
-    fontFamily: 'var(--font-text)', fontSize: 12, fontWeight: 600,
-    letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink)',
-    display: 'inline-flex', alignItems: 'center', gap: 10,
-  },
-  tick: { width: 24, height: 1, background: 'var(--ink)', display: 'inline-block' },
-  index: { fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--ink-60)', marginLeft: 'auto' },
-  head: { display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 96, marginBottom: 64, alignItems: 'baseline' },
-  h2: {
-    fontFamily: 'var(--font-display)', fontWeight: 900,
-    fontSize: 'clamp(40px, 5vw, 72px)', lineHeight: 1.02, letterSpacing: '-0.04em',
-    color: 'var(--ink)', margin: 0, textWrap: 'balance',
-  },
-  rhs: { fontFamily: 'var(--font-text)', fontSize: 17, lineHeight: 1.55, color: 'var(--ink-60)' },
-  cases: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(3, 1fr)',
-    gap: 0,
-    border: '1px solid var(--ink)',
-  },
-  card: {
-    padding: 36,
-    borderRight: '1px solid var(--ink-10)',
-    background: 'var(--paper)',
-    display: 'flex', flexDirection: 'column',
-    minHeight: 460,
-    cursor: 'default',
-  },
-  cardLast: { borderRight: 'none' },
-  caseN: {
-    fontFamily: 'var(--font-mono)', fontSize: 12,
-    color: 'var(--ink-60)', textTransform: 'uppercase',
-    letterSpacing: '0.08em', marginBottom: 12,
-  },
-  caseT: {
-    fontFamily: 'var(--font-display)', fontWeight: 900,
-    fontSize: 28, lineHeight: 1.05, letterSpacing: '-0.03em',
-    color: 'var(--ink)', marginBottom: 12,
-  },
-  caseS: {
-    fontFamily: 'var(--font-text)', fontSize: 16, lineHeight: 1.5,
-    color: 'var(--ink-60)', marginBottom: 28, fontStyle: 'italic',
-  },
-  steps: { display: 'flex', flexDirection: 'column', gap: 0, marginTop: 'auto' },
-  step: {
-    display: 'grid', gridTemplateColumns: '40px 1fr', gap: 12,
-    padding: '14px 0',
-    borderTop: '1px solid var(--ink-10)',
-    alignItems: 'baseline',
-  },
-  stepLast: { borderBottom: '1px solid var(--ink-10)' },
-  stepN: { fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--blue)', fontWeight: 500 },
-  stepT: { fontFamily: 'var(--font-text)', fontSize: 15, color: 'var(--ink)', lineHeight: 1.4 },
-  closer: {
-    marginTop: 64,
-    paddingTop: 32,
-    borderTop: '1px solid var(--ink)',
-    display: 'grid',
-    gridTemplateColumns: '1fr auto',
-    alignItems: 'baseline', gap: 32,
-  },
-  closerL: {
-    fontFamily: 'var(--font-display)', fontWeight: 900,
-    fontSize: 'clamp(28px, 3.6vw, 48px)', letterSpacing: '-0.03em',
-    color: 'var(--ink)', lineHeight: 1.1, textWrap: 'balance', maxWidth: '24ch',
-  },
-  closerBlue: { color: 'var(--blue)' },
-  closerR: { fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--ink-60)' },
-};
-
-function UseCases() {
+export default function UseCases() {
   const cases = [
     {
       n: 'Case 01', t: 'Market Entry', s: 'A global brand entering Nigeria.',
-      steps: [
-        'Design go-to-market strategy',
-        'Build local partnerships',
-        'Deploy launch execution team',
-      ],
+      steps: ['Design go-to-market strategy', 'Build local partnerships', 'Deploy launch execution team'],
     },
     {
       n: 'Case 02', t: 'Growth Stagnation', s: 'A local leader plateauing.',
-      steps: [
-        'Diagnose growth bottlenecks',
-        'Rewire commercial model',
-        'Deploy targeted execution pods',
-      ],
+      steps: ['Diagnose growth bottlenecks', 'Rewire commercial model', 'Deploy targeted execution pods'],
     },
     {
       n: 'Case 03', t: 'Opportunity Creation', s: 'A new revenue stream we identify.',
-      steps: [
-        'Develop concept',
-        'Pitch client',
-        'Execute rollout',
-      ],
+      steps: ['Develop concept', 'Pitch client', 'Execute rollout'],
     },
-  ];
+  ]
+
   return (
-    <section id="cases" data-screen-label="07 Use Cases" style={ucStyles.section}>
-      <div style={ucStyles.topRow}>
-        <span style={ucStyles.eyebrow}><span style={ucStyles.tick} />Early use cases</span>
-        <span style={ucStyles.index}>06 / 09</span>
+    <section id="cases" className="py-32 px-24 bg-paper border-b border-ink">
+      <div className="flex items-baseline gap-6 mb-14">
+        <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-ink inline-flex items-center gap-2.5">
+          <span className="w-6 h-px bg-ink inline-block" />
+          Early use cases
+        </span>
+        <span className="font-mono text-xs text-ink-60 ml-auto">06 / 09</span>
       </div>
-      <div style={ucStyles.head}>
-        <h2 style={ucStyles.h2}>Three patterns. One operating method.</h2>
-        <p style={ucStyles.rhs}>
+
+      <div className="grid grid-cols-[5fr_7fr] gap-24 mb-16 items-baseline">
+        <h2 className="font-display font-black text-[clamp(40px,5vw,72px)] leading-tight tracking-display text-ink m-0 text-balance">
+          Three patterns. One operating method.
+        </h2>
+        <p className="font-text text-[17px] leading-body text-ink-60 m-0">
           Every engagement falls into one of three shapes — entering, unblocking or originating.
           The architecture is shared; the configuration is bespoke.
         </p>
       </div>
-      <div style={ucStyles.cases}>
+
+      <div className="grid grid-cols-3 border border-ink">
         {cases.map((c, i) => (
-          <div key={c.n} style={{...ucStyles.card, ...(i === cases.length-1 ? ucStyles.cardLast : {})}}>
-            <div style={ucStyles.caseN}>{c.n}</div>
-            <div style={ucStyles.caseT}>{c.t}</div>
-            <p style={ucStyles.caseS}>{c.s}</p>
-            <div style={ucStyles.steps}>
+          <div key={c.n} className={`p-9 bg-paper flex flex-col min-h-[460px] ${i < cases.length - 1 ? 'border-r border-ink-10' : ''}`}>
+            <div className="font-mono text-xs text-ink-60 uppercase tracking-[0.08em] mb-3">{c.n}</div>
+            <div className="font-display font-black text-[28px] leading-tight tracking-h3 text-ink mb-3">{c.t}</div>
+            <p className="font-text text-base leading-relaxed text-ink-60 mb-7 italic">{c.s}</p>
+            <div className="flex flex-col mt-auto">
               {c.steps.map((s, j) => (
-                <div key={j} style={{...ucStyles.step, ...(j === c.steps.length-1 ? ucStyles.stepLast : {})}}>
-                  <span style={ucStyles.stepN}>0{j+1}/</span>
-                  <span style={ucStyles.stepT}>{s}</span>
+                <div key={j} className={`grid grid-cols-[40px_1fr] gap-3 py-3.5 border-t border-ink-10 items-baseline ${j === c.steps.length - 1 ? 'border-b border-ink-10' : ''}`}>
+                  <span className="font-mono text-xs text-blue font-medium">0{j + 1}/</span>
+                  <span className="font-text text-[15px] text-ink leading-snug">{s}</span>
                 </div>
               ))}
             </div>
           </div>
         ))}
       </div>
-      <div style={ucStyles.closer}>
-        <div style={ucStyles.closerL}>
-          We do not wait for problems. <span style={ucStyles.closerBlue}>We create opportunities.</span>
+
+      <div className="mt-16 pt-8 border-t border-ink grid grid-cols-[1fr_auto] items-baseline gap-8">
+        <div className="font-display font-black text-[clamp(28px,3.6vw,48px)] tracking-h3 text-ink leading-tight text-balance max-w-[24ch]">
+          We do not wait for problems. <span className="text-blue">We create opportunities.</span>
         </div>
-        <div style={ucStyles.closerR}>06 / 09 · Operating method</div>
+        <div className="font-mono text-xs text-ink-60">06 / 09 · Operating method</div>
       </div>
     </section>
-  );
+  )
 }
-
-window.UseCases = UseCases;
