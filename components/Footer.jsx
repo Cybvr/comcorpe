@@ -14,9 +14,7 @@ export default function Footer() {
           <span className="w-6 h-px bg-paper inline-block" />
           Orchestrating capability
         </span>
-        <h2 className="font-display font-black text-[clamp(96px,18vw,280px)] leading-[0.85] tracking-[-0.06em] text-paper m-0">
-          Comcorp<span className="gradient-e text-[0.5em] align-super -ml-[0.02em]">e</span>
-        </h2>
+        <img src="/images/comcorpe.png" alt="Comcorpᵉ" className="h-24 md:h-40 lg:h-56 w-auto object-contain brightness-0 invert" />
         <div className="mt-8 font-display font-black text-[22px] tracking-[-0.02em] text-paper">
           Orchestrating capability. <span className="text-paper/50">Delivering outcomes. Scaling impact.</span>
         </div>
