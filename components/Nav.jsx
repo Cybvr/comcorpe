@@ -23,7 +23,7 @@ export default function Nav() {
   return (
     <nav className={`sticky top-0 z-50 h-16 flex items-center px-6 md:px-24 border-b transition-all duration-[240ms] ${scrolled ? 'bg-paper/70 backdrop-blur-md border-ink-10' : 'border-transparent bg-transparent'}`}>
       <a href="#top" className="block">
-        <img src="/images/comcorpe.png" alt="Comcorpᵉ" className="h-6 md:h-7 w-auto object-contain" />
+        <img src="/images/comcorpe.png" alt="Comcorpe" className="h-6 md:h-7 w-auto object-contain" />
       </a>
       <div className="ml-auto flex gap-6 md:gap-9 items-center">
         <div className="hidden md:flex gap-9 items-center">
