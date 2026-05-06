@@ -16,15 +16,15 @@ export default function Hero() {
       </div>
 
       <h1 className="font-display font-black text-[clamp(72px,11vw,184px)] leading-[0.88] tracking-[-0.05em] text-ink m-0 text-balance">
-        <span className="block text-ink-40"><em className="not-italic font-text font-normal tracking-[-0.02em]">not&nbsp;</em>an agency.</span>
-        <span className="block text-ink-40"><em className="not-italic font-text font-normal tracking-[-0.02em]">not&nbsp;</em>a consultancy.</span>
-        <span className="block">A system for<br />building growth<span className="text-blue">.</span></span>
+        The Operating Layer<br />
+        for High-Velocity<br />
+        Growth<span className="text-blue">.</span>
       </h1>
 
       <div className="flex flex-col md:grid md:grid-cols-[5fr_7fr] gap-12 md:gap-24 mt-16 md:mt-20 pb-14 items-end">
         <p className="font-text text-[22px] leading-lede text-ink-60 m-0 tracking-body max-w-[34ch]">
           Comcorpᵉ orchestrates data, creativity, technology and strategy into unified growth systems —
-          designed not just to communicate, but to perform.
+          built to perform in complex markets.
         </p>
         <div className="flex flex-col gap-8">
           <div className="flex gap-3.5 items-center flex-wrap">

@@ -38,8 +38,7 @@ export default function Pillars() {
 
       <div className="flex flex-col md:grid md:grid-cols-2 gap-12 md:gap-16 mb-20 md:mb-24 md:items-end">
         <h2 className="font-display font-black text-[clamp(48px,7vw,112px)] leading-[0.94] tracking-hero text-paper m-0 text-balance">
-          We do not deliver recommendations.<br />
-          <span className="text-blue">We build growth engines that run.</span>
+          We build growth <span className="text-blue">engines that run.</span>
         </h2>
         <div className="font-text text-[18px] leading-relaxed text-paper/70 max-w-[38ch]">
           <span className="font-display font-black text-[22px] tracking-[-0.02em] text-paper block mb-3">Three pillars hold the model.</span>

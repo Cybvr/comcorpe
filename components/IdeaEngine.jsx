@@ -17,8 +17,7 @@ export default function IdeaEngine() {
 
       <div className="flex flex-col lg:grid lg:grid-cols-[7fr_5fr] gap-12 lg:gap-24 items-start">
         <h2 className="font-display font-black text-[clamp(56px,7.5vw,128px)] leading-[0.92] tracking-[-0.05em] text-ink m-0 text-balance">
-          Most firms wait for briefs.<br />
-          <span className="text-blue">We originate them.</span>
+          We originate proprietary <span className="text-blue">Growth Plays.</span>
         </h2>
 
         <div className="flex flex-col gap-6 pt-4">

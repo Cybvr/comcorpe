@@ -37,7 +37,7 @@ export default function Competitive() {
 
       <div className="flex flex-col md:grid md:grid-cols-2 gap-12 md:gap-24 mb-14 md:items-baseline">
         <h2 className="font-display font-black text-[clamp(48px,6vw,96px)] leading-[0.96] tracking-hero text-ink m-0 text-balance">
-          We intersect with many. We resemble none.
+          A category of one.
         </h2>
         <p className="font-text text-[17px] leading-body text-ink-60 m-0">
           Strategy firms, agency networks and independent advisors each hold one piece of the

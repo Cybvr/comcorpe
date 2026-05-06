@@ -54,7 +54,7 @@ export default function UseCases() {
 
       <div className="mt-16 pt-8 border-t border-ink grid grid-cols-[1fr_auto] items-baseline gap-8">
         <div className="font-display font-black text-[clamp(28px,3.6vw,48px)] tracking-h3 text-ink leading-tight text-balance max-w-[24ch]">
-          We do not wait for problems. <span className="text-blue">We create opportunities.</span>
+          We architect and <span className="text-blue">capture opportunities.</span>
         </div>
         <div className="font-mono text-xs text-ink-60">06 / 09 · Operating method</div>
       </div>

@@ -17,8 +17,7 @@ export default function Provocation() {
       </div>
 
       <h2 className="font-display font-black text-[clamp(48px,6.5vw,104px)] leading-[0.96] tracking-hero text-ink m-0 max-w-[20ch] text-balance">
-        Growth is the most <span className="text-blue">mismanaged</span> function in emerging markets.<br />
-        <span className="text-ink-40">Not for lack of capital. Not for lack of ambition.</span>
+        Growth is the most <span className="text-blue">mismanaged</span> function in emerging markets.
       </h2>
 
       <div className="mt-16 md:mt-24 grid grid-cols-1 md:grid-cols-2 border-t border-ink">

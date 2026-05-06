@@ -21,10 +21,7 @@ export default function Closing() {
       </div>
 
       <h2 className="font-display font-black text-[clamp(56px,8vw,144px)] leading-[0.92] tracking-[-0.05em] text-paper m-0 text-balance">
-        We are not building a firm.<br />
-        <span className="text-paper/40">We are building </span>
-        <span className="text-blue">the infrastructure</span>
-        <span className="text-paper/40"> for growth in complex markets.</span>
+        Building the <span className="text-blue">infrastructure</span> for growth in complex markets.
       </h2>
 
       <div className="mt-16 md:mt-24 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 md:items-end">
