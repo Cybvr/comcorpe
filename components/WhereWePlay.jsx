@@ -13,7 +13,7 @@ export default function WhereWePlay() {
   ]
 
   return (
-    <section id="arenas" className="py-32 px-24 bg-ink text-paper border-b border-ink">
+    <section id="arenas" className="py-20 md:py-32 px-6 md:px-24 bg-ink text-paper border-b border-ink">
       <div className="flex items-baseline gap-6 mb-14">
         <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-paper inline-flex items-center gap-2.5">
           <span className="w-6 h-px bg-paper inline-block" />
@@ -22,11 +22,11 @@ export default function WhereWePlay() {
         <span className="font-mono text-xs text-paper/60 ml-auto">05 / 09</span>
       </div>
 
-      <h2 className="font-display font-black text-[clamp(48px,6vw,96px)] leading-[0.96] tracking-hero text-paper m-0 mb-20 max-w-[20ch] text-balance">
+      <h2 className="font-display font-black text-[clamp(48px,6vw,96px)] leading-[0.96] tracking-hero text-paper m-0 mb-16 md:mb-20 max-w-[20ch] text-balance">
         Concentration over coverage. Three arenas, anchored in Pan-Africa.
       </h2>
 
-      <div className="grid grid-cols-[5fr_7fr] gap-16 items-start">
+      <div className="flex flex-col lg:grid lg:grid-cols-[5fr_7fr] gap-12 lg:gap-16 items-start">
         <div className="border border-paper/20">
           {arenas.map((a, i) => (
             <div

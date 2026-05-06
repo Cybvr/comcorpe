@@ -1,3 +1,5 @@
+import { Fragment } from 'react'
+
 export default function Pillars() {
   const pillars = [
     {
@@ -25,7 +27,7 @@ export default function Pillars() {
   ]
 
   return (
-    <section id="model" className="py-32 px-24 bg-ink text-paper border-b border-ink">
+    <section id="model" className="py-20 md:py-32 px-6 md:px-24 bg-ink text-paper border-b border-ink">
       <div className="flex items-baseline gap-6 mb-14">
         <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-paper inline-flex items-center gap-2.5">
           <span className="w-6 h-px bg-paper inline-block" />
@@ -34,7 +36,7 @@ export default function Pillars() {
         <span className="font-mono text-xs text-paper/60 ml-auto">03 / 09</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-16 mb-24 items-end">
+      <div className="flex flex-col md:grid md:grid-cols-2 gap-12 md:gap-16 mb-20 md:mb-24 md:items-end">
         <h2 className="font-display font-black text-[clamp(48px,7vw,112px)] leading-[0.94] tracking-hero text-paper m-0 text-balance">
           We do not deliver recommendations.<br />
           <span className="text-blue">We build growth engines that run.</span>
@@ -46,11 +48,11 @@ export default function Pillars() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 border border-paper/20">
+      <div className="grid grid-cols-1 md:grid-cols-3 border border-paper/20">
         {pillars.map((p, i) => (
           <div
             key={p.i}
-            className={`group p-12 hover:bg-blue/[0.08] transition-colors duration-[240ms] cursor-default min-h-[460px] flex flex-col ${i < pillars.length - 1 ? 'border-r border-paper/20' : ''}`}
+            className={`group p-8 md:p-12 hover:bg-blue/[0.08] transition-colors duration-[240ms] cursor-default min-h-[400px] md:min-h-[460px] flex flex-col ${i < pillars.length - 1 ? 'border-b md:border-b-0 md:border-r border-paper/20' : ''}`}
           >
             <div className="flex items-baseline gap-3 mb-16">
               <span className="font-mono text-[13px] text-paper/60">{p.i}.</span>
@@ -70,16 +72,16 @@ export default function Pillars() {
         ))}
       </div>
 
-      <div className="mt-24 border border-paper/20 grid grid-cols-[180px_1fr_1fr]">
+      <div className="mt-20 md:mt-24 border border-paper/20 grid grid-cols-1 md:grid-cols-[180px_1fr_1fr] overflow-x-auto">
         <div className="p-5 border-b border-r border-paper/20 font-mono text-xs text-paper/60 uppercase tracking-[0.08em]">vs.</div>
         <div className="p-5 border-b border-r border-paper/20 font-mono text-xs text-paper/60 uppercase tracking-[0.08em]">Traditional Model</div>
         <div className="p-5 border-b border-paper/20 font-mono text-xs text-white uppercase tracking-[0.08em] bg-blue">Comcorpᵉ Model</div>
         {rows.map((r, i) => (
-          <>
+          <Fragment key={i}>
             <div key={`l-${r.label}`} className={`px-6 py-6 font-mono text-xs text-paper/60 uppercase tracking-[0.08em] border-r border-paper/20 ${i < rows.length - 1 ? 'border-b border-paper/[0.12]' : ''}`}>{r.label}</div>
             <div key={`a-${r.label}`} className={`px-6 py-6 font-text text-[17px] text-paper/85 border-r border-paper/20 ${i < rows.length - 1 ? 'border-b border-paper/[0.12]' : ''}`}>{r.a}</div>
             <div key={`b-${r.label}`} className={`px-6 py-6 font-text text-[17px] text-paper font-medium bg-blue/[0.08] ${i < rows.length - 1 ? 'border-b border-paper/[0.12]' : ''}`}>{r.b}</div>
-          </>
+          </Fragment>
         ))}
       </div>
     </section>

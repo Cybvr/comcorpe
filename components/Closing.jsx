@@ -5,9 +5,9 @@ export default function Closing() {
   const [email, setEmail] = useState('')
 
   return (
-    <section id="closing" className="py-40 px-24 bg-ink text-paper border-b border-ink relative overflow-hidden">
+    <section id="closing" className="py-24 md:py-40 px-6 md:px-24 bg-ink text-paper border-b border-ink relative overflow-hidden">
       {/* decorative ᵉ */}
-      <div className="absolute -bottom-40 -right-20 font-display font-black text-[720px] leading-[0.8] tracking-[-0.06em] pointer-events-none italic select-none"
+      <div className="absolute -bottom-20 md:-bottom-40 -right-10 md:-right-20 font-display font-black text-[320px] md:text-[720px] leading-[0.8] tracking-[-0.06em] pointer-events-none italic select-none"
         style={{ background: 'linear-gradient(180deg, rgba(31,77,255,0.20) 0%, rgba(123,59,255,0.08) 100%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>
         e
       </div>
@@ -27,7 +27,7 @@ export default function Closing() {
         <span className="text-paper/40"> for growth in complex markets.</span>
       </h2>
 
-      <div className="mt-24 grid grid-cols-2 gap-16 items-end">
+      <div className="mt-16 md:mt-24 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 md:items-end">
         <div>
           <div className="font-mono text-xs text-paper/50 uppercase tracking-[0.08em] mb-4">3–5 Year Ambition</div>
           <p className="font-text text-[17px] leading-relaxed text-paper/70 max-w-[40ch] m-0">
@@ -42,11 +42,11 @@ export default function Closing() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 items-end">
+        <div className="flex flex-col gap-4 items-start md:items-end">
           <span className="font-mono text-xs text-paper/50 uppercase tracking-[0.08em]">Take the next step</span>
           <a
             href="#"
-            className="font-display font-black text-[clamp(48px,6vw,96px)] leading-[0.95] tracking-[-0.04em] text-paper text-right group"
+            className="font-display font-black text-[clamp(40px,6vw,96px)] leading-[0.95] tracking-[-0.04em] text-paper text-left md:text-right group"
           >
             Request a brief
             <span className="text-blue ml-4 inline-block transition-transform duration-[240ms] group-hover:translate-x-3">→</span>

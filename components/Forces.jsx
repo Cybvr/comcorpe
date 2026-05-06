@@ -6,7 +6,7 @@ export default function Forces() {
   ]
 
   return (
-    <section id="forces" className="py-32 px-24 bg-paper border-b border-ink">
+    <section id="forces" className="py-20 md:py-32 px-6 md:px-24 bg-paper border-b border-ink">
       <div className="flex items-baseline gap-6 mb-14">
         <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-ink inline-flex items-center gap-2.5">
           <span className="w-6 h-px bg-ink inline-block" />
@@ -15,7 +15,7 @@ export default function Forces() {
         <span className="font-mono text-xs text-ink-60 ml-auto">02 / 09</span>
       </div>
 
-      <div className="grid grid-cols-[5fr_7fr] gap-24 mb-20 items-baseline">
+      <div className="flex flex-col md:grid md:grid-cols-[5fr_7fr] gap-12 md:gap-24 mb-16 md:mb-20 md:items-baseline">
         <h2 className="font-display font-black text-[clamp(40px,5vw,72px)] leading-tight tracking-display text-ink m-0 text-balance">
           Three forces have converged.
         </h2>
@@ -25,11 +25,11 @@ export default function Forces() {
         </p>
       </div>
 
-      <div className="grid grid-cols-3 border border-ink">
+      <div className="grid grid-cols-1 md:grid-cols-3 border border-ink">
         {items.map((it, i) => (
           <div
             key={it.i}
-            className={`group p-10 bg-paper hover:bg-ink transition-colors duration-[240ms] cursor-default min-h-[280px] flex flex-col ${i < items.length - 1 ? 'border-r border-ink' : ''}`}
+            className={`group p-8 md:p-10 bg-paper hover:bg-ink transition-colors duration-[240ms] cursor-default min-h-[240px] md:min-h-[280px] flex flex-col ${i < items.length - 1 ? 'border-b md:border-b-0 md:border-r border-ink' : ''}`}
           >
             <div className="font-mono text-[13px] text-ink-60 group-hover:text-paper/60 mb-auto pb-20 transition-colors duration-[240ms]">{it.i}.</div>
             <div className="font-display font-black text-[30px] leading-tight tracking-h3 text-ink group-hover:text-paper mb-4 transition-colors duration-[240ms]">{it.t}</div>

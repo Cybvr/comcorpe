@@ -7,8 +7,8 @@ export default function Provocation() {
   ]
 
   return (
-    <section id="provocation" className="py-32 px-24 bg-paper border-b border-ink">
-      <div className="flex items-baseline gap-6 mb-20">
+    <section id="provocation" className="py-20 md:py-32 px-6 md:px-24 bg-paper border-b border-ink">
+      <div className="flex flex-col md:flex-row md:items-baseline gap-6 mb-12 md:mb-20">
         <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-ink inline-flex items-center gap-2.5">
           <span className="w-6 h-px bg-ink inline-block" />
           The Provocation
@@ -21,8 +21,8 @@ export default function Provocation() {
         <span className="text-ink-40">Not for lack of capital. Not for lack of ambition.</span>
       </h2>
 
-      <div className="mt-24 grid grid-cols-2 border-t border-ink">
-        <div className="py-12 pr-12 pl-24 -ml-24 border-r border-ink-10">
+      <div className="mt-16 md:mt-24 grid grid-cols-1 md:grid-cols-2 border-t border-ink">
+        <div className="py-12 md:pr-12 md:pl-24 md:-ml-24 border-b md:border-b-0 md:border-r border-ink-10">
           <div className="font-mono text-xs text-ink-60 mb-6 uppercase">The Diagnosis</div>
           <div className="font-display font-black text-[32px] leading-tight tracking-h3 mb-8">Growth is not treated as a system.</div>
           <ul className="list-none p-0 m-0 flex flex-col">
@@ -35,7 +35,7 @@ export default function Provocation() {
           </ul>
         </div>
 
-        <div className="py-12 pl-12 pr-24 -mr-24 bg-ink text-paper">
+        <div className="py-12 md:pl-12 md:pr-24 md:-mr-24 bg-ink text-paper">
           <div className="font-mono text-xs text-paper/60 mb-6 uppercase">The Result</div>
           <div className="font-display font-black text-[32px] leading-tight tracking-h3 text-paper mb-8">
             Reactive. Fragmented. Non-compounding.

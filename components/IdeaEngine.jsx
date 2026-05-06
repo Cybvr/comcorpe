@@ -6,7 +6,7 @@ export default function IdeaEngine() {
   ]
 
   return (
-    <section id="idea-engine" className="py-32 px-24 bg-paper border-b border-ink">
+    <section id="idea-engine" className="py-20 md:py-32 px-6 md:px-24 bg-paper border-b border-ink">
       <div className="flex items-baseline gap-6 mb-14">
         <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-ink inline-flex items-center gap-2.5">
           <span className="w-6 h-px bg-ink inline-block" />
@@ -15,7 +15,7 @@ export default function IdeaEngine() {
         <span className="font-mono text-xs text-ink-60 ml-auto">04 / 09</span>
       </div>
 
-      <div className="grid grid-cols-[7fr_5fr] gap-24 items-start">
+      <div className="flex flex-col lg:grid lg:grid-cols-[7fr_5fr] gap-12 lg:gap-24 items-start">
         <h2 className="font-display font-black text-[clamp(56px,7.5vw,128px)] leading-[0.92] tracking-[-0.05em] text-ink m-0 text-balance">
           Most firms wait for briefs.<br />
           <span className="text-blue">We originate them.</span>

@@ -9,7 +9,7 @@ function FooterLink({ children }) {
 export default function Footer() {
   return (
     <footer className="bg-ink text-paper">
-      <div className="px-24 pt-[120px] pb-24 border-b border-paper/[0.12]">
+      <div className="px-6 md:px-24 pt-20 md:pt-[120px] pb-16 md:pb-24 border-b border-paper/[0.12]">
         <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-paper inline-flex items-center gap-2.5 mb-8">
           <span className="w-6 h-px bg-paper inline-block" />
           Orchestrating capability
@@ -22,7 +22,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-12 px-24 py-16">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 px-6 md:px-24 py-16">
         {[
           { head: 'Model', links: ['Orchestration', 'Specialist Pods', 'Growth Plays'] },
           { head: 'Arenas', links: ['Technology & Fintech', 'Public Infrastructure', 'Consumer & Brand'] },
@@ -36,7 +36,7 @@ export default function Footer() {
         ))}
       </div>
 
-      <div className="px-24 py-6 flex items-center justify-between border-t border-paper/[0.12] font-mono text-xs text-paper/50">
+      <div className="px-6 md:px-24 py-6 flex flex-col md:flex-row items-center justify-between border-t border-paper/[0.12] font-mono text-xs text-paper/50 gap-4">
         <span>© 2026 Comcorpᵉ Ltd. All rights reserved.</span>
         <span>A Growth Systems Company</span>
       </div>

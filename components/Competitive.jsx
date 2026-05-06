@@ -1,3 +1,5 @@
+import { Fragment } from 'react'
+
 function Dot({ kind }) {
   return (
     <span className={`w-2.5 h-2.5 rounded-full inline-block flex-none ${
@@ -24,7 +26,7 @@ export default function Competitive() {
   ]
 
   return (
-    <section id="competitive" className="py-32 px-24 bg-paper border-b border-ink">
+    <section id="competitive" className="py-20 md:py-32 px-6 md:px-24 bg-paper border-b border-ink">
       <div className="flex items-baseline gap-6 mb-14">
         <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-ink inline-flex items-center gap-2.5">
           <span className="w-6 h-px bg-ink inline-block" />
@@ -33,7 +35,7 @@ export default function Competitive() {
         <span className="font-mono text-xs text-ink-60 ml-auto">07 / 09</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-24 mb-14 items-baseline">
+      <div className="flex flex-col md:grid md:grid-cols-2 gap-12 md:gap-24 mb-14 md:items-baseline">
         <h2 className="font-display font-black text-[clamp(48px,6vw,96px)] leading-[0.96] tracking-hero text-ink m-0 text-balance">
           We intersect with many. We resemble none.
         </h2>
@@ -45,7 +47,7 @@ export default function Competitive() {
         </p>
       </div>
 
-      <div className="border border-ink grid grid-cols-[1.4fr_repeat(3,1fr)_1.2fr]">
+      <div className="border border-ink grid grid-cols-[200px_repeat(3,150px)_160px] md:grid-cols-[1.4fr_repeat(3,1fr)_1.2fr] overflow-x-auto">
         {['Capability', 'Strategy firms', 'Agency networks', 'Independent advisors'].map((h) => (
           <div key={h} className="px-6 py-5 font-mono text-xs text-ink-60 uppercase tracking-[0.08em] border-b border-ink border-r border-ink-10">{h}</div>
         ))}
@@ -54,7 +56,7 @@ export default function Competitive() {
         {rows.map((r, i) => {
           const last = i === rows.length - 1
           return (
-            <>
+            <Fragment key={i}>
               <div key={`cap-${i}`} className={`px-6 py-6 font-display font-black text-[18px] tracking-[-0.02em] text-ink flex items-center border-r border-ink-10 ${!last ? 'border-b border-ink-10' : ''}`}>{r.cap}</div>
               <Cell key={`s-${i}`} kind={r.strategy[0]} text={r.strategy[1]} last={last} />
               <Cell key={`a-${i}`} kind={r.agency[0]}   text={r.agency[1]}   last={last} />
@@ -63,7 +65,7 @@ export default function Competitive() {
                 <span className="w-2.5 h-2.5 rounded-full inline-block flex-none bg-blue" />
                 <span>{r.ours[1]}</span>
               </div>
-            </>
+            </Fragment>
           )
         })}
       </div>

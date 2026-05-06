@@ -15,7 +15,7 @@ export default function UseCases() {
   ]
 
   return (
-    <section id="cases" className="py-32 px-24 bg-paper border-b border-ink">
+    <section id="cases" className="py-20 md:py-32 px-6 md:px-24 bg-paper border-b border-ink">
       <div className="flex items-baseline gap-6 mb-14">
         <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-ink inline-flex items-center gap-2.5">
           <span className="w-6 h-px bg-ink inline-block" />
@@ -24,7 +24,7 @@ export default function UseCases() {
         <span className="font-mono text-xs text-ink-60 ml-auto">06 / 09</span>
       </div>
 
-      <div className="grid grid-cols-[5fr_7fr] gap-24 mb-16 items-baseline">
+      <div className="flex flex-col md:grid md:grid-cols-[5fr_7fr] gap-12 md:gap-24 mb-16 md:items-baseline">
         <h2 className="font-display font-black text-[clamp(40px,5vw,72px)] leading-tight tracking-display text-ink m-0 text-balance">
           Three patterns. One operating method.
         </h2>
@@ -34,9 +34,9 @@ export default function UseCases() {
         </p>
       </div>
 
-      <div className="grid grid-cols-3 border border-ink">
+      <div className="grid grid-cols-1 md:grid-cols-3 border border-ink">
         {cases.map((c, i) => (
-          <div key={c.n} className={`p-9 bg-paper flex flex-col min-h-[460px] ${i < cases.length - 1 ? 'border-r border-ink-10' : ''}`}>
+          <div key={c.n} className={`p-8 md:p-9 bg-paper flex flex-col min-h-[400px] md:min-h-[460px] ${i < cases.length - 1 ? 'border-b md:border-b-0 md:border-r border-ink-10' : ''}`}>
             <div className="font-mono text-xs text-ink-60 uppercase tracking-[0.08em] mb-3">{c.n}</div>
             <div className="font-display font-black text-[28px] leading-tight tracking-h3 text-ink mb-3">{c.t}</div>
             <p className="font-text text-base leading-relaxed text-ink-60 mb-7 italic">{c.s}</p>
