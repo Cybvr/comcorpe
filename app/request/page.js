@@ -69,7 +69,7 @@ export default function RequestPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-ink text-paper flex items-center justify-center px-6">
+      <div className="min-h-screen bg-ink text-paper flex items-center justify-center px-6 dark-inv-section">
         <div className="max-w-[560px] w-full">
           <Link href="/" className="inline-flex items-center gap-2 font-mono text-xs text-paper/50 hover:text-paper transition-colors mb-16">
             <span>←</span> Back to site
@@ -98,7 +98,7 @@ export default function RequestPage() {
       {/* Header */}
       <header className="px-6 md:px-24 py-6 border-b border-ink-10 flex items-center justify-between">
         <Link href="/">
-          <Image src="/images/comcorpe.png" alt="Comcorpᵉ" width={140} height={36} className="h-7 w-auto object-contain" />
+          <Image src="/images/comcorpe.png" alt="Comcorpᵉ" width={140} height={36} className="h-7 w-auto object-contain dark:invert" />
         </Link>
         <Link href="/" className="font-mono text-xs text-ink-60 hover:text-ink transition-colors">
           ← Back
@@ -288,7 +288,7 @@ export default function RequestPage() {
   )
 }
 
-const inputCls = 'w-full px-4 py-3.5 border border-ink-20 bg-white font-text text-sm text-ink placeholder:text-ink-40 focus:outline-none focus:border-ink transition-colors duration-[120ms]'
+const inputCls = 'w-full px-4 py-3.5 border border-ink-20 bg-paper-pure font-text text-sm text-ink placeholder:text-ink-40 focus:outline-none focus:border-ink transition-colors duration-[120ms]'
 
 function Field({ label, required, children }) {
   return (

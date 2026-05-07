@@ -8,7 +8,7 @@ function FooterLink({ children, href = '#' }) {
 
 export default function Footer() {
   return (
-    <footer className="bg-ink text-paper">
+    <footer className="bg-ink text-paper dark-inv-section">
       <div className="px-6 md:px-24 pt-20 md:pt-[120px] pb-16 md:pb-24 border-b border-paper/[0.12]">
         <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-paper inline-flex items-center gap-2.5 mb-8">
           <span className="w-6 h-px bg-paper inline-block" />

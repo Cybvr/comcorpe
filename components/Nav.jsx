@@ -2,9 +2,52 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
+function MoonIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  )
+}
+
+function SunIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="5" />
+      <line x1="12" y1="1" x2="12" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="23" />
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+      <line x1="1" y1="12" x2="3" y2="12" />
+      <line x1="21" y1="12" x2="23" y2="12" />
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+    </svg>
+  )
+}
+
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [darkMode, setDarkMode] = useState(false)
+
+  // Initialise from localStorage / system preference
+  useEffect(() => {
+    const saved = localStorage.getItem('theme')
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isDark = saved === 'dark' || (!saved && prefersDark)
+    if (isDark) {
+      document.documentElement.classList.add('dark')
+      setDarkMode(true)
+    }
+  }, [])
+
+  const toggleDark = () => {
+    const next = !darkMode
+    setDarkMode(next)
+    document.documentElement.classList.toggle('dark', next)
+    localStorage.setItem('theme', next ? 'dark' : 'light')
+  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -13,7 +56,6 @@ export default function Nav() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Close menu on resize to desktop
   useEffect(() => {
     const onResize = () => { if (window.innerWidth >= 768) setMenuOpen(false) }
     window.addEventListener('resize', onResize)
@@ -36,7 +78,7 @@ export default function Nav() {
     <>
       <nav className={`sticky top-0 z-50 h-16 flex items-center px-6 md:px-24 border-b transition-all duration-[240ms] ${scrolled || menuOpen ? 'bg-paper/95 backdrop-blur-md border-ink-10' : 'border-transparent bg-transparent'}`}>
         <a href="#top" className="block">
-          <img src="/images/comcorpe.png" alt="Comcorpe" className="h-6 md:h-7 w-auto object-contain" />
+          <img src="/images/comcorpe.png" alt="Comcorpe" className="h-6 md:h-7 w-auto object-contain dark:invert" />
         </a>
 
         {/* Desktop links */}
@@ -50,6 +92,16 @@ export default function Nav() {
               {label}
             </button>
           ))}
+
+          {/* Dark mode toggle — desktop */}
+          <button
+            onClick={toggleDark}
+            aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="w-8 h-8 flex items-center justify-center rounded-full text-ink hover:bg-ink-10 transition-colors duration-[120ms] cursor-pointer"
+          >
+            {darkMode ? <SunIcon /> : <MoonIcon />}
+          </button>
+
           <Link
             href="/request"
             className="font-text text-[13px] font-semibold px-[18px] py-[10px] rounded-full bg-ink text-paper hover:bg-blue transition-colors duration-[120ms]"
@@ -58,8 +110,15 @@ export default function Nav() {
           </Link>
         </div>
 
-        {/* Mobile: CTA + hamburger */}
-        <div className="ml-auto flex md:hidden items-center gap-3">
+        {/* Mobile: dark toggle + CTA + hamburger */}
+        <div className="ml-auto flex md:hidden items-center gap-2">
+          <button
+            onClick={toggleDark}
+            aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="w-8 h-8 flex items-center justify-center rounded-full text-ink hover:bg-ink-10 transition-colors duration-[120ms] cursor-pointer"
+          >
+            {darkMode ? <SunIcon /> : <MoonIcon />}
+          </button>
           <Link
             href="/request"
             className="font-text text-[12px] font-semibold px-4 py-2.5 rounded-full bg-ink text-paper hover:bg-blue transition-colors duration-[120ms]"

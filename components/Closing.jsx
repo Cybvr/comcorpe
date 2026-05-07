@@ -5,7 +5,7 @@ export default function Closing() {
   const [email, setEmail] = useState('')
 
   return (
-    <section id="closing" className="py-24 md:py-40 px-6 md:px-24 bg-ink text-paper border-b border-ink relative overflow-hidden">
+    <section id="closing" className="py-24 md:py-40 px-6 md:px-24 bg-ink text-paper border-b border-ink relative overflow-hidden dark-inv-section">
       {/* decorative ᵉ */}
       <div className="absolute -bottom-20 md:-bottom-40 -right-10 md:-right-20 font-display font-black text-[320px] md:text-[720px] leading-[0.8] tracking-[-0.06em] pointer-events-none italic select-none"
         style={{ background: 'linear-gradient(180deg, rgba(31,77,255,0.20) 0%, rgba(123,59,255,0.08) 100%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>

@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-display: 'Archivo Black', system-ui, sans-serif;
   --font-text: 'Inter Tight', Inter, system-ui, sans-serif;
@@ -35,6 +37,33 @@
     from { transform: translateX(0); }
     to   { transform: translateX(-50%); }
   }
+}
+
+/* ── Dark mode ───────────────────────────────────────────── */
+.dark {
+  --color-paper: #111113;
+  --color-paper-pure: #1A1A1C;
+  --color-ink: #F0EDE6;
+  --color-ink-80: #C5C2BB;
+  --color-ink-60: #888480;
+  --color-ink-40: #514E4B;
+  --color-ink-20: #2B2927;
+  --color-ink-10: #1E1C1A;
+}
+
+/*
+  Sections intentionally dark in light mode (Footer, Closing) restore
+  original variable values in dark mode so they stay visually dark.
+*/
+.dark .dark-inv-section {
+  --color-paper: #F6F4EF;
+  --color-paper-pure: #FFFFFF;
+  --color-ink: #0A0A0B;
+  --color-ink-80: #2A2A2C;
+  --color-ink-60: #5A5A5E;
+  --color-ink-40: #9A9A9E;
+  --color-ink-20: #D4D2CC;
+  --color-ink-10: #E8E5DE;
 }
 
 html { -webkit-text-size-adjust: 100%; }
