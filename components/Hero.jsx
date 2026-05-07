@@ -29,7 +29,7 @@ export default function Hero() {
         <div className="flex flex-col gap-8">
           <div className="flex gap-3.5 items-center flex-wrap">
             <a
-              href="#closing"
+              href="/request"
               className="font-text text-sm font-semibold px-6 py-3.5 bg-blue text-white rounded-full inline-flex items-center gap-2.5 hover:bg-blue-hover transition-colors duration-[120ms]"
             >
               Request a brief

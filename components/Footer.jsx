@@ -1,6 +1,6 @@
-function FooterLink({ children }) {
+function FooterLink({ children, href = '#' }) {
   return (
-    <a href="#" className="font-text text-sm text-paper cursor-pointer border-b border-transparent hover:border-blue hover:text-blue transition-colors duration-[120ms] pb-px w-fit">
+    <a href={href} className="font-text text-sm text-paper cursor-pointer border-b border-transparent hover:border-blue hover:text-blue transition-colors duration-[120ms] pb-px w-fit">
       {children}
     </a>
   )
@@ -25,11 +25,14 @@ export default function Footer() {
           { head: 'Model', links: ['Orchestration', 'Specialist Pods', 'Growth Plays'] },
           { head: 'Arenas', links: ['Technology & Fintech', 'Public Infrastructure', 'Consumer & Brand'] },
           { head: 'Company', links: ['International Board', 'Strategic Opportunity Briefs', 'Press'] },
-          { head: 'Contact', links: ['Request a brief', 'hello@comcorp.e', 'London · Lagos · Singapore'] },
+          { head: 'Contact', links: [{ label: 'Request a brief', href: '/request' }, { label: 'hello@comcorp.e', href: 'mailto:hello@comcorp.e' }, { label: 'London · Lagos · Singapore', href: '#' }] },
         ].map(({ head, links }) => (
           <div key={head} className="flex flex-col gap-3.5">
             <span className="font-text text-[11px] font-semibold tracking-eyebrow uppercase text-paper/50 mb-2">{head}</span>
-            {links.map(l => <FooterLink key={l}>{l}</FooterLink>)}
+            {links.map(l => typeof l === 'string'
+              ? <FooterLink key={l}>{l}</FooterLink>
+              : <FooterLink key={l.label} href={l.href}>{l.label}</FooterLink>
+            )}
           </div>
         ))}
       </div>
