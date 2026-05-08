@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 
-function Dot({ kind }) {
+function Dot({ kind }: { kind: string }) {
   return (
     <span className={`w-2.5 h-2.5 rounded-full inline-block flex-none ${
       kind === 'yes' ? 'bg-blue' : kind === 'partial' ? 'bg-ink-40' : 'bg-transparent border border-ink-20'
@@ -8,7 +8,7 @@ function Dot({ kind }) {
   )
 }
 
-function Cell({ kind, text, last, ours }) {
+function Cell({ kind, text, last, ours = false }: { kind: string; text: string; last: boolean; ours?: boolean }) {
   return (
     <div className={`px-6 py-6 font-text text-sm text-ink flex items-center gap-2.5 ${!last ? 'border-b border-ink-10' : ''} ${ours ? 'bg-blue/[0.06] font-medium border-r-0' : 'border-r border-ink-10'}`}>
       <Dot kind={kind} />
