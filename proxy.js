@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 
-export function proxy(request) {
+export default function proxy(request) {
   const { pathname } = request.nextUrl
   const auth = request.cookies.get('cc_auth')?.value
 

@@ -24,7 +24,7 @@ export default function Footer() {
         {[
           { head: 'Model', links: ['Orchestration', 'Specialist Pods', 'Growth Plays'] },
           { head: 'Arenas', links: ['Technology & Fintech', 'Public Infrastructure', 'Consumer & Brand'] },
-          { head: 'Company', links: ['International Board', 'Strategic Opportunity Briefs', 'Press'] },
+          { head: 'Company', links: ['International Board', { label: 'Case Studies', href: '/case-studies' }, 'Press'] },
           { head: 'Contact', links: [{ label: 'Request a brief', href: '/request' }, { label: 'hello@comcorp.e', href: 'mailto:hello@comcorp.e' }, { label: 'London · Lagos · Singapore', href: '#' }] },
         ].map(({ head, links }) => (
           <div key={head} className="flex flex-col gap-3.5">

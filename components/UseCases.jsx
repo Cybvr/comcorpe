@@ -1,15 +1,20 @@
+import Link from 'next/link'
+
 export default function UseCases() {
   const cases = [
     {
       n: 'Case 01', t: 'Market Entry', s: 'A global brand entering Nigeria.',
+      slug: 'market-entry',
       steps: ['Design go-to-market strategy', 'Build local partnerships', 'Deploy launch execution team'],
     },
     {
       n: 'Case 02', t: 'Growth Stagnation', s: 'A local leader plateauing.',
+      slug: null,
       steps: ['Diagnose growth bottlenecks', 'Rewire commercial model', 'Deploy targeted execution pods'],
     },
     {
       n: 'Case 03', t: 'Opportunity Creation', s: 'A new revenue stream we identify.',
+      slug: null,
       steps: ['Develop concept', 'Pitch client', 'Execute rollout'],
     },
   ]
@@ -47,16 +52,25 @@ export default function UseCases() {
                   <span className="font-text text-[15px] text-ink leading-snug">{s}</span>
                 </div>
               ))}
+              {c.slug ? (
+                <Link href={`/case-studies/${c.slug}`} className="mt-5 font-mono text-xs text-blue inline-flex items-center gap-1.5 hover:gap-3 transition-all duration-[200ms] w-fit">
+                  Read the case →
+                </Link>
+              ) : (
+                <span className="mt-5 font-mono text-xs text-ink-40 w-fit">Coming soon</span>
+              )}
             </div>
           </div>
         ))}
       </div>
 
-      <div className="mt-16 pt-8 border-t border-ink grid grid-cols-[1fr_auto] items-baseline gap-8">
+      <div className="mt-16 pt-8 border-t border-ink grid grid-cols-1 md:grid-cols-[1fr_auto] items-baseline gap-6">
         <div className="font-display font-black text-[clamp(28px,3.6vw,48px)] tracking-h3 text-ink leading-tight text-balance max-w-[24ch]">
           We architect and <span className="text-blue">capture opportunities.</span>
         </div>
-        <div className="font-mono text-xs text-ink-60">06 / 09 · Operating method</div>
+        <Link href="/case-studies" className="font-mono text-xs text-blue hover:underline whitespace-nowrap">
+          All case studies →
+        </Link>
       </div>
     </section>
   )
