@@ -1,32 +1,12 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-
-function MoonIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-    </svg>
-  )
-}
-
-function SunIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="5" />
-      <line x1="12" y1="1" x2="12" y2="3" />
-      <line x1="12" y1="21" x2="12" y2="23" />
-      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-      <line x1="1" y1="12" x2="3" y2="12" />
-      <line x1="21" y1="12" x2="23" y2="12" />
-      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-    </svg>
-  )
-}
+import { usePathname, useRouter } from 'next/navigation'
+import { Moon, Sun } from 'lucide-react'
 
 export default function Nav() {
+  const pathname = usePathname()
+  const router = useRouter()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
@@ -64,7 +44,11 @@ export default function Nav() {
 
   const scroll = (id: string) => {
     setMenuOpen(false)
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (pathname === '/') {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    } else {
+      router.push(`/#${id}`)
+    }
   }
 
   const items = [
@@ -77,9 +61,9 @@ export default function Nav() {
   return (
     <>
       <nav className={`sticky top-0 z-50 h-16 flex items-center px-6 md:px-24 border-b transition-all duration-[240ms] ${scrolled || menuOpen ? 'bg-paper/95 backdrop-blur-md border-ink-10' : 'border-transparent bg-transparent'}`}>
-        <a href="#top" className="block">
+        <Link href="/" className="block">
           <img src="/images/comcorpe.png" alt="Comcorpe" className="h-6 md:h-7 w-auto object-contain dark:invert" />
-        </a>
+        </Link>
 
         {/* Desktop links */}
         <div className="ml-auto hidden md:flex gap-9 items-center">
@@ -99,7 +83,7 @@ export default function Nav() {
             aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
             className="w-8 h-8 flex items-center justify-center rounded-full text-ink hover:bg-ink-10 transition-colors duration-[120ms] cursor-pointer"
           >
-            {darkMode ? <SunIcon /> : <MoonIcon />}
+            {darkMode ? <Sun size={15} strokeWidth={1.5} /> : <Moon size={15} strokeWidth={1.5} />}
           </button>
 
           <Link
@@ -117,7 +101,7 @@ export default function Nav() {
             aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
             className="w-8 h-8 flex items-center justify-center rounded-full text-ink hover:bg-ink-10 transition-colors duration-[120ms] cursor-pointer"
           >
-            {darkMode ? <SunIcon /> : <MoonIcon />}
+            {darkMode ? <Sun size={15} strokeWidth={1.5} /> : <Moon size={15} strokeWidth={1.5} />}
           </button>
           <Link
             href="/request"
