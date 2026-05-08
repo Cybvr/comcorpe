@@ -15,11 +15,16 @@ export default function Hero() {
         <span className="md:ml-auto font-mono text-xs text-ink-60">00 / Manifesto · Lagos / London / Singapore</span>
       </div>
 
-      <h1 className="font-display font-black text-[clamp(72px,11vw,184px)] leading-[0.88] tracking-[-0.05em] text-ink m-0 text-balance">
-        The Operating Layer<br />
-        for High-Velocity<br />
-        Growth<span className="text-blue">.</span>
-      </h1>
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-12 md:gap-24 items-end">
+        <h1 className="font-display font-black text-[clamp(72px,11vw,184px)] leading-[0.88] tracking-[-0.05em] text-ink m-0 text-balance">
+          The Operating Layer<br />
+          for High-Velocity<br />
+          Growth<span className="text-blue">.</span>
+        </h1>
+        <div className="hidden lg:block w-[420px] aspect-square bg-ink-10 border border-ink-10 flex items-center justify-center -mb-24 relative z-10">
+          <span className="font-mono text-[10px] text-ink-40 uppercase tracking-widest italic">Hero Image Placeholder</span>
+        </div>
+      </div>
 
       <div className="flex flex-col md:grid md:grid-cols-[5fr_7fr] gap-12 md:gap-24 mt-16 md:mt-20 pb-14 items-end">
         <p className="font-text text-[22px] leading-lede text-ink-60 m-0 tracking-body max-w-[34ch]">

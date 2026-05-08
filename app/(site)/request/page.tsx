@@ -36,10 +36,26 @@ const ENGAGEMENT_TYPES = [
   'Not sure yet',
 ]
 
+interface FormState {
+  firstName: string;
+  lastName: string;
+  email: string;
+  company: string;
+  role: string;
+  phone: string;
+  arena: string;
+  engagementType: string;
+  budget: string;
+  timeline: string;
+  markets: string;
+  challenge: string;
+  heard: string;
+}
+
 export default function RequestPage() {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormState>({
     firstName: '',
     lastName: '',
     email: '',
@@ -55,10 +71,13 @@ export default function RequestPage() {
     heard: '',
   })
 
-  const set = (field) => (e) => setForm(f => ({ ...f, [field]: e.target.value }))
-  const toggle = (field, val) => setForm(f => ({ ...f, [field]: f[field] === val ? '' : val }))
+  const set = (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => 
+    setForm(f => ({ ...f, [field]: e.target.value }))
+  
+  const toggle = (field: keyof FormState, val: string) => 
+    setForm(f => ({ ...f, [field]: f[field] === val ? '' : val }))
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     await new Promise(r => setTimeout(r, 600))
@@ -275,7 +294,13 @@ export default function RequestPage() {
 
 const inputCls = 'w-full px-4 py-3.5 border border-ink-20 bg-paper-pure font-text text-sm text-ink placeholder:text-ink-40 focus:outline-none focus:border-ink transition-colors duration-[120ms]'
 
-function Field({ label, required, children }) {
+interface FieldProps {
+  label: string;
+  required?: boolean;
+  children: React.ReactNode;
+}
+
+function Field({ label, required, children }: FieldProps) {
   return (
     <div className="flex flex-col gap-1.5">
       <label className="font-mono text-[11px] tracking-eyebrow uppercase text-ink-60">

@@ -1,7 +1,9 @@
 import Link from 'next/link'
 import { cases } from '@/lib/cases'
 
-export const metadata = {
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
   title: 'Case Studies — Comcorpᵉ',
   description: 'How Comcorpᵉ architects and executes growth for clients in complex markets.',
 }

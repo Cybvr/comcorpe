@@ -62,7 +62,7 @@ export default function Nav() {
     return () => window.removeEventListener('resize', onResize)
   }, [])
 
-  const scroll = (id) => {
+  const scroll = (id: string) => {
     setMenuOpen(false)
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }

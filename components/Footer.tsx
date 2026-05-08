@@ -1,4 +1,11 @@
-function FooterLink({ children, href = '#' }) {
+import React from 'react'
+
+interface FooterLinkProps {
+  children: React.ReactNode
+  href?: string
+}
+
+function FooterLink({ children, href = '#' }: FooterLinkProps) {
   return (
     <a href={href} className="font-text text-sm text-paper cursor-pointer border-b border-transparent hover:border-blue hover:text-blue transition-colors duration-[120ms] pb-px w-fit">
       {children}

@@ -1,4 +1,28 @@
-export const cases = [
+export interface Case {
+  slug: string;
+  number: string;
+  title: string;
+  arena: string;
+  lede: string;
+  client: {
+    name: string;
+    description: string;
+  };
+  problem: string;
+  phases: {
+    label: string;
+    body: string;
+  }[];
+  outcome: {
+    summary: string;
+    stats: {
+      value: string;
+      label: string;
+    }[];
+  };
+}
+
+export const cases: Case[] = [
   {
     slug: 'market-entry',
     number: 'Case 01',
@@ -36,6 +60,6 @@ export const cases = [
   },
 ]
 
-export function getCaseBySlug(slug) {
+export function getCaseBySlug(slug: string): Case | null {
   return cases.find(c => c.slug === slug) ?? null
 }

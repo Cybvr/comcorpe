@@ -1,24 +1,33 @@
-export const metadata = {
-  title: 'Leadership & Board — Comcorpᵉ',
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Team & Board — Comcorpᵉ',
   description: 'The people behind Comcorpᵉ — founding leadership and international board.',
 }
 
 const leadership = [
   {
-    name: '[Founder Name]',
-    title: 'Founder & CEO',
-    bio: 'Built and scaled growth systems across three continents. Operator first.',
-    tags: ['STRATEGY', 'GROWTH SYSTEMS'],
+    name: 'Enyi Odigbo',
+    title: 'Chairman',
+    bio: 'Advertising veteran and founder of Casers Group. Strategic visionary with decades of experience in the African marketing landscape.',
+    tags: ['STRATEGY', 'GOVERNANCE'],
   },
   {
-    name: '[Co-founder Name]',
-    title: 'Co-founder & CSO',
-    bio: 'Strategic architecture and commercial design. Former management consulting.',
+    name: 'Maxwell Marshall',
+    title: 'Chief Business Architect',
+    bio: 'Expert in commercial design and strategic partnerships, driving growth through innovative business models.',
     tags: ['COMMERCIAL DESIGN', 'PARTNERSHIPS'],
+  },
+  {
+    name: 'Jide Pinheiro',
+    title: 'Chief Creativity Architect',
+    bio: 'Technology leader and designer focusing on product innovation and digital transformation.',
+    tags: ['PRODUCT DESIGN', 'TECHNOLOGY'],
   },
 ]
 
 const board = [
+  { name: 'Dr. Olubayo Adekanmbi', credential: 'Founder & CEO, Data Science Nigeria (DSNai)', geo: 'Lagos' },
   { name: '[Board Member Name]', credential: 'Former Global Chairman, BBDO Worldwide', geo: 'London' },
   { name: '[Board Member Name]', credential: 'Founding Partner, [Africa-focused Growth Equity]', geo: 'Lagos' },
   { name: '[Board Member Name]', credential: 'Former Permanent Secretary, [Federal Ministry]', geo: 'Abuja' },
@@ -35,7 +44,7 @@ export default function AboutPage() {
         <div className="mb-16 md:mb-24 border-b border-ink pb-14 md:pb-20">
           <div className="font-mono text-xs text-ink-60 uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
             <span className="w-6 h-px bg-ink-60 inline-block" />
-            Leadership &amp; Board
+            Team &amp; Board
           </div>
           <div className="flex flex-col md:flex-row md:items-end gap-8 md:gap-24">
             <h1 className="font-display font-black text-[clamp(48px,7vw,96px)] leading-[0.92] tracking-hero text-ink m-0 text-balance">
@@ -54,17 +63,20 @@ export default function AboutPage() {
           <div className="flex items-baseline gap-6 mb-10">
             <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-ink inline-flex items-center gap-2.5">
               <span className="w-6 h-px bg-ink inline-block" />
-              Founding Leadership
+              Founding Team
             </span>
             <span className="font-mono text-xs text-ink-40 ml-auto">01 / 02</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 border border-ink">
+          <div className="grid grid-cols-1 md:grid-cols-3 border border-ink">
             {leadership.map((p, i) => (
               <div
                 key={i}
                 className={`p-8 md:p-12 flex flex-col gap-6 ${i < leadership.length - 1 ? 'border-b md:border-b-0 md:border-r border-ink' : ''}`}
               >
+                <div className="w-full aspect-[4/5] bg-ink-10 border border-ink-10 flex items-center justify-center group-hover:border-ink transition-colors duration-300">
+                  <span className="font-mono text-[10px] text-ink-40 uppercase tracking-widest italic">Portrait Placeholder</span>
+                </div>
                 <div>
                   <div className="font-mono text-[11px] tracking-eyebrow uppercase text-ink-40 mb-3">{p.title}</div>
                   <div className="font-display font-black text-[clamp(32px,3.5vw,52px)] leading-tight tracking-h3 text-ink">{p.name}</div>
