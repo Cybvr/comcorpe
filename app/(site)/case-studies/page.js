@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { cases } from '@/lib/cases'
 
 export const metadata = {
@@ -10,16 +9,6 @@ export const metadata = {
 export default function CaseStudiesPage() {
   return (
     <div className="min-h-screen bg-paper">
-      {/* Header */}
-      <header className="px-6 md:px-24 py-6 border-b border-ink-10 flex items-center justify-between sticky top-0 bg-paper/95 backdrop-blur-md z-40">
-        <Link href="/">
-          <Image src="/images/comcorpe.png" alt="Comcorpᵉ" width={140} height={36} className="h-7 w-auto object-contain dark:invert" />
-        </Link>
-        <Link href="/" className="font-mono text-xs text-ink-60 hover:text-ink transition-colors duration-[120ms]">
-          ← Back
-        </Link>
-      </header>
-
       <div className="px-6 md:px-24 pt-16 md:pt-24 pb-24 md:pb-40">
 
         {/* Page header */}
@@ -42,7 +31,7 @@ export default function CaseStudiesPage() {
 
         {/* Case list */}
         <div className="flex flex-col gap-0">
-          {cases.map((c, i) => (
+          {cases.map((c) => (
             <Link
               key={c.slug}
               href={`/case-studies/${c.slug}`}

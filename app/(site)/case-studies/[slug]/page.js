@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { cases, getCaseBySlug } from '@/lib/cases'
 
@@ -23,21 +22,15 @@ export default async function CasePage({ params }) {
   if (!c) notFound()
 
   return (
-    <div className="min-h-screen bg-paper">
-
-      {/* Header */}
-      <header className="px-6 md:px-24 py-6 border-b border-ink-10 flex items-center justify-between sticky top-0 bg-paper/95 backdrop-blur-md z-40">
-        <Link href="/">
-          <Image src="/images/comcorpe.png" alt="Comcorpᵉ" width={140} height={36} className="h-7 w-auto object-contain dark:invert" />
-        </Link>
-        <Link href="/case-studies" className="font-mono text-xs text-ink-60 hover:text-ink transition-colors duration-[120ms]">
-          ← Case studies
-        </Link>
-      </header>
+    <div className="bg-paper">
 
       {/* Hero */}
       <div className="px-6 md:px-24 pt-14 md:pt-20 pb-16 md:pb-24 border-b border-ink">
         <div className="flex flex-wrap items-center gap-3 mb-10">
+          <Link href="/case-studies" className="font-mono text-xs text-ink-40 hover:text-blue transition-colors duration-[120ms]">
+            Case Studies
+          </Link>
+          <span className="font-mono text-xs text-ink-20">/</span>
           <span className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow">{c.number}</span>
           <span className="w-px h-3 bg-ink-20 inline-block" />
           <span className="font-mono text-[11px] text-blue uppercase tracking-eyebrow border border-blue px-2 py-1">
@@ -72,7 +65,7 @@ export default async function CasePage({ params }) {
           What Comcorpᵉ Did
         </div>
 
-        <div className="flex flex-col gap-0">
+        <div className="flex flex-col">
           {c.phases.map((phase, i) => (
             <div
               key={phase.label}
@@ -100,7 +93,6 @@ export default async function CasePage({ params }) {
             The Outcome
           </div>
 
-          {/* Stats grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-0 md:border md:border-paper/[0.16] mb-14">
             {c.outcome.stats.map((s, i) => (
               <div
@@ -117,13 +109,11 @@ export default async function CasePage({ params }) {
             ))}
           </div>
 
-          {/* Summary */}
           <p className="font-text text-[18px] md:text-[22px] leading-lede text-paper/80 m-0 max-w-[52ch]">
             {c.outcome.summary}
           </p>
         </div>
 
-        {/* Bottom CTA */}
         <div className="px-6 md:px-24 py-12 md:py-16 flex flex-col md:flex-row md:items-center gap-6 justify-between">
           <div>
             <div className="font-mono text-xs text-paper/40 uppercase tracking-eyebrow mb-2">Build your own playbook</div>

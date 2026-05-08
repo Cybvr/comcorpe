@@ -1,6 +1,5 @@
 'use client'
 import { useState } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 
 const ARENAS = [
@@ -69,11 +68,8 @@ export default function RequestPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-ink text-paper flex items-center justify-center px-6 dark-inv-section">
-        <div className="max-w-[560px] w-full">
-          <Link href="/" className="inline-flex items-center gap-2 font-mono text-xs text-paper/50 hover:text-paper transition-colors mb-16">
-            <span>←</span> Back to site
-          </Link>
+      <div className="min-h-[80vh] bg-ink dark-inv-section flex items-center justify-center px-6">
+        <div className="max-w-[560px] w-full py-24">
           <div className="font-mono text-xs text-paper/50 uppercase tracking-eyebrow mb-6">Brief received</div>
           <h1 className="font-display font-black text-[clamp(48px,7vw,80px)] leading-[0.92] tracking-hero text-paper mb-8">
             We'll be in touch.
@@ -94,18 +90,9 @@ export default function RequestPage() {
   }
 
   return (
-    <div className="min-h-screen bg-paper">
-      {/* Header */}
-      <header className="px-6 md:px-24 py-6 border-b border-ink-10 flex items-center justify-between">
-        <Link href="/">
-          <Image src="/images/comcorpe.png" alt="Comcorpᵉ" width={140} height={36} className="h-7 w-auto object-contain dark:invert" />
-        </Link>
-        <Link href="/" className="font-mono text-xs text-ink-60 hover:text-ink transition-colors">
-          ← Back
-        </Link>
-      </header>
-
+    <div className="bg-paper">
       <div className="max-w-[760px] mx-auto px-6 md:px-12 py-16 md:py-24">
+
         {/* Page header */}
         <div className="mb-16">
           <div className="font-mono text-xs text-ink-60 uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
@@ -200,18 +187,16 @@ export default function RequestPage() {
             <legend className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow mb-8 pb-4 border-b border-ink-10 w-full">
               03 / The challenge
             </legend>
-            <div className="flex flex-col gap-8">
-              <Field label="Describe the growth challenge you're facing" required>
-                <textarea
-                  value={form.challenge}
-                  onChange={set('challenge')}
-                  required
-                  rows={5}
-                  placeholder="What's the core problem? What have you tried? What does success look like?"
-                  className={`${inputCls} resize-none`}
-                />
-              </Field>
-            </div>
+            <Field label="Describe the growth challenge you're facing" required>
+              <textarea
+                value={form.challenge}
+                onChange={set('challenge')}
+                required
+                rows={5}
+                placeholder="What's the core problem? What have you tried? What does success look like?"
+                className={`${inputCls} resize-none`}
+              />
+            </Field>
           </fieldset>
 
           {/* Section 4 — Practicalities */}
