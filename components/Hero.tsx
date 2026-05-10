@@ -41,7 +41,7 @@ export default function Hero() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
             </a>
             <a
-              href="/about#model"
+              href="/model"
               className="font-text text-sm font-semibold px-6 py-3.5 bg-transparent text-ink border border-ink hover:bg-ink hover:text-paper transition-colors duration-[120ms]"
             >
               See the model

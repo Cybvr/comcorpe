@@ -60,12 +60,13 @@ export default function Nav() {
     { 
       label: 'About', 
       dropdown: [
-        { label: 'The Provocation', href: '/about#provocation', desc: 'Why emerging markets demand a new approach to growth.' },
-        { label: 'Our Model', href: '/about#model', desc: 'How we architect, assemble, and operate growth systems.' },
-        { label: 'Team & Advisory', href: '/about#team', desc: 'The people and the global network behind Comcorpᵉ.' },
+        { label: 'The Provocation', href: '/provocation', desc: 'Why emerging markets demand a new approach to growth.' },
+        { label: 'Our Model', href: '/model', desc: 'How we architect, assemble, and operate growth systems.' },
+        { label: 'Team & Advisory', href: '/about', desc: 'The people and the global network behind Comcorpᵉ.' },
         { label: 'Why Comcorpe', href: '/why', desc: 'Designed for complexity. Built for structural advantage.' },
       ]
     },
+    { label: 'Oversight', href: '/enterprise' },
     { label: 'Cases', href: '/case-studies' },
   ]
 

@@ -6,6 +6,11 @@ export const metadata: Metadata = {
   title: 'Comcorpᵉ — A Growth Systems Company',
   description: 'Comcorpᵉ orchestrates data, creativity, technology and strategy into unified growth systems.',
   robots: 'noindex, nofollow',
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

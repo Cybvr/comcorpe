@@ -4,8 +4,8 @@ import Link from 'next/link'
 
 export default function Home() {
   const sections = [
-    { label: 'Provocation', title: 'Rewiring growth systems', href: '/about#provocation', description: 'Growth is the most mismanaged function in emerging markets. We treat growth as architecture, not effort.' },
-    { label: 'Model', title: 'Architect. Assemble. Operate.', href: '/about#model', description: 'We build growth engines that run by collapsing the gap between strategy and execution.' },
+    { label: 'Provocation', title: 'Rewiring growth systems', href: '/provocation', description: 'Growth is the most mismanaged function in emerging markets. We treat growth as architecture, not effort.' },
+    { label: 'Model', title: 'Architect. Assemble. Operate.', href: '/model', description: 'We build growth engines that run by collapsing the gap between strategy and execution.' },
     { label: 'Arenas', title: 'Concentration over coverage', href: '/arenas', description: 'Focusing on high-impact sectors across Pan-Africa: Fintech, Infrastructure, and Consumer Ecosystems.' },
   ]
 
