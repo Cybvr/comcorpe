@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import ImagePlaceholder from '@/components/ImagePlaceholder'
+import { services } from '@/lib/services'
 
 export const metadata: Metadata = {
   title: 'Arenas — Comcorpᵉ',
@@ -7,11 +8,6 @@ export const metadata: Metadata = {
 }
 
 export default function ArenasPage() {
-  const arenas = [
-    { i: '01', t: 'Technology & Fintech Platforms', s: 'Activation, brand and growth systems for high-velocity tech and regulated financial platforms.', tags: ['FINTECH', 'PAYMENTS', 'PLATFORMS'] },
-    { i: '02', t: 'Public Infrastructure & Impact Systems', s: 'Behaviour-shifting communication for state, civic and impact-led organisations operating at population scale.', tags: ['CIVIC', 'STATE', 'IMPACT'] },
-    { i: '03', t: 'Consumer & Brand Ecosystems', s: 'Brand worlds and commercial systems for consumer companies that need to perform across every channel.', tags: ['FMCG', 'TELECOMS', 'GAMING'] },
-  ]
 
   const rungs = [
     { n: '01', l: 'Retainers', d: 'System oversight and ongoing orchestration', r: 'Recurring' },
@@ -47,27 +43,21 @@ export default function ArenasPage() {
         </div>
 
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-16 lg:gap-24">
-          <div className="flex flex-col gap-px bg-ink border border-ink overflow-hidden rounded-sm">
-            {arenas.map((a, i) => (
+          <div className="flex flex-col gap-px bg-ink border border-ink overflow-hidden">
+            {services.map((a, i) => (
               <div
                 key={a.i}
-                className="group grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8 p-8 md:p-12 bg-paper hover:bg-blue/[0.03] transition-colors duration-[240ms]"
+                className="group p-8 md:p-12 bg-paper hover:bg-ink transition-colors duration-[240ms] cursor-default"
               >
-                <ImagePlaceholder
-                  label={`${a.t} image placeholder`}
-                  className="aspect-[4/3] w-full"
-                />
-                <div>
-                  <div className="flex items-baseline gap-4 mb-4">
-                    <span className="font-mono text-xs text-blue">0{i+1}.</span>
-                    <h2 className="font-display font-black text-[clamp(28px,3vw,42px)] tracking-[-0.025em] leading-tight text-ink">{a.t}</h2>
-                  </div>
-                  <p className="font-text text-[17px] leading-relaxed text-ink-60 mb-8 max-w-[42ch]">{a.s}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {a.tags.map(t => (
-                      <span key={t} className="font-mono text-[11px] tracking-[0.08em] uppercase text-ink px-2.5 py-1.5 border border-ink-20">{t}</span>
-                    ))}
-                  </div>
+                <div className="flex items-baseline gap-3 mb-5">
+                  <span className="font-mono text-xs text-blue shrink-0">0{i+1}.</span>
+                  <h2 className="font-display font-black text-[clamp(26px,2.8vw,40px)] tracking-[-0.025em] leading-tight text-ink group-hover:text-paper transition-colors duration-[240ms]">{a.t}</h2>
+                </div>
+                <p className="font-text text-[17px] leading-relaxed text-ink-60 group-hover:text-paper/70 mb-8 max-w-[44ch] transition-colors duration-[240ms]">{a.s}</p>
+                <div className="flex flex-wrap gap-2">
+                  {a.tags.map(t => (
+                    <span key={t} className="font-mono text-[11px] tracking-[0.08em] uppercase text-ink group-hover:text-paper px-2.5 py-1.5 border border-ink-20 group-hover:border-paper/30 transition-colors duration-[240ms]">{t}</span>
+                  ))}
                 </div>
               </div>
             ))}
