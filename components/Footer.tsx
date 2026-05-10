@@ -31,8 +31,8 @@ export default function Footer() {
         {[
           { head: 'Model', links: ['Orchestration', 'Specialist Pods', 'Growth Plays'] },
           { head: 'Arenas', links: ['Technology & Fintech', 'Public Infrastructure', 'Consumer & Brand'] },
-          { head: 'Company', links: [{ label: 'Team', href: '/team' }, { label: 'Case Studies', href: '/case-studies' }, 'Press'] },
-          { head: 'Contact', links: [{ label: 'Book a session call', href: '/book' }, { label: 'hello@comcorp.e', href: 'mailto:hello@comcorp.e' }, { label: 'Plot 5 Chief Yesufu Abiodun Oniru Rd, Victoria Island, Lagos 106104, Lagos', href: '#' }, { label: 'London · Lagos · Singapore', href: '#' }] },
+          { head: 'Company', links: [{ label: 'About', href: '/about' }, { label: 'Why Comcorpe', href: '/why' }, { label: 'Cases', href: '/case-studies' }, 'Press'] },
+          { head: 'Contact', links: [{ label: 'Book a session call', href: '/book' }, { label: 'hello@comcorp.e', href: 'mailto:hello@comcorp.e' }, { label: 'Plot 5 Chief Yesufu Abiodun Oniru Rd, Victoria Island, Lagos 106104, Lagos', href: '#' }, { label: 'London · Lagos · Oslo', href: '#' }] },
         ].map(({ head, links }) => (
           <div key={head} className="flex flex-col gap-3.5">
             <span className="font-text text-[11px] font-semibold tracking-eyebrow uppercase text-paper/50 mb-2">{head}</span>

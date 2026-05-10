@@ -72,10 +72,10 @@ export default function BookPage() {
     heard: '',
   })
 
-  const set = (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => 
+  const set = (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm(f => ({ ...f, [field]: e.target.value }))
-  
-  const toggle = (field: keyof FormState, val: string) => 
+
+  const toggle = (field: keyof FormState, val: string) =>
     setForm(f => ({ ...f, [field]: f[field] === val ? '' : val }))
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -101,7 +101,7 @@ export default function BookPage() {
           <div className="mt-12 pt-8 border-t border-paper/20">
             <Link href="/" className="font-text text-sm font-semibold px-6 py-3.5 bg-blue text-white hover:bg-blue-hover transition-colors duration-[120ms] inline-flex items-center gap-2">
               Back to Comcorpᵉ
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
             </Link>
           </div>
         </div>
@@ -195,7 +195,7 @@ export default function BookPage() {
                   type="text"
                   value={form.markets}
                   onChange={set('markets')}
-                  placeholder="e.g. Nigeria, Kenya, UK, Singapore…"
+                  placeholder="e.g. Nigeria, Kenya, UK, Oslo…"
                   className={inputCls}
                 />
               </Field>
@@ -282,7 +282,7 @@ export default function BookPage() {
             >
               {loading ? 'Submitting…' : 'Book session'}
               {!loading && (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
               )}
             </button>
           </div>

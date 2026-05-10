@@ -12,7 +12,7 @@ export default function Hero() {
           <span className="w-6 h-px bg-ink inline-block" />
           A Growth Systems Company
         </span>
-        <span className="md:ml-auto font-mono text-xs text-ink-60">00 / Manifesto · Lagos / London / Singapore</span>
+        <span className="md:ml-auto font-mono text-xs text-ink-60">00 / Manifesto · Lagos / London / Oslo</span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-12 md:gap-24 items-end">
@@ -38,17 +38,17 @@ export default function Hero() {
               className="font-text text-sm font-semibold px-6 py-3.5 bg-blue text-white rounded-full inline-flex items-center gap-2.5 hover:bg-blue-hover transition-colors duration-[120ms]"
             >
               Book a session call
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
             </a>
             <a
-              href="/model"
+              href="/about#model"
               className="font-text text-sm font-semibold px-6 py-3.5 bg-transparent text-ink border border-ink hover:bg-ink hover:text-paper transition-colors duration-[120ms]"
             >
               See the model
             </a>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 pt-8 border-t border-ink-10 font-mono text-xs text-ink-60">
-            {[['03','Arenas'],['17','Active pods'],['12','Growth plays'],['09','Markets']].map(([val, label]) => (
+            {[['03', 'Arenas'], ['17', 'Active pods'], ['12', 'Growth plays'], ['09', 'Markets']].map(([val, label]) => (
               <div key={label} className="flex flex-col gap-1.5">
                 <span className="font-display font-black text-[36px] tracking-[-0.03em] leading-none text-ink">{val}</span>
                 <span>{label}</span>
