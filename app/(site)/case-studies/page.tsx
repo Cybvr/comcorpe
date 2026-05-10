@@ -90,12 +90,12 @@ export default function CaseStudiesPage() {
           ))}
         </div>
 
-        {/* More coming callout */}
+        {/* Next engagement callout */}
         <div className="mt-20 pt-12 border-t border-ink-10 flex flex-col md:flex-row md:items-center gap-6 justify-between">
           <div>
-            <div className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow mb-2">Coming soon</div>
+            <div className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow mb-2">Three patterns</div>
             <p className="font-text text-[17px] text-ink-60 m-0 max-w-[40ch]">
-              Cases 02 and 03 are in the pipeline — covering growth stagnation and opportunity creation.
+              Market entry, growth stagnation, and opportunity creation are now documented as reusable growth playbooks.
             </p>
           </div>
           <Link

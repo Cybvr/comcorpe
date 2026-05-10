@@ -1,10 +1,9 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import ImagePlaceholder from '@/components/ImagePlaceholder'
 
 export const metadata: Metadata = {
-  title: 'Oversight by Comcorpᵉ — Enterprise Growth',
-  description: 'AI systems break. Growth requires expert human oversight. We provide the talent that guides and drives enterprise growth engines.',
+  title: 'Oversight by Comcorpᵉ — Enterprise AI Management',
+  description: 'Enterprise AI requires human judgment. We provide the organizational transformation, human capital, and strategic advisory to oversee your AI deployments.',
 }
 
 export default function EnterprisePage() {
@@ -24,12 +23,12 @@ export default function EnterprisePage() {
               Oversight<span className="text-blue">.</span>
             </h1>
             <div className="font-mono text-[13px] text-ink-60 uppercase tracking-widest mb-4">
-              The Missing Layer: Human Judgment
+              The Missing Layer for Enterprise AI
             </div>
             <p className="font-text text-[22px] leading-lede text-ink-80 max-w-[34ch]">
-              Technology is a commodity. Generic AI models are powerful, but they don't know how complex markets actually work. AI systems break. 
+              Enterprises are rushing to deploy AI. But generic models don't understand the nuances of complex markets, and isolated technology cannot drive a business. AI systems break.
               <br /><br />
-              Enterprise growth requires expert human talent to guide, drive, and course-correct the technology. We provide the Oversight.
+              Enterprise AI requires human judgment. We provide the strategic advisory, organizational transformation, human capital, and marketing services required to oversee, guide, and correct your AI systems in real-time.
             </p>
             <div className="mt-12 flex gap-4">
               <Link
@@ -44,7 +43,7 @@ export default function EnterprisePage() {
           {/* Metrics Grid */}
           <div className="grid grid-cols-2 gap-px bg-ink border border-ink mt-8 lg:mt-0">
             {[
-              { label: 'Markets Covered', value: '20+' },
+              { label: 'African Markets', value: '20+' },
               { label: 'Specialist Pods', value: '17' },
               { label: 'Strategic Plays', value: '50+' },
               { label: 'Growth Engines', value: 'Active' },
@@ -66,10 +65,10 @@ export default function EnterprisePage() {
       <section className="px-6 md:px-24 py-24 border-b border-ink">
         <div className="max-w-[42ch] mb-20">
           <h2 className="font-display font-black text-[clamp(40px,5vw,64px)] leading-tight tracking-[-0.02em] text-ink mb-6">
-            Build growth engines designed for your enterprise.
+            Safely integrate AI into your enterprise.
           </h2>
           <p className="font-text text-[18px] leading-relaxed text-ink-60">
-            Weeks, not years. We convert your commercial logic, data, and workflows into functioning systems—managed and overseen by our specialist operators.
+            Technology alone is a liability. We convert your enterprise AI ambitions into functioning growth engines—managed, structured, and overseen by our specialist operators.
           </p>
         </div>
 
@@ -77,23 +76,23 @@ export default function EnterprisePage() {
           {[
             {
               time: 'Phase 01',
-              title: 'Absorb organizational context',
-              desc: 'We map your commercial logic, ingest company data, and conduct expert-led diagnostics to build an operational baseline.',
+              title: 'Strategic Advisory',
+              desc: 'We map your commercial workflows, identify where AI can safely generate value, and establish the baseline for human oversight.',
             },
             {
               time: 'Phase 02',
-              title: 'Assemble the engine',
-              desc: 'Turn the commercial strategy into programmatically defined workflows, utilizing AI frameworks wrapped in strict quality guardrails.',
+              title: 'Organizational Transformation',
+              desc: 'We restructure your enterprise operations to safely integrate AI, defining strict quality guardrails and feedback loops.',
             },
             {
               time: 'Phase 03',
-              title: 'Deploy specialist pods',
-              desc: 'Technology is handed over to curated human operators. We deploy specialist pods to oversee the system in real-time.',
+              title: 'Human Capital & Tech',
+              desc: 'We deploy specialist pods. Expert human operators step in to oversee the AI models in real-time, catching errors before they compound.',
             },
             {
               time: 'Phase 04+',
-              title: 'Iterate & Oversite',
-              desc: 'Catch system failures. Feed human-driven corrections back into the engine, compounding accuracy and revenue over time.',
+              title: 'Marketing & Comm.',
+              desc: 'Scale your output safely. We ensure automated campaigns and communications retain human nuance, cultural context, and brand safety.',
             },
           ].map((step, i) => (
             <div key={i} className="bg-paper md:p-8 flex flex-col">
@@ -116,7 +115,7 @@ export default function EnterprisePage() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-16 lg:gap-24 mb-20">
           <div>
             <h2 className="font-display font-black text-[clamp(40px,5vw,72px)] leading-[0.92] tracking-[-0.02em] text-paper mb-8">
-              Enterprise growth doesn't fail from weak technology.
+              Enterprise AI doesn't fail from weak models.
             </h2>
             <h3 className="font-display font-black text-[clamp(32px,4vw,48px)] leading-[0.92] tracking-[-0.02em] text-blue">
               It fails from a lack of Oversight.
@@ -124,7 +123,7 @@ export default function EnterprisePage() {
           </div>
           <div className="flex flex-col justify-end">
             <p className="font-text text-[19px] leading-relaxed text-paper/70 max-w-[40ch]">
-              We built this system because pure technology deployments collapse when faced with the nuances of emerging markets. Every deployment we run is supported by world-class strategic talent and on-the-ground operational oversight.
+              We built this model because pure technology deployments collapse when faced with the nuances of emerging markets. Every AI system we integrate across Africa is supported by world-class strategic advisory and on-the-ground human oversight.
             </p>
           </div>
         </div>
@@ -133,15 +132,15 @@ export default function EnterprisePage() {
           {[
             {
               title: 'Rapid system iteration',
-              desc: 'Human experts quickly identify gaps in automated performance and optimize workflows in tight feedback loops.',
+              desc: 'Our human experts quickly identify gaps in AI performance and optimize workflows in tight feedback loops.',
             },
             {
               title: 'Eliminate silent failures',
-              desc: 'We surface edge cases and contextual errors with clear paths for human correction—no more invisible mistakes compounding.',
+              desc: 'We surface edge cases and contextual hallucinations with clear paths for human correction—no more invisible mistakes compounding.',
             },
             {
               title: 'Safe deployment',
-              desc: 'Expert guardrails and strict observability de-risk technology deployment in high-stakes commercial environments.',
+              desc: 'Rigorous strategic oversight and human capital deployment de-risk your technology in complex, high-stakes African markets.',
             },
           ].map((feature, i) => (
             <div key={i} className="bg-ink p-8 md:p-12">
@@ -157,24 +156,24 @@ export default function EnterprisePage() {
         </div>
       </section>
 
-      {/* Use Cases */}
+      {/* Core Services */}
       <section className="px-6 md:px-24 py-24 border-b border-ink">
         <div className="mb-16">
           <div className="font-mono text-xs text-ink-60 uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
             <span className="w-6 h-px bg-ink-60 inline-block" />
-            Use Cases
+            Core Services
           </div>
           <h2 className="font-display font-black text-[clamp(40px,5vw,64px)] leading-tight tracking-[-0.02em] text-ink max-w-[20ch]">
-            Suited for every complex workflow.
+            Oversight across every complex workflow.
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-ink border border-ink">
           {[
-            { title: 'Commercial Strategy', desc: 'Oversee complex go-to-market motions, dynamic pricing models, and competitive positioning with real-time market feedback.' },
-            { title: 'Market Entry', desc: 'De-risk expansion into new territories with hybrid engines that combine local human intelligence with scaled data scraping.' },
-            { title: 'Revenue Operations', desc: 'Monitor and optimize the entire revenue pipeline, catching leakage that automated CRM logic misses.' },
-            { title: 'Brand Orchestration', desc: 'Ensure automated campaigns and content generation remain aligned with nuanced cultural sentiment and brand safety.' },
+            { title: 'Marketing & Communications', desc: 'Ensure automated campaigns and content generation remain aligned with nuanced cultural sentiment, brand safety, and market reality.' },
+            { title: 'Digital Technology', desc: 'Modernize your infrastructure and de-risk your AI deployments with hybrid systems that combine human intelligence with digital efficiency.' },
+            { title: 'Human Capital & Outsourcing', desc: 'Inject specialized human operators directly into the loop. We provide the talent required to guide and manage automated processes.' },
+            { title: 'Organizational Transformation', desc: 'Restructure your enterprise pipeline to maximize the efficiency of AI tools without losing the critical layer of strategic judgment.' },
           ].map((uc, i) => (
             <div key={i} className="bg-paper p-8 md:p-12 group hover:bg-blue/[0.02] transition-colors">
               <div className="font-display font-black text-[28px] leading-tight tracking-[-0.01em] text-ink mb-4 group-hover:text-blue transition-colors">
@@ -190,10 +189,10 @@ export default function EnterprisePage() {
 
       <section className="px-6 md:px-24 py-24 bg-ink-10 text-center flex flex-col items-center">
         <h2 className="font-display font-black text-[clamp(40px,5vw,64px)] leading-tight tracking-[-0.02em] text-ink mb-6 max-w-[24ch]">
-          Ready to empower your enterprise with human oversight?
+          Ready to empower your enterprise AI with human oversight?
         </h2>
         <p className="font-text text-[18px] leading-relaxed text-ink-60 mb-10 max-w-[42ch]">
-          From initial discovery to production-grade growth engines delivering measurable ROI in 4–6 weeks.
+          From initial strategic advisory to on-the-ground implementation across Africa.
         </p>
         <Link
           href="/book"

@@ -37,7 +37,7 @@ export default function Nav() {
   }, [])
 
   useEffect(() => {
-    const onResize = () => { if (window.innerWidth >= 768) setMenuOpen(false) }
+    const onResize = () => { if (window.innerWidth >= 1024) setMenuOpen(false) }
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
   }, [])
@@ -67,18 +67,19 @@ export default function Nav() {
       ]
     },
     { label: 'Oversight', href: '/enterprise' },
+    { label: 'Talent', href: '/talent' },
     { label: 'Cases', href: '/case-studies' },
   ]
 
   return (
     <>
-      <nav className={`sticky top-0 z-50 h-16 flex items-center px-6 md:px-24 border-b transition-all duration-[240ms] ${scrolled || menuOpen ? 'bg-paper/95 backdrop-blur-md border-ink-10' : 'border-transparent bg-transparent'}`}>
-        <Link href="/" className="block">
+      <nav className={`sticky top-0 z-50 h-16 grid grid-cols-[auto_1fr_auto] items-center px-6 md:px-24 border-b transition-all duration-[240ms] ${scrolled || menuOpen ? 'bg-paper/95 backdrop-blur-md border-ink-10' : 'border-transparent bg-transparent'}`}>
+        <Link href="/" className="block justify-self-start">
           <img src="/images/comcorpe.png" alt="Comcorpe" className="h-6 md:h-7 w-auto object-contain dark:invert" />
         </Link>
 
         {/* Desktop links */}
-        <div className="ml-auto hidden md:flex gap-9 items-center">
+        <div className="hidden lg:flex gap-6 xl:gap-9 items-center justify-self-center">
           {items.map((item) => (
             <div key={item.label} className="relative group">
               {item.dropdown ? (
@@ -114,8 +115,10 @@ export default function Nav() {
               )}
             </div>
           ))}
+        </div>
 
-          {/* Dark mode toggle — desktop */}
+        {/* Desktop actions */}
+        <div className="hidden lg:flex items-center gap-4 justify-self-end">
           <button
             onClick={toggleDark}
             aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
@@ -133,7 +136,7 @@ export default function Nav() {
         </div>
 
         {/* Mobile: dark toggle + CTA + hamburger */}
-        <div className="ml-auto flex md:hidden items-center gap-2">
+        <div className="flex lg:hidden items-center gap-2 justify-self-end">
           <button
             onClick={toggleDark}
             aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
@@ -160,7 +163,7 @@ export default function Nav() {
       </nav>
 
       {/* Mobile menu drawer */}
-      <div className={`fixed inset-0 top-16 z-40 bg-paper flex flex-col md:hidden transition-all duration-[300ms] ${menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} overflow-y-auto pb-12`}>
+      <div className={`fixed inset-0 top-16 z-40 bg-paper flex flex-col lg:hidden transition-all duration-[300ms] ${menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} overflow-y-auto pb-12`}>
         <div className="flex flex-col px-6 py-8 gap-1">
           {items.map((item) => (
             <div key={item.label}>

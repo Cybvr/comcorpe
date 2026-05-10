@@ -1,0 +1,265 @@
+import { Metadata } from 'next'
+import Link from 'next/link'
+import ImagePlaceholder from '@/components/ImagePlaceholder'
+
+export const metadata: Metadata = {
+  title: 'Specialist Talent — Comcorpᵉ',
+  description: 'Deploy curated, world-class strategic operators and commercial architects directly into your enterprise.',
+}
+
+const archetypes = [
+  {
+    title: 'The Architect',
+    role: 'Commercial Strategy & Design',
+    desc: 'Builds the foundational growth system. Maps unit economics, channel architecture, and go-to-market strategies that turn business ambition into measurable commercial logic.',
+  },
+  {
+    title: 'The Integrator',
+    role: 'Market Entry & Partnerships',
+    desc: 'Connects the strategy to the reality of the market. Navigates regulatory landscapes, builds local partnership networks, and embeds operations into complex emerging markets.',
+  },
+  {
+    title: 'The Operator',
+    role: 'Execution & Revenue Ops',
+    desc: 'Drives day-to-day implementation. Manages the performance marketing, sales activation, and revenue pipelines, ensuring the growth system operates efficiently at scale.',
+  },
+]
+
+const trainingModules = [
+  {
+    title: 'Commercial Architecture',
+    desc: 'Design reliable, production-grade business models',
+    progress: [
+      { label: 'Unit Economics Mapping', completed: true },
+      { label: 'Go-to-Market Strategy', completed: true },
+      { label: 'Pricing & Monetization', completed: true },
+    ]
+  },
+  {
+    title: 'Market Intelligence',
+    desc: 'Architect localized strategies for complex African markets',
+    progress: [
+      { label: 'Regulatory Navigation', completed: true },
+      { label: 'Partnership Ecosystems', completed: true },
+      { label: 'Consumer Trust Dynamics', completed: false },
+    ]
+  },
+  {
+    title: 'Growth Operations',
+    desc: 'Deploy scalable revenue infrastructure in live environments',
+    progress: [
+      { label: 'Performance Marketing', completed: true },
+      { label: 'Pipeline Automation', completed: true },
+      { label: 'Data & Analytics', completed: false },
+    ]
+  },
+]
+
+const talentRoster = [
+  {
+    name: 'Tunde A.',
+    role: 'Commercial Strategy Lead',
+    bg: 'Formerly at McKinsey & Company',
+    desc: 'Designs go-to-market strategies for pan-African fintech expansions.'
+  },
+  {
+    name: 'Sarah M.',
+    role: 'Revenue Operations Director',
+    bg: 'Formerly at Flutterwave',
+    desc: 'Builds scalable data platforms to automate enterprise sales pipelines.'
+  },
+  {
+    name: 'David O.',
+    role: 'Market Entry Specialist',
+    bg: 'Formerly at KPMG',
+    desc: 'Navigates complex regulatory environments to launch foreign brands in Nigeria.'
+  },
+  {
+    name: 'Amira H.',
+    role: 'Brand & Comms Architect',
+    bg: 'Formerly at DDB',
+    desc: 'Translates global brand equity into localized, culturally nuanced campaigns.'
+  },
+  {
+    name: 'James K.',
+    role: 'Growth Marketing Lead',
+    bg: 'Formerly at Jumia',
+    desc: 'Drives customer acquisition and performance marketing at massive scale.'
+  },
+  {
+    name: 'Elena R.',
+    role: 'Strategic Partnerships',
+    bg: 'Formerly at Standard Bank',
+    desc: 'Builds high-trust corporate networks to accelerate B2B distribution.'
+  },
+]
+
+export default function TalentPage() {
+  return (
+    <div className="bg-paper min-h-screen">
+      
+      {/* Hero Section */}
+      <section className="px-6 md:px-24 pt-16 md:pt-24 pb-20 border-b border-ink">
+        <div className="font-mono text-xs text-ink-60 uppercase tracking-eyebrow mb-12 flex items-center gap-3">
+          <span className="w-2 h-2 bg-blue rounded-full" />
+          Comcorpᵉ / Talent
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-[6fr_5fr] gap-12 lg:gap-24 items-start">
+          <div>
+            <h1 className="font-display font-black text-[clamp(48px,6vw,96px)] leading-[0.92] tracking-[-0.03em] text-ink m-0 mb-8">
+              Access the deepest pool of <span className="text-blue">strategic operators.</span>
+            </h1>
+            <p className="font-text text-[20px] leading-relaxed text-ink-80 max-w-[38ch]">
+              Embedded directly into your enterprise to build, integrate, and scale growth systems across complex markets.
+            </p>
+            <div className="mt-12">
+              <Link
+                href="/book"
+                className="font-text text-sm font-semibold px-6 py-3.5 bg-ink text-paper rounded-full inline-flex items-center gap-2.5 hover:bg-blue transition-colors duration-[120ms]"
+              >
+                Deploy a Pod
+              </Link>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            <div className="bg-ink-10 p-6 border border-ink-20 flex gap-6 items-center">
+              <div className="w-16 h-16 rounded-full bg-ink-20 shrink-0" />
+              <div>
+                <div className="font-mono text-[10px] uppercase tracking-widest text-blue mb-1">Commercial Architect</div>
+                <div className="font-display font-black text-[20px] leading-tight text-ink">Growth Strategy & Design</div>
+                <div className="flex gap-2 mt-3">
+                  <span className="font-mono text-[9px] uppercase px-2 py-1 border border-ink-20 text-ink-60">Fintech</span>
+                  <span className="font-mono text-[9px] uppercase px-2 py-1 border border-ink-20 text-ink-60">Unit Economics</span>
+                </div>
+              </div>
+            </div>
+            <div className="bg-ink p-6 flex gap-6 items-center text-paper">
+              <div className="w-16 h-16 rounded-full bg-paper/20 shrink-0" />
+              <div>
+                <div className="font-mono text-[10px] uppercase tracking-widest text-blue mb-1">Execution Lead</div>
+                <div className="font-display font-black text-[20px] leading-tight text-paper">Revenue Ops & Performance</div>
+                <div className="flex gap-2 mt-3">
+                  <span className="font-mono text-[9px] uppercase px-2 py-1 border border-paper/20 text-paper/60">CRM</span>
+                  <span className="font-mono text-[9px] uppercase px-2 py-1 border border-paper/20 text-paper/60">Automation</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Logos */}
+      <section className="px-6 md:px-24 py-12 border-b border-ink overflow-hidden flex items-center justify-center">
+        <div className="font-mono text-xs text-ink-40 uppercase tracking-widest text-center">
+          Delivering strategic talent the market cannot supply
+        </div>
+      </section>
+
+      {/* Archetypes */}
+      <section className="px-6 md:px-24 py-24 border-b border-ink">
+        <div className="mb-20">
+          <h2 className="font-display font-black text-[clamp(40px,5vw,64px)] leading-tight tracking-[-0.02em] text-ink max-w-[24ch]">
+            Three strategic archetypes powering enterprise growth.
+          </h2>
+          <p className="font-text text-[18px] leading-relaxed text-ink-60 mt-6 max-w-[42ch]">
+            Successful growth systems require multiple capabilities. Our specialist pods continuously bring these three archetypes together to turn ambition into execution.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-ink border border-ink">
+          {archetypes.map((arch, i) => (
+            <div key={i} className="bg-paper p-8 md:p-12 hover:bg-blue/[0.02] transition-colors">
+              <div className="font-mono text-[13px] text-blue mb-4">0{i+1}.</div>
+              <div className="font-display font-black text-[32px] leading-tight tracking-[-0.01em] text-ink mb-2">
+                {arch.title}
+              </div>
+              <div className="font-mono text-[11px] uppercase tracking-widest text-ink-40 mb-6 pb-6 border-b border-ink-10">
+                {arch.role}
+              </div>
+              <p className="font-text text-[16px] leading-relaxed text-ink-60 m-0">
+                {arch.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Training / Curation Pipeline */}
+      <section className="px-6 md:px-24 py-24 bg-ink text-paper">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-16 lg:gap-24 mb-20">
+          <div>
+            <h2 className="font-display font-black text-[clamp(40px,5vw,72px)] leading-[0.92] tracking-[-0.02em] text-paper mb-8">
+              How we build the strategic talent market.
+            </h2>
+            <p className="font-text text-[19px] leading-relaxed text-paper/70 max-w-[36ch]">
+              We operate a continuous curation pipeline of operators, trained specifically for real-world commercial delivery in complex emerging markets.
+            </p>
+          </div>
+          
+          <div className="flex flex-col gap-12">
+            {trainingModules.map((mod, i) => (
+              <div key={i}>
+                <div className="font-display font-black text-[24px] tracking-[-0.01em] text-blue mb-2">{mod.title}</div>
+                <div className="font-text text-[15px] text-paper/60 mb-6">{mod.desc}</div>
+                <div className="flex flex-col gap-3">
+                  {mod.progress.map((p, j) => (
+                    <div key={j} className="flex items-center gap-4">
+                      <div className={`w-4 h-4 flex items-center justify-center border ${p.completed ? 'bg-blue border-blue' : 'border-paper/20'}`}>
+                        {p.completed && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>}
+                      </div>
+                      <span className={`font-mono text-[11px] uppercase tracking-widest ${p.completed ? 'text-paper' : 'text-paper/40'}`}>
+                        {p.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Talent Roster */}
+      <section className="px-6 md:px-24 py-24 border-b border-ink bg-paper">
+        <div className="mb-20">
+          <h2 className="font-display font-black text-[clamp(40px,5vw,64px)] leading-tight tracking-[-0.02em] text-ink max-w-[24ch]">
+            Deploy curated talent trained to scale your enterprise.
+          </h2>
+          <p className="font-text text-[18px] leading-relaxed text-ink-60 mt-6 max-w-[42ch]">
+            Augment your existing operations with individual specialists, or deploy a fully-managed pod to build and scale your commercial growth engine.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-ink border border-ink">
+          {talentRoster.map((talent, i) => (
+            <div key={i} className="bg-paper p-8">
+              <p className="font-text text-[16px] leading-relaxed text-ink mb-8 h-[72px]">
+                {talent.desc}
+              </p>
+              <div className="flex items-center gap-4 border-t border-ink-10 pt-6">
+                <div className="w-12 h-12 rounded-full bg-ink-10 shrink-0" />
+                <div>
+                  <div className="font-display font-black text-[20px] leading-tight text-ink mb-1">{talent.name}</div>
+                  <div className="font-mono text-[10px] text-blue uppercase tracking-widest mb-1">{talent.role}</div>
+                  <div className="font-text text-[12px] text-ink-40">{talent.bg}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div className="mt-16 text-center">
+          <Link
+            href="/book"
+            className="font-text text-[15px] font-semibold px-8 py-4 bg-ink text-paper rounded-full hover:bg-blue transition-colors duration-[120ms] inline-flex"
+          >
+            Explore our Pod model
+          </Link>
+        </div>
+      </section>
+
+    </div>
+  )
+}

@@ -9,12 +9,12 @@ export default function UseCases() {
     },
     {
       n: 'Case 02', t: 'Growth Stagnation', s: 'A local leader plateauing.',
-      slug: null,
+      slug: 'growth-stagnation',
       steps: ['Diagnose growth bottlenecks', 'Rewire commercial model', 'Deploy targeted execution pods'],
     },
     {
       n: 'Case 03', t: 'Opportunity Creation', s: 'A new revenue stream we identify.',
-      slug: null,
+      slug: 'opportunity-creation',
       steps: ['Develop concept', 'Pitch client', 'Execute rollout'],
     },
   ]
