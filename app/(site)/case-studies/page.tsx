@@ -88,7 +88,7 @@ export default function CaseStudiesPage() {
             </p>
           </div>
           <Link
-            href="/request"
+            href="/book"
             className="font-text text-sm font-semibold px-6 py-3.5 bg-ink text-paper hover:bg-blue transition-colors duration-[120ms] inline-flex items-center gap-2.5 whitespace-nowrap"
           >
             Become a case study

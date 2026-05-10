@@ -42,10 +42,10 @@ export default function Closing() {
         <div className="flex flex-col gap-4 items-start md:items-end">
           <span className="font-mono text-xs text-paper/50 uppercase tracking-[0.08em]">Take the next step</span>
           <a
-            href="/request"
+            href="/book"
             className="font-display font-black text-[clamp(40px,6vw,96px)] leading-[0.95] tracking-[-0.04em] text-paper text-left md:text-right group"
           >
-            Request a brief
+            Book a session call
             <span className="text-blue ml-4 inline-block transition-transform duration-[240ms] group-hover:translate-x-3">→</span>
           </a>
           <div className="mt-4 flex border border-paper/25 w-full max-w-[480px]">

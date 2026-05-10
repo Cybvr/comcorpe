@@ -31,8 +31,8 @@ export default function Footer() {
         {[
           { head: 'Model', links: ['Orchestration', 'Specialist Pods', 'Growth Plays'] },
           { head: 'Arenas', links: ['Technology & Fintech', 'Public Infrastructure', 'Consumer & Brand'] },
-          { head: 'Company', links: ['International Board', { label: 'Case Studies', href: '/case-studies' }, 'Press'] },
-          { head: 'Contact', links: [{ label: 'Request a brief', href: '/request' }, { label: 'hello@comcorp.e', href: 'mailto:hello@comcorp.e' }, { label: 'London · Lagos · Singapore', href: '#' }] },
+          { head: 'Company', links: [{ label: 'Team', href: '/team' }, { label: 'Case Studies', href: '/case-studies' }, 'Press'] },
+          { head: 'Contact', links: [{ label: 'Book a session call', href: '/book' }, { label: 'hello@comcorp.e', href: 'mailto:hello@comcorp.e' }, { label: 'Plot 5 Chief Yesufu Abiodun Oniru Rd, Victoria Island, Lagos 106104, Lagos', href: '#' }, { label: 'London · Lagos · Singapore', href: '#' }] },
         ].map(({ head, links }) => (
           <div key={head} className="flex flex-col gap-3.5">
             <span className="font-text text-[11px] font-semibold tracking-eyebrow uppercase text-paper/50 mb-2">{head}</span>

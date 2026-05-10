@@ -10,7 +10,8 @@ const ARENAS = [
 ]
 
 const BUDGETS = [
-  'Under $25k',
+  '5-10k dollars',
+  '10-25k dollars',
   '$25k – $75k',
   '$75k – $150k',
   '$150k – $500k',
@@ -52,7 +53,7 @@ interface FormState {
   heard: string;
 }
 
-export default function RequestPage() {
+export default function BookPage() {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState<FormState>({
@@ -116,7 +117,7 @@ export default function RequestPage() {
         <div className="mb-16">
           <div className="font-mono text-xs text-ink-60 uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
             <span className="w-6 h-px bg-ink-60 inline-block" />
-            Strategic Brief
+            Book a session
           </div>
           <h1 className="font-display font-black text-[clamp(40px,6vw,72px)] leading-[0.94] tracking-hero text-ink mb-6 text-balance">
             Tell us about<br />your challenge.
@@ -279,7 +280,7 @@ export default function RequestPage() {
               disabled={loading}
               className="font-text text-sm font-semibold px-8 py-4 bg-blue text-white hover:bg-blue-hover transition-colors duration-[120ms] disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-3 whitespace-nowrap"
             >
-              {loading ? 'Submitting…' : 'Submit brief'}
+              {loading ? 'Submitting…' : 'Book session'}
               {!loading && (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
               )}

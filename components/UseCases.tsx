@@ -24,7 +24,7 @@ export default function UseCases() {
       <div className="flex items-baseline gap-6 mb-14">
         <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-ink inline-flex items-center gap-2.5">
           <span className="w-6 h-px bg-ink inline-block" />
-          Early use cases
+          Case Studies
         </span>
         <span className="font-mono text-xs text-ink-60 ml-auto">06 / 09</span>
       </div>

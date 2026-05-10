@@ -123,10 +123,10 @@ export default async function CasePage({ params }: { params: Promise<{ slug: str
             </p>
           </div>
           <Link
-            href="/request"
+            href="/book"
             className="font-text text-sm font-semibold px-6 py-3.5 bg-blue text-white hover:bg-blue-hover transition-colors duration-[120ms] inline-flex items-center gap-2.5 whitespace-nowrap"
           >
-            Request a brief
+            Book a session call
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
           </Link>
         </div>

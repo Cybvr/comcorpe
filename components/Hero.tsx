@@ -34,14 +34,14 @@ export default function Hero() {
         <div className="flex flex-col gap-8">
           <div className="flex gap-3.5 items-center flex-wrap">
             <a
-              href="/request"
+              href="/book"
               className="font-text text-sm font-semibold px-6 py-3.5 bg-blue text-white rounded-full inline-flex items-center gap-2.5 hover:bg-blue-hover transition-colors duration-[120ms]"
             >
-              Request a brief
+              Book a session call
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
             </a>
             <a
-              href="#model"
+              href="/model"
               className="font-text text-sm font-semibold px-6 py-3.5 bg-transparent text-ink border border-ink hover:bg-ink hover:text-paper transition-colors duration-[120ms]"
             >
               See the model

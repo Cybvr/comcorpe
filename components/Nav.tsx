@@ -42,20 +42,25 @@ export default function Nav() {
     return () => window.removeEventListener('resize', onResize)
   }, [])
 
-  const scroll = (id: string) => {
+  const handleNav = (item: { label: string, id?: string, href?: string }) => {
     setMenuOpen(false)
-    if (pathname === '/') {
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    } else {
-      router.push(`/#${id}`)
+    if (item.href) {
+      router.push(item.href)
+    } else if (item.id) {
+      if (pathname === '/') {
+        document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      } else {
+        router.push(`/#${item.id}`)
+      }
     }
   }
 
   const items = [
-    { label: 'Provocation', id: 'provocation' },
-    { label: 'Model', id: 'model' },
-    { label: 'Arenas', id: 'arenas' },
-    { label: 'Cases', id: 'cases' },
+    { label: 'Provocation', href: '/provocation' },
+    { label: 'Model', href: '/model' },
+    { label: 'Arenas', href: '/arenas' },
+    { label: 'Team', href: '/team' },
+    { label: 'Case Studies', href: '/case-studies' },
   ]
 
   return (
@@ -67,13 +72,13 @@ export default function Nav() {
 
         {/* Desktop links */}
         <div className="ml-auto hidden md:flex gap-9 items-center">
-          {items.map(({ label, id }) => (
+          {items.map((item) => (
             <button
-              key={id}
-              onClick={() => scroll(id)}
+              key={item.label}
+              onClick={() => handleNav(item)}
               className="font-text text-sm font-medium tracking-body text-ink cursor-pointer pb-0.5 border-b border-transparent hover:border-blue hover:text-blue transition-colors duration-[120ms] bg-transparent border-0"
             >
-              {label}
+              {item.label}
             </button>
           ))}
 
@@ -87,10 +92,10 @@ export default function Nav() {
           </button>
 
           <Link
-            href="/request"
+            href="/book"
             className="font-text text-[13px] font-semibold px-[18px] py-[10px] rounded-full bg-ink text-paper hover:bg-blue transition-colors duration-[120ms]"
           >
-            Request a brief
+            Book a session call
           </Link>
         </div>
 
@@ -104,10 +109,10 @@ export default function Nav() {
             {darkMode ? <Sun size={15} strokeWidth={1.5} /> : <Moon size={15} strokeWidth={1.5} />}
           </button>
           <Link
-            href="/request"
+            href="/book"
             className="font-text text-[12px] font-semibold px-4 py-2.5 rounded-full bg-ink text-paper hover:bg-blue transition-colors duration-[120ms]"
           >
-            Request a brief
+            Book a session call
           </Link>
           <button
             onClick={() => setMenuOpen(o => !o)}
@@ -124,13 +129,13 @@ export default function Nav() {
       {/* Mobile menu drawer */}
       <div className={`fixed inset-0 top-16 z-40 bg-paper flex flex-col md:hidden transition-all duration-[300ms] ${menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
         <div className="flex flex-col px-6 py-8 gap-1">
-          {items.map(({ label, id }) => (
+          {items.map((item) => (
             <button
-              key={id}
-              onClick={() => scroll(id)}
+              key={item.label}
+              onClick={() => handleNav(item)}
               className="font-display font-black text-[32px] tracking-hero text-ink text-left py-4 border-b border-ink-10 bg-transparent border-x-0 border-t-0 cursor-pointer hover:text-blue transition-colors duration-[120ms] w-full"
             >
-              {label}
+              {item.label}
             </button>
           ))}
         </div>
