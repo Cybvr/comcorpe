@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import ImagePlaceholder from '@/components/ImagePlaceholder'
 
 export const metadata: Metadata = {
   title: 'Arenas — Comcorpᵉ',
@@ -39,6 +40,10 @@ export default function ArenasPage() {
               Anchored in Pan-Africa, reaching global markets.
             </p>
           </div>
+          <ImagePlaceholder
+            label="Arenas image placeholder"
+            className="mt-12 md:mt-16 aspect-[16/7] w-full"
+          />
         </div>
 
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-16 lg:gap-24">
@@ -46,23 +51,33 @@ export default function ArenasPage() {
             {arenas.map((a, i) => (
               <div
                 key={a.i}
-                className="group p-8 md:p-12 bg-paper hover:bg-blue/[0.03] transition-colors duration-[240ms]"
+                className="group grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8 p-8 md:p-12 bg-paper hover:bg-blue/[0.03] transition-colors duration-[240ms]"
               >
-                <div className="flex items-baseline gap-4 mb-4">
-                  <span className="font-mono text-xs text-blue">0{i+1}.</span>
-                  <h2 className="font-display font-black text-[clamp(28px,3vw,42px)] tracking-[-0.025em] leading-tight text-ink">{a.t}</h2>
-                </div>
-                <p className="font-text text-[17px] leading-relaxed text-ink-60 mb-8 max-w-[42ch]">{a.s}</p>
-                <div className="flex flex-wrap gap-2">
-                  {a.tags.map(t => (
-                    <span key={t} className="font-mono text-[11px] tracking-[0.08em] uppercase text-ink px-2.5 py-1.5 border border-ink-20">{t}</span>
-                  ))}
+                <ImagePlaceholder
+                  label={`${a.t} image placeholder`}
+                  className="aspect-[4/3] w-full"
+                />
+                <div>
+                  <div className="flex items-baseline gap-4 mb-4">
+                    <span className="font-mono text-xs text-blue">0{i+1}.</span>
+                    <h2 className="font-display font-black text-[clamp(28px,3vw,42px)] tracking-[-0.025em] leading-tight text-ink">{a.t}</h2>
+                  </div>
+                  <p className="font-text text-[17px] leading-relaxed text-ink-60 mb-8 max-w-[42ch]">{a.s}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {a.tags.map(t => (
+                      <span key={t} className="font-mono text-[11px] tracking-[0.08em] uppercase text-ink px-2.5 py-1.5 border border-ink-20">{t}</span>
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
 
           <div className="lg:sticky lg:top-32 h-fit">
+            <ImagePlaceholder
+              label="Pan-Africa network image placeholder"
+              className="mb-10 aspect-[4/3] w-full"
+            />
             <div className="font-mono text-xs text-ink-60 uppercase tracking-[0.08em] mb-6">Business Model</div>
             <div className="font-display font-black text-[clamp(32px,3.5vw,52px)] tracking-h3 leading-tight text-ink mb-10">We align with growth, not activity.</div>
             <div className="flex flex-col border-t border-ink">

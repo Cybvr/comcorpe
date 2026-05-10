@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import ImagePlaceholder from '@/components/ImagePlaceholder'
 import { cases } from '@/lib/cases'
 
 import { Metadata } from 'next'
@@ -29,6 +30,10 @@ export default function CaseStudiesPage() {
               These are the cases that shaped the model.
             </p>
           </div>
+          <ImagePlaceholder
+            label="Case studies image placeholder"
+            className="mt-12 md:mt-16 aspect-[16/7] w-full"
+          />
         </div>
 
         {/* Case list */}
@@ -37,14 +42,20 @@ export default function CaseStudiesPage() {
             <Link
               key={c.slug}
               href={`/case-studies/${c.slug}`}
-              className="group grid grid-cols-1 md:grid-cols-[1fr_2fr_1fr] gap-6 md:gap-12 py-12 md:py-14 border-b border-ink-10 hover:bg-ink-10/40 transition-colors duration-[120ms] -mx-6 md:-mx-24 px-6 md:px-24"
+              className="group grid grid-cols-1 md:grid-cols-[220px_1.6fr_0.9fr] gap-8 md:gap-12 py-12 md:py-14 border-b border-ink-10 hover:bg-ink-10/40 transition-colors duration-[120ms] -mx-6 md:-mx-24 px-6 md:px-24"
             >
               {/* Left: number + arena */}
-              <div className="flex flex-col gap-3">
-                <span className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow">{c.number}</span>
-                <span className="font-mono text-[11px] text-blue uppercase tracking-eyebrow border border-blue px-2 py-1 w-fit">
-                  {c.arena}
-                </span>
+              <div className="flex flex-col gap-5">
+                <div className="flex flex-col gap-3">
+                  <span className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow">{c.number}</span>
+                  <span className="font-mono text-[11px] text-blue uppercase tracking-eyebrow border border-blue px-2 py-1 w-fit">
+                    {c.arena}
+                  </span>
+                </div>
+                <ImagePlaceholder
+                  label={`${c.title} case image placeholder`}
+                  className="aspect-[4/3] w-full"
+                />
               </div>
 
               {/* Centre: title + lede */}

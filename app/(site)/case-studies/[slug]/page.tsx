@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
+import ImagePlaceholder from '@/components/ImagePlaceholder'
 import { cases, getCaseBySlug } from '@/lib/cases'
 
 export function generateStaticParams() {
@@ -43,6 +44,11 @@ export default async function CasePage({ params }: { params: Promise<{ slug: str
           {c.title}<span className="text-blue">.</span>
         </h1>
 
+        <ImagePlaceholder
+          label={`${c.title} case study image placeholder`}
+          className="mt-10 md:mt-14 aspect-[16/7] w-full"
+        />
+
         <div className="mt-10 md:mt-16 grid grid-cols-1 md:grid-cols-[5fr_7fr] gap-8 md:gap-24 items-end">
           <div>
             <div className="font-mono text-[11px] text-ink-40 uppercase tracking-eyebrow mb-2">The Client</div>
@@ -53,7 +59,7 @@ export default async function CasePage({ params }: { params: Promise<{ slug: str
           </div>
           <blockquote className="m-0 pl-6 border-l-2 border-blue">
             <p className="font-display font-black text-[clamp(20px,2.4vw,30px)] leading-tight tracking-[-0.02em] text-ink m-0 text-balance italic">
-              "{c.problem}"
+              &ldquo;{c.problem}&rdquo;
             </p>
           </blockquote>
         </div>
@@ -94,25 +100,35 @@ export default async function CasePage({ params }: { params: Promise<{ slug: str
             The Outcome
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-0 md:border md:border-paper/[0.16] mb-14">
-            {c.outcome.stats.map((s, i) => (
-              <div
-                key={s.label}
-                className={`flex flex-col gap-2 md:p-8 ${i < c.outcome.stats.length - 1 ? 'md:border-r md:border-paper/[0.16]' : ''}`}
-              >
-                <span className="font-display font-black text-[clamp(36px,4.5vw,64px)] leading-none tracking-[-0.04em] text-paper">
-                  {s.value}
-                </span>
-                <span className="font-mono text-[11px] uppercase tracking-eyebrow text-paper/50">
-                  {s.label}
-                </span>
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-12 lg:gap-16 items-start">
+            <div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-0 md:border md:border-paper/[0.16] mb-14">
+                {c.outcome.stats.map((s, i) => (
+                  <div
+                    key={s.label}
+                    className={`flex flex-col gap-2 md:p-8 ${i < c.outcome.stats.length - 1 ? 'md:border-r md:border-paper/[0.16]' : ''}`}
+                  >
+                    <span className="font-display font-black text-[clamp(36px,4.5vw,64px)] leading-none tracking-[-0.04em] text-paper">
+                      {s.value}
+                    </span>
+                    <span className="font-mono text-[11px] uppercase tracking-eyebrow text-paper/50">
+                      {s.label}
+                    </span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          <p className="font-text text-[18px] md:text-[22px] leading-lede text-paper/80 m-0 max-w-[52ch]">
-            {c.outcome.summary}
-          </p>
+              <p className="font-text text-[18px] md:text-[22px] leading-lede text-paper/80 m-0 max-w-[52ch]">
+                {c.outcome.summary}
+              </p>
+            </div>
+
+            <ImagePlaceholder
+              label="Outcome image placeholder"
+              className="aspect-[4/3] w-full"
+              tone="dark"
+            />
+          </div>
         </div>
 
         <div className="px-6 md:px-24 py-12 md:py-16 flex flex-col md:flex-row md:items-center gap-6 justify-between">
