@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const c = getCaseBySlug(slug)
   if (!c) return {}
   return {
-    title: `${c.number}: ${c.title} — Comcorpᵉ`,
+    title: `${c.title} — ${c.solution} — Comcorpᵉ`,
     description: c.lede,
   }
 }
@@ -36,8 +36,9 @@ export default async function CasePage({ params }: { params: Promise<{ slug: str
           <span className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow">{c.number}</span>
           <span className="w-px h-3 bg-ink-20 inline-block" />
           <span className="font-mono text-[11px] text-blue uppercase tracking-eyebrow border border-blue px-2 py-1">
-            {c.arena}
+            Solution / {c.solution}
           </span>
+          <span className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow">{c.arena}</span>
         </div>
 
         <h1 className="font-display font-black text-[clamp(64px,9vw,144px)] leading-[0.88] tracking-hero text-ink m-0">
@@ -50,12 +51,17 @@ export default async function CasePage({ params }: { params: Promise<{ slug: str
         />
 
         <div className="mt-10 md:mt-16 grid grid-cols-1 md:grid-cols-[5fr_7fr] gap-8 md:gap-24 items-end">
-          <div>
-            <div className="font-mono text-[11px] text-ink-40 uppercase tracking-eyebrow mb-2">The Client</div>
-            <div className="font-display font-black text-[22px] tracking-[-0.02em] text-ink mb-2">{c.client.name}</div>
-            <p className="font-text text-[16px] leading-relaxed text-ink-60 m-0">
-              {c.client.description}
-            </p>
+          <div className="flex flex-col gap-6">
+            <div>
+              <div className="font-mono text-[11px] text-ink-40 uppercase tracking-eyebrow mb-2">The Solution</div>
+              <div className="font-display font-black text-[22px] tracking-[-0.02em] text-ink">{c.solution}</div>
+            </div>
+            <div>
+              <div className="font-mono text-[11px] text-ink-40 uppercase tracking-eyebrow mb-2">The Client</div>
+              <p className="font-text text-[16px] leading-relaxed text-ink-60 m-0">
+                {c.client.description}
+              </p>
+            </div>
           </div>
           <blockquote className="m-0 pl-6 border-l-2 border-blue">
             <p className="font-display font-black text-[clamp(20px,2.4vw,30px)] leading-tight tracking-[-0.02em] text-ink m-0 text-balance italic">

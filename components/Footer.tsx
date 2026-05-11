@@ -1,4 +1,5 @@
 import React from 'react'
+import { services } from '@/lib/services'
 
 interface FooterLinkProps {
   children: React.ReactNode
@@ -30,7 +31,7 @@ export default function Footer() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 px-6 md:px-24 py-16">
         {[
           { head: 'Model', links: ['Orchestration', 'Specialist Pods', 'Growth Plays'] },
-          { head: 'Arenas', links: ['Technology & Fintech', 'Public Infrastructure', 'Consumer & Brand'] },
+          { head: 'Arenas', links: services.map(s => s.t) },
           { head: 'Company', links: [{ label: 'About', href: '/about' }, { label: 'Why Comcorpe', href: '/why' }, { label: 'Cases', href: '/case-studies' }, 'Press'] },
           { head: 'Contact', links: [{ label: 'Book a session call', href: '/book' }, { label: 'hello@comcorp.e', href: 'mailto:hello@comcorp.e' }, { label: 'Plot 5 Chief Yesufu Abiodun Oniru Rd, Victoria Island, Lagos 106104, Lagos', href: '#' }, { label: 'London · Lagos · Oslo', href: '#' }] },
         ].map(({ head, links }) => (

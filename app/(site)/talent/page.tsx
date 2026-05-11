@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import ImagePlaceholder from '@/components/ImagePlaceholder'
+import { talentRoster } from '@/lib/people'
 
 export const metadata: Metadata = {
   title: 'Specialist Talent — Comcorpᵉ',
@@ -33,7 +33,7 @@ const trainingModules = [
       { label: 'Unit Economics Mapping', completed: true },
       { label: 'Go-to-Market Strategy', completed: true },
       { label: 'Pricing & Monetization', completed: true },
-    ]
+    ],
   },
   {
     title: 'Market Intelligence',
@@ -42,7 +42,7 @@ const trainingModules = [
       { label: 'Regulatory Navigation', completed: true },
       { label: 'Partnership Ecosystems', completed: true },
       { label: 'Consumer Trust Dynamics', completed: false },
-    ]
+    ],
   },
   {
     title: 'Growth Operations',
@@ -51,46 +51,7 @@ const trainingModules = [
       { label: 'Performance Marketing', completed: true },
       { label: 'Pipeline Automation', completed: true },
       { label: 'Data & Analytics', completed: false },
-    ]
-  },
-]
-
-const talentRoster = [
-  {
-    name: 'Tunde A.',
-    role: 'Commercial Strategy Lead',
-    bg: 'Formerly at McKinsey & Company',
-    desc: 'Designs go-to-market strategies for pan-African fintech expansions.'
-  },
-  {
-    name: 'Sarah M.',
-    role: 'Revenue Operations Director',
-    bg: 'Formerly at Flutterwave',
-    desc: 'Builds scalable data platforms to automate enterprise sales pipelines.'
-  },
-  {
-    name: 'David O.',
-    role: 'Market Entry Specialist',
-    bg: 'Formerly at KPMG',
-    desc: 'Navigates complex regulatory environments to launch foreign brands in Nigeria.'
-  },
-  {
-    name: 'Amira H.',
-    role: 'Brand & Comms Architect',
-    bg: 'Formerly at DDB',
-    desc: 'Translates global brand equity into localized, culturally nuanced campaigns.'
-  },
-  {
-    name: 'James K.',
-    role: 'Growth Marketing Lead',
-    bg: 'Formerly at Jumia',
-    desc: 'Drives customer acquisition and performance marketing at massive scale.'
-  },
-  {
-    name: 'Elena R.',
-    role: 'Strategic Partnerships',
-    bg: 'Formerly at Standard Bank',
-    desc: 'Builds high-trust corporate networks to accelerate B2B distribution.'
+    ],
   },
 ]
 

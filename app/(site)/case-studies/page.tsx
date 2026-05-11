@@ -48,7 +48,7 @@ export default function CaseStudiesPage() {
               <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-3">
                   <span className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow">{c.number}</span>
-                  <span className="font-mono text-[11px] text-blue uppercase tracking-eyebrow border border-blue px-2 py-1 w-fit">
+                  <span className="font-mono text-[11px] text-ink-40 uppercase tracking-eyebrow">
                     {c.arena}
                   </span>
                 </div>
@@ -58,8 +58,11 @@ export default function CaseStudiesPage() {
                 />
               </div>
 
-              {/* Centre: title + lede */}
+              {/* Centre: solution + client title + lede */}
               <div className="flex flex-col gap-3">
+                <div className="font-mono text-[11px] text-blue uppercase tracking-eyebrow border border-blue px-2 py-1 w-fit">
+                  Solution / {c.solution}
+                </div>
                 <h2 className="font-display font-black text-[clamp(28px,3.5vw,48px)] leading-tight tracking-h3 text-ink m-0 group-hover:text-blue transition-colors duration-[120ms]">
                   {c.title}
                 </h2>

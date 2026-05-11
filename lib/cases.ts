@@ -2,6 +2,7 @@ export interface Case {
   slug: string;
   number: string;
   title: string;
+  solution: string;
   arena: string;
   lede: string;
   client: {
@@ -26,7 +27,8 @@ export const cases: Case[] = [
   {
     slug: 'market-entry',
     number: 'Case 01',
-    title: 'Market Entry',
+    title: 'Volta Pay',
+    solution: 'Market Entry',
     arena: 'Technology & Fintech',
     lede: 'A UK-based digital payments company with a proven product in Europe needed a commercial architecture to enter Nigeria.',
     client: {
@@ -61,7 +63,8 @@ export const cases: Case[] = [
   {
     slug: 'growth-stagnation',
     number: 'Case 02',
-    title: 'Growth Stagnation',
+    title: 'Kade Foods',
+    solution: 'Growth Stagnation',
     arena: 'Consumer & Brand Ecosystems',
     lede: 'A regional consumer goods challenger had distribution, awareness, and loyal buyers, but revenue had flattened across its core channels.',
     client: {
@@ -96,7 +99,8 @@ export const cases: Case[] = [
   {
     slug: 'opportunity-creation',
     number: 'Case 03',
-    title: 'Opportunity Creation',
+    title: 'GridWell',
+    solution: 'Opportunity Creation',
     arena: 'Public Infrastructure & Impact Systems',
     lede: 'A distributed energy operator needed a new growth lane that could turn infrastructure capability into recurring commercial demand.',
     client: {
