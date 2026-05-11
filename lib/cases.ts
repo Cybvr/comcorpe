@@ -133,9 +133,9 @@ export const cases: Case[] = [
     },
   },
   {
-    slug: 'weildquest',
+    slug: 'wieldquest',
     number: 'Case 01',
-    title: 'weildquest',
+    title: 'wieldquest',
     solution: 'Opportunity Creation',
     arena: 'Creative & Agency Operations',
     lede: `Our teams were using AI. We couldn't tell if any of it was working.`,
@@ -155,7 +155,7 @@ export const cases: Case[] = [
       },
       {
         label: 'Operate',
-        body: `Launched weildquest as a live, rolling platform. Players received a brief, a 1,000-token budget, and a deadline. Submissions were scored across all five dimensions and ranked on a live leaderboard. Each cycle, briefs were iterated based on where scores clustered and where they stalled — harder constraints where the cohort plateaued, more open prompts where participation dropped. Players got a score, a rank, and a clear read on exactly where their AI use was strong and where it wasn't.`,
+        body: `Launched wieldquest as a live, rolling platform. Players received a brief, a 1,000-token budget, and a deadline. Submissions were scored across all five dimensions and ranked on a live leaderboard. Each cycle, briefs were iterated based on where scores clustered and where they stalled — harder constraints where the cohort plateaued, more open prompts where participation dropped. Players got a score, a rank, and a clear read on exactly where their AI use was strong and where it wasn't.`,
       },
     ],
     outcome: {
