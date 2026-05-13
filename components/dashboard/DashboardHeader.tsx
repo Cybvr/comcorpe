@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Bell, Moon, Search, Settings, Sun } from 'lucide-react'
+import { Bell, Menu, Moon, Search, Settings, Sun } from 'lucide-react'
 import { currentUser } from '@/lib/user'
 
 type DashboardAudience = 'talent' | 'client'
@@ -13,8 +13,10 @@ const searchPlaceholder: Record<DashboardAudience, string> = {
 
 export default function DashboardHeader({
   audience = 'talent',
+  onMenuClick,
 }: {
   audience?: DashboardAudience
+  onMenuClick?: () => void
 }) {
   const [darkMode, setDarkMode] = useState(false)
 
@@ -39,7 +41,15 @@ export default function DashboardHeader({
   }
 
   return (
-    <header className="h-13 shrink-0 border-b border-ink-10 flex items-center gap-4 px-6 bg-paper">
+    <header className="h-13 shrink-0 border-b border-ink-10 flex items-center gap-3 px-4 lg:px-6 bg-paper">
+      {/* Mobile Menu Toggle */}
+      <button 
+        onClick={onMenuClick}
+        className="lg:hidden p-1.5 -ml-1 text-ink-60 hover:text-ink hover:bg-ink-10 rounded-md transition-colors"
+      >
+        <Menu size={20} />
+      </button>
+
       <div className="flex-1 relative max-w-md">
         <Search size={14} strokeWidth={1.8} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-40" />
         <input

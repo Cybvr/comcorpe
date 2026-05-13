@@ -12,6 +12,7 @@ import {
   Home,
   MessageCircle,
   Users,
+  X,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -119,30 +120,49 @@ function DashboardSwitch({ audience }: { audience: DashboardAudience }) {
   )
 }
 
-export default function DashboardSidebar({ audience }: { audience: DashboardAudience }) {
+export default function DashboardSidebar({ 
+  audience,
+  onClose,
+}: { 
+  audience: DashboardAudience
+  onClose?: () => void 
+}) {
   const config = dashboardConfig[audience]
 
   return (
-    <aside className="w-56 shrink-0 border-r border-ink-10 flex flex-col h-full overflow-y-auto bg-paper">
-      <div className="px-4 pt-5 pb-4 border-b border-ink-10">
-        <Link href={config.root} className="flex items-center gap-2.5">
+    <aside className="w-64 lg:w-56 shrink-0 border-r border-ink-10 flex flex-col h-full overflow-y-auto bg-paper shadow-2xl lg:shadow-none">
+      <div className="px-4 pt-5 pb-4 border-b border-ink-10 relative">
+        <Link href={config.root} className="flex items-center gap-2.5" onClick={onClose}>
           <Image src="/images/comcorpe.png" alt="Comcorpe" width={118} height={24} className="h-6 w-auto object-contain dark:invert" priority />
           <span className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 border-l border-ink-20 pl-2">
             {config.label}
           </span>
         </Link>
+        
+        {/* Mobile Close Button */}
+        <button 
+          onClick={onClose}
+          className="lg:hidden absolute right-3 top-5 p-1 text-ink-40 hover:text-ink transition-colors"
+        >
+          <X size={18} />
+        </button>
+
         <DashboardSwitch audience={audience} />
       </div>
 
       <nav className="flex flex-col gap-0.5 p-3 flex-1" aria-label="Dashboard">
         {config.primaryItems.map((item) => (
-          <SidebarLink key={item.href} item={item} />
+          <div key={item.href} onClick={onClose}>
+            <SidebarLink item={item} />
+          </div>
         ))}
       </nav>
 
       <div className="p-3 border-t border-ink-10">
         {config.supportItems.map((item) => (
-          <SidebarLink key={item.href} item={item} />
+          <div key={item.href} onClick={onClose}>
+            <SidebarLink item={item} />
+          </div>
         ))}
       </div>
     </aside>
