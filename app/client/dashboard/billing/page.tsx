@@ -1,5 +1,6 @@
 import { CreditCard, FileText } from 'lucide-react'
-import { clientInvoices } from '@/lib/client-dashboard'
+import { clientInvoices } from '@/lib/invoices'
+import { currentUser } from '@/lib/user'
 
 const invoiceStatusStyles = {
   Paid: 'bg-green-600/10 text-green-700 border-green-600/20',
@@ -8,7 +9,9 @@ const invoiceStatusStyles = {
 }
 
 export default function BillingPage() {
-  const openTotal = clientInvoices
+  const myInvoices = clientInvoices.filter(i => i.label.includes(currentUser.company))
+
+  const openTotal = myInvoices
     .filter((invoice) => invoice.status === 'Due')
     .map((invoice) => invoice.amount)
     .join(', ')
@@ -32,21 +35,21 @@ export default function BillingPage() {
         <article className="border border-ink-10 rounded-xl p-5 bg-paper">
           <p className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mb-3">Draft charges</p>
           <div className="font-display font-black text-[30px] tracking-[-0.03em] text-ink leading-none">
-            {clientInvoices.filter((invoice) => invoice.status === 'Draft').length}
+            {myInvoices.filter((invoice) => invoice.status === 'Draft').length}
           </div>
           <p className="font-text text-sm text-ink-60 mt-3">Issued after client approval</p>
         </article>
         <article className="border border-ink-10 rounded-xl p-5 bg-paper">
           <p className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mb-3">Paid retainers</p>
           <div className="font-display font-black text-[30px] tracking-[-0.03em] text-ink leading-none">
-            {clientInvoices.filter((invoice) => invoice.status === 'Paid').length}
+            {myInvoices.filter((invoice) => invoice.status === 'Paid').length}
           </div>
           <p className="font-text text-sm text-ink-60 mt-3">Cleared by finance</p>
         </article>
       </section>
 
       <div className="flex flex-col gap-3">
-        {clientInvoices.map((invoice) => (
+        {myInvoices.map((invoice) => (
           <article key={invoice.id} className="border border-ink-10 rounded-xl p-5 bg-paper">
             <div className="flex items-start justify-between gap-6">
               <div className="flex items-start gap-4">
