@@ -53,8 +53,8 @@ const homeActions: HomeAction[] = [
 
 export default function DashboardPage() {
   return (
-    <div className="px-8 py-8 max-w-[1200px] mx-auto">
-      <div className="flex items-center justify-between mb-8">
+    <div className="px-6 py-6 lg:px-8 lg:py-8 max-w-[1200px] mx-auto">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
         <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-none">
           Hi, {currentUser.name}!
         </h1>
@@ -83,7 +83,7 @@ export default function DashboardPage() {
           e
         </div>
         <p className="font-mono text-xs text-paper/50 uppercase tracking-eyebrow mb-4">Welcome to Comcorpe</p>
-        <div className="grid grid-cols-3 gap-4 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
           {homeActions.map(({ icon: Icon, title, cta, href }) => (
             <div key={title} className="bg-paper/[0.08] rounded-lg p-4 flex flex-col gap-3 border border-paper/[0.12] hover:bg-paper/[0.14] transition-colors">
               <Icon size={20} strokeWidth={1.5} className="text-blue" />
@@ -139,7 +139,7 @@ export default function DashboardPage() {
 
           <section>
             <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink mb-4">Get inspired by top operators</h2>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {topOperators.map((operator) => (
                 <OperatorCard key={operator.id} operator={operator} />
               ))}
@@ -147,21 +147,21 @@ export default function DashboardPage() {
           </section>
 
           <section className="border border-ink-10 rounded-xl p-6 bg-ink-10/40">
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-start justify-between gap-6">
               <div>
                 <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink mb-1">Refer Clients &amp; Talent</h2>
                 <p className="font-text text-sm text-ink-60 max-w-[36ch]">
                   Share your link and earn {referral.clientShare} of client billings for every client hired, and {referral.talentShare} of talent earnings for every job landed.
                 </p>
-                <div className="mt-4 flex items-center gap-2">
-                  <div className="flex-1 px-3 py-2 bg-paper border border-ink-10 rounded-lg font-mono text-xs text-ink-60 truncate">
+                <div className="mt-4 flex flex-col xs:flex-row items-start xs:items-center gap-2">
+                  <div className="w-full xs:flex-1 px-3 py-2 bg-paper border border-ink-10 rounded-lg font-mono text-xs text-ink-60 truncate">
                     {referral.link}
                   </div>
-                  <button className="font-text text-xs font-semibold px-3 py-2 bg-ink text-paper rounded-lg hover:bg-blue transition-colors duration-[120ms]">
+                  <button className="w-full xs:w-auto font-text text-xs font-semibold px-3 py-2 bg-ink text-paper rounded-lg hover:bg-blue transition-colors duration-[120ms]">
                     Copy
                   </button>
                 </div>
-                <div className="flex gap-2 mt-3">
+                <div className="flex flex-wrap gap-2 mt-3">
                   {referral.channels.map((channel) => (
                     <button key={channel} className="font-mono text-[10px] uppercase tracking-eyebrow px-3 py-1.5 border border-ink-20 rounded-full text-ink-60 hover:border-ink hover:text-ink transition-colors">
                       {channel}

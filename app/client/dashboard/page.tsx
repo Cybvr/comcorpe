@@ -72,8 +72,8 @@ export default function ClientDashboardPage() {
   ]
 
   return (
-    <div className="px-8 py-8 max-w-[1240px] mx-auto">
-      <div className="flex items-start justify-between gap-6 mb-8">
+    <div className="px-6 py-6 lg:px-8 lg:py-8 max-w-[1240px] mx-auto">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
         <div>
           <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Client cockpit</p>
           <h1 className="font-display font-black text-[34px] tracking-[-0.03em] text-ink leading-none">
@@ -110,7 +110,7 @@ export default function ClientDashboardPage() {
               </div>
               <AlertCircle size={24} strokeWidth={1.5} className="text-blue shrink-0" />
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 relative z-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 relative z-10">
               {myDecisions.map((decision) => (
                 <Link
                   key={decision.id}
@@ -134,7 +134,7 @@ export default function ClientDashboardPage() {
                 View all briefs <ChevronRight size={12} />
               </Link>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {primaryBriefs.map((brief) => (
                 <Link
                   key={brief.id}
@@ -168,7 +168,7 @@ export default function ClientDashboardPage() {
                 View talent pods <ChevronRight size={12} />
               </Link>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {primaryPods.map((pod) => (
                 <Link
                   key={pod.id}
