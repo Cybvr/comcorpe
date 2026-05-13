@@ -108,7 +108,7 @@ export default function Nav() {
     },
     { label: 'Oversight', href: '/enterprise' },
     { label: 'Talent', href: '/talent' },
-    { label: 'Cases', href: '/case-studies' },
+    { label: 'Insights', href: '/insights' },
   ]
 
   return (

@@ -32,7 +32,7 @@ export default function Footer() {
         {[
           { head: 'Model', links: ['Orchestration', 'Specialist Pods', 'Growth Plays'] },
           { head: 'Arenas', links: services.map(s => s.t) },
-          { head: 'Company', links: [{ label: 'About', href: '/about' }, { label: 'Why Comcorpe', href: '/why' }, { label: 'Cases', href: '/case-studies' }, 'Press'] },
+          { head: 'Company', links: [{ label: 'About', href: '/about' }, { label: 'Why Comcorpe', href: '/why' }, { label: 'Use Cases', href: '/case-studies' }, 'Press'] },
           { head: 'Contact', links: [{ label: 'Book a session call', href: '/book' }, { label: 'hello@comcorp.e', href: 'mailto:hello@comcorp.e' }, { label: 'Plot 5 Chief Yesufu Abiodun Oniru Rd, Victoria Island, Lagos 106104, Lagos', href: '#' }, { label: 'London · Lagos · Oslo', href: '#' }] },
         ].map(({ head, links }) => (
           <div key={head} className="flex flex-col gap-3.5">
