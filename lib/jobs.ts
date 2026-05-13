@@ -16,6 +16,7 @@ export interface Job {
   updatedAt: string
   arena?: string
   owner?: string
+  updates?: string[]
   // Meta data for the dashboard (mostly for Active projects)
   progress?: number
   phase?: string
@@ -86,6 +87,11 @@ export const jobs: Job[] = [
     updatedAt: 'Updated Jan 10',
     arena: 'Technology & Fintech',
     owner: 'Commercial team',
+    updates: [
+      'Diagnostic phase complete',
+      'Retention leaks mapped',
+      'Sprint cadence established',
+    ],
     progress: 58,
     phase: 'Diagnostic playback',
     lead: 'Daniel Osei',

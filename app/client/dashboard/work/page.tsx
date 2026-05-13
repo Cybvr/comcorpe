@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ArrowUpRight, CalendarDays, CheckCircle2 } from 'lucide-react'
-import { clientProjects } from '@/lib/client-dashboard'
+import { jobs } from '@/lib/jobs'
+import { currentUser } from '@/lib/user'
 
 const projectStatusStyles = {
   'On track': 'bg-green-600/10 text-green-700 border-green-600/20',
@@ -20,7 +21,7 @@ export default function ProjectsPage() {
       </div>
 
       <div className="flex flex-col gap-4">
-        {clientProjects.map((project) => (
+        {jobs.filter(j => j.client === currentUser.company && j.status === 'Active').map((project) => (
           <article key={project.id} className="border border-ink-10 rounded-xl p-6 bg-paper">
             <div className="flex items-start justify-between gap-6">
               <div>
@@ -30,11 +31,11 @@ export default function ProjectsPage() {
                   </span>
                   <span className="font-text text-xs text-ink-40">{project.phase}</span>
                 </div>
-                <h2 className="font-display font-black text-[24px] tracking-[-0.02em] text-ink leading-tight">{project.name}</h2>
+                <h2 className="font-display font-black text-[24px] tracking-[-0.02em] text-ink leading-tight">{project.title}</h2>
                 <p className="font-text text-sm leading-relaxed text-ink-60 mt-3 max-w-[68ch]">{project.summary}</p>
               </div>
               <Link
-                href={`/client/dashboard/jobs/${project.briefSlug}`}
+                href={`/client/dashboard/jobs/${project.slug}`}
                 className="font-text text-xs font-semibold px-4 py-2 border border-ink-20 rounded-full text-ink hover:bg-ink hover:text-paper transition-colors duration-[120ms] shrink-0 inline-flex items-center gap-1.5"
               >
                 Open brief <ArrowUpRight size={12} />
@@ -71,7 +72,7 @@ export default function ProjectsPage() {
             <div className="mt-6 pt-5 border-t border-ink-10">
               <p className="font-mono text-[10px] uppercase tracking-eyebrow text-blue mb-3">Latest updates</p>
               <div className="flex flex-col gap-2">
-                {project.updates.map((update) => (
+                {(project.updates || []).map((update) => (
                   <div key={update} className="flex items-center gap-2 font-text text-sm text-ink-60">
                     <CheckCircle2 size={13} className="text-blue shrink-0" /> {update}
                   </div>
