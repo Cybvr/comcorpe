@@ -8,13 +8,11 @@ import {
   CreditCard,
 } from 'lucide-react'
 import {
-  clientBriefs,
   clientDecisions,
-  clientInvoices,
-  clientMetrics,
   clientPodRecommendations,
-  clientProjects,
 } from '@/lib/client-dashboard'
+import { jobs } from '@/lib/jobs'
+import { clientInvoices } from '@/lib/invoices'
 import { currentUser } from '@/lib/user'
 
 const statusStyles = {
@@ -37,8 +35,41 @@ const invoiceStatusStyles = {
 }
 
 export default function ClientDashboardPage() {
-  const primaryBriefs = clientBriefs.slice(0, 3)
+  // Filter unified jobs by current user's company
+  const myJobs = jobs.filter(j => j.client === currentUser.company)
+  
+  // Categorize jobs for the dashboard view
+  const myBriefs = myJobs.filter(j => j.status === 'Scoping' || j.status === 'Pod review')
+  const myProjects = myJobs.filter(j => j.status === 'Active')
+  const myDecisions = clientDecisions.filter(d => myJobs.some(j => j.title === d.related))
+  const myInvoices = clientInvoices.filter(i => i.label.includes(currentUser.company))
+
+  const primaryBriefs = myBriefs.slice(0, 3)
   const primaryPods = clientPodRecommendations.slice(0, 2)
+
+  // Dynamic metrics
+  const dynamicMetrics = [
+    { 
+      label: 'Active briefs', 
+      value: myBriefs.length.toString(), 
+      meta: `${myBriefs.filter(b => b.status === 'Pod review').length} ready for pod review` 
+    },
+    { 
+      label: 'Live projects', 
+      value: myProjects.length.toString(), 
+      meta: `${myProjects.filter(p => p.status === 'Needs input' || p.status === 'Active').length} currently live` 
+    },
+    { 
+      label: 'Recommended pods', 
+      value: '2', 
+      meta: 'Across fintech, growth, trust' 
+    },
+    { 
+      label: 'Open invoices', 
+      value: `$${(myInvoices.reduce((acc, inv) => acc + parseInt(inv.amount.replace(/[^0-9]/g, '')), 0) / 1000).toFixed(1)}k`, 
+      meta: 'Next due Jan 31' 
+    },
+  ]
 
   return (
     <div className="px-8 py-8 max-w-[1240px] mx-auto">
@@ -58,7 +89,7 @@ export default function ClientDashboardPage() {
       </div>
 
       <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 mb-8">
-        {clientMetrics.map((metric) => (
+        {dynamicMetrics.map((metric) => (
           <article key={metric.label} className="border border-ink-10 rounded-xl p-5 bg-paper">
             <p className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mb-3">{metric.label}</p>
             <div className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-none">{metric.value}</div>
@@ -80,7 +111,7 @@ export default function ClientDashboardPage() {
               <AlertCircle size={24} strokeWidth={1.5} className="text-blue shrink-0" />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 relative z-10">
-              {clientDecisions.map((decision) => (
+              {myDecisions.map((decision) => (
                 <Link
                   key={decision.id}
                   href={decision.href}
@@ -116,7 +147,7 @@ export default function ClientDashboardPage() {
                       {brief.status}
                     </span>
                   </div>
-                  <p className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mb-2">{brief.company}</p>
+                  <p className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mb-2">{brief.client}</p>
                   <h3 className="font-display font-black text-[17px] tracking-[-0.01em] text-ink group-hover:text-blue transition-colors leading-tight">
                     {brief.title}
                   </h3>
@@ -172,7 +203,7 @@ export default function ClientDashboardPage() {
               <Link href="/client/dashboard/work" className="font-text text-xs text-blue hover:underline">View all</Link>
             </div>
             <div className="flex flex-col gap-3">
-              {clientProjects.map((project) => (
+              {myProjects.map((project) => (
                 <Link
                   key={project.id}
                   href="/client/dashboard/work"
@@ -180,7 +211,7 @@ export default function ClientDashboardPage() {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h3 className="font-display font-black text-[15px] tracking-[-0.01em] text-ink leading-tight">{project.name}</h3>
+                      <h3 className="font-display font-black text-[15px] tracking-[-0.01em] text-ink leading-tight">{project.title}</h3>
                       <p className="font-text text-xs text-ink-60 mt-1">{project.phase}</p>
                     </div>
                     <span className={`font-mono text-[10px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${projectStatusStyles[project.status]}`}>
@@ -202,7 +233,7 @@ export default function ClientDashboardPage() {
               <Link href="/client/dashboard/billing" className="font-text text-xs text-blue hover:underline">Open billing</Link>
             </div>
             <div className="flex flex-col gap-3">
-              {clientInvoices.slice(0, 2).map((invoice) => (
+              {myInvoices.slice(0, 2).map((invoice) => (
                 <article key={invoice.id} className="border border-ink-10 rounded-xl p-4 bg-paper">
                   <div className="flex items-start justify-between gap-3">
                     <CreditCard size={16} strokeWidth={1.5} className="text-blue shrink-0 mt-0.5" />

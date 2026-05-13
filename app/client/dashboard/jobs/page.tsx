@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ArrowUpRight, Briefcase, Clock, MapPin } from 'lucide-react'
-import { clientBriefs } from '@/lib/client-dashboard'
+import { jobs } from '@/lib/jobs'
+import { currentUser } from '@/lib/user'
 
 const statusStyles = {
   Scoping: 'bg-amber-100 text-amber-700 border-amber-200',
@@ -26,7 +27,7 @@ export default function BriefsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-        {clientBriefs.map((brief) => (
+        {jobs.filter(b => b.client === currentUser.company).map((brief) => (
           <Link
             key={brief.id}
             href={`/client/dashboard/jobs/${brief.slug}`}
@@ -40,7 +41,7 @@ export default function BriefsPage() {
                 {brief.status}
               </span>
             </div>
-            <p className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mb-2">{brief.company}</p>
+            <p className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mb-2">{brief.client}</p>
             <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink group-hover:text-blue transition-colors leading-tight">
               {brief.title}
             </h2>

@@ -10,6 +10,7 @@ import {
   Lightbulb, Network, Users, Target,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import { currentUser } from '@/lib/user'
 
 type DropdownItem = {
   label: string
@@ -184,7 +185,7 @@ export default function Nav() {
             {darkMode ? <Sun size={15} strokeWidth={1.5} /> : <Moon size={15} strokeWidth={1.5} />}
           </button>
           <Link
-            href="/client/dashboard"
+            href={currentUser.role === 'client' ? '/client/dashboard' : '/talent/dashboard'}
             className="font-text text-[13px] font-semibold px-[16px] py-[9px] rounded-full border border-ink-20 text-ink hover:border-blue hover:text-blue transition-colors duration-[120ms] inline-flex items-center gap-1.5"
           >
             <LayoutDashboard size={14} strokeWidth={1.6} />
@@ -208,7 +209,7 @@ export default function Nav() {
             {darkMode ? <Sun size={15} strokeWidth={1.5} /> : <Moon size={15} strokeWidth={1.5} />}
           </button>
           <Link
-            href="/client/dashboard"
+            href={currentUser.role === 'client' ? '/client/dashboard' : '/talent/dashboard'}
             aria-label="Dashboard"
             className="w-8 h-8 flex items-center justify-center rounded-full border border-ink-20 text-ink hover:border-blue hover:text-blue transition-colors duration-[120ms]"
           >

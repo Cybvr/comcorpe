@@ -1,11 +1,8 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, ArrowUpRight, Briefcase, Clock, MapPin, UserRound } from 'lucide-react'
-import {
-  clientBriefs,
-  clientPodRecommendations,
-  getClientBriefBySlug,
-} from '@/lib/client-dashboard'
+import { clientPodRecommendations } from '@/lib/client-dashboard'
+import { jobs, getJobBySlug } from '@/lib/jobs'
 
 const statusStyles = {
   Scoping: 'bg-amber-100 text-amber-700 border-amber-200',
@@ -21,8 +18,8 @@ const podByBrief = {
 }
 
 export function generateStaticParams() {
-  return clientBriefs.map((brief) => ({
-    slug: brief.slug,
+  return jobs.map((job) => ({
+    slug: job.slug,
   }))
 }
 
@@ -32,7 +29,7 @@ export default async function BriefDetailPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const brief = getClientBriefBySlug(slug)
+  const brief = getJobBySlug(slug)
 
   if (!brief) {
     notFound()
@@ -51,7 +48,7 @@ export default async function BriefDetailPage({
         <div className="flex items-start justify-between gap-8">
           <div>
             <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-3">{brief.arena}</p>
-            <h1 className="font-display font-black text-[40px] tracking-[-0.03em] text-ink leading-none">{brief.company}</h1>
+            <h1 className="font-display font-black text-[40px] tracking-[-0.03em] text-ink leading-none">{brief.client}</h1>
             <p className="font-display font-black text-[24px] tracking-[-0.02em] text-ink mt-3">{brief.title}</p>
             <p className="font-text text-[16px] leading-relaxed text-ink-60 mt-5 max-w-[62ch]">{brief.summary}</p>
           </div>
@@ -60,9 +57,9 @@ export default async function BriefDetailPage({
             <span className={`font-mono text-[10px] uppercase tracking-eyebrow px-2 py-1 border rounded-sm ${statusStyles[brief.status]}`}>
               {brief.status}
             </span>
-            <div className="font-display font-black text-[24px] tracking-[-0.02em] text-ink mt-5">{brief.budget}</div>
+            <div className="font-display font-black text-[24px] tracking-[-0.02em] text-ink mt-5">{brief.rate}</div>
             <div className="flex items-center gap-2 text-ink-60 text-sm mt-4">
-              <Clock size={14} /> {brief.timeline}
+              <Clock size={14} /> {brief.time}
             </div>
             <div className="flex items-center gap-2 text-ink-60 text-sm mt-2">
               <MapPin size={14} /> {brief.location}
@@ -85,7 +82,7 @@ export default async function BriefDetailPage({
           <section>
             <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink mb-4">Target outcomes</h2>
             <div className="flex flex-col gap-3">
-              {brief.outcomes.map((item) => (
+              {(brief.outcomes || []).map((item) => (
                 <div key={item} className="border border-ink-10 rounded-lg p-4 font-text text-sm text-ink-60">
                   {item}
                 </div>
@@ -96,7 +93,7 @@ export default async function BriefDetailPage({
           <section>
             <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink mb-4">Client next steps</h2>
             <div className="flex flex-col gap-3">
-              {brief.nextSteps.map((item) => (
+              {(brief.nextSteps || []).map((item) => (
                 <div key={item} className="border border-ink-10 rounded-lg p-4 font-text text-sm text-ink-60">
                   {item}
                 </div>
