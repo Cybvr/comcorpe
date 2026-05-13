@@ -1,42 +1,3 @@
-export const talentRoster = [
-  {
-    name: 'Tunde A.',
-    role: 'Commercial Strategy Lead',
-    bg: 'Formerly at McKinsey & Company',
-    desc: 'Designs go-to-market strategies for pan-African fintech expansions.'
-  },
-  {
-    name: 'Sarah M.',
-    role: 'Revenue Operations Director',
-    bg: 'Formerly at Flutterwave',
-    desc: 'Builds scalable data platforms to automate enterprise sales pipelines.'
-  },
-  {
-    name: 'David O.',
-    role: 'Market Entry Specialist',
-    bg: 'Formerly at KPMG',
-    desc: 'Navigates complex regulatory environments to launch foreign brands in Nigeria.'
-  },
-  {
-    name: 'Amira H.',
-    role: 'Brand & Comms Architect',
-    bg: 'Formerly at DDB',
-    desc: 'Translates global brand equity into localized, culturally nuanced campaigns.'
-  },
-  {
-    name: 'James K.',
-    role: 'Growth Marketing Lead',
-    bg: 'Formerly at Jumia',
-    desc: 'Drives customer acquisition and performance marketing at massive scale.'
-  },
-  {
-    name: 'Elena R.',
-    role: 'Strategic Partnerships',
-    bg: 'Formerly at Standard Bank',
-    desc: 'Builds high-trust corporate networks to accelerate B2B distribution.'
-  },
-]
-
 export const leadership = [
   {
     name: 'Enyi Odigbo',
@@ -55,7 +16,7 @@ export const leadership = [
   {
     name: 'Jide Pinheiro',
     title: 'Chief Creativity Architect',
-    bio: 'Jide Pinheiro is a multidisciplinary product architect, technologist, and digital strategist with over 15 years of experience leading high-impact innovation across global markets. As the founder of TISV Digital and a contributor to elite engineering networks like Toptal and Braintrust, he has consistently operated at the frontier of design and technology—including driving early adoption in the Web3 ecosystem. At Comcorpe, Jide orchestrates the vital intersection of human-centered design and advanced engineering, building enterprise-grade platforms that redefine digital experiences.',
+    bio: 'Jide Pinheiro is a multidisciplinary product architect, technologist, and digital strategist with over 15 years of experience leading high-impact innovation across global markets. As the founder of VisualHQ and a contributor to elite engineering networks like Toptal and Braintrust, he has consistently operated at the frontier of design and technology—including driving early adoption in the Web3 ecosystem. At Comcorpe, Jide orchestrates the vital intersection of human-centered design and advanced engineering, building enterprise-grade platforms that redefine digital experiences.',
     tags: ['PRODUCT DESIGN', 'TECHNOLOGY'],
     linkedin: '#',
   },

@@ -1,59 +1,16 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { talentRoster } from '@/lib/people'
+import {
+  talentArchetypes,
+  talentRoster,
+  talentSpotlightCards,
+  talentTrainingModules,
+} from '@/lib/talent'
 
 export const metadata: Metadata = {
   title: 'Specialist Talent — Comcorpᵉ',
   description: 'Deploy curated, world-class strategic operators and commercial architects directly into your enterprise.',
 }
-
-const archetypes = [
-  {
-    title: 'The Architect',
-    role: 'Commercial Strategy & Design',
-    desc: 'Builds the foundational growth system. Maps unit economics, channel architecture, and go-to-market strategies that turn business ambition into measurable commercial logic.',
-  },
-  {
-    title: 'The Integrator',
-    role: 'Market Entry & Partnerships',
-    desc: 'Connects the strategy to the reality of the market. Navigates regulatory landscapes, builds local partnership networks, and embeds operations into complex emerging markets.',
-  },
-  {
-    title: 'The Operator',
-    role: 'Execution & Revenue Ops',
-    desc: 'Drives day-to-day implementation. Manages the performance marketing, sales activation, and revenue pipelines, ensuring the growth system operates efficiently at scale.',
-  },
-]
-
-const trainingModules = [
-  {
-    title: 'Commercial Architecture',
-    desc: 'Design reliable, production-grade business models',
-    progress: [
-      { label: 'Unit Economics Mapping', completed: true },
-      { label: 'Go-to-Market Strategy', completed: true },
-      { label: 'Pricing & Monetization', completed: true },
-    ],
-  },
-  {
-    title: 'Market Intelligence',
-    desc: 'Architect localized strategies for complex African markets',
-    progress: [
-      { label: 'Regulatory Navigation', completed: true },
-      { label: 'Partnership Ecosystems', completed: true },
-      { label: 'Consumer Trust Dynamics', completed: false },
-    ],
-  },
-  {
-    title: 'Growth Operations',
-    desc: 'Deploy scalable revenue infrastructure in live environments',
-    progress: [
-      { label: 'Performance Marketing', completed: true },
-      { label: 'Pipeline Automation', completed: true },
-      { label: 'Data & Analytics', completed: false },
-    ],
-  },
-]
 
 export default function TalentPage() {
   return (
@@ -85,28 +42,32 @@ export default function TalentPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-4">
-            <div className="bg-ink-10 p-6 border border-ink-20 flex gap-6 items-center">
-              <div className="w-16 h-16 rounded-full bg-ink-20 shrink-0" />
-              <div>
-                <div className="font-mono text-[10px] uppercase tracking-widest text-blue mb-1">Commercial Architect</div>
-                <div className="font-display font-black text-[20px] leading-tight text-ink">Growth Strategy & Design</div>
-                <div className="flex gap-2 mt-3">
-                  <span className="font-mono text-[9px] uppercase px-2 py-1 border border-ink-20 text-ink-60">Fintech</span>
-                  <span className="font-mono text-[9px] uppercase px-2 py-1 border border-ink-20 text-ink-60">Unit Economics</span>
+            {talentSpotlightCards.map((card) => (
+              <div
+                key={card.title}
+                className={`p-6 flex gap-6 items-center ${card.inverted ? 'bg-ink text-paper' : 'bg-ink-10 border border-ink-20'}`}
+              >
+                <div className={`w-16 h-16 rounded-full shrink-0 ${card.inverted ? 'bg-paper/20' : 'bg-ink-20'}`} />
+                <div>
+                  <div className="font-mono text-[10px] uppercase tracking-widest text-blue mb-1">{card.eyebrow}</div>
+                  <div className={`font-display font-black text-[20px] leading-tight ${card.inverted ? 'text-paper' : 'text-ink'}`}>
+                    {card.title}
+                  </div>
+                  <div className="flex gap-2 mt-3">
+                    {card.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className={`font-mono text-[9px] uppercase px-2 py-1 border ${
+                          card.inverted ? 'border-paper/20 text-paper/60' : 'border-ink-20 text-ink-60'
+                        }`}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="bg-ink p-6 flex gap-6 items-center text-paper">
-              <div className="w-16 h-16 rounded-full bg-paper/20 shrink-0" />
-              <div>
-                <div className="font-mono text-[10px] uppercase tracking-widest text-blue mb-1">Execution Lead</div>
-                <div className="font-display font-black text-[20px] leading-tight text-paper">Revenue Ops & Performance</div>
-                <div className="flex gap-2 mt-3">
-                  <span className="font-mono text-[9px] uppercase px-2 py-1 border border-paper/20 text-paper/60">CRM</span>
-                  <span className="font-mono text-[9px] uppercase px-2 py-1 border border-paper/20 text-paper/60">Automation</span>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -130,7 +91,7 @@ export default function TalentPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-ink border border-ink">
-          {archetypes.map((arch, i) => (
+          {talentArchetypes.map((arch, i) => (
             <div key={i} className="bg-paper p-8 md:p-12 hover:bg-blue/[0.02] transition-colors">
               <div className="font-mono text-[13px] text-blue mb-4">0{i+1}.</div>
               <div className="font-display font-black text-[32px] leading-tight tracking-[-0.01em] text-ink mb-2">
@@ -160,7 +121,7 @@ export default function TalentPage() {
           </div>
           
           <div className="flex flex-col gap-12">
-            {trainingModules.map((mod, i) => (
+            {talentTrainingModules.map((mod, i) => (
               <div key={i}>
                 <div className="font-display font-black text-[24px] tracking-[-0.01em] text-blue mb-2">{mod.title}</div>
                 <div className="font-text text-[15px] text-paper/60 mb-6">{mod.desc}</div>
@@ -195,19 +156,19 @@ export default function TalentPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-ink border border-ink">
           {talentRoster.map((talent, i) => (
-            <div key={i} className="bg-paper p-8">
+            <Link key={i} href={`/talent/${talent.id}`} className="block bg-paper p-8 group hover:bg-ink-10/60 transition-colors duration-[120ms]">
               <p className="font-text text-[16px] leading-relaxed text-ink mb-8 h-[72px]">
                 {talent.desc}
               </p>
               <div className="flex items-center gap-4 border-t border-ink-10 pt-6">
                 <div className="w-12 h-12 rounded-full bg-ink-10 shrink-0" />
                 <div>
-                  <div className="font-display font-black text-[20px] leading-tight text-ink mb-1">{talent.name}</div>
+                  <div className="font-display font-black text-[20px] leading-tight text-ink group-hover:text-blue transition-colors mb-1">{talent.name}</div>
                   <div className="font-mono text-[10px] text-blue uppercase tracking-widest mb-1">{talent.role}</div>
                   <div className="font-text text-[12px] text-ink-40">{talent.bg}</div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
         
