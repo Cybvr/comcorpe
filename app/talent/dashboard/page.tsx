@@ -96,7 +96,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <div className="grid grid-cols-[1fr_360px] gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-8">
         <div className="flex flex-col gap-8">
           <section>
             <div className="flex items-center justify-between mb-4">

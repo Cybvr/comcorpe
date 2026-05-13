@@ -3,14 +3,14 @@ import { referral } from '@/lib/referrals'
 
 export default function ReferralsPage() {
   return (
-    <div className="px-8 py-8 max-w-[900px] mx-auto">
+    <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[900px] mx-auto">
       <div className="mb-6">
         <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Refer & grow</p>
         <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-none">Client and talent referrals</h1>
       </div>
 
       <section className="border border-ink-10 rounded-xl p-6 bg-ink-10/40">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-6">
           <div>
             <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink mb-1">Referral link</h2>
             <p className="font-text text-sm text-ink-60 max-w-[56ch]">

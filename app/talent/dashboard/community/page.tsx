@@ -7,13 +7,13 @@ import { spaces } from '@/lib/spaces'
 
 export default function CommunityPage() {
   return (
-    <div className="px-8 py-8 max-w-[1120px] mx-auto">
+    <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1120px] mx-auto">
       <div className="mb-6">
         <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Community</p>
         <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-none">Community posts and spaces</h1>
       </div>
 
-      <div className="grid grid-cols-[1fr_360px] gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-8">
         <section className="flex flex-col gap-3">
           <DashboardPostComposer />
           {posts.map((post) => (

@@ -27,12 +27,12 @@ export default async function CommunityPostPage({
   const otherPosts = posts.filter((p) => p.slug !== slug)
 
   return (
-    <div className="px-8 py-8 max-w-[1040px] mx-auto">
+    <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">
       <Link href="/talent/dashboard/community" className="font-text text-sm text-ink-60 hover:text-blue transition-colors inline-flex items-center gap-2 mb-8">
         <ArrowLeft size={14} /> Back to community
       </Link>
 
-      <div className="grid grid-cols-[1fr_320px] gap-8 items-start">
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-8 items-start">
         <article className="border border-ink-10 rounded-xl p-8 bg-paper">
           <div className="flex items-center gap-3 mb-8">
             <Link href={`/talent/${author.id}`} className="shrink-0">

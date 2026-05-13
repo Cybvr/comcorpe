@@ -53,7 +53,7 @@ const dashboardConfig: Record<DashboardAudience, {
       { icon: Home, label: 'Home', href: '/client/dashboard' },
       { icon: Briefcase, label: 'Briefs', href: '/client/dashboard/jobs' },
       { icon: Users, label: 'Talent pods', href: '/client/dashboard/community', badge: 3 },
-      { icon: FolderOpen, label: 'Projects', href: '/client/dashboard/work' },
+      { icon: FolderOpen, label: 'Active work', href: '/client/dashboard/work' },
       { icon: CreditCard, label: 'Billing', href: '/client/dashboard/billing' },
       { icon: Gift, label: 'Refer & grow', href: '/client/dashboard/referrals' },
     ],

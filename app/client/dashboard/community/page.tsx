@@ -4,8 +4,8 @@ import { clientPodRecommendations } from '@/lib/client-dashboard'
 
 export default function TalentPodsPage() {
   return (
-    <div className="px-8 py-8 max-w-[1120px] mx-auto">
-      <div className="flex items-start justify-between gap-6 mb-8">
+    <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1120px] mx-auto">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div>
           <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Talent pods</p>
           <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-none">Recommended specialist pods</h1>

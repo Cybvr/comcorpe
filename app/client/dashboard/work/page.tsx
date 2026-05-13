@@ -13,10 +13,10 @@ const statusStyles = {
 
 export default function ProjectsPage() {
   return (
-    <div className="px-8 py-8 max-w-[1040px] mx-auto">
+    <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">
       <div className="mb-8">
-        <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Projects</p>
-        <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-none">Active Comcorpe engagements</h1>
+        <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Active work</p>
+        <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-none">Live engagements</h1>
         <p className="font-text text-sm text-ink-60 mt-3 max-w-[62ch]">
           Follow current phases, progress, review dates, and the exact inputs needed to keep live work moving.
         </p>

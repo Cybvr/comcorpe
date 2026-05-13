@@ -25,7 +25,7 @@ export default async function TalentPodDetailPage({
   }
 
   return (
-    <div className="px-8 py-8 max-w-[1040px] mx-auto">
+    <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">
       <Link href="/client/dashboard/community" className="font-text text-sm text-ink-60 hover:text-blue transition-colors inline-flex items-center gap-2 mb-8">
         <ArrowLeft size={14} /> Back to talent pods
       </Link>

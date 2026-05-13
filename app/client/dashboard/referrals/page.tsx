@@ -3,7 +3,7 @@ import { clientReferral } from '@/lib/client-dashboard'
 
 export default function ReferralsPage() {
   return (
-    <div className="px-8 py-8 max-w-[920px] mx-auto">
+    <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[920px] mx-auto">
       <div className="mb-8">
         <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Refer & grow</p>
         <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-none">Client and operator referrals</h1>

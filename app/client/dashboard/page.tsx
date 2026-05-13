@@ -66,7 +66,7 @@ export default function ClientDashboardPage() {
   ]
 
   return (
-    <div className="px-6 py-6 lg:px-8 lg:py-8 max-w-[1240px] mx-auto">
+    <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1240px] mx-auto">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
         <div>
           <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Client cockpit</p>
@@ -193,7 +193,7 @@ export default function ClientDashboardPage() {
         <aside className="flex flex-col gap-6">
           <section>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">Projects</h2>
+              <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">Active work</h2>
               <Link href="/client/dashboard/work" className="font-text text-xs text-blue hover:underline">View all</Link>
             </div>
             <div className="flex flex-col gap-3">
