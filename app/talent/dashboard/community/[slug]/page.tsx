@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Bookmark, MessageCircle, Share2, TrendingUp } from 'lucide-react'
+import PostCard from '@/components/dashboard/PostCard'
 import { getPostBySlug, posts } from '@/lib/posts'
 import { getTalentProfile } from '@/lib/talent'
 
@@ -23,6 +24,7 @@ export default async function CommunityPostPage({
   }
 
   const author = getTalentProfile(post.authorId)
+  const otherPosts = posts.filter((p) => p.slug !== slug)
 
   return (
     <div className="px-8 py-8 max-w-[1040px] mx-auto">
@@ -89,6 +91,22 @@ export default async function CommunityPostPage({
           </Link>
         </aside>
       </div>
+
+      {otherPosts.length > 0 && (
+        <section className="mt-10">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">More from the community</h2>
+            <Link href="/talent/dashboard/community" className="font-text text-xs text-blue hover:underline">
+              View all posts
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {otherPosts.map((p) => (
+              <PostCard key={p.id} post={p} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   )
 }
