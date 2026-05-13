@@ -40,7 +40,7 @@ export default function LoginPage() {
       body: JSON.stringify({ email: emailLower }),
     })
 
-    router.push('/talent/dashboard')
+    router.push('/client/dashboard')
     router.refresh()
   }
 

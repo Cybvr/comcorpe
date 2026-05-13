@@ -92,7 +92,7 @@ export default function BookPage() {
         <div className="max-w-[560px] w-full py-24">
           <div className="font-mono text-xs text-paper/50 uppercase tracking-eyebrow mb-6">Brief received</div>
           <h1 className="font-display font-black text-[clamp(48px,7vw,80px)] leading-[0.92] tracking-hero text-paper mb-8">
-            We'll be in touch.
+            We&apos;ll be in touch.
           </h1>
           <p className="font-text text-[18px] leading-relaxed text-paper/70 max-w-[40ch]">
             Thank you, <strong className="text-paper font-semibold">{form.firstName}</strong>. Someone from the Comcorpᵉ team
@@ -273,7 +273,7 @@ export default function BookPage() {
           {/* Submit */}
           <div className="pt-4 border-t border-ink flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <p className="font-mono text-xs text-ink-60 max-w-[36ch]">
-              We'll review your brief and respond within 48 hours.
+              We&apos;ll review your brief and respond within 48 hours.
             </p>
             <button
               type="submit"

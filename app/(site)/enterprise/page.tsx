@@ -26,7 +26,7 @@ export default function EnterprisePage() {
               The Missing Layer for Enterprise AI
             </div>
             <p className="font-text text-[22px] leading-lede text-ink-80 max-w-[34ch]">
-              Enterprises are rushing to deploy AI. But generic models don't understand the nuances of complex markets, and isolated technology cannot drive a business. AI systems break.
+              Enterprises are rushing to deploy AI. But generic models don&apos;t understand the nuances of complex markets, and isolated technology cannot drive a business. AI systems break.
               <br /><br />
               Enterprise AI requires human judgment. We provide the strategic advisory, organizational transformation, human capital, and marketing services required to oversee, guide, and correct your AI systems in real-time.
             </p>
@@ -115,7 +115,7 @@ export default function EnterprisePage() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-16 lg:gap-24 mb-20">
           <div>
             <h2 className="font-display font-black text-[clamp(40px,5vw,72px)] leading-[0.92] tracking-[-0.02em] text-paper mb-8">
-              Enterprise AI doesn't fail from weak models.
+              Enterprise AI doesn&apos;t fail from weak models.
             </h2>
             <h3 className="font-display font-black text-[clamp(32px,4vw,48px)] leading-[0.92] tracking-[-0.02em] text-blue">
               It fails from a lack of Oversight.

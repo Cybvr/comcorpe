@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   Moon, Sun,
+  LayoutDashboard,
+  CalendarDays,
   Zap, Landmark, ShoppingBag,
   Lightbulb, Network, Users, Target,
 } from 'lucide-react'
@@ -36,8 +38,10 @@ export default function Nav() {
     const isDark = saved === 'dark' || (!saved && prefersDark)
     if (isDark) {
       document.documentElement.classList.add('dark')
-      setDarkMode(true)
     }
+
+    const frame = requestAnimationFrame(() => setDarkMode(isDark))
+    return () => cancelAnimationFrame(frame)
   }, [])
 
   const toggleDark = () => {
@@ -180,6 +184,13 @@ export default function Nav() {
             {darkMode ? <Sun size={15} strokeWidth={1.5} /> : <Moon size={15} strokeWidth={1.5} />}
           </button>
           <Link
+            href="/client/dashboard"
+            className="font-text text-[13px] font-semibold px-[16px] py-[9px] rounded-full border border-ink-20 text-ink hover:border-blue hover:text-blue transition-colors duration-[120ms] inline-flex items-center gap-1.5"
+          >
+            <LayoutDashboard size={14} strokeWidth={1.6} />
+            Dashboard
+          </Link>
+          <Link
             href="/book"
             className="font-text text-[13px] font-semibold px-[18px] py-[10px] rounded-full bg-ink text-paper hover:bg-blue transition-colors duration-[120ms]"
           >
@@ -197,8 +208,22 @@ export default function Nav() {
             {darkMode ? <Sun size={15} strokeWidth={1.5} /> : <Moon size={15} strokeWidth={1.5} />}
           </button>
           <Link
+            href="/client/dashboard"
+            aria-label="Dashboard"
+            className="w-8 h-8 flex items-center justify-center rounded-full border border-ink-20 text-ink hover:border-blue hover:text-blue transition-colors duration-[120ms]"
+          >
+            <LayoutDashboard size={15} strokeWidth={1.6} />
+          </Link>
+          <Link
             href="/book"
-            className="font-text text-[12px] font-semibold px-4 py-2.5 rounded-full bg-ink text-paper hover:bg-blue transition-colors duration-[120ms]"
+            aria-label="Book a session call"
+            className="sm:hidden w-8 h-8 flex items-center justify-center rounded-full bg-ink text-paper hover:bg-blue transition-colors duration-[120ms]"
+          >
+            <CalendarDays size={15} strokeWidth={1.6} />
+          </Link>
+          <Link
+            href="/book"
+            className="hidden sm:inline-flex font-text text-[12px] font-semibold px-4 py-2.5 rounded-full bg-ink text-paper hover:bg-blue transition-colors duration-[120ms]"
           >
             Book a session call
           </Link>

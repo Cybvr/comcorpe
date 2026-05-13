@@ -9,7 +9,7 @@ export function proxy(request) {
 
   if (matchesPath(pathname, '/dashboard')) {
     const dashboardUrl = request.nextUrl.clone()
-    dashboardUrl.pathname = pathname.replace('/dashboard', '/talent/dashboard')
+    dashboardUrl.pathname = pathname.replace('/dashboard', '/client/dashboard')
     return NextResponse.redirect(dashboardUrl)
   }
 

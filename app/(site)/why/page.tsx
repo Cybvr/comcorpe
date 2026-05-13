@@ -22,7 +22,7 @@ export default function WhyPage() {
               <span className="text-blue">complexity.</span>
             </h1>
             <p className="font-text text-[18px] leading-lede text-ink-60 max-w-[36ch] md:mb-2">
-              Emerging markets don't reward standard playbooks. They reward systems that can adapt, scale, and execute flawlessly amidst friction.
+              Emerging markets don&apos;t reward standard playbooks. They reward systems that can adapt, scale, and execute flawlessly amidst friction.
             </p>
           </div>
         </div>
@@ -54,7 +54,7 @@ export default function WhyPage() {
               Execution as Architecture
             </h2>
             <p className="font-text text-[18px] leading-relaxed text-ink-60 max-w-[40ch]">
-              Strategy is only as good as its implementation. We don't hand over decks; we engineer the execution architecture to ensure that every opportunity is captured and measurable.
+              Strategy is only as good as its implementation. We don&apos;t hand over decks; we engineer the execution architecture to ensure that every opportunity is captured and measurable.
             </p>
           </div>
         </div>

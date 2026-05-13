@@ -168,7 +168,7 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
                 Ready to place {profile.name.split(' ')[0]} on your brief?
               </p>
               <p className="font-text text-sm text-paper/70">
-                Submit a brief and we'll assess fit within 48 hours. No retainer required to start.
+                Submit a brief and we&apos;ll assess fit within 48 hours. No retainer required to start.
               </p>
               <Link
                 href="/request"

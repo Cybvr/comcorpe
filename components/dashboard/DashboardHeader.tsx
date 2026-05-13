@@ -4,7 +4,18 @@ import { useEffect, useState } from 'react'
 import { Bell, Moon, Search, Settings, Sun } from 'lucide-react'
 import { currentUser } from '@/lib/user'
 
-export default function DashboardHeader() {
+type DashboardAudience = 'talent' | 'client'
+
+const searchPlaceholder: Record<DashboardAudience, string> = {
+  talent: 'Search jobs, cases and resources',
+  client: 'Search briefs, projects, talent and invoices',
+}
+
+export default function DashboardHeader({
+  audience = 'talent',
+}: {
+  audience?: DashboardAudience
+}) {
   const [darkMode, setDarkMode] = useState(false)
 
   useEffect(() => {
@@ -33,7 +44,7 @@ export default function DashboardHeader() {
         <Search size={14} strokeWidth={1.8} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-40" />
         <input
           type="text"
-          placeholder="Search jobs, cases and resources"
+          placeholder={searchPlaceholder[audience]}
           className="w-full pl-9 pr-4 py-2 text-sm bg-ink-10/60 border border-transparent rounded-lg text-ink placeholder:text-ink-40 focus:outline-none focus:border-ink-20 transition-colors"
         />
       </div>

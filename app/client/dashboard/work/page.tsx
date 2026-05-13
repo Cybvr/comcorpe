@@ -1,17 +1,84 @@
-import ApplicationCard from '@/components/dashboard/ApplicationCard'
-import { applications } from '@/lib/applications'
+import Link from 'next/link'
+import { ArrowUpRight, CalendarDays, CheckCircle2 } from 'lucide-react'
+import { clientProjects } from '@/lib/client-dashboard'
 
-export default function WorkPage() {
+const projectStatusStyles = {
+  'On track': 'bg-green-600/10 text-green-700 border-green-600/20',
+  'Needs input': 'bg-amber-100 text-amber-700 border-amber-200',
+  'At risk': 'bg-red-50 text-red-700 border-red-200',
+}
+
+export default function ProjectsPage() {
   return (
-    <div className="px-8 py-8 max-w-[900px] mx-auto">
-      <div className="mb-6">
-        <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">My work</p>
-        <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-none">Applications and active work</h1>
+    <div className="px-8 py-8 max-w-[1040px] mx-auto">
+      <div className="mb-8">
+        <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Projects</p>
+        <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-none">Active Comcorpe engagements</h1>
+        <p className="font-text text-sm text-ink-60 mt-3 max-w-[62ch]">
+          Follow current phases, progress, review dates, and the exact inputs needed to keep live work moving.
+        </p>
       </div>
 
-      <div className="flex flex-col gap-3">
-        {applications.map((application) => (
-          <ApplicationCard key={application.id} application={application} />
+      <div className="flex flex-col gap-4">
+        {clientProjects.map((project) => (
+          <article key={project.id} className="border border-ink-10 rounded-xl p-6 bg-paper">
+            <div className="flex items-start justify-between gap-6">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`font-mono text-[10px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${projectStatusStyles[project.status]}`}>
+                    {project.status}
+                  </span>
+                  <span className="font-text text-xs text-ink-40">{project.phase}</span>
+                </div>
+                <h2 className="font-display font-black text-[24px] tracking-[-0.02em] text-ink leading-tight">{project.name}</h2>
+                <p className="font-text text-sm leading-relaxed text-ink-60 mt-3 max-w-[68ch]">{project.summary}</p>
+              </div>
+              <Link
+                href={`/client/dashboard/jobs/${project.briefSlug}`}
+                className="font-text text-xs font-semibold px-4 py-2 border border-ink-20 rounded-full text-ink hover:bg-ink hover:text-paper transition-colors duration-[120ms] shrink-0 inline-flex items-center gap-1.5"
+              >
+                Open brief <ArrowUpRight size={12} />
+              </Link>
+            </div>
+
+            <div className="mt-6">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Progress</span>
+                <span className="font-display font-black text-[16px] tracking-[-0.02em] text-ink">{project.progress}%</span>
+              </div>
+              <div className="h-2 bg-ink-10 rounded-full overflow-hidden">
+                <div className="h-full bg-blue rounded-full" style={{ width: `${project.progress}%` }} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-6">
+              <div className="border border-ink-10 rounded-lg p-4">
+                <p className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mb-2">Pod lead</p>
+                <div className="font-display font-black text-[16px] tracking-[-0.01em] text-ink">{project.lead}</div>
+              </div>
+              <div className="border border-ink-10 rounded-lg p-4">
+                <p className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mb-2">Next milestone</p>
+                <div className="font-display font-black text-[16px] tracking-[-0.01em] text-ink leading-tight">{project.nextMilestone}</div>
+              </div>
+              <div className="border border-ink-10 rounded-lg p-4">
+                <p className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mb-2">Review</p>
+                <div className="flex items-center gap-2 font-display font-black text-[16px] tracking-[-0.01em] text-ink">
+                  <CalendarDays size={14} /> {project.nextReview}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-5 border-t border-ink-10">
+              <p className="font-mono text-[10px] uppercase tracking-eyebrow text-blue mb-3">Latest updates</p>
+              <div className="flex flex-col gap-2">
+                {project.updates.map((update) => (
+                  <div key={update} className="flex items-center gap-2 font-text text-sm text-ink-60">
+                    <CheckCircle2 size={13} className="text-blue shrink-0" /> {update}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </article>
         ))}
       </div>
     </div>
