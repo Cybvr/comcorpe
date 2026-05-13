@@ -3,10 +3,12 @@ import { ArrowUpRight, CalendarDays, CheckCircle2 } from 'lucide-react'
 import { jobs } from '@/lib/jobs'
 import { currentUser } from '@/lib/user'
 
-const projectStatusStyles = {
-  'On track': 'bg-green-600/10 text-green-700 border-green-600/20',
-  'Needs input': 'bg-amber-100 text-amber-700 border-amber-200',
-  'At risk': 'bg-red-50 text-red-700 border-red-200',
+const statusStyles = {
+  Scoping: 'bg-amber-100 text-amber-700 border-amber-200',
+  'Pod review': 'bg-blue/10 text-blue border-blue/20',
+  Active: 'bg-green-600/10 text-green-700 border-green-600/20',
+  Paused: 'bg-ink-10 text-ink-60 border-ink-20',
+  Completed: 'bg-ink-10 text-ink-60 border-ink-20',
 }
 
 export default function ProjectsPage() {
@@ -26,7 +28,7 @@ export default function ProjectsPage() {
             <div className="flex items-start justify-between gap-6">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className={`font-mono text-[10px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${projectStatusStyles[project.status]}`}>
+                  <span className={`font-mono text-[10px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${statusStyles[project.status]}`}>
                     {project.status}
                   </span>
                   <span className="font-text text-xs text-ink-40">{project.phase}</span>

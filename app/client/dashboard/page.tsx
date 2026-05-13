@@ -22,12 +22,6 @@ const statusStyles = {
   Paused: 'bg-ink-10 text-ink-60 border-ink-20',
 }
 
-const projectStatusStyles = {
-  'On track': 'bg-green-600/10 text-green-700 border-green-600/20',
-  'Needs input': 'bg-amber-100 text-amber-700 border-amber-200',
-  'At risk': 'bg-red-50 text-red-700 border-red-200',
-}
-
 const invoiceStatusStyles = {
   Paid: 'bg-green-600/10 text-green-700 border-green-600/20',
   Due: 'bg-amber-100 text-amber-700 border-amber-200',
@@ -57,7 +51,7 @@ export default function ClientDashboardPage() {
     { 
       label: 'Live projects', 
       value: myProjects.length.toString(), 
-      meta: `${myProjects.filter(p => p.status === 'Needs input' || p.status === 'Active').length} currently live` 
+      meta: `${myProjects.length} currently live`
     },
     { 
       label: 'Recommended pods', 
@@ -214,7 +208,7 @@ export default function ClientDashboardPage() {
                       <h3 className="font-display font-black text-[15px] tracking-[-0.01em] text-ink leading-tight">{project.title}</h3>
                       <p className="font-text text-xs text-ink-60 mt-1">{project.phase}</p>
                     </div>
-                    <span className={`font-mono text-[10px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${projectStatusStyles[project.status]}`}>
+                    <span className={`font-mono text-[10px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${statusStyles[project.status]}`}>
                       {project.status}
                     </span>
                   </div>

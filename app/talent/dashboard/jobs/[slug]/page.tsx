@@ -32,7 +32,7 @@ export default async function JobDetailPage({
           <div>
             <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-3">{job.type}</p>
             <h1 className="font-display font-black text-[40px] tracking-[-0.03em] text-ink leading-none">{job.client}</h1>
-            <p className="font-display font-black text-[22px] tracking-[-0.02em] text-ink mt-3">{job.role}</p>
+            <p className="font-display font-black text-[22px] tracking-[-0.02em] text-ink mt-3">{job.title}</p>
             <p className="font-text text-[16px] leading-relaxed text-ink-60 mt-5 max-w-[62ch]">{job.summary}</p>
           </div>
 

@@ -31,7 +31,7 @@ export default function JobCard({
             <div className="font-display font-black text-[17px] tracking-[-0.01em] text-ink group-hover:text-blue transition-colors leading-tight">
               {job.client}
             </div>
-            <div className="font-text text-sm text-ink-60 mt-0.5 truncate">{job.role}</div>
+            <div className="font-text text-sm text-ink-60 mt-0.5 truncate">{job.title}</div>
           </div>
         </div>
 

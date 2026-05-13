@@ -56,7 +56,7 @@ export default function BriefsPage() {
             </div>
 
             <div className="mt-5 pt-4 border-t border-ink-10 grid grid-cols-2 gap-3 text-xs text-ink-40">
-              <span className="flex items-center gap-1.5"><Clock size={11} /> {brief.timeline}</span>
+              <span className="flex items-center gap-1.5"><Clock size={11} /> {brief.time}</span>
               <span className="flex items-center gap-1.5"><MapPin size={11} /> {brief.location}</span>
             </div>
             <div className="mt-4 flex items-center justify-between gap-3">
