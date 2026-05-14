@@ -1,46 +1,8 @@
-export type DecisionUrgency = 'Today' | 'This week' | 'Next'
-
-export interface ClientDecision {
-  id: number
-  title: string
-  related: string
-  urgency: DecisionUrgency
-  body: string
-  href: string
-}
-
 export interface ClientHelpTopic {
   id: number
   title: string
   body: string
 }
-
-export const clientDecisions: ClientDecision[] = [
-  {
-    id: 1,
-    title: 'Approve Volta Pay pod composition',
-    related: 'Nigeria market-entry operating brief',
-    urgency: 'Today',
-    body: 'The recommended market-entry pod is ready. Approval unlocks intro calls and partner mapping.',
-    href: '/client/dashboard/search/fintech-market-entry-pod',
-  },
-  {
-    id: 2,
-    title: 'Choose EazeBank retention test markets',
-    related: 'Acquisition and activation reset',
-    urgency: 'This week',
-    body: 'The growth pod needs two priority markets before finalizing the 12-week experiment calendar.',
-    href: '/client/dashboard/work',
-  },
-  {
-    id: 3,
-    title: 'Confirm GridWell cluster criteria',
-    related: 'SME cluster demand creation',
-    urgency: 'Next',
-    body: 'A short criteria review will keep the validation interviews focused on the highest-value clusters.',
-    href: '/client/dashboard/jobs/gridwell-sme-clusters',
-  },
-]
 
 export const clientHelpTopics: ClientHelpTopic[] = [
   {

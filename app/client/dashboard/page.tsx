@@ -13,18 +13,29 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import {
-  clientDecisions,
-} from '@/lib/client-dashboard'
 import { pods } from '@/lib/pods'
 import { getTalentProfile } from '@/lib/talent'
-import { jobs } from '@/lib/jobs'
+import { jobs, type JobStatus } from '@/lib/jobs'
 import { clientInvoices } from '@/lib/invoices'
 import { currentUser } from '@/lib/user'
 
+const urgencyMap: Record<JobStatus, string> = {
+  'Active':     'Today',
+  'Pod review': 'This week',
+  'Scoping':    'Next',
+  'Paused':     'Next',
+  'Completed':  'Next',
+}
+
+const urgencyStyle: Record<string, string> = {
+  'Today':     'bg-red-50 text-red-600 border-red-100',
+  'This week': 'bg-blue/5 text-blue border-blue/10',
+  'Next':      'bg-ink-10 text-ink-60 border-ink-10',
+}
+
 export default function ClientDashboardHome() {
   const activeJobs = jobs.filter(j => j.status === 'Active')
-  const pendingDecisions = clientDecisions.slice(0, 2)
+  const pendingDecisions = jobs.filter(j => j.nextSteps && j.nextSteps.length > 0).slice(0, 4)
   const primaryPods = pods.slice(0, 2)
 
   return (
@@ -37,7 +48,7 @@ export default function ClientDashboardHome() {
             <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-tight">
               Good morning, {currentUser.name.split(' ')[0]}
             </h1>
-            <p className="font-text text-ink-60 mt-1">You have {pendingDecisions.length} urgent decisions across {activeJobs.length} active projects.</p>
+            <p className="font-text text-ink-60 mt-1">You have {activeJobs.length} active projects and {pendingDecisions.length} decisions to make.</p>
           </div>
           <Link 
             href="/client/dashboard/jobs/new"
@@ -55,27 +66,26 @@ export default function ClientDashboardHome() {
           <section>
             <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink mb-4">Pending decisions</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {clientDecisions.map((decision) => (
-                <Link 
-                  key={decision.id}
-                  href={decision.href}
-                  className="group block p-5 bg-paper border border-ink-10 rounded-xl hover:border-ink-20 hover:shadow-sm transition-all"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-1 rounded-sm border ${
-                      decision.urgency === 'Today' 
-                        ? 'bg-red-50 text-red-600 border-red-100' 
-                        : 'bg-blue/5 text-blue border-blue/10'
-                    }`}>
-                      {decision.urgency}
-                    </span>
-                    <ChevronRight size={14} className="text-ink-20 group-hover:text-blue transition-colors" />
-                  </div>
-                  <h3 className="font-display font-black text-[16px] text-ink group-hover:text-blue transition-colors mb-1">{decision.title}</h3>
-                  <p className="font-text text-xs text-ink-40 mb-3">{decision.related}</p>
-                  <p className="font-text text-sm text-ink-60 leading-relaxed">{decision.body}</p>
-                </Link>
-              ))}
+              {pendingDecisions.map((job) => {
+                const urgency = urgencyMap[job.status]
+                return (
+                  <Link
+                    key={job.id}
+                    href={`/client/dashboard/jobs/${job.slug}`}
+                    className="group block p-5 bg-paper border border-ink-10 rounded-xl hover:border-ink-20 hover:shadow-sm transition-all"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-1 rounded-sm border ${urgencyStyle[urgency]}`}>
+                        {urgency}
+                      </span>
+                      <ChevronRight size={14} className="text-ink-20 group-hover:text-blue transition-colors" />
+                    </div>
+                    <h3 className="font-display font-black text-[16px] text-ink group-hover:text-blue transition-colors mb-1">{job.nextSteps![0]}</h3>
+                    <p className="font-text text-xs text-ink-40 mb-3">{job.client} · {job.title}</p>
+                    <p className="font-text text-sm text-ink-60 leading-relaxed">{job.summary}</p>
+                  </Link>
+                )
+              })}
             </div>
           </section>
 
