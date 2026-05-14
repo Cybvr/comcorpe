@@ -56,7 +56,7 @@ export default async function JobDetailPage({
             </div>
             <div className="flex items-center gap-1.5">
               <Clock size={14} strokeWidth={1.5} className="text-ink-40" />
-              Started {job.posted}
+              {job.updatedAt}
             </div>
           </div>
         </div>
