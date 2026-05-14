@@ -11,6 +11,7 @@ import {
   HelpCircle,
   Home,
   MessageCircle,
+  Search,
   Users,
   X,
 } from 'lucide-react'
@@ -38,7 +39,7 @@ const dashboardConfig: Record<DashboardAudience, {
       { icon: Home, label: 'Home', href: '/talent/dashboard' },
       { icon: Briefcase, label: 'Jobs', href: '/talent/dashboard/jobs' },
       { icon: FolderOpen, label: 'My work', href: '/talent/dashboard/work' },
-      { icon: MessageCircle, label: 'Community', href: '/talent/dashboard/community', badge: 3 },
+      { icon: Search, label: 'Search', href: '/talent/dashboard/community', badge: 3 },
       { icon: CreditCard, label: 'Billing', href: '/talent/dashboard/billing' },
       { icon: Gift, label: 'Refer & grow', href: '/talent/dashboard/referrals' },
     ],
@@ -52,7 +53,7 @@ const dashboardConfig: Record<DashboardAudience, {
     primaryItems: [
       { icon: Home, label: 'Home', href: '/client/dashboard' },
       { icon: Briefcase, label: 'Briefs', href: '/client/dashboard/jobs' },
-      { icon: Users, label: 'Talent pods', href: '/client/dashboard/community', badge: 3 },
+      { icon: Users, label: 'Search', href: '/client/dashboard/search', badge: 3 },
       { icon: FolderOpen, label: 'Active work', href: '/client/dashboard/work' },
       { icon: CreditCard, label: 'Billing', href: '/client/dashboard/billing' },
       { icon: Gift, label: 'Refer & grow', href: '/client/dashboard/referrals' },

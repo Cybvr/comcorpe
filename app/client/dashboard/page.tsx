@@ -1,261 +1,250 @@
-import Link from 'next/link'
-import {
-  AlertCircle,
-  ArrowUpRight,
-  Briefcase,
-  CheckCircle2,
-  ChevronRight,
-  CreditCard,
+'use client'
+
+import { 
+  ArrowUpRight, 
+  Briefcase, 
+  ChevronRight, 
+  Clock, 
+  CreditCard, 
+  LayoutDashboard, 
+  MessageSquare, 
+  Search,
+  Users,
 } from 'lucide-react'
+import Link from 'next/link'
+import Image from 'next/image'
 import {
   clientDecisions,
-  clientPodRecommendations,
 } from '@/lib/client-dashboard'
+import { pods } from '@/lib/pods'
+import { getTalentProfile } from '@/lib/talent'
 import { jobs } from '@/lib/jobs'
 import { clientInvoices } from '@/lib/invoices'
 import { currentUser } from '@/lib/user'
 
-const statusStyles = {
-  Scoping: 'bg-amber-100 text-amber-700 border-amber-200',
-  'Pod review': 'bg-blue/10 text-blue border-blue/20',
-  Active: 'bg-green-600/10 text-green-700 border-green-600/20',
-  Paused: 'bg-ink-10 text-ink-60 border-ink-20',
-}
-
-const invoiceStatusStyles = {
-  Paid: 'bg-green-600/10 text-green-700 border-green-600/20',
-  Due: 'bg-amber-100 text-amber-700 border-amber-200',
-  Draft: 'bg-ink-10 text-ink-60 border-ink-20',
-}
-
-export default function ClientDashboardPage() {
-  // Filter unified jobs by current user's company
-  const myJobs = jobs.filter(j => j.client === currentUser.company)
-  
-  // Categorize jobs for the dashboard view
-  const myBriefs = myJobs.filter(j => j.status === 'Scoping' || j.status === 'Pod review')
-  const myProjects = myJobs.filter(j => j.status === 'Active')
-  const myDecisions = clientDecisions.filter(d => myJobs.some(j => j.title === d.related))
-  const myInvoices = clientInvoices.filter(i => i.label.includes(currentUser.company))
-
-  const primaryBriefs = myBriefs.slice(0, 3)
-  const primaryPods = clientPodRecommendations.slice(0, 2)
-
-  // Dynamic metrics
-  const dynamicMetrics = [
-    { 
-      label: 'Active briefs', 
-      value: myBriefs.length.toString(), 
-      meta: `${myBriefs.filter(b => b.status === 'Pod review').length} ready for pod review` 
-    },
-    { 
-      label: 'Live projects', 
-      value: myProjects.length.toString(), 
-      meta: `${myProjects.length} currently live`
-    },
-    { 
-      label: 'Recommended pods', 
-      value: '2', 
-      meta: 'Across fintech, growth, trust' 
-    },
-    { 
-      label: 'Open invoices', 
-      value: `$${(myInvoices.reduce((acc, inv) => acc + parseInt(inv.amount.replace(/[^0-9]/g, '')), 0) / 1000).toFixed(1)}k`, 
-      meta: 'Next due Jan 31' 
-    },
-  ]
+export default function ClientDashboardHome() {
+  const activeJobs = jobs.filter(j => j.status === 'active')
+  const pendingDecisions = clientDecisions.slice(0, 2)
+  const primaryPods = pods.slice(0, 2)
 
   return (
-    <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1240px] mx-auto">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
-        <div>
-          <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Client cockpit</p>
-          <h1 className="font-display font-black text-[34px] tracking-[-0.03em] text-ink leading-none">
-            Hi, {currentUser.name}. Here is what needs movement.
-          </h1>
+    <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1280px] mx-auto">
+      {/* Header */}
+      <header className="mb-10">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Dashboard</p>
+            <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-tight">
+              Good morning, {currentUser.name.split(' ')[0]}
+            </h1>
+            <p className="font-text text-ink-60 mt-1">You have {pendingDecisions.length} urgent decisions across {activeJobs.length} active projects.</p>
+          </div>
+          <Link 
+            href="/client/dashboard/jobs/new"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-ink text-paper rounded-full font-text text-sm font-semibold hover:bg-blue transition-colors duration-[120ms] group"
+          >
+            Create new brief <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+          </Link>
         </div>
-        <Link
-          href="/client/dashboard/jobs"
-          className="font-text text-sm font-semibold px-4 py-2 rounded-full bg-ink text-paper hover:bg-blue transition-colors duration-[120ms] shrink-0"
-        >
-          Review briefs
-        </Link>
-      </div>
+      </header>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 mb-8">
-        {dynamicMetrics.map((metric) => (
-          <article key={metric.label} className="border border-ink-10 rounded-xl p-5 bg-paper">
-            <p className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mb-3">{metric.label}</p>
-            <div className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-none">{metric.value}</div>
-            <p className="font-text text-sm text-ink-60 mt-3">{metric.meta}</p>
-          </article>
-        ))}
-      </section>
-
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-8">
-        <div className="flex flex-col gap-8">
-          <section className="bg-ink rounded-xl p-6 dark-inv-section relative overflow-hidden">
-            <div className="flex items-center justify-between gap-4 mb-5 relative z-10">
-              <div>
-                <p className="font-mono text-xs text-paper/50 uppercase tracking-eyebrow mb-2">Pending decisions</p>
-                <h2 className="font-display font-black text-[24px] tracking-[-0.03em] text-paper leading-tight">
-                  Decisions that unblock the work
-                </h2>
-              </div>
-              <AlertCircle size={24} strokeWidth={1.5} className="text-blue shrink-0" />
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 relative z-10">
-              {myDecisions.map((decision) => (
-                <Link
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-8 items-start">
+        {/* Main Content Area */}
+        <div className="space-y-10">
+          {/* Decisions / Action Items */}
+          <section>
+            <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink mb-4">Pending decisions</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {clientDecisions.map((decision) => (
+                <Link 
                   key={decision.id}
                   href={decision.href}
-                  className="bg-paper/[0.08] rounded-lg p-4 border border-paper/[0.12] hover:bg-paper/[0.14] transition-colors group"
+                  className="group block p-5 bg-paper border border-ink-10 rounded-xl hover:border-ink-20 hover:shadow-sm transition-all"
                 >
-                  <span className="font-mono text-[10px] uppercase tracking-eyebrow text-blue">{decision.urgency}</span>
-                  <h3 className="font-display font-black text-[15px] leading-tight text-paper mt-2 group-hover:text-blue transition-colors">
-                    {decision.title}
-                  </h3>
-                  <p className="font-text text-xs leading-relaxed text-paper/60 mt-2">{decision.body}</p>
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          <section>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">Active briefs</h2>
-              <Link href="/client/dashboard/jobs" className="font-text text-xs text-blue hover:underline flex items-center gap-1">
-                View all briefs <ChevronRight size={12} />
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {primaryBriefs.map((brief) => (
-                <Link
-                  key={brief.id}
-                  href={`/client/dashboard/jobs/${brief.slug}`}
-                  className="border border-ink-10 rounded-xl p-5 bg-paper hover:border-ink-20 hover:shadow-sm transition-all group"
-                >
-                  <div className="flex items-start justify-between gap-3 mb-5">
-                    <Briefcase size={18} strokeWidth={1.5} className="text-blue shrink-0" />
-                    <span className={`font-mono text-[10px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${statusStyles[brief.status]}`}>
-                      {brief.status}
+                  <div className="flex items-center justify-between mb-3">
+                    <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-1 rounded-sm border ${
+                      decision.urgency === 'Today' 
+                        ? 'bg-red-50 text-red-600 border-red-100' 
+                        : 'bg-blue/5 text-blue border-blue/10'
+                    }`}>
+                      {decision.urgency}
                     </span>
+                    <ChevronRight size={14} className="text-ink-20 group-hover:text-blue transition-colors" />
                   </div>
-                  <p className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mb-2">{brief.client}</p>
-                  <h3 className="font-display font-black text-[17px] tracking-[-0.01em] text-ink group-hover:text-blue transition-colors leading-tight">
-                    {brief.title}
-                  </h3>
-                  <p className="font-text text-xs leading-relaxed text-ink-60 mt-3 line-clamp-3">{brief.summary}</p>
-                  <div className="mt-5 pt-4 border-t border-ink-10 flex items-center justify-between gap-3">
-                    <span className="font-text text-xs text-ink-40">{brief.updatedAt}</span>
-                    <ArrowUpRight size={14} className="text-ink-40 group-hover:text-blue transition-colors" />
-                  </div>
+                  <h3 className="font-display font-black text-[16px] text-ink group-hover:text-blue transition-colors mb-1">{decision.title}</h3>
+                  <p className="font-text text-xs text-ink-40 mb-3">{decision.related}</p>
+                  <p className="font-text text-sm text-ink-60 leading-relaxed">{decision.body}</p>
                 </Link>
               ))}
             </div>
           </section>
 
-          <section>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">Recommended pods</h2>
-              <Link href="/client/dashboard/community" className="font-text text-xs text-blue hover:underline flex items-center gap-1">
-                View talent pods <ChevronRight size={12} />
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {primaryPods.map((pod) => (
-                <Link
-                  key={pod.id}
-                  href={`/client/dashboard/community/${pod.slug}`}
-                  className="border border-ink-10 rounded-xl p-5 bg-paper hover:border-ink-20 hover:shadow-sm transition-all group"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="w-11 h-11 rounded-full bg-ink flex items-center justify-center font-display font-black text-[12px] text-paper shrink-0">
-                      {pod.leadInitials}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <span className="font-mono text-[10px] uppercase tracking-eyebrow text-blue">{pod.fit}</span>
-                        <span className="font-text text-xs text-ink-40">{pod.availability}</span>
-                      </div>
-                      <h3 className="font-display font-black text-[17px] tracking-[-0.01em] text-ink group-hover:text-blue transition-colors leading-tight">
-                        {pod.name}
-                      </h3>
-                      <p className="font-text text-xs leading-relaxed text-ink-60 mt-2">{pod.summary}</p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-        </div>
-
-        <aside className="flex flex-col gap-6">
+          {/* Active Work / Projects */}
           <section>
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">Active work</h2>
-              <Link href="/client/dashboard/work" className="font-text text-xs text-blue hover:underline">View all</Link>
+              <Link href="/client/dashboard/work" className="font-text text-xs text-blue hover:underline flex items-center gap-1">
+                View all projects <ChevronRight size={12} />
+              </Link>
             </div>
-            <div className="flex flex-col gap-3">
-              {myProjects.map((project) => (
-                <Link
-                  key={project.id}
-                  href="/client/dashboard/work"
-                  className="border border-ink-10 rounded-xl p-4 bg-paper hover:border-ink-20 transition-colors"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h3 className="font-display font-black text-[15px] tracking-[-0.01em] text-ink leading-tight">{project.title}</h3>
-                      <p className="font-text text-xs text-ink-60 mt-1">{project.phase}</p>
+            <div className="space-y-3">
+              {activeJobs.map((job) => (
+                <div key={job.id} className="p-4 bg-paper border border-ink-10 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-blue/5 flex items-center justify-center text-blue shrink-0">
+                      <Briefcase size={18} strokeWidth={1.5} />
                     </div>
-                    <span className={`font-mono text-[10px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${statusStyles[project.status]}`}>
-                      {project.status}
-                    </span>
+                    <div>
+                      <h3 className="font-display font-black text-[16px] text-ink leading-tight">{job.title}</h3>
+                      <div className="flex items-center gap-3 mt-1">
+                        <span className="font-text text-xs text-ink-60">{job.type}</span>
+                        <span className="w-1 h-1 bg-ink-10 rounded-full" />
+                        <span className="font-text text-xs text-ink-60">{job.location}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="h-1.5 bg-ink-10 rounded-full overflow-hidden mt-4">
-                    <div className="h-full bg-blue rounded-full" style={{ width: `${project.progress}%` }} />
+                  <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-ink-5">
+                    <div className="flex flex-col md:items-end">
+                      <p className="font-mono text-[9px] uppercase tracking-eyebrow text-ink-40">Next review</p>
+                      <p className="font-text text-sm text-ink font-semibold">Tomorrow</p>
+                    </div>
+                    <div className="w-24 h-1.5 bg-ink-10 rounded-full overflow-hidden">
+                      <div className="h-full bg-blue w-[65%]" />
+                    </div>
+                    <Link href={`/client/dashboard/work/${job.slug}`} className="p-2 text-ink-20 hover:text-blue transition-colors">
+                      <ArrowUpRight size={18} />
+                    </Link>
                   </div>
-                  <p className="font-text text-xs text-ink-40 mt-3">Next review: {project.nextReview}</p>
-                </Link>
+                </div>
               ))}
             </div>
           </section>
 
+          {/* Recommended Pods */}
           <section>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">Billing</h2>
-              <Link href="/client/dashboard/billing" className="font-text text-xs text-blue hover:underline">Open billing</Link>
+              <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">Recommended pods</h2>
+              <Link href="/client/dashboard/search" className="font-text text-xs text-blue hover:underline flex items-center gap-1">
+                View talent pods <ChevronRight size={12} />
+              </Link>
             </div>
-            <div className="flex flex-col gap-3">
-              {myInvoices.slice(0, 2).map((invoice) => (
-                <article key={invoice.id} className="border border-ink-10 rounded-xl p-4 bg-paper">
-                  <div className="flex items-start justify-between gap-3">
-                    <CreditCard size={16} strokeWidth={1.5} className="text-blue shrink-0 mt-0.5" />
-                    <span className={`font-mono text-[10px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${invoiceStatusStyles[invoice.status]}`}>
-                      {invoice.status}
-                    </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {primaryPods.map((pod) => {
+                const lead = getTalentProfile(pod.leadId)
+                return (
+                  <Link
+                    key={pod.id}
+                    href={`/client/dashboard/search/${pod.slug}`}
+                    className="border border-ink-10 rounded-xl p-5 bg-paper hover:border-ink-20 hover:shadow-md transition-all group"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-ink flex items-center justify-center font-display font-black text-[11px] text-paper shrink-0 border border-ink-10 overflow-hidden relative">
+                          {lead.image ? (
+                            <Image src={lead.image} alt={lead.name} fill className="object-cover" />
+                          ) : (
+                            lead.initials
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="font-display font-black text-[15px] text-ink group-hover:text-blue transition-colors">{pod.name}</h3>
+                          <p className="font-text text-[11px] text-ink-40">{pod.focus}</p>
+                        </div>
+                      </div>
+                      <span className="font-mono text-[9px] uppercase tracking-eyebrow text-blue px-1.5 py-0.5 bg-blue/5 border border-blue/10 rounded-sm">
+                        {pod.fitScore}%
+                      </span>
+                    </div>
+                    
+                    {/* Visual squad grid resolved from talent IDs */}
+                    <div className="grid grid-cols-4 gap-1.5 mb-4">
+                      {pod.memberIds.slice(0, 4).map((memberId) => {
+                        const profile = getTalentProfile(memberId)
+                        return (
+                          <div 
+                            key={memberId} 
+                            className="aspect-square rounded-md bg-ink-5 flex items-center justify-center text-[10px] font-display font-black text-ink-40 border border-ink-10 overflow-hidden relative"
+                          >
+                            {profile.image ? (
+                              <Image src={profile.image} alt={profile.name} fill className="object-cover grayscale group-hover:grayscale-0 transition-all" />
+                            ) : (
+                              profile.initials
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                    
+                    <div className="flex items-center justify-between pt-3 border-t border-ink-5">
+                      <span className="font-text text-[11px] text-ink-60 flex items-center gap-1.5">
+                        <Clock size={12} strokeWidth={1.5} /> {pod.availability}
+                      </span>
+                      <ArrowUpRight size={14} className="text-ink-20 group-hover:text-blue transition-colors" />
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </section>
+        </div>
+
+        {/* Sidebar / Stats Area */}
+        <aside className="space-y-8">
+          {/* Active Stats */}
+          <div className="bg-ink text-paper rounded-2xl p-6">
+            <h3 className="font-display font-black text-[18px] mb-6">Commercial health</h3>
+            <div className="space-y-6">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-text text-sm opacity-60">Retainer utilization</span>
+                  <span className="font-mono text-xs font-bold">84%</span>
+                </div>
+                <div className="h-1.5 bg-paper/10 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue w-[84%]" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-1">Total spend</p>
+                  <p className="font-display font-black text-lg">$42.8k</p>
+                </div>
+                <div>
+                  <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-1">Operators</p>
+                  <p className="font-display font-black text-lg">14</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Recent Invoices */}
+          <section>
+            <h3 className="font-display font-black text-[16px] text-ink mb-4 px-1">Recent activity</h3>
+            <div className="space-y-2">
+              {clientInvoices.slice(0, 3).map((invoice) => (
+                <div key={invoice.id} className="p-3 bg-paper border border-ink-10 rounded-xl flex items-center justify-between hover:border-ink-20 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-ink-5 flex items-center justify-center text-ink-40">
+                      <CreditCard size={14} />
+                    </div>
+                    <div>
+                      <p className="font-text text-xs font-semibold text-ink">{invoice.amount}</p>
+                      <p className="font-text text-[10px] text-ink-40 uppercase tracking-wider">{invoice.status}</p>
+                    </div>
                   </div>
-                  <h3 className="font-display font-black text-[15px] tracking-[-0.01em] text-ink leading-tight mt-3">{invoice.label}</h3>
-                  <div className="font-display font-black text-[24px] tracking-[-0.03em] text-ink leading-none mt-3">{invoice.amount}</div>
-                  <p className="font-text text-xs text-ink-60 mt-2">{invoice.due}</p>
-                </article>
+                  <span className="font-text text-[10px] text-ink-40">{invoice.date}</span>
+                </div>
               ))}
             </div>
           </section>
 
-          <section className="border border-ink-10 rounded-xl p-5 bg-ink-10/40">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-blue/10 border border-blue/20 flex items-center justify-center text-blue shrink-0">
-                <CheckCircle2 size={18} strokeWidth={1.5} />
-              </div>
-              <div>
-                <h2 className="font-display font-black text-[17px] tracking-[-0.01em] text-ink leading-tight">Client operating rhythm</h2>
-                <p className="font-text text-sm text-ink-60 mt-2">
-                  Review decisions, approve pod movement, and keep every active engagement moving from this cockpit.
-                </p>
-              </div>
-            </div>
-          </section>
+          {/* Help / Resources */}
+          <div className="p-6 bg-blue/5 border border-blue/10 rounded-2xl">
+            <h3 className="font-display font-black text-[16px] text-blue mb-2">Need strategic support?</h3>
+            <p className="font-text text-sm text-blue/70 mb-4 leading-relaxed">Schedule a brief review with your account operator to refine your pod requirements.</p>
+            <button className="w-full py-2.5 bg-blue text-paper rounded-lg font-text text-sm font-semibold hover:bg-ink transition-colors">
+              Book strategy call
+            </button>
+          </div>
         </aside>
       </div>
     </div>

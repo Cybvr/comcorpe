@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { talentProfiles, getTalentProfile } from '@/lib/talent'
 import { ArrowLeft, MapPin, ExternalLink } from 'lucide-react'
 
@@ -57,8 +58,12 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
 
           <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-10 md:gap-16 items-start">
             {/* Avatar */}
-            <div className={`w-24 h-24 md:w-32 md:h-32 rounded-2xl ${bgColor} flex items-center justify-center font-display font-black text-[32px] md:text-[40px] text-paper shrink-0`}>
-              {profile.initials}
+            <div className={`w-24 h-24 md:w-32 md:h-32 rounded-2xl ${bgColor} flex items-center justify-center font-display font-black text-[32px] md:text-[40px] text-paper shrink-0 border border-ink-10 overflow-hidden relative shadow-sm`}>
+              {profile.image ? (
+                <Image src={profile.image} alt={profile.name} fill className="object-cover" />
+              ) : (
+                profile.initials
+              )}
             </div>
 
             {/* Info */}
@@ -207,8 +212,12 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
                     href={`/talent/${p.id}`}
                     className="flex items-center gap-3 group"
                   >
-                    <div className={`w-9 h-9 rounded-lg ${p.color ?? 'bg-ink'} flex items-center justify-center font-display font-black text-[12px] text-paper shrink-0`}>
-                      {p.initials}
+                    <div className={`w-9 h-9 rounded-lg ${p.color ?? 'bg-ink'} border border-ink-10 flex items-center justify-center font-display font-black text-[12px] text-paper shrink-0 overflow-hidden relative group-hover:border-blue transition-all`}>
+                      {p.image ? (
+                        <Image src={p.image} alt={p.name} fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-300" />
+                      ) : (
+                        p.initials
+                      )}
                     </div>
                     <div>
                       <div className="font-display font-black text-[14px] tracking-[-0.01em] text-ink group-hover:text-blue transition-colors leading-tight">{p.name}</div>

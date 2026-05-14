@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   talentArchetypes,
   talentRoster,
@@ -42,12 +43,19 @@ export default function TalentPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-4">
-            {talentSpotlightCards.map((card) => (
+            {talentSpotlightCards.map((card, i) => (
               <div
                 key={card.title}
                 className={`p-6 flex gap-6 items-center ${card.inverted ? 'bg-ink text-paper' : 'bg-ink-10 border border-ink-20'}`}
               >
-                <div className={`w-16 h-16 rounded-full shrink-0 ${card.inverted ? 'bg-paper/20' : 'bg-ink-20'}`} />
+                <div className={`w-20 h-20 rounded-xl shrink-0 overflow-hidden relative border ${card.inverted ? 'bg-paper/10 border-paper/10' : 'bg-ink-20 border-ink-10'}`}>
+                  <Image 
+                    src={i === 0 ? '/images/talent/Sarah M.png' : '/images/talent/Tunde A.png'} 
+                    alt={card.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
                 <div>
                   <div className="font-mono text-[10px] uppercase tracking-widest text-blue mb-1">{card.eyebrow}</div>
                   <div className={`font-display font-black text-[20px] leading-tight ${card.inverted ? 'text-paper' : 'text-ink'}`}>
@@ -161,7 +169,13 @@ export default function TalentPage() {
                 {talent.desc}
               </p>
               <div className="flex items-center gap-4 border-t border-ink-10 pt-6">
-                <div className="w-12 h-12 rounded-full bg-ink-10 shrink-0" />
+                <div className="w-16 h-16 rounded-xl border border-ink-10 overflow-hidden relative flex items-center justify-center bg-ink-10 shrink-0">
+                  {talent.image ? (
+                    <Image src={talent.image} alt={talent.name} fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                  ) : (
+                    <span className="font-display font-black text-xs text-ink-40">{talent.initials}</span>
+                  )}
+                </div>
                 <div>
                   <div className="font-display font-black text-[20px] leading-tight text-ink group-hover:text-blue transition-colors mb-1">{talent.name}</div>
                   <div className="font-mono text-[10px] text-blue uppercase tracking-widest mb-1">{talent.role}</div>

@@ -1,0 +1,124 @@
+import Link from 'next/link'
+import Image from 'next/image'
+import { notFound } from 'next/navigation'
+import { ArrowLeft, ArrowUpRight, CheckCircle2, DollarSign, Globe2, Layers3, MapPin, ShieldCheck, Star } from 'lucide-react'
+import { getTalentProfile, talentProfiles } from '@/lib/talent'
+
+export function generateStaticParams() {
+  return talentProfiles.map((profile) => ({
+    id: profile.id,
+  }))
+}
+
+export default async function ClientDashboardTalentDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params
+  const profile = getTalentProfile(id)
+
+  if (!profile) {
+    notFound()
+  }
+
+  return (
+    <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">
+      <Link href="/client/dashboard/search" className="font-text text-sm text-ink-60 hover:text-blue transition-colors inline-flex items-center gap-2 mb-8">
+        <ArrowLeft size={14} /> Back to search
+      </Link>
+
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-8 items-start">
+        <article className="border border-ink-10 rounded-xl p-8 bg-paper">
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-6">
+            <div className="flex items-start gap-6">
+              <div className={`w-20 h-20 rounded-2xl ${profile.color || 'bg-ink'} flex items-center justify-center font-display font-black text-[24px] text-paper shrink-0 border border-ink-10 overflow-hidden relative`}>
+                {profile.image ? (
+                  <Image src={profile.image} alt={profile.name} fill className="object-cover" />
+                ) : (
+                  profile.initials
+                )}
+              </div>
+              <div>
+                <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Verified Operator</p>
+                <h1 className="font-display font-black text-[36px] tracking-[-0.03em] text-ink leading-tight">{profile.name}</h1>
+                <p className="font-text text-[17px] text-ink-60 mt-1">{profile.role}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-blue/5 border border-blue/10 rounded-full">
+              <ShieldCheck size={14} className="text-blue" />
+              <span className="font-text text-xs font-semibold text-blue">Comcorpe Verified</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-10">
+            <div className="border border-ink-10 rounded-xl p-4">
+              <MapPin size={16} strokeWidth={1.5} className="text-blue mb-3" />
+              <p className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mb-1">Background</p>
+              <div className="font-text text-sm font-medium text-ink leading-tight">{profile.bg}</div>
+            </div>
+            <div className="border border-ink-10 rounded-xl p-4">
+              <Layers3 size={16} strokeWidth={1.5} className="text-blue mb-3" />
+              <p className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mb-1">Availability</p>
+              <div className="font-text text-sm font-medium text-ink leading-tight">Within 7 days</div>
+            </div>
+            <div className="border border-ink-10 rounded-xl p-4">
+              <Star size={16} strokeWidth={1.5} className="text-blue mb-3" />
+              <p className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mb-1">Experience</p>
+              <div className="font-text text-sm font-medium text-ink leading-tight">Senior Operator</div>
+            </div>
+            <div className="border border-ink-10 rounded-xl p-4">
+              <DollarSign size={16} strokeWidth={1.5} className="text-blue mb-3" />
+              <p className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mb-1">Monthly Rate</p>
+              <div className="font-text text-sm font-medium text-ink leading-tight">{profile.rate}</div>
+            </div>
+          </div>
+
+          <section className="mt-12">
+            <h2 className="font-display font-black text-[22px] tracking-[-0.02em] text-ink mb-4">Professional Overview</h2>
+            <p className="font-text text-[16px] leading-relaxed text-ink-60 max-w-[65ch]">
+              {profile.desc} This operator has been vetted for senior leadership roles in high-growth environments, specializing in {profile.role.toLowerCase()} and strategic execution.
+            </p>
+          </section>
+
+          <section className="mt-12">
+            <h2 className="font-display font-black text-[22px] tracking-[-0.02em] text-ink mb-4">Core Competencies</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {['Strategic GTM Planning', 'Revenue Operations', 'Market Intelligence', 'Cross-functional Leadership'].map((skill) => (
+                <div key={skill} className="flex items-center gap-2 font-text text-sm text-ink-60 bg-ink-10/10 p-3 rounded-lg">
+                  <CheckCircle2 size={14} className="text-blue" /> {skill}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <div className="mt-12 pt-8 border-t border-ink-10 flex items-center justify-between gap-6">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-eyebrow text-blue mb-1">Direct Introduction</p>
+              <p className="font-text text-sm text-ink-60">Approval starts the scheduling sequence.</p>
+            </div>
+            <button className="font-text text-sm font-semibold px-6 py-3 rounded-full bg-ink text-paper hover:bg-blue transition-colors duration-[120ms] shrink-0">
+              Request Introduction
+            </button>
+          </div>
+        </article>
+
+        <aside className="border border-ink-10 rounded-xl p-6 bg-paper">
+          <h3 className="font-display font-black text-[18px] tracking-[-0.01em] text-ink mb-4">Match Analysis</h3>
+          <p className="font-text text-sm text-ink-60 mb-6">
+            Based on your active briefs, {profile.name.split(' ')[0]} is a strong match for complex market entry and commercial design.
+          </p>
+          <div className="space-y-4">
+            <div className="p-3 bg-blue/5 rounded-lg border border-blue/10">
+              <p className="font-mono text-[9px] uppercase tracking-eyebrow text-blue mb-1">Fit Score</p>
+              <p className="font-display font-black text-[18px] text-blue">94% High Fit</p>
+            </div>
+          </div>
+          <button className="w-full mt-6 inline-flex items-center justify-center gap-2 font-text text-xs font-semibold px-4 py-3 bg-paper border border-ink-10 text-ink hover:border-ink-20 transition-all rounded-full">
+            Compare Talent <ArrowUpRight size={14} />
+          </button>
+        </aside>
+      </div>
+    </div>
+  )
+}

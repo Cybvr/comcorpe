@@ -1,4 +1,4 @@
-import { RotateCcw } from 'lucide-react'
+import { RotateCcw, Search as SearchIcon } from 'lucide-react'
 import DashboardPostComposer from '@/components/dashboard/DashboardPostComposer'
 import PostCard from '@/components/dashboard/PostCard'
 import SpaceCard from '@/components/dashboard/SpaceCard'
@@ -8,13 +8,21 @@ import { spaces } from '@/lib/spaces'
 export default function CommunityPage() {
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1120px] mx-auto">
-      <div className="mb-6">
-        <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Community</p>
-        <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-none">Community posts and spaces</h1>
+      <div className="mb-8">
+        <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Search</p>
+        <h1 className="font-display font-black text-[36px] tracking-[-0.03em] text-ink leading-none">Find posts and spaces</h1>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-8">
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-4">
+          <div className="relative">
+            <SearchIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-40" />
+            <input 
+              type="text" 
+              placeholder="Search conversations, strategies or talent..."
+              className="w-full pl-12 pr-4 py-3 bg-ink-10/40 border border-transparent rounded-xl focus:outline-none focus:border-ink-20 transition-all font-text text-[15px]"
+            />
+          </div>
           <DashboardPostComposer />
           {posts.map((post) => (
             <PostCard key={post.id} post={post} />

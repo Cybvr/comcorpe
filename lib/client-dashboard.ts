@@ -1,21 +1,5 @@
 export type DecisionUrgency = 'Today' | 'This week' | 'Next'
 
-export interface ClientPodRecommendation {
-  id: number
-  slug: string
-  name: string
-  focus: string
-  fit: string
-  availability: string
-  lead: string
-  leadInitials: string
-  summary: string
-  members: string[]
-  markets: string[]
-  evidence: string[]
-  nextStep: string
-}
-
 export interface ClientDecision {
   id: number
   title: string
@@ -31,47 +15,6 @@ export interface ClientHelpTopic {
   body: string
 }
 
-export const clientPodRecommendations: ClientPodRecommendation[] = [
-  {
-    id: 1,
-    slug: 'fintech-market-entry-pod',
-    name: 'Fintech market-entry pod',
-    focus: 'Payments launch sequencing',
-    fit: '96% fit',
-    availability: 'Ready in 5 days',
-    lead: 'Tobi Adeyemi',
-    leadInitials: 'TA',
-    summary: 'A compact pod for regulated payments entry: commercial lead, partnerships operator, trust strategist, and performance acquisition support.',
-    members: ['Commercial lead', 'Partnerships operator', 'Regulatory affairs operator', 'Performance marketer'],
-    markets: ['Nigeria', 'Ghana', 'UK corridor'],
-    evidence: [
-      'Built merchant acquisition motion for two African fintech launches',
-      'Strong Lagos banking and network',
-      'Can operate between board strategy and weekly execution',
-    ],
-    nextStep: 'Approve pod interview sequence',
-  },
-  {
-    id: 2,
-    slug: 'consumer-trust-pod',
-    name: 'Consumer trust and retention pod',
-    focus: 'Activation and repeat usage',
-    fit: '91% fit',
-    availability: 'Ready in 9 days',
-    lead: 'Kemi Adaora',
-    leadInitials: 'KA',
-    summary: 'Brand, lifecycle, and route-to-market specialists for products where trust, habit, and local conversion cues drive growth.',
-    members: ['Brand strategist', 'Lifecycle marketer', 'Field insight analyst', 'Retail comms designer'],
-    markets: ['Nigeria', 'Kenya', 'South Africa'],
-    evidence: [
-      'Mapped trust signals across four African consumer markets',
-      'Useful for EazeBank activation and GridWell demand creation',
-      'Pairs research discipline with live campaign execution',
-    ],
-    nextStep: 'Shortlist for EazeBank sprint',
-  },
-]
-
 export const clientDecisions: ClientDecision[] = [
   {
     id: 1,
@@ -79,7 +22,7 @@ export const clientDecisions: ClientDecision[] = [
     related: 'Nigeria market-entry operating brief',
     urgency: 'Today',
     body: 'The recommended market-entry pod is ready. Approval unlocks intro calls and partner mapping.',
-    href: '/client/dashboard/community/fintech-market-entry-pod',
+    href: '/client/dashboard/search/fintech-market-entry-pod',
   },
   {
     id: 2,
@@ -128,8 +71,4 @@ export const clientReferral = {
   clientShare: '3%',
   talentShare: '1%',
   summary: 'Introduce another company or a senior operator and track rewards when referred work closes.',
-}
-
-export function getClientPodBySlug(slug: string) {
-  return clientPodRecommendations.find((pod) => pod.slug === slug) ?? null
 }

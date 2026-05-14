@@ -9,6 +9,8 @@ export interface TalentProfile {
   communityRole?: string
   color?: string
   featured?: boolean
+  image?: string
+  rate?: string
 }
 
 export interface TalentSpotlightCard {
@@ -104,6 +106,8 @@ export const talentProfiles: TalentProfile[] = [
     desc: 'Designs go-to-market strategies for pan-African fintech expansions.',
     initials: 'TA',
     featured: true,
+    image: '/images/talent/Tunde A.png',
+    rate: '$15k - $22k/mo'
   },
   {
     id: 'sarah-m',
@@ -113,6 +117,8 @@ export const talentProfiles: TalentProfile[] = [
     desc: 'Builds scalable data platforms to automate enterprise sales pipelines.',
     initials: 'SM',
     featured: true,
+    image: '/images/talent/Sarah M.png',
+    rate: '$14k - $20k/mo'
   },
   {
     id: 'david-o',
@@ -122,6 +128,8 @@ export const talentProfiles: TalentProfile[] = [
     desc: 'Navigates complex regulatory environments to launch foreign brands in Nigeria.',
     initials: 'DO',
     featured: true,
+    image: '/images/talent/David O.png',
+    rate: '$12k - $18k/mo'
   },
   {
     id: 'amira-h',
@@ -131,6 +139,8 @@ export const talentProfiles: TalentProfile[] = [
     desc: 'Translates global brand equity into localized, culturally nuanced campaigns.',
     initials: 'AH',
     featured: true,
+    image: '/images/talent/Amira H.png',
+    rate: '$12k - $16k/mo'
   },
   {
     id: 'james-k',
@@ -140,6 +150,8 @@ export const talentProfiles: TalentProfile[] = [
     desc: 'Drives customer acquisition and performance marketing at massive scale.',
     initials: 'JK',
     featured: true,
+    image: '/images/talent/James K.png',
+    rate: '$13k - $19k/mo'
   },
   {
     id: 'elena-r',
@@ -149,6 +161,8 @@ export const talentProfiles: TalentProfile[] = [
     desc: 'Builds high-trust corporate networks to accelerate B2B distribution.',
     initials: 'ER',
     featured: true,
+    image: '/images/talent/Elena R.png',
+    rate: '$14k - $21k/mo'
   },
   {
     id: 'amara-nwosu',
@@ -159,6 +173,7 @@ export const talentProfiles: TalentProfile[] = [
     initials: 'AN',
     dashboardTitle: 'Growth Architect - Lagos',
     color: 'bg-violet',
+    rate: '$10k - $15k/mo'
   },
   {
     id: 'tobi-adeyemi',
@@ -169,6 +184,7 @@ export const talentProfiles: TalentProfile[] = [
     initials: 'TA',
     dashboardTitle: 'Fintech Commercial Lead',
     color: 'bg-blue',
+    rate: '$15k - $20k/mo'
   },
   {
     id: 'yetunde-bello',
@@ -187,6 +203,8 @@ export const talentProfiles: TalentProfile[] = [
     desc: 'Clarifies strategic briefs and turns ambiguous growth problems into executable work.',
     initials: 'DO',
     communityRole: 'Strategy - 2 days ago',
+    image: '/images/talent/Daniel Osei.png',
+    rate: '$14k - $19k/mo'
   },
   {
     id: 'kemi-adaora',
@@ -196,6 +214,8 @@ export const talentProfiles: TalentProfile[] = [
     desc: 'Designs market-specific brand systems for consumer growth across African markets.',
     initials: 'KA',
     communityRole: 'Brand Systems - 1 day ago',
+    image: '/images/talent/Kemi Adaora.png',
+    rate: '$12k - $17k/mo'
   },
 ]
 
