@@ -24,6 +24,8 @@ export interface Job {
   nextReview?: string
   lead?: string
   podSlug?: string
+  startDate?: string
+  endDate?: string
   // Detail pages
   scope: string[]
   requirements: string[]
@@ -45,6 +47,8 @@ export const jobs: Job[] = [
     location: 'Lagos / London',
     time: '12-week sprint',
     updatedAt: 'Updated Jan 12',
+    startDate: 'Jan 12',
+    endDate: 'Apr 12',
     arena: 'Technology & Fintech',
     owner: 'Jide Pinheiro',
     progress: 36,
@@ -87,6 +91,8 @@ export const jobs: Job[] = [
     location: 'Nigeria / Remote',
     time: '3 - 6 months',
     updatedAt: 'Updated Jan 10',
+    startDate: 'Jan 10',
+    endDate: 'Jul 10',
     arena: 'Technology & Fintech',
     owner: 'Commercial team',
     updates: [
@@ -133,6 +139,8 @@ export const jobs: Job[] = [
     location: 'West Africa',
     time: '8-week opportunity build',
     updatedAt: 'Updated Jan 8',
+    startDate: 'Jan 8',
+    endDate: 'Mar 5',
     arena: 'Public Infrastructure',
     owner: 'Strategy office',
     scope: [
@@ -255,6 +263,68 @@ export const jobs: Job[] = [
       'Align on activation KPIs with Parady brand growth leadership',
       'Access anonymised cohort data for registration-to-use funnel',
       'Confirm priority merchant segments for first sprint',
+    ],
+  },
+  {
+    id: 7,
+    slug: 'volta-pay-uk-compliance',
+    title: 'UK regulatory compliance and FCA readiness',
+    client: 'Volta Pay',
+    type: 'PROJECT',
+    status: 'Completed',
+    podSlug: 'beachhead',
+    summary: 'Structured the FCA authorisation roadmap and compliance operating model ahead of Volta Pay\'s UK launch.',
+    rate: '$60k - 90k',
+    tags: ['FINTECH', 'COMPLIANCE', 'REGULATORY'],
+    location: 'London',
+    time: '10-week sprint',
+    updatedAt: 'Updated Oct 14',
+    startDate: 'Aug 5',
+    endDate: 'Oct 14',
+    scope: [
+      'Map FCA authorisation requirements against current operating model',
+      'Design compliance governance and reporting structure',
+      'Prepare board-ready regulatory risk register',
+    ],
+    requirements: [
+      'UK regulatory and FCA authorisation experience',
+      'Payments and e-money institution compliance background',
+    ],
+    outcomes: [
+      'FCA authorisation roadmap',
+      'Compliance operating model',
+      'Board-ready risk register',
+    ],
+  },
+  {
+    id: 8,
+    slug: 'volta-pay-launch-strategy',
+    title: 'Consumer launch strategy and channel plan',
+    client: 'Volta Pay',
+    type: 'PROJECT',
+    status: 'Completed',
+    podSlug: 'payments_strike',
+    summary: 'Defined the go-to-market strategy for Volta Pay\'s consumer product launch across three UK cities.',
+    rate: '$40k - 65k',
+    tags: ['FINTECH', 'GTM', 'CONSUMER'],
+    location: 'London / Remote',
+    time: '8-week sprint',
+    updatedAt: 'Updated Jul 22',
+    startDate: 'Jun 2',
+    endDate: 'Jul 22',
+    scope: [
+      'Define target customer segments and acquisition channels',
+      'Build channel economics model and payback analysis',
+      'Develop launch messaging and trust-building playbook',
+    ],
+    requirements: [
+      'Consumer fintech go-to-market experience',
+      'Channel economics and growth modelling',
+    ],
+    outcomes: [
+      'Go-to-market playbook for three UK cities',
+      'Channel economics model',
+      'Launch messaging framework',
     ],
   },
 ]

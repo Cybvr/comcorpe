@@ -63,14 +63,23 @@ export default async function JobDetailPage({
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <button className="px-5 py-2.5 bg-paper border border-ink-10 rounded-full font-text text-sm font-semibold hover:border-ink-20 transition-colors">
-            Edit brief
-          </button>
-          <button className="px-5 py-2.5 bg-ink text-paper rounded-full font-text text-sm font-semibold hover:bg-blue transition-colors duration-[120ms]">
-            Manage
-          </button>
-        </div>
+        {job.status !== 'Completed' && (
+          <div className="flex items-center gap-3">
+            <button className="px-5 py-2.5 bg-paper border border-ink-10 rounded-full font-text text-sm font-semibold hover:border-ink-20 transition-colors">
+              Edit brief
+            </button>
+            {job.status === 'Active' && (
+              <button className="px-5 py-2.5 bg-ink text-paper rounded-full font-text text-sm font-semibold hover:bg-blue transition-colors duration-[120ms]">
+                Pause engagement
+              </button>
+            )}
+            {job.status === 'Paused' && (
+              <button className="px-5 py-2.5 bg-ink text-paper rounded-full font-text text-sm font-semibold hover:bg-blue transition-colors duration-[120ms]">
+                Resume
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-8 items-start">
@@ -104,30 +113,34 @@ export default async function JobDetailPage({
             </div>
           </section>
 
-          {job.status === 'Active' ? (
+          {job.status === 'Active' || job.status === 'Completed' || job.status === 'Paused' ? (
             <section className="space-y-4">
-              <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">Project tracking</h2>
+              {job.status === 'Active' && (
+                <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">Project tracking</h2>
+              )}
 
-              {/* Progress bar */}
-              <div className="bg-paper border border-ink-10 rounded-2xl p-6">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Overall progress</span>
-                  <span className="font-display font-black text-[20px] text-ink">{job.progress ?? 0}%</span>
-                </div>
-                <div className="h-2 bg-ink-10 rounded-full overflow-hidden">
-                  <div className="h-full bg-blue rounded-full transition-all duration-500" style={{ width: `${job.progress ?? 0}%` }} />
-                </div>
-                <div className="flex items-center justify-between mt-4">
-                  <div>
-                    <p className="font-mono text-[9px] uppercase tracking-eyebrow text-ink-40 mb-0.5">Current phase</p>
-                    <p className="font-text text-sm font-semibold text-ink">{job.phase ?? '—'}</p>
+              {/* Progress bar — Active only */}
+              {job.status === 'Active' && (
+                <div className="bg-paper border border-ink-10 rounded-2xl p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Overall progress</span>
+                    <span className="font-display font-black text-[20px] text-ink">{job.progress ?? 0}%</span>
                   </div>
-                  <div className="text-right">
-                    <p className="font-mono text-[9px] uppercase tracking-eyebrow text-ink-40 mb-0.5">Next review</p>
-                    <p className="font-text text-sm font-semibold text-ink">{job.nextReview ?? '—'}</p>
+                  <div className="h-2 bg-ink-10 rounded-full overflow-hidden">
+                    <div className="h-full bg-blue rounded-full transition-all duration-500" style={{ width: `${job.progress ?? 0}%` }} />
+                  </div>
+                  <div className="flex items-center justify-between mt-4">
+                    <div>
+                      <p className="font-mono text-[9px] uppercase tracking-eyebrow text-ink-40 mb-0.5">Current phase</p>
+                      <p className="font-text text-sm font-semibold text-ink">{job.phase ?? '—'}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-mono text-[9px] uppercase tracking-eyebrow text-ink-40 mb-0.5">Next review</p>
+                      <p className="font-text text-sm font-semibold text-ink">{job.nextReview ?? '—'}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Next milestone */}
               {job.nextMilestone && (
@@ -185,7 +198,7 @@ export default async function JobDetailPage({
                   <p className="font-text text-sm text-ink-60 mb-5">{assignedPod.focus}</p>
                   <div className="flex flex-wrap gap-3">
                     {assignedPodMembers.map(member => (
-                      <Link key={member.id} href={`/talent/${member.id}`} className="flex items-center gap-2.5 group">
+                      <Link key={member.id} href={`/client/dashboard/search/talent/${member.id}`} className="flex items-center gap-2.5 group">
                         <div className={`w-9 h-9 rounded-lg shrink-0 flex items-center justify-center font-display font-black text-[11px] text-paper overflow-hidden relative ${member.color || 'bg-ink'}`}>
                           {member.image ? (
                             <Image src={member.image} alt={member.name} fill className="object-cover" />

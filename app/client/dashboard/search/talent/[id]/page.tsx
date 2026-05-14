@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { ArrowLeft, ArrowUpRight, CheckCircle2, DollarSign, Globe2, Layers3, MapPin, ShieldCheck, Star } from 'lucide-react'
+import { ArrowUpRight, CheckCircle2, DollarSign, Globe2, Layers3, MapPin, ShieldCheck, Star } from 'lucide-react'
 import { getTalentProfile, talentProfiles } from '@/lib/talent'
+import BackButton from '@/components/dashboard/BackButton'
 
 export function generateStaticParams() {
   return talentProfiles.map((profile) => ({
@@ -24,9 +25,7 @@ export default async function ClientDashboardTalentDetailPage({
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">
-      <Link href="/client/dashboard/search" className="font-text text-sm text-ink-60 hover:text-blue transition-colors inline-flex items-center gap-2 mb-8">
-        <ArrowLeft size={14} /> Back to search
-      </Link>
+      <BackButton />
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-8 items-start">
         <article className="border border-ink-10 rounded-xl p-8 bg-paper">
