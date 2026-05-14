@@ -7,6 +7,7 @@ export interface User {
   role: UserRole
   // Client fields
   company?: string
+  clientId?: string
   credits?: number
   // Talent profile fields
   talentRole?: string
@@ -20,6 +21,25 @@ export interface User {
   rate?: string
 }
 
+// ─── Client company users ─────────────────────────────────────────────────────
+export const clientUsers: User[] = [
+  { id: 'volta-pay',     name: 'Volta Pay',     initials: 'VP', role: 'client', company: 'Volta Pay' },
+  { id: 't-finance',     name: 'T-Finance',     initials: 'TF', role: 'client', company: 'T-Finance' },
+  { id: 'gridwell',      name: 'GridWell',      initials: 'GW', role: 'client', company: 'GridWell' },
+  { id: 'stealth-co',    name: 'Stealth Co.',   initials: 'SC', role: 'client', company: 'Stealth Co.' },
+  { id: 'wazobia-foods', name: 'Wazobia Foods', initials: 'WF', role: 'client', company: 'Wazobia Foods' },
+  { id: 'volks-bank',    name: 'Volks Bank',    initials: 'VB', role: 'client', company: 'Volks Bank' },
+  { id: 'eazebank',      name: 'EazeBank',      initials: 'EB', role: 'client', company: 'EazeBank' },
+]
+
+const clientMap = new Map(clientUsers.map(u => [u.id, u]))
+
+export function getClientUser(id: string): User {
+  const user = clientMap.get(id)
+  if (!user) throw new Error(`Unknown client: ${id}`)
+  return user
+}
+
 // ─── Current session (mock auth) ──────────────────────────────────────────────
 export const currentUser: User = {
   id: 'jide-p',
@@ -27,6 +47,7 @@ export const currentUser: User = {
   initials: 'JP',
   role: 'client',
   company: 'Volta Pay',
+  clientId: 'volta-pay',
   credits: 3,
 }
 

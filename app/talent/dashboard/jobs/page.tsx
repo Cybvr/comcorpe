@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowUpRight, Briefcase, Clock, MapPin, Search, CalendarDays, Users, Flag, Banknote } from 'lucide-react'
 import { jobs, getJobProgress } from '@/lib/jobs'
+import { getClientUser } from '@/lib/user'
 
 const statusStyles = {
   Scoping: 'bg-amber-100 text-amber-700 border-amber-200',
@@ -98,7 +99,7 @@ export default function TalentJobsPage() {
             >
               <div className="flex items-start justify-between gap-3 mb-6">
                 <div className="w-12 h-12 rounded-xl bg-ink-5 border border-ink-10 flex items-center justify-center text-ink-20 group-hover:text-blue transition-colors shrink-0 font-display font-black text-sm">
-                  {job.client[0]}
+                  {getClientUser(job.clientId).name[0]}
                 </div>
                 <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${statusStyles[job.status as keyof typeof statusStyles]}`}>
                   {job.status}
@@ -106,7 +107,7 @@ export default function TalentJobsPage() {
               </div>
               
               <div className="flex-1">
-                <h3 className="font-display font-black text-[14px] text-ink-40 uppercase tracking-widest mb-1">{job.client}</h3>
+                <h3 className="font-display font-black text-[14px] text-ink-40 uppercase tracking-widest mb-1">{getClientUser(job.clientId).name}</h3>
                 <h2 className="font-display font-black text-[22px] tracking-[-0.02em] text-ink group-hover:text-blue transition-colors leading-tight">
                   {job.title}
                 </h2>
@@ -149,7 +150,7 @@ export default function TalentJobsPage() {
                       <span className={`font-mono text-[10px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${statusStyles[job.status as keyof typeof statusStyles]}`}>
                         {job.status}
                       </span>
-                      <span className="font-display font-black text-[10px] text-ink-40 uppercase tracking-widest ml-2">{job.client}</span>
+                      <span className="font-display font-black text-[10px] text-ink-40 uppercase tracking-widest ml-2">{getClientUser(job.clientId).name}</span>
                     </div>
                     <h2 className="font-display font-black text-[24px] tracking-[-0.02em] text-ink group-hover:text-blue transition-colors">
                       {job.title}

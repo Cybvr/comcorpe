@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, DollarSign, Layers3, MapPin, Plus, Search, Users, X } from 'lucide-react'
 import { pods } from '@/lib/pods'
 import { jobs } from '@/lib/jobs'
-import { talentProfiles, getTalentProfile } from '@/lib/user'
+import { talentProfiles, getTalentProfile, getClientUser } from '@/lib/user'
 
 type DiscoverTab = 'all' | 'pods' | 'build'
 
@@ -538,7 +538,7 @@ function BuildTab({
                 className={`w-full text-left px-4 py-3 border rounded-xl transition-colors ${briefSlug === job.slug ? 'border-blue bg-blue/5' : 'border-ink-10 hover:border-ink-20'}`}
               >
                 <p className={`font-text text-sm font-semibold ${briefSlug === job.slug ? 'text-blue' : 'text-ink'}`}>{job.title}</p>
-                <p className="font-text text-[11px] text-ink-40 mt-0.5">{job.client} · {job.status}</p>
+                <p className="font-text text-[11px] text-ink-40 mt-0.5">{getClientUser(job.clientId).name} · {job.status}</p>
               </button>
             ))}
           </div>

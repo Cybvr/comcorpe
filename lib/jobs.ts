@@ -14,7 +14,7 @@ export interface Job {
   id: number
   slug: string
   title: string
-  client: string // Company name
+  clientId: string
   type: JobType
   status: JobStatus
   summary: string
@@ -45,7 +45,7 @@ export const jobs: Job[] = [
     id: 1,
     slug: 'volks-bank-loyalty-systems',
     title: 'Digital loyalty and rewards ecosystem',
-    client: 'Volks Bank',
+    clientId: 'volks-bank',
     type: 'PROJECT',
     status: 'Active',
     podSlug: 'growth_squad',
@@ -89,7 +89,7 @@ export const jobs: Job[] = [
     id: 2,
     slug: 't-finance-retention-sprints',
     title: 'Growth and retention operating sprint',
-    client: 'T-Finance',
+    clientId: 't-finance',
     type: 'RETAINED',
     status: 'Active',
     podSlug: 'growth_squad',
@@ -132,7 +132,7 @@ export const jobs: Job[] = [
     id: 3,
     slug: 'gridwell-sme-clusters',
     title: 'SME cluster demand creation',
-    client: 'GridWell',
+    clientId: 'gridwell',
     type: 'PROJECT',
     status: 'Scoping',
     summary: 'Originate and package a repeatable growth lane for distributed energy adoption in underserved SME clusters.',
@@ -165,7 +165,7 @@ export const jobs: Job[] = [
     id: 4,
     slug: 'stealth-consumer-brand-ecosystem',
     title: 'Consumer Brand Ecosystem Build',
-    client: 'Stealth Co.',
+    clientId: 'stealth-co',
     type: 'EQUITY',
     status: 'Scoping',
     summary: 'A consumer venture is building a brand ecosystem and needs senior commercial and brand systems support.',
@@ -189,7 +189,7 @@ export const jobs: Job[] = [
     id: 5,
     slug: 'wazobia-brand-lead',
     title: 'Fractional brand and commercial lead',
-    client: 'Wazobia Foods',
+    clientId: 'wazobia-foods',
     type: 'RETAINED',
     status: 'Scoping',
     summary: 'A fast-growing pan-Nigerian packaged food brand needs a single senior operator to own brand positioning, trade marketing, and the commercial relationship with their three key distributors. Not a pod — one person who can hold the room with both the marketing team and the trade floor.',
@@ -220,7 +220,7 @@ export const jobs: Job[] = [
     id: 6,
     slug: 'parady-wallet-depth',
     title: 'Wallet depth and financial habit formation',
-    client: 'Volta Pay',
+    clientId: 'volta-pay',
     type: 'RETAINED',
     status: 'Scoping',
     summary: 'Parady brand has Nigeria\'s most powerful distribution infrastructure — 150k agents, the largest telco base in the country. The problem is depth, not reach. Users register, top up, send money, and stop. Bill payments, merchant QR, lifestyle spend — flat. OPay and PalmPay are colonising the everyday financial relationship while the wallet sits on an underactivated asset. This pod reframes the commercial motion: from transactional wallet to the primary financial OS for the mass market.',
@@ -254,7 +254,7 @@ export const jobs: Job[] = [
     id: 7,
     slug: 'volta-pay-uk-compliance',
     title: 'UK regulatory compliance and FCA readiness',
-    client: 'Volta Pay',
+    clientId: 'volta-pay',
     type: 'PROJECT',
     status: 'Completed',
     podSlug: 'beachhead',
@@ -285,7 +285,7 @@ export const jobs: Job[] = [
     id: 8,
     slug: 'volta-pay-launch-strategy',
     title: 'Consumer launch strategy and channel plan',
-    client: 'Volta Pay',
+    clientId: 'volta-pay',
     type: 'PROJECT',
     status: 'Completed',
     podSlug: 'payments_strike',
@@ -316,7 +316,7 @@ export const jobs: Job[] = [
     id: 9,
     slug: 'volta-pay-nigeria-entry',
     title: 'Market entry strategy and regulatory setup',
-    client: 'Volta Pay',
+    clientId: 'volta-pay',
     type: 'PROJECT',
     status: 'Active',
     summary: 'Navigating the Nigerian fintech landscape, including PSB licensing and merchant ecosystem mapping.',

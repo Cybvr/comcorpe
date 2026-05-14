@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Briefcase, Clock, MapPin, Target, LayoutDashboard, Users2 } from 'lucide-react'
 import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
-import { getTalentProfile } from '@/lib/user'
+import { getTalentProfile, getClientUser } from '@/lib/user'
 import { jobs, getJobBySlug, getJobProgress } from '@/lib/jobs'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -46,7 +46,7 @@ export default function TalentJobDetailPage({
             <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-0.5 rounded-sm border ${statusStyles[job.status as keyof typeof statusStyles]}`}>
               {job.status}
             </span>
-            <span className="font-display font-black text-[10px] text-ink-40 uppercase tracking-widest">{job.client}</span>
+            <span className="font-display font-black text-[10px] text-ink-40 uppercase tracking-widest">{getClientUser(job.clientId).name}</span>
           </div>
           <h1 className="font-display font-black text-[28px] tracking-[-0.03em] text-ink leading-tight">{job.title}</h1>
           <div className="flex items-center gap-4 mt-3 font-text text-[13px] text-ink-60">

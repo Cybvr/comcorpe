@@ -5,7 +5,8 @@ import Link from 'next/link'
 import { Search } from 'lucide-react'
 import { clientInvoices } from '@/lib/invoices'
 import { jobs } from '@/lib/jobs'
-import { currentClient } from '@/lib/session'
+import { currentClientId } from '@/lib/session'
+import { getClientUser } from '@/lib/user'
 
 const jobStatusStyles: Record<string, string> = {
   Active:       'bg-green-50 text-green-700 border-green-200',
@@ -25,8 +26,9 @@ const paymentStatusStyles: Record<string, string> = {
 export default function ClientBillingPage() {
   const [search, setSearch] = useState('')
 
-  const clientJobs = jobs.filter(j => j.client === currentClient)
-  const clientInvoiceList = clientInvoices.filter(i => i.jobClient === currentClient)
+  const clientJobs = jobs.filter(j => j.clientId === currentClientId)
+  const clientUser = getClientUser(currentClientId)
+  const clientInvoiceList = clientInvoices.filter(i => i.jobClient === clientUser.name)
 
   const activeMonthly = clientJobs
     .filter(j => j.status === 'Active')

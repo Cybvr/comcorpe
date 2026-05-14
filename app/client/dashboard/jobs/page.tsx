@@ -17,7 +17,7 @@ export default function JobsPage() {
   const [filter, setFilter] = useState<'all' | 'active'>('all')
   const [view, setView] = useState<'grid' | 'list'>('grid')
   
-  const clientJobs = jobs.filter(j => j.client === currentUser.company)
+  const clientJobs = jobs.filter(j => j.clientId === currentUser.clientId)
   const displayJobs = filter === 'active' ? clientJobs.filter(j => j.status === 'Active') : clientJobs
 
   return (

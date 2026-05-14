@@ -1,1 +1,1 @@
-export const currentClient = 'Volta Pay'
+export const currentClientId = 'volta-pay'

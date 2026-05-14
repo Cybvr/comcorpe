@@ -21,7 +21,7 @@ import { clientInvoices } from '@/lib/invoices'
 import { currentUser } from '@/lib/user'
 
 export default function ClientDashboardHome() {
-  const activeJobs = jobs.filter(j => j.status === 'Active' && j.client === currentUser.company)
+  const activeJobs = jobs.filter(j => j.status === 'Active' && j.clientId === currentUser.clientId)
   const primaryPods = pods.slice(0, 2)
   
   const slackMessages = [
@@ -78,7 +78,7 @@ export default function ClientDashboardHome() {
     .filter(i => i.status === 'Paid')
     .reduce((acc, inv) => acc + inv.amountRaw, 0)
   
-  const companyJobs = jobs.filter(j => j.client === currentUser.company)
+  const companyJobs = jobs.filter(j => j.clientId === currentUser.clientId)
   const uniqueOperators = new Set(companyJobs.map(j => j.lead).filter(Boolean)).size
   const avgUtilization = Math.round(activeJobs.reduce((acc, j) => acc + getJobProgress(j), 0) / (activeJobs.length || 1))
 
