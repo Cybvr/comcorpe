@@ -1,5 +1,5 @@
 import { HelpCircle } from 'lucide-react'
-import { clientHelpTopics } from '@/lib/help'
+import { helpTopics } from '@/lib/help'
 
 export default function HelpPage() {
   return (
@@ -13,7 +13,7 @@ export default function HelpPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {clientHelpTopics.map((topic) => (
+        {helpTopics.map((topic) => (
           <article key={topic.id} className="border border-ink-10 rounded-xl p-5 bg-paper">
             <HelpCircle size={18} strokeWidth={1.5} className="text-blue mb-4" />
             <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink leading-tight">{topic.title}</h2>

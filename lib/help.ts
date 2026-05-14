@@ -1,10 +1,10 @@
-export interface ClientHelpTopic {
+export interface HelpTopic {
   id: number
   title: string
   body: string
 }
 
-export const clientHelpTopics: ClientHelpTopic[] = [
+export const helpTopics: HelpTopic[] = [
   {
     id: 1,
     title: 'Submitting a brief',
