@@ -1,5 +1,5 @@
 import { Gift, Share2, Users } from 'lucide-react'
-import { clientReferral } from '@/lib/client-dashboard'
+import { clientReferral } from '@/lib/help'
 
 export default function ReferralsPage() {
   return (

@@ -1,5 +1,5 @@
 import { HelpCircle } from 'lucide-react'
-import { clientHelpTopics } from '@/lib/client-dashboard'
+import { clientHelpTopics } from '@/lib/help'
 
 export default function HelpPage() {
   return (
