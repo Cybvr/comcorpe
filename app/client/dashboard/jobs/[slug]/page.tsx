@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { ArrowLeft, ArrowUpRight, Briefcase, Clock, MapPin } from 'lucide-react'
+import { ArrowLeft, Briefcase, Clock, MapPin } from 'lucide-react'
 import { pods } from '@/lib/pods'
 import { getTalentProfile } from '@/lib/talent'
 import { jobs, getJobBySlug } from '@/lib/jobs'
@@ -107,31 +107,23 @@ export default async function JobDetailPage({
               {primaryPods.map((pod) => {
                 const lead = getTalentProfile(pod.leadId)
                 return (
-                  <div key={pod.id} className="p-6 bg-paper border border-ink-10 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-ink-20 transition-all group">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-ink flex items-center justify-center font-display font-black text-[13px] text-paper shrink-0 border border-ink-10 overflow-hidden relative">
-                        {lead.image ? (
-                          <Image src={lead.image} alt={lead.name} fill className="object-cover" />
-                        ) : (
-                          lead.initials
-                        )}
-                      </div>
-                      <div>
-                        <h3 className="font-display font-black text-[18px] text-ink leading-tight">{pod.name}</h3>
-                        <div className="flex items-center gap-3 mt-1.5">
-                          <span className="font-text text-sm text-ink-60">{pod.focus}</span>
-                          <span className="w-1 h-1 bg-ink-10 rounded-full" />
-                          <span className="font-text text-sm text-blue font-semibold">{pod.fitScore}% Match</span>
-                        </div>
+                  <Link key={pod.id} href={`/client/dashboard/search/${pod.slug}`} className="p-6 bg-paper border border-ink-10 rounded-2xl flex items-center gap-4 hover:border-ink-20 transition-all group">
+                    <div className="w-12 h-12 rounded-xl bg-ink flex items-center justify-center font-display font-black text-[13px] text-paper shrink-0 border border-ink-10 overflow-hidden relative">
+                      {lead.image ? (
+                        <Image src={lead.image} alt={lead.name} fill className="object-cover" />
+                      ) : (
+                        lead.initials
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="font-display font-black text-[18px] text-ink group-hover:text-blue transition-colors leading-tight">{pod.name}</h3>
+                      <div className="flex items-center gap-3 mt-1.5">
+                        <span className="font-text text-sm text-ink-60">{pod.focus}</span>
+                        <span className="w-1 h-1 bg-ink-10 rounded-full" />
+                        <span className="font-text text-sm text-blue font-semibold">{pod.fitScore}% Match</span>
                       </div>
                     </div>
-                    <Link
-                      href={`/client/dashboard/search/${pod.slug}`}
-                      className="font-text text-xs font-semibold px-4 py-2 bg-ink text-paper rounded-full hover:bg-blue transition-colors duration-[120ms] shrink-0 inline-flex items-center gap-1.5"
-                    >
-                      Review pod <ArrowUpRight size={12} />
-                    </Link>
-                  </div>
+                  </Link>
                 )
               })}
             </div>

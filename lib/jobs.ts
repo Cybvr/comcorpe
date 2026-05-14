@@ -179,6 +179,46 @@ export const jobs: Job[] = [
       'Interest in a long-term venture-aligned engagement',
     ],
   },
+  {
+    id: 5,
+    slug: 'mtn-momo-wallet-depth',
+    title: 'Wallet depth and financial habit formation',
+    client: 'MTN MoMo',
+    type: 'RETAINED',
+    status: 'Scoping',
+    summary: 'MoMo has Nigeria\'s most powerful distribution infrastructure — 150k agents, the largest telco base in the country. The problem is depth, not reach. Users register, top up, send money, and stop. Bill payments, merchant QR, lifestyle spend — flat. OPay and PalmPay are colonising the everyday financial relationship while MoMo sits on an underactivated asset. This pod reframes the commercial motion: from transactional wallet to the primary financial OS for the mass market.',
+    rate: '$55k - 85k/mo',
+    tags: ['FINTECH', 'CONSUMER', 'ACTIVATION'],
+    location: 'Nigeria',
+    time: '16-week sprint + retainer option',
+    updatedAt: 'Updated May 14',
+    arena: 'Technology & Fintech',
+    owner: 'Growth office',
+    scope: [
+      'Diagnose the activation gap — where users drop off after registration and why',
+      'Map the merchant and bill-payment opportunity by cluster and channel',
+      'Build the consumer trust and habit-formation playbook for PSB-regulated context',
+      'Design the commercial operating rhythm for agent-to-digital migration',
+      'Deliver a 90-day growth sprint with weekly leadership scorecard',
+    ],
+    requirements: [
+      'Deep fintech consumer activation experience in Nigeria',
+      'Familiarity with CBN PSB regulations and USSD-first markets',
+      'Ability to work between board-level strategy and weekly execution',
+      'Experience building merchant network depth in mass-market contexts',
+    ],
+    outcomes: [
+      'Activation leak audit across registration, first transaction, and repeat use',
+      'Merchant and bill-payment channel playbook for Lagos and tier-2 cities',
+      'Trust signal and habit formation framework for unbanked segments',
+      'Board-ready 90-day commercial operating plan',
+    ],
+    nextSteps: [
+      'Align on activation KPIs with MoMo growth leadership',
+      'Access anonymised cohort data for registration-to-use funnel',
+      'Confirm priority merchant segments for first sprint',
+    ],
+  },
 ]
 
 export function getJobBySlug(slug: string) {
