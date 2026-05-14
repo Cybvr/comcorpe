@@ -17,7 +17,7 @@ import { pods } from '@/lib/pods'
 import GrowthCommunity from '@/components/dashboard/GrowthCommunity'
 import { getTalentProfile } from '@/lib/user'
 import { jobs, type JobStatus, getJobProgress } from '@/lib/jobs'
-import { clientInvoices } from '@/lib/invoices'
+import { invoices } from '@/lib/invoices'
 import { currentUser } from '@/lib/user'
 
 export default function ClientDashboardHome() {
@@ -72,7 +72,7 @@ export default function ClientDashboardHome() {
     }
   ]
   
-  const companyInvoices = clientInvoices.filter(i => i.jobClient === currentUser.company)
+  const companyInvoices = invoices.filter(i => i.clientId === currentUser.clientId)
   
   const totalSpend = companyInvoices
     .filter(i => i.status === 'Paid')
@@ -306,7 +306,7 @@ export default function ClientDashboardHome() {
                         <p className="font-text text-[9px] text-ink-40 uppercase tracking-wider mt-0.5">{invoice.status}</p>
                       </div>
                     </div>
-                    <span className="font-text text-[10px] text-ink-40">{invoice.due}</span>
+                    <span className="font-text text-[10px] text-ink-40">{invoice.date}</span>
                   </div>
                 )
               })}

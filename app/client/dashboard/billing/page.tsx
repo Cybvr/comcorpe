@@ -3,32 +3,21 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Search } from 'lucide-react'
-import { clientInvoices } from '@/lib/invoices'
+import { invoices, type InvoiceStatus } from '@/lib/invoices'
 import { jobs } from '@/lib/jobs'
 import { currentClientId } from '@/lib/session'
-import { getClientUser } from '@/lib/user'
 
-const jobStatusStyles: Record<string, string> = {
-  Active:       'bg-green-50 text-green-700 border-green-200',
-  Scoping:      'bg-ink-5 text-ink-60 border-ink-10',
-  'Pod review': 'bg-violet/10 text-violet border-violet/20',
-  Paused:       'bg-orange-50 text-orange-700 border-orange-100',
-  Completed:    'bg-blue-50 text-blue-700 border-blue-100',
-}
-
-const paymentStatusStyles: Record<string, string> = {
-  Paid:    'bg-green-50 text-green-700 border-green-200',
-  Due:     'bg-amber-50 text-amber-700 border-amber-200',
-  Draft:   'bg-ink-5 text-ink-60 border-ink-10',
-  None:    'bg-ink-5 text-ink-40 border-ink-10',
+const statusStyles: Record<InvoiceStatus, string> = {
+  Paid:  'bg-green-50 text-green-700 border-green-200',
+  Due:   'bg-amber-50 text-amber-700 border-amber-200',
+  Draft: 'bg-ink-5 text-ink-60 border-ink-10',
 }
 
 export default function ClientBillingPage() {
   const [search, setSearch] = useState('')
 
+  const clientInvoices = invoices.filter(i => i.clientId === currentClientId)
   const clientJobs = jobs.filter(j => j.clientId === currentClientId)
-  const clientUser = getClientUser(currentClientId)
-  const clientInvoiceList = clientInvoices.filter(i => i.jobClient === clientUser.name)
 
   const activeMonthly = clientJobs
     .filter(j => j.status === 'Active')
@@ -37,30 +26,18 @@ export default function ClientBillingPage() {
       return acc + (match ? parseInt(match[1]) * 1000 : 0)
     }, 0)
 
-  const outstanding = clientInvoiceList
+  const outstanding = clientInvoices
     .filter(i => i.status === 'Due')
     .reduce((acc, i) => acc + i.amountRaw, 0)
 
-  const paidTotal = clientInvoiceList
+  const paidTotal = clientInvoices
     .filter(i => i.status === 'Paid')
     .reduce((acc, i) => acc + i.amountRaw, 0)
 
-  const billedByJob = clientInvoiceList.reduce<Record<string, number>>((acc, i) => {
-    if (i.jobSlug) acc[i.jobSlug] = (acc[i.jobSlug] ?? 0) + i.amountRaw
-    return acc
-  }, {})
-
-  const paymentStatusByJob = clientInvoiceList.reduce<Record<string, string>>((acc, i) => {
-    if (!i.jobSlug) return acc
-    const current = acc[i.jobSlug]
-    if (!current || i.status === 'Due') acc[i.jobSlug] = i.status
-    return acc
-  }, {})
-
-  const filtered = clientJobs.filter(j =>
-    j.title.toLowerCase().includes(search.toLowerCase()) ||
-    j.status.toLowerCase().includes(search.toLowerCase()) ||
-    j.type.toLowerCase().includes(search.toLowerCase())
+  const filtered = clientInvoices.filter(i =>
+    i.label.toLowerCase().includes(search.toLowerCase()) ||
+    i.meta.toLowerCase().includes(search.toLowerCase()) ||
+    i.status.toLowerCase().includes(search.toLowerCase())
   )
 
   return (
@@ -85,7 +62,7 @@ export default function ClientBillingPage() {
             ${outstanding.toLocaleString()}
           </p>
           <p className={`font-text text-sm mt-4 ${outstanding > 0 ? 'text-amber-600' : 'text-ink-60'}`}>
-            {clientInvoiceList.filter(i => i.status === 'Due').length} invoice{clientInvoiceList.filter(i => i.status === 'Due').length !== 1 ? 's' : ''} due
+            {clientInvoices.filter(i => i.status === 'Due').length} invoice{clientInvoices.filter(i => i.status === 'Due').length !== 1 ? 's' : ''} due
           </p>
         </div>
 
@@ -95,79 +72,72 @@ export default function ClientBillingPage() {
             ${paidTotal.toLocaleString()}
           </p>
           <p className="font-text text-sm text-ink-60 mt-4">
-            {clientInvoiceList.filter(i => i.status === 'Paid').length} invoices cleared
+            {clientInvoices.filter(i => i.status === 'Paid').length} invoices cleared
           </p>
         </div>
       </div>
 
-      <div className="mb-12">
-        <div className="flex items-center justify-between gap-4 mb-4">
-          <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">Commercial Activity</h2>
-          <div className="flex items-center gap-2">
-            <div className="relative max-w-sm flex-1">
-              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-40" />
-              <input
-                type="text"
-                placeholder="Search invoices or projects..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-paper border border-ink-10 rounded-xl font-text text-xs focus:outline-none focus:border-blue/40 transition-colors"
-              />
-            </div>
-            <button className="px-3 py-2 border border-ink-10 rounded-xl font-text text-xs font-semibold hover:bg-ink-5 transition-colors">
-              Export CSV
-            </button>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between gap-4">
+          <div className="relative max-w-sm flex-1">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-40" />
+            <input
+              type="text"
+              placeholder="Filter invoices..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-2.5 bg-paper border border-ink-10 rounded-xl font-text text-sm focus:outline-none focus:border-blue/40 transition-colors"
+            />
           </div>
+          <button className="px-4 py-2.5 border border-ink-10 rounded-xl font-text text-sm font-semibold hover:bg-ink-5 transition-colors">
+            Export CSV
+          </button>
         </div>
-        
-        <div className="border border-ink-10 rounded-2xl overflow-hidden bg-paper shadow-sm">
+
+        <div className="border border-ink-10 rounded-2xl overflow-hidden bg-paper">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-ink-10 bg-ink-5/50">
-                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 font-bold">Invoice & Description</th>
-                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 font-bold">Status</th>
-                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 font-bold">Project</th>
-                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 font-bold text-right">Amount</th>
-                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 font-bold">Timeline</th>
+                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Status</th>
+                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Invoice</th>
+                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Job</th>
+                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 text-right">Amount</th>
+                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Date</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ink-10">
-              {clientInvoiceList
-                .filter(i => 
-                  i.label.toLowerCase().includes(search.toLowerCase()) || 
-                  (jobs.find(j => j.slug === i.jobSlug)?.title.toLowerCase().includes(search.toLowerCase()))
+              {filtered.map(invoice => {
+                const job = jobs.find(j => j.slug === invoice.jobSlug)
+                return (
+                  <tr key={invoice.id} className="hover:bg-ink-5/30 transition-colors">
+                    <td className="px-5 py-4">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border ${statusStyles[invoice.status]}`}>
+                        {invoice.status}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4">
+                      <p className="font-text text-sm font-semibold text-ink leading-tight">{invoice.label}</p>
+                      <p className="font-text text-xs text-ink-40 mt-0.5">{invoice.meta}</p>
+                    </td>
+                    <td className="px-5 py-4">
+                      {job ? (
+                        <Link href={`/client/dashboard/jobs/${job.slug}`} className="font-text text-sm text-blue hover:underline">
+                          {job.title}
+                        </Link>
+                      ) : <span className="text-ink-40">—</span>}
+                    </td>
+                    <td className="px-5 py-4 text-right">
+                      <span className="font-mono text-sm font-bold text-ink">{invoice.amount}</span>
+                    </td>
+                    <td className="px-5 py-4">
+                      <span className="font-text text-xs text-ink-60">{invoice.date}</span>
+                    </td>
+                  </tr>
                 )
-                .map((invoice) => {
-                  const job = jobs.find(j => j.slug === invoice.jobSlug)
-                  return (
-                    <tr key={invoice.id} className="hover:bg-ink-5/20 transition-colors group">
-                      <td className="px-5 py-4">
-                        <p className="font-text text-sm font-bold text-ink leading-tight group-hover:text-blue transition-colors">{invoice.label}</p>
-                        <p className="font-text text-[10px] text-ink-40 mt-1 leading-relaxed">{invoice.meta}</p>
-                      </td>
-                      <td className="px-5 py-4">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black border uppercase tracking-wider ${paymentStatusStyles[invoice.status]}`}>
-                          {invoice.status}
-                        </span>
-                      </td>
-                      <td className="px-5 py-4">
-                        {job ? (
-                          <Link href={`/client/dashboard/jobs/${job.slug}`} className="font-text text-xs text-ink-60 hover:text-blue hover:underline decoration-blue/30 font-semibold">
-                            {job.title}
-                          </Link>
-                        ) : (
-                          <span className="text-ink-20">—</span>
-                        )}
-                      </td>
-                      <td className="px-5 py-4 text-right">
-                        <span className="font-mono text-sm font-black text-ink">{invoice.amount}</span>
-                      </td>
-                      <td className="px-5 py-4">
-                        <span className="font-text text-xs text-ink-40 font-medium">{invoice.due}</span>
-                      </td>
-                    </tr>
-                  )
-                })}
+              })}
+              {filtered.length === 0 && (
+                <tr><td colSpan={5} className="px-5 py-12 text-center font-text text-sm text-ink-40">No invoices match your search.</td></tr>
+              )}
             </tbody>
           </table>
         </div>
