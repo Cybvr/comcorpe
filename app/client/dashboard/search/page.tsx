@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, DollarSign, Filter, Layers3, MapPin, Search, Users } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, Layers3, MapPin, Search, Users } from 'lucide-react'
 import { pods } from '@/lib/pods'
 import { talentProfiles, getTalentProfile } from '@/lib/talent'
 
@@ -202,31 +202,25 @@ export default function DiscoverPage() {
           />
         </div>
         
-        <div className="flex items-center gap-2 px-2 overflow-x-auto no-scrollbar">
-          <FilterDropdown 
-            label="All markets" 
-            options={['Nigeria', 'Kenya', 'South Africa', 'Ghana', 'UK']} 
+        <div className="flex items-center flex-wrap gap-2 px-2">
+          <FilterDropdown
+            label="All markets"
+            options={['Nigeria', 'Kenya', 'South Africa', 'Ghana', 'UK']}
             value={marketFilter}
             onChange={(val) => { setMarketFilter(val); setActivePage(1); }}
           />
-          <FilterDropdown 
-            label="Expertise" 
-            options={['Fintech', 'Growth', 'Strategy', 'Brand', 'Market Entry']} 
+          <FilterDropdown
+            label="Expertise"
+            options={['Fintech', 'Growth', 'Strategy', 'Brand', 'Market Entry']}
             value={expertiseFilter}
             onChange={(val) => { setExpertiseFilter(val); setActivePage(1); }}
           />
-          <FilterDropdown 
-            label="Monthly Budget" 
-            options={activeTab === 'pods' ? ['<$50k', '>$50k'] : ['<$15k', '>$15k']} 
+          <FilterDropdown
+            label="Monthly Budget"
+            options={activeTab === 'pods' ? ['<$50k', '>$50k'] : ['<$15k', '>$15k']}
             value={budgetFilter}
             onChange={(val) => { setBudgetFilter(val); setActivePage(1); }}
           />
-          <button 
-            onClick={() => { setSearchQuery(''); setMarketFilter('All'); setExpertiseFilter('All'); setBudgetFilter('All'); }}
-            className="flex items-center gap-2 px-4 py-2 text-ink-40 hover:text-ink transition-colors font-text text-xs whitespace-nowrap"
-          >
-            Clear all
-          </button>
         </div>
       </section>
 
