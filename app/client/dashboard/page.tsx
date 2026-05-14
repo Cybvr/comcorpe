@@ -241,7 +241,7 @@ export default function ClientDashboardHome() {
                       <p className="font-text text-[10px] text-ink-40 uppercase tracking-wider">{invoice.status}</p>
                     </div>
                   </div>
-                  <span className="font-text text-[10px] text-ink-40">{invoice.date}</span>
+                  <span className="font-text text-[10px] text-ink-40">{invoice.due}</span>
                 </div>
               ))}
             </div>
