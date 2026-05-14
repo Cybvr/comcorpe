@@ -13,7 +13,7 @@ const statusStyles = {
   Paused: 'bg-ink-10 text-ink-60 border-ink-20',
 }
 
-export default function BriefsPage() {
+export default function JobsPage() {
   const [filter, setFilter] = useState<'all' | 'active'>('all')
   const [view, setView] = useState<'grid' | 'list'>('grid')
   
@@ -26,7 +26,7 @@ export default function BriefsPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-4">
-            <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-none">Briefs</h1>
+            <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-none">My Jobs</h1>
             <span className="px-2 py-0.5 rounded-full bg-ink-5 text-ink-40 font-mono text-[10px] uppercase tracking-wider">
               {clientJobs.length} total
             </span>
@@ -84,36 +84,36 @@ export default function BriefsPage() {
           href="/client/dashboard/jobs/new"
           className="font-text text-sm font-semibold px-6 py-3 rounded-full bg-ink text-paper hover:bg-blue transition-all duration-200 flex items-center gap-2 w-fit"
         >
-          <Plus size={18} /> New brief
+          <Plus size={18} /> New job
         </Link>
       </div>
 
       {view === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {displayJobs.map((brief) => (
+          {displayJobs.map((job) => (
             <Link
-              key={brief.id}
-              href={`/client/dashboard/jobs/${brief.slug}`}
+              key={job.id}
+              href={`/client/dashboard/jobs/${job.slug}`}
               className="border border-ink-10 rounded-2xl p-6 bg-paper hover:border-ink-20 hover:shadow-xl transition-all group flex flex-col"
             >
               <div className="flex items-start justify-between gap-3 mb-6">
                 <div className="w-12 h-12 rounded-xl bg-ink-5 border border-ink-10 flex items-center justify-center text-ink-20 group-hover:text-blue transition-colors shrink-0">
                   <Briefcase size={20} strokeWidth={1.5} />
                 </div>
-                <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${statusStyles[brief.status as keyof typeof statusStyles]}`}>
-                  {brief.status}
+                <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${statusStyles[job.status as keyof typeof statusStyles]}`}>
+                  {job.status}
                 </span>
               </div>
               
               <div className="flex-1">
                 <h2 className="font-display font-black text-[22px] tracking-[-0.02em] text-ink group-hover:text-blue transition-colors leading-tight">
-                  {brief.title}
+                  {job.title}
                 </h2>
-                <p className="font-text text-[15px] leading-relaxed text-ink-60 mt-4 line-clamp-3">{brief.summary}</p>
+                <p className="font-text text-[15px] leading-relaxed text-ink-60 mt-4 line-clamp-3">{job.summary}</p>
               </div>
 
               <div className="flex flex-wrap gap-1.5 mt-6 mb-8">
-                {brief.tags.map((tag) => (
+                {job.tags.map((tag) => (
                   <span key={tag} className="font-mono text-[9px] uppercase tracking-eyebrow text-ink-40 px-2 py-0.5 border border-ink-5 rounded-sm bg-ink-5/30">
                     {tag}
                   </span>
@@ -122,11 +122,11 @@ export default function BriefsPage() {
 
               <div className="mt-auto pt-5 border-t border-ink-5">
                 <div className="grid grid-cols-2 gap-4 text-[11px] text-ink-40 mb-4">
-                  <span className="flex items-center gap-2"><Clock size={12} strokeWidth={1.5} /> {brief.time}</span>
-                  <span className="flex items-center gap-2"><MapPin size={12} strokeWidth={1.5} /> {brief.location}</span>
+                  <span className="flex items-center gap-2"><Clock size={12} strokeWidth={1.5} /> {job.time}</span>
+                  <span className="flex items-center gap-2"><MapPin size={12} strokeWidth={1.5} /> {job.location}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="font-text text-[10px] text-ink-20 uppercase tracking-widest">{brief.updatedAt}</span>
+                  <span className="font-text text-[10px] text-ink-20 uppercase tracking-widest">{job.updatedAt}</span>
                   <ArrowUpRight size={16} className="text-ink-20 group-hover:text-blue group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                 </div>
               </div>
@@ -135,27 +135,27 @@ export default function BriefsPage() {
         </div>
       ) : (
         <div className="flex flex-col gap-4 max-w-[1040px]">
-          {displayJobs.map((project) => (
+          {displayJobs.map((job) => (
             <Link 
-              key={project.id} 
-              href={`/client/dashboard/jobs/${project.slug}`}
+              key={job.id} 
+              href={`/client/dashboard/jobs/${job.slug}`}
               className="group block border border-ink-10 rounded-xl p-7 bg-paper hover:border-blue transition-all duration-300"
             >
               <article>
                 <div className="flex items-start justify-between gap-4 mb-6">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className={`font-mono text-[10px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${statusStyles[project.status as keyof typeof statusStyles]}`}>
-                        {project.status}
+                      <span className={`font-mono text-[10px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${statusStyles[job.status as keyof typeof statusStyles]}`}>
+                        {job.status}
                       </span>
-                      {project.phase && <span className="font-text text-xs text-ink-40">{project.phase}</span>}
+                      {job.phase && <span className="font-text text-xs text-ink-40">{job.phase}</span>}
                     </div>
                     <h2 className="font-display font-black text-[24px] tracking-[-0.02em] text-ink group-hover:text-blue transition-colors">
-                      {project.title}
+                      {job.title}
                     </h2>
                   </div>
                   <div className="text-right">
-                    <div className="font-display font-black text-[20px] text-ink leading-none">{getJobProgress(project)}%</div>
+                    <div className="font-display font-black text-[20px] text-ink leading-none">{getJobProgress(job)}%</div>
                     <div className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mt-1">Progress</div>
                   </div>
                 </div>
@@ -163,28 +163,28 @@ export default function BriefsPage() {
                 <div className="flex flex-wrap items-center gap-x-10 gap-y-4 mb-8">
                   <div className="flex items-center gap-2">
                     <Users size={18} className="text-blue shrink-0" />
-                    <span className="font-text text-[15px] font-semibold text-ink-60">{project.lead || 'TBD'}</span>
+                    <span className="font-text text-[15px] font-semibold text-ink-60">{job.lead || 'TBD'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Flag size={18} className="text-blue shrink-0" />
                     <span className="font-text text-[15px] font-semibold text-ink-60">
-                      {project.milestones?.find(m => m.status === 'pending')?.title || 'Scoping phase'}
+                      {job.milestones?.find(m => m.status === 'pending')?.title || 'Scoping phase'}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CalendarDays size={18} className="text-blue shrink-0" />
-                    <span className="font-text text-[15px] font-semibold text-ink-60">{project.nextReview || 'TBD'}</span>
+                    <span className="font-text text-[15px] font-semibold text-ink-60">{job.nextReview || 'TBD'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Banknote size={18} className="text-blue shrink-0" />
-                    <span className="font-text text-[15px] font-semibold text-ink-60">{project.rate}</span>
+                    <span className="font-text text-[15px] font-semibold text-ink-60">{job.rate}</span>
                   </div>
                 </div>
  
                 <div className="h-2 bg-ink-10 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-blue rounded-full transition-all duration-700 ease-out" 
-                    style={{ width: `${getJobProgress(project)}%` }} 
+                    style={{ width: `${getJobProgress(job)}%` }} 
                   />
                 </div>
               </article>
@@ -195,7 +195,7 @@ export default function BriefsPage() {
       
       {displayJobs.length === 0 && (
         <div className="py-20 text-center border-2 border-dashed border-ink-10 rounded-2xl">
-          <p className="font-text text-ink-40">No {filter} briefs found.</p>
+          <p className="font-text text-ink-40">No {filter} jobs found.</p>
         </div>
       )}
     </div>

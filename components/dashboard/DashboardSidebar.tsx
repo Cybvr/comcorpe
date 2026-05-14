@@ -52,9 +52,8 @@ const dashboardConfig: Record<DashboardAudience, {
     root: '/client/dashboard',
     primaryItems: [
       { icon: Home, label: 'Home', href: '/client/dashboard' },
-      { icon: Briefcase, label: 'Briefs', href: '/client/dashboard/jobs' },
-      { icon: Users, label: 'Search', href: '/client/dashboard/search', badge: 3 },
-      { icon: MessageCircle, label: 'Community', href: '/client/dashboard/community' },
+      { icon: Briefcase, label: 'My Jobs', href: '/client/dashboard/jobs' },
+      { icon: Users, label: 'Community', href: '/client/dashboard/search', badge: 3 },
       { icon: CreditCard, label: 'Billing', href: '/client/dashboard/billing' },
       { icon: Gift, label: 'Refer & grow', href: '/client/dashboard/referrals' },
     ],
@@ -81,11 +80,10 @@ function SidebarLink({ item }: { item: SidebarItem }) {
     <Link
       href={item.href}
       aria-current={active ? 'page' : undefined}
-      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-text text-sm transition-colors duration-150 ${
-        active
+      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-text text-sm transition-colors duration-150 ${active
           ? 'bg-blue/10 text-blue font-semibold'
           : 'text-ink-60 hover:bg-ink-10 hover:text-ink'
-      }`}
+        }`}
     >
       <Icon size={16} strokeWidth={1.8} />
       <span className="flex-1">{item.label}</span>
@@ -109,9 +107,8 @@ function DashboardSwitch({ audience }: { audience: DashboardAudience }) {
           <Link
             key={option}
             href={config.root}
-            className={`text-center rounded-md px-2 py-1.5 font-text text-xs font-semibold transition-colors ${
-              active ? 'bg-paper text-blue shadow-sm' : 'text-ink-60 hover:text-ink'
-            }`}
+            className={`text-center rounded-md px-2 py-1.5 font-text text-xs font-semibold transition-colors ${active ? 'bg-paper text-blue shadow-sm' : 'text-ink-60 hover:text-ink'
+              }`}
           >
             {config.label}
           </Link>
@@ -121,12 +118,12 @@ function DashboardSwitch({ audience }: { audience: DashboardAudience }) {
   )
 }
 
-export default function DashboardSidebar({ 
+export default function DashboardSidebar({
   audience,
   onClose,
-}: { 
+}: {
   audience: DashboardAudience
-  onClose?: () => void 
+  onClose?: () => void
 }) {
   const config = dashboardConfig[audience]
 
@@ -139,9 +136,9 @@ export default function DashboardSidebar({
             {config.label}
           </span>
         </Link>
-        
+
         {/* Mobile Close Button */}
-        <button 
+        <button
           onClick={onClose}
           className="lg:hidden absolute right-3 top-5 p-1 text-ink-40 hover:text-ink transition-colors"
         >

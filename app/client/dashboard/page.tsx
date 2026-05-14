@@ -20,24 +20,57 @@ import { jobs, type JobStatus, getJobProgress } from '@/lib/jobs'
 import { clientInvoices } from '@/lib/invoices'
 import { currentUser } from '@/lib/user'
 
-const urgencyMap: Record<JobStatus, string> = {
-  'Active':     'Today',
-  'Pod review': 'This week',
-  'Scoping':    'Next',
-  'Paused':     'Next',
-  'Completed':  'Next',
-}
-
-const urgencyStyle: Record<string, string> = {
-  'Today':     'bg-red-50 text-red-600 border-red-100',
-  'This week': 'bg-blue/5 text-blue border-blue/10',
-  'Next':      'bg-ink-10 text-ink-60 border-ink-10',
-}
-
 export default function ClientDashboardHome() {
   const activeJobs = jobs.filter(j => j.status === 'Active' && j.client === currentUser.company)
-  const pendingDecisions = jobs.filter(j => j.client === currentUser.company && j.milestones?.some(m => m.status === 'pending')).slice(0, 4)
   const primaryPods = pods.slice(0, 2)
+  
+  const slackMessages = [
+    {
+      id: 1,
+      user: "Sarah Chen",
+      role: "Pod Lead",
+      content: "Hey @Jide, I've just uploaded the revised Q3 strategic roadmap for the AI Governance project. Let me know if the milestones align.",
+      time: "10:24 AM",
+      avatar: "SC",
+      color: "bg-blue/10 text-blue"
+    },
+    {
+      id: 2,
+      user: "Alex Rivers",
+      role: "Technical Architect",
+      content: "The initial security audit for the LLM deployment is complete. No critical vulnerabilities found. Summary is in #project-alpha.",
+      time: "9:45 AM",
+      avatar: "AR",
+      color: "bg-amber-100 text-amber-700"
+    },
+    {
+      id: 3,
+      user: "Jordan Smith",
+      role: "Operator",
+      content: "Just a heads up that we're onboarding the two specialist consultants for the data pipeline optimization tomorrow morning.",
+      time: "Yesterday",
+      avatar: "JS",
+      color: "bg-green-600/10 text-green-700"
+    },
+    {
+      id: 4,
+      user: "Taylor Wong",
+      role: "Designer",
+      content: "The new UX prototypes for the enterprise dashboard are ready for review. I've incorporated the feedback from our last session.",
+      time: "Yesterday",
+      avatar: "TW",
+      color: "bg-purple-100 text-purple-700"
+    },
+    {
+      id: 5,
+      user: "Comcorpe Bot",
+      role: "System",
+      content: "New milestone reached: 'Initial Scoping' for Supply Chain Optimization has been marked as complete.",
+      time: "2 days ago",
+      avatar: "CB",
+      color: "bg-ink-10 text-ink-60"
+    }
+  ]
   
   const totalSpend = clientInvoices.reduce((acc, inv) => {
     const val = Number(inv.amount.replace(/[^0-9.-]+/g, ""))
@@ -58,7 +91,7 @@ export default function ClientDashboardHome() {
             <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-tight">
               Good morning, {currentUser.name.split(' ')[0]}
             </h1>
-            <p className="font-text text-ink-60 mt-1">You have {activeJobs.length} active projects and {pendingDecisions.length} decisions to make.</p>
+            <p className="font-text text-ink-60 mt-1">You have {activeJobs.length} active projects and {slackMessages.length} new messages.</p>
           </div>
           <Link 
             href="/client/dashboard/jobs/new"
@@ -72,32 +105,43 @@ export default function ClientDashboardHome() {
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-8 items-start">
         {/* Main Content Area */}
         <div className="space-y-10">
-          {/* Decisions / Action Items */}
+          {/* Slack Messages Feed */}
           <section>
-            <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink mb-4">Pending decisions</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {pendingDecisions.map((job) => {
-                const urgency = urgencyMap[job.status]
-                return (
-                  <Link
-                    key={job.id}
-                    href={`/client/dashboard/jobs/${job.slug}`}
-                    className="group block p-5 bg-paper border border-ink-10 rounded-xl hover:border-ink-20 hover:shadow-sm transition-all"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-1 rounded-sm border ${urgencyStyle[urgency]}`}>
-                        {urgency}
-                      </span>
-                      <ChevronRight size={14} className="text-ink-20 group-hover:text-blue transition-colors" />
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">Recent messages</h2>
+              <div className="flex items-center gap-2 px-3 py-1 bg-blue/5 border border-blue/10 rounded-full">
+                <span className="w-2 h-2 bg-blue rounded-full animate-pulse" />
+                <span className="font-mono text-[10px] uppercase tracking-wider text-blue font-bold italic">Slack Live</span>
+              </div>
+            </div>
+            <div className="bg-paper border border-ink-10 rounded-2xl divide-y divide-ink-5 overflow-hidden">
+              {slackMessages.map((msg) => (
+                <div 
+                  key={msg.id}
+                  className="p-5 hover:bg-ink-5/30 transition-colors group cursor-pointer"
+                >
+                  <div className="flex gap-4">
+                    <div className={`w-10 h-10 rounded-xl ${msg.color} flex items-center justify-center font-display font-black text-xs shrink-0 border border-ink-10/10`}>
+                      {msg.avatar}
                     </div>
-                    <h3 className="font-display font-black text-[16px] text-ink group-hover:text-blue transition-colors mb-1">
-                      {job.milestones?.find(m => m.status === 'pending')?.title || job.title}
-                    </h3>
-                    <p className="font-text text-xs text-ink-40 mb-3">{job.title}</p>
-                    <p className="font-text text-sm text-ink-60 leading-relaxed">{job.summary}</p>
-                  </Link>
-                )
-              })}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-display font-black text-[15px] text-ink">{msg.user}</span>
+                          <span className="font-mono text-[9px] uppercase tracking-widest text-ink-40 px-1.5 py-0.5 bg-ink-5 rounded-sm">{msg.role}</span>
+                        </div>
+                        <span className="font-text text-[11px] text-ink-40 whitespace-nowrap">{msg.time}</span>
+                      </div>
+                      <p className="font-text text-sm text-ink-60 leading-relaxed line-clamp-2 group-hover:text-ink transition-colors">
+                        {msg.content}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <button className="w-full py-4 bg-ink-5/50 hover:bg-ink-5 transition-colors font-text text-[11px] font-bold uppercase tracking-widest text-ink-40 border-t border-ink-5">
+                View thread history in Slack
+              </button>
             </div>
           </section>
 
