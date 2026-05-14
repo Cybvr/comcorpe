@@ -1,4 +1,4 @@
-import { helpTopics } from '@/lib/help'
+import { clientHelpTopics as helpTopics } from '@/lib/help'
 
 export default function HelpPage() {
   return (
