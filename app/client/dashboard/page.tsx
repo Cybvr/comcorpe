@@ -23,7 +23,7 @@ import { clientInvoices } from '@/lib/invoices'
 import { currentUser } from '@/lib/user'
 
 export default function ClientDashboardHome() {
-  const activeJobs = jobs.filter(j => j.status === 'active')
+  const activeJobs = jobs.filter(j => j.status === 'Active')
   const pendingDecisions = clientDecisions.slice(0, 2)
   const primaryPods = pods.slice(0, 2)
 

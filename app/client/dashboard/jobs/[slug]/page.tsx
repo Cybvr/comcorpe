@@ -6,11 +6,12 @@ import { pods } from '@/lib/pods'
 import { getTalentProfile } from '@/lib/talent'
 import { jobs, getJobBySlug } from '@/lib/jobs'
 
-const statusStyles = {
-  active: 'bg-green-50 text-green-700 border-green-100',
-  completed: 'bg-blue-50 text-blue-700 border-blue-100',
-  paused: 'bg-orange-50 text-orange-700 border-orange-100',
-  cancelled: 'bg-ink-10 text-ink-40 border-ink-10',
+const statusStyles: Record<string, string> = {
+  'Active':     'bg-green-50 text-green-700 border-green-100',
+  'Completed':  'bg-blue-50 text-blue-700 border-blue-100',
+  'Paused':     'bg-orange-50 text-orange-700 border-orange-100',
+  'Scoping':    'bg-ink-10 text-ink-60 border-ink-10',
+  'Pod review': 'bg-violet/10 text-violet border-violet/20',
 }
 
 export function generateStaticParams() {
@@ -48,7 +49,7 @@ export default async function JobDetailPage({
               {job.status}
             </span>
           </div>
-          <h1 className="font-display font-black text-[36px] tracking-[-0.03em] text-ink leading-tight">{job.title}</h1>
+          <h1 className="font-display font-black text-[22px] tracking-[-0.02em] text-ink leading-tight">{job.title}</h1>
           <div className="flex items-center gap-4 mt-3 font-text text-sm text-ink-60">
             <div className="flex items-center gap-1.5">
               <MapPin size={14} strokeWidth={1.5} className="text-ink-40" />

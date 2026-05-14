@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, Layers3, MapPin, Search, Users } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, Clock, DollarSign, Filter, Layers3, MapPin, Search, Users } from 'lucide-react'
 import { pods } from '@/lib/pods'
 import { talentProfiles, getTalentProfile } from '@/lib/talent'
 
@@ -143,7 +143,6 @@ export default function DiscoverPage() {
                          p.focus.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesMarket = marketFilter === 'All' || p.markets.some(m => m.includes(marketFilter))
     const matchesExpertise = expertiseFilter === 'All' || p.focus.includes(expertiseFilter)
-    // Basic budget filtering (just for demo)
     const matchesBudget = budgetFilter === 'All' || (budgetFilter === '<$50k' && parseInt(p.rate.replace(/\D/g, '')) < 50) || (budgetFilter === '>$50k' && parseInt(p.rate.replace(/\D/g, '')) >= 50)
     return matchesSearch && matchesMarket && matchesExpertise && matchesBudget
   })
@@ -152,7 +151,6 @@ export default function DiscoverPage() {
     const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          t.role.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesExpertise = expertiseFilter === 'All' || t.role.includes(expertiseFilter)
-    // Basic budget filtering for talent
     const matchesBudget = budgetFilter === 'All' || (budgetFilter === '<$15k' && parseInt(t.rate?.replace(/\D/g, '') || '0') < 15) || (budgetFilter === '>$15k' && parseInt(t.rate?.replace(/\D/g, '') || '0') >= 15)
     return matchesSearch && matchesExpertise && matchesBudget
   })
@@ -202,22 +200,22 @@ export default function DiscoverPage() {
           />
         </div>
         
-        <div className="flex items-center flex-wrap gap-2 px-2">
-          <FilterDropdown
-            label="All markets"
-            options={['Nigeria', 'Kenya', 'South Africa', 'Ghana', 'UK']}
+        <div className="flex items-center gap-2 px-2 overflow-x-auto no-scrollbar">
+          <FilterDropdown 
+            label="All markets" 
+            options={['Nigeria', 'Kenya', 'South Africa', 'Ghana', 'UK']} 
             value={marketFilter}
             onChange={(val) => { setMarketFilter(val); setActivePage(1); }}
           />
-          <FilterDropdown
-            label="Expertise"
-            options={['Fintech', 'Growth', 'Strategy', 'Brand', 'Market Entry']}
+          <FilterDropdown 
+            label="Expertise" 
+            options={['Fintech', 'Growth', 'Strategy', 'Brand', 'Market Entry']} 
             value={expertiseFilter}
             onChange={(val) => { setExpertiseFilter(val); setActivePage(1); }}
           />
-          <FilterDropdown
-            label="Monthly Budget"
-            options={activeTab === 'pods' ? ['<$50k', '>$50k'] : ['<$15k', '>$15k']}
+          <FilterDropdown 
+            label="Monthly Budget" 
+            options={activeTab === 'pods' ? ['<$50k', '>$50k'] : ['<$15k', '>$15k']} 
             value={budgetFilter}
             onChange={(val) => { setBudgetFilter(val); setActivePage(1); }}
           />
@@ -244,16 +242,11 @@ export default function DiscoverPage() {
                 href={`/client/dashboard/search/${pod.slug}`}
                 className="border border-ink-10 rounded-xl p-6 bg-paper hover:border-ink-20 hover:shadow-xl transition-all group flex flex-col"
               >
-                <div className="mb-6 flex justify-between items-start">
-                  <div>
-                    <p className="font-mono text-[10px] uppercase tracking-eyebrow text-blue mb-1">{pod.focus}</p>
-                    <h2 className="font-display font-black text-[22px] tracking-[-0.02em] text-ink group-hover:text-blue transition-colors leading-tight">
-                      {pod.name}
-                    </h2>
-                  </div>
-                  <div className="font-mono text-[10px] bg-ink-5 px-2 py-1 rounded border border-ink-10 text-ink-60 group-hover:border-blue/20 transition-colors">
-                    {pod.rate}
-                  </div>
+                <div className="mb-6">
+                  <p className="font-mono text-[10px] uppercase tracking-eyebrow text-blue mb-1">{pod.focus}</p>
+                  <h2 className="font-display font-black text-[22px] tracking-[-0.02em] text-ink group-hover:text-blue transition-colors leading-tight">
+                    {pod.name}
+                  </h2>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 mb-8">
@@ -284,14 +277,18 @@ export default function DiscoverPage() {
                 </div>
 
                 <div className="mt-auto pt-5 border-t border-ink-5 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                     <div className="flex items-center gap-1.5 font-text text-[13px] text-ink-60">
                       <Users size={14} strokeWidth={1.5} className="text-ink-40" />
                       <span className="font-semibold text-ink">{lead.name.split(' ')[0]}</span>
                     </div>
                     <div className="flex items-center gap-1.5 font-text text-[13px] text-ink-60">
-                      <Layers3 size={14} strokeWidth={1.5} className="text-ink-40" />
+                      <Clock size={14} strokeWidth={1.5} className="text-ink-40" />
                       <span>{pod.availability.replace('Ready in ', '')}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 font-text text-[13px] text-ink-60">
+                      <DollarSign size={14} strokeWidth={1.5} className="text-ink-40" />
+                      <span className="font-semibold text-ink">{pod.rate.replace('/mo', '')}</span>
                     </div>
                   </div>
                   <ArrowUpRight size={16} className="text-ink-20 group-hover:text-blue group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
@@ -316,13 +313,8 @@ export default function DiscoverPage() {
                     profile.initials
                   )}
                 </div>
-                <div className="flex flex-col items-end gap-2">
-                  <div className="p-1 rounded-full bg-ink-5 group-hover:bg-blue/10 transition-colors">
-                    <ArrowUpRight size={14} className="text-ink-20 group-hover:text-blue transition-colors" />
-                  </div>
-                  <div className="font-mono text-[8px] bg-ink-5 px-1.5 py-0.5 rounded border border-ink-10 text-ink-40 uppercase tracking-tighter">
-                    {profile.rate}
-                  </div>
+                <div className="p-1 rounded-full bg-ink-5 group-hover:bg-blue/10 transition-colors">
+                  <ArrowUpRight size={14} className="text-ink-20 group-hover:text-blue transition-colors" />
                 </div>
               </div>
               
@@ -333,9 +325,15 @@ export default function DiscoverPage() {
                 <p className="font-mono text-[9px] uppercase tracking-eyebrow text-blue/60 mt-1">{profile.role}</p>
               </div>
               
-              <div className="mt-4 pt-4 border-t border-ink-5 flex items-center gap-2 text-ink-60 font-text text-[11px]">
-                <MapPin size={10} className="text-ink-20" />
-                <span className="truncate">{profile.bg}</span>
+              <div className="mt-4 pt-4 border-t border-ink-5 flex items-center justify-between gap-2 text-ink-60 font-text text-[11px]">
+                <div className="flex items-center gap-2 truncate">
+                  <MapPin size={10} className="text-ink-20" />
+                  <span className="truncate">{profile.bg}</span>
+                </div>
+                <div className="flex items-center gap-1 font-semibold text-ink shrink-0">
+                  <DollarSign size={10} className="text-ink-20" />
+                  {profile.rate?.replace('/mo', '')}
+                </div>
               </div>
             </Link>
           ))}
