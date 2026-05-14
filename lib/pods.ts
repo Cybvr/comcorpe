@@ -1,4 +1,4 @@
-import { getTalentProfile, type TalentProfile } from './talent'
+import { getTalentProfile, type User } from './user'
 
 export interface Pod {
   id: string
@@ -80,6 +80,6 @@ export function getPodBySlug(slug: string): Pod | null {
   return pods.find((p) => p.slug === slug) ?? null
 }
 
-export function getPodMembers(pod: Pod): TalentProfile[] {
+export function getPodMembers(pod: Pod): User[] {
   return pod.memberIds.map((id) => getTalentProfile(id))
 }

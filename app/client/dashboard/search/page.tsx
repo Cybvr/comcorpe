@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, DollarSign, Layers3, MapPin, Plus, Search, Users, X } from 'lucide-react'
 import { pods } from '@/lib/pods'
 import { jobs } from '@/lib/jobs'
-import { talentProfiles, getTalentProfile } from '@/lib/talent'
+import { talentProfiles, getTalentProfile } from '@/lib/user'
 
 type DiscoverTab = 'all' | 'pods' | 'build'
 
@@ -184,8 +184,8 @@ export default function DiscoverPage() {
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1240px] mx-auto">
       <div className="mb-6">
-        <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Community</p>
-        <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-none">Operators</h1>
+        <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Search</p>
+        <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-none">Talent & Pods</h1>
       </div>
       <div className="flex gap-8 mb-6 border-b border-ink-10">
         {([['all', 'All'], ['pods', 'Pods'], ['build', 'Build a pod']] as const).map(([tab, label]) => (

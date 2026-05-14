@@ -39,7 +39,7 @@ const dashboardConfig: Record<DashboardAudience, {
       { icon: Home, label: 'Home', href: '/talent/dashboard' },
       { icon: Briefcase, label: 'Jobs', href: '/talent/dashboard/jobs' },
       { icon: FolderOpen, label: 'My work', href: '/talent/dashboard/work' },
-      { icon: Search, label: 'Search', href: '/talent/dashboard/community', badge: 3 },
+      { icon: MessageCircle, label: 'Community', href: '/talent/dashboard/community', badge: 3 },
       { icon: CreditCard, label: 'Billing', href: '/talent/dashboard/billing' },
       { icon: Gift, label: 'Refer & grow', href: '/talent/dashboard/referrals' },
     ],
@@ -53,7 +53,8 @@ const dashboardConfig: Record<DashboardAudience, {
     primaryItems: [
       { icon: Home, label: 'Home', href: '/client/dashboard' },
       { icon: Briefcase, label: 'My Jobs', href: '/client/dashboard/jobs' },
-      { icon: Users, label: 'Community', href: '/client/dashboard/search', badge: 3 },
+      { icon: Search, label: 'Search', href: '/client/dashboard/search', badge: 3 },
+      { icon: MessageCircle, label: 'Community', href: '/client/dashboard/community' },
       { icon: CreditCard, label: 'Billing', href: '/client/dashboard/billing' },
       { icon: Gift, label: 'Refer & grow', href: '/client/dashboard/referrals' },
     ],

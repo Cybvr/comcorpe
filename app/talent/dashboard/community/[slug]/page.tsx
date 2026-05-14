@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { ArrowLeft, Bookmark, MessageCircle, Share2, TrendingUp } from 'lucide-react'
 import PostCard from '@/components/dashboard/PostCard'
 import { getPostBySlug, posts } from '@/lib/posts'
-import { getTalentProfile } from '@/lib/talent'
+import { getTalentProfile } from '@/lib/user'
 
 export function generateStaticParams() {
   return posts.map((post) => ({

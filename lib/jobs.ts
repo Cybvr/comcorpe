@@ -312,6 +312,35 @@ export const jobs: Job[] = [
       { id: 'm3', title: 'Launch messaging framework', amount: '$20,000', date: 'Jul 22', status: 'completed', paymentStatus: 'paid' },
     ],
   },
+  {
+    id: 9,
+    slug: 'volta-pay-nigeria-entry',
+    title: 'Market entry strategy and regulatory setup',
+    client: 'Volta Pay',
+    type: 'PROJECT',
+    status: 'Active',
+    summary: 'Navigating the Nigerian fintech landscape, including PSB licensing and merchant ecosystem mapping.',
+    rate: '$45k - 80k',
+    tags: ['FINTECH', 'STRATEGY', 'NIGERIA'],
+    location: 'Lagos / London',
+    time: '12-week engagement',
+    updatedAt: 'Updated Jan 12',
+    startDate: 'Jan 12',
+    endDate: 'Apr 12',
+    scope: [
+      'License application support for PSB framework',
+      'Merchant partner ecosystem mapping',
+      'Local payment infrastructure integration strategy',
+    ],
+    requirements: [
+      'Nigerian fintech regulatory expertise',
+      'Merchant acquisition and payments background',
+    ],
+    milestones: [
+      { id: 'm1', title: 'Regulatory roadmap sign-off', amount: '$15,000', date: 'Jan 30', status: 'completed', paymentStatus: 'paid' },
+      { id: 'm2', title: 'Merchant ecosystem audit', amount: '$20,000', date: 'Mar 15', status: 'in-progress', paymentStatus: 'unpaid' },
+    ],
+  },
 ]
 
 export function getJobBySlug(slug: string) {

@@ -1,12 +1,69 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import {
-  talentArchetypes,
-  talentRoster,
-  talentSpotlightCards,
-  talentTrainingModules,
-} from '@/lib/talent'
+import { talentRoster } from '@/lib/user'
+
+const talentSpotlightCards = [
+  {
+    eyebrow: 'Commercial Architect',
+    title: 'Growth Strategy & Design',
+    tags: ['Fintech', 'Unit Economics'],
+  },
+  {
+    eyebrow: 'Execution Lead',
+    title: 'Revenue Ops & Performance',
+    tags: ['CRM', 'Automation'],
+    inverted: true,
+  },
+]
+
+const talentArchetypes = [
+  {
+    title: 'The Architect',
+    role: 'Commercial Strategy & Design',
+    desc: 'Builds the foundational growth system. Maps unit economics, channel architecture, and go-to-market strategies that turn business ambition into measurable commercial logic.',
+  },
+  {
+    title: 'The Integrator',
+    role: 'Market Entry & Partnerships',
+    desc: 'Connects the strategy to the reality of the market. Navigates regulatory landscapes, builds local partnership networks, and embeds operations into complex emerging markets.',
+  },
+  {
+    title: 'The Operator',
+    role: 'Execution & Revenue Ops',
+    desc: 'Drives day-to-day implementation. Manages the performance marketing, sales activation, and revenue pipelines, ensuring the growth system operates efficiently at scale.',
+  },
+]
+
+const talentTrainingModules = [
+  {
+    title: 'Commercial Architecture',
+    desc: 'Design reliable, production-grade business models',
+    progress: [
+      { label: 'Unit Economics Mapping', completed: true },
+      { label: 'Go-to-Market Strategy', completed: true },
+      { label: 'Pricing & Monetization', completed: true },
+    ],
+  },
+  {
+    title: 'Market Intelligence',
+    desc: 'Architect localized strategies for complex African markets',
+    progress: [
+      { label: 'Regulatory Navigation', completed: true },
+      { label: 'Partnership Ecosystems', completed: true },
+      { label: 'Consumer Trust Dynamics', completed: false },
+    ],
+  },
+  {
+    title: 'Growth Operations',
+    desc: 'Deploy scalable revenue infrastructure in live environments',
+    progress: [
+      { label: 'Performance Marketing', completed: true },
+      { label: 'Pipeline Automation', completed: true },
+      { label: 'Data & Analytics', completed: false },
+    ],
+  },
+]
 
 export const metadata: Metadata = {
   title: 'Specialist Talent — Comcorpᵉ',
@@ -178,7 +235,7 @@ export default function TalentPage() {
                 </div>
                 <div>
                   <div className="font-display font-black text-[20px] leading-tight text-ink group-hover:text-blue transition-colors mb-1">{talent.name}</div>
-                  <div className="font-mono text-[10px] text-blue uppercase tracking-widest mb-1">{talent.role}</div>
+                  <div className="font-mono text-[10px] text-blue uppercase tracking-widest mb-1">{talent.talentRole}</div>
                   <div className="font-text text-[12px] text-ink-40">{talent.bg}</div>
                 </div>
               </div>

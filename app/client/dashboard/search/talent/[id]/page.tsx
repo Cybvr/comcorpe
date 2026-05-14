@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { ArrowUpRight, CheckCircle2, DollarSign, Globe2, Layers3, MapPin, ShieldCheck, Star } from 'lucide-react'
-import { getTalentProfile, talentProfiles } from '@/lib/talent'
+import { getTalentProfile, talentProfiles } from '@/lib/user'
 import BackButton from '@/components/dashboard/BackButton'
 
 export function generateStaticParams() {

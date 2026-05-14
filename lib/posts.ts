@@ -1,4 +1,4 @@
-import { getTalentProfile } from './talent'
+import { getTalentProfile } from './user'
 
 export interface Post {
   id: number

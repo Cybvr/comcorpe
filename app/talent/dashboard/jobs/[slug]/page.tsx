@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Briefcase, Clock, MapPin, Target, LayoutDashboard, Users2 } from 'lucide-react'
 import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
-import { getTalentProfile } from '@/lib/talent'
+import { getTalentProfile } from '@/lib/user'
 import { jobs, getJobBySlug, getJobProgress } from '@/lib/jobs'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"

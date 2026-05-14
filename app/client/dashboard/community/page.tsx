@@ -9,8 +9,8 @@ export default function ClientCommunityPage() {
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1120px] mx-auto">
       <div className="mb-8">
-        <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Search</p>
-        <h1 className="font-display font-black text-[36px] tracking-[-0.03em] text-ink leading-none">Find posts and spaces</h1>
+        <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Community</p>
+        <h1 className="font-display font-black text-[36px] tracking-[-0.03em] text-ink leading-none">Conversations & Spaces</h1>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-8">

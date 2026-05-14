@@ -15,7 +15,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { pods } from '@/lib/pods'
 import GrowthCommunity from '@/components/dashboard/GrowthCommunity'
-import { getTalentProfile } from '@/lib/talent'
+import { getTalentProfile } from '@/lib/user'
 import { jobs, type JobStatus, getJobProgress } from '@/lib/jobs'
 import { clientInvoices } from '@/lib/invoices'
 import { currentUser } from '@/lib/user'
@@ -72,10 +72,11 @@ export default function ClientDashboardHome() {
     }
   ]
   
-  const totalSpend = clientInvoices.reduce((acc, inv) => {
-    const val = Number(inv.amount.replace(/[^0-9.-]+/g, ""))
-    return acc + val
-  }, 0)
+  const companyInvoices = clientInvoices.filter(i => i.jobClient === currentUser.company)
+  
+  const totalSpend = companyInvoices
+    .filter(i => i.status === 'Paid')
+    .reduce((acc, inv) => acc + inv.amountRaw, 0)
   
   const companyJobs = jobs.filter(j => j.client === currentUser.company)
   const uniqueOperators = new Set(companyJobs.map(j => j.lead).filter(Boolean)).size
@@ -291,20 +292,24 @@ export default function ClientDashboardHome() {
           <section>
             <h3 className="font-display font-black text-[16px] text-ink mb-4 px-1">Recent activity</h3>
             <div className="space-y-2">
-              {clientInvoices.slice(0, 3).map((invoice) => (
-                <div key={invoice.id} className="p-3 bg-paper border border-ink-10 rounded-xl flex items-center justify-between hover:border-ink-20 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-ink-5 flex items-center justify-center text-ink-40">
-                      <CreditCard size={14} />
+              {companyInvoices.slice(0, 3).map((invoice) => {
+                const job = jobs.find(j => j.slug === invoice.jobSlug)
+                return (
+                  <div key={invoice.id} className="p-3 bg-paper border border-ink-10 rounded-xl flex items-center justify-between hover:border-ink-20 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-ink-5 flex items-center justify-center text-ink-40">
+                        <CreditCard size={14} />
+                      </div>
+                      <div>
+                        <p className="font-text text-xs font-bold text-ink leading-tight">{invoice.amount}</p>
+                        {job && <p className="font-text text-[10px] text-blue font-semibold mt-0.5">{job.title}</p>}
+                        <p className="font-text text-[9px] text-ink-40 uppercase tracking-wider mt-0.5">{invoice.status}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-text text-xs font-semibold text-ink">{invoice.amount}</p>
-                      <p className="font-text text-[10px] text-ink-40 uppercase tracking-wider">{invoice.status}</p>
-                    </div>
+                    <span className="font-text text-[10px] text-ink-40">{invoice.due}</span>
                   </div>
-                  <span className="font-text text-[10px] text-ink-40">{invoice.due}</span>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </section>
 

@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, ArrowUpRight, CheckCircle2, DollarSign, Globe2, Layers3, Users } from 'lucide-react'
 import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
-import { getTalentProfile } from '@/lib/talent'
+import { getTalentProfile } from '@/lib/user'
 
 export function generateStaticParams() {
   return pods.map((pod) => ({
