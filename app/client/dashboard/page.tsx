@@ -14,6 +14,7 @@ import {
 import Link from 'next/link'
 import Image from 'next/image'
 import { pods } from '@/lib/pods'
+import GrowthCommunity from '@/components/dashboard/GrowthCommunity'
 import { getTalentProfile } from '@/lib/talent'
 import { jobs, type JobStatus } from '@/lib/jobs'
 import { clientInvoices } from '@/lib/invoices'
@@ -34,9 +35,18 @@ const urgencyStyle: Record<string, string> = {
 }
 
 export default function ClientDashboardHome() {
-  const activeJobs = jobs.filter(j => j.status === 'Active')
-  const pendingDecisions = jobs.filter(j => j.nextSteps && j.nextSteps.length > 0).slice(0, 4)
+  const activeJobs = jobs.filter(j => j.status === 'Active' && j.client === currentUser.company)
+  const pendingDecisions = jobs.filter(j => j.client === currentUser.company && j.nextSteps && j.nextSteps.length > 0).slice(0, 4)
   const primaryPods = pods.slice(0, 2)
+  
+  const totalSpend = clientInvoices.reduce((acc, inv) => {
+    const val = Number(inv.amount.replace(/[^0-9.-]+/g, ""))
+    return acc + val
+  }, 0)
+  
+  const companyJobs = jobs.filter(j => j.client === currentUser.company)
+  const uniqueOperators = new Set(companyJobs.map(j => j.lead).filter(Boolean)).size
+  const avgUtilization = Math.round(activeJobs.reduce((acc, j) => acc + (j.progress || 0), 0) / (activeJobs.length || 1))
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1280px] mx-auto">
@@ -81,7 +91,7 @@ export default function ClientDashboardHome() {
                       <ChevronRight size={14} className="text-ink-20 group-hover:text-blue transition-colors" />
                     </div>
                     <h3 className="font-display font-black text-[16px] text-ink group-hover:text-blue transition-colors mb-1">{job.nextSteps![0]}</h3>
-                    <p className="font-text text-xs text-ink-40 mb-3">{job.client} · {job.title}</p>
+                    <p className="font-text text-xs text-ink-40 mb-3">{job.title}</p>
                     <p className="font-text text-sm text-ink-60 leading-relaxed">{job.summary}</p>
                   </Link>
                 )
@@ -93,7 +103,7 @@ export default function ClientDashboardHome() {
           <section>
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">Active work</h2>
-              <Link href="/client/dashboard/work" className="font-text text-xs text-blue hover:underline flex items-center gap-1">
+              <Link href="/client/dashboard/jobs" className="font-text text-xs text-blue hover:underline flex items-center gap-1">
                 View all projects <ChevronRight size={12} />
               </Link>
             </div>
@@ -119,9 +129,9 @@ export default function ClientDashboardHome() {
                       <p className="font-text text-sm text-ink font-semibold">Tomorrow</p>
                     </div>
                     <div className="w-24 h-1.5 bg-ink-10 rounded-full overflow-hidden">
-                      <div className="h-full bg-blue w-[65%]" />
+                      <div className="h-full bg-blue transition-all duration-500" style={{ width: `${job.progress}%` }} />
                     </div>
-                    <Link href={`/client/dashboard/work/${job.slug}`} className="p-2 text-ink-20 hover:text-blue transition-colors">
+                    <Link href={`/client/dashboard/jobs/${job.slug}`} className="p-2 text-ink-20 hover:text-blue transition-colors">
                       <ArrowUpRight size={18} />
                     </Link>
                   </div>
@@ -196,6 +206,8 @@ export default function ClientDashboardHome() {
               })}
             </div>
           </section>
+
+          <GrowthCommunity audience="client" />
         </div>
 
         {/* Sidebar / Stats Area */}
@@ -206,21 +218,21 @@ export default function ClientDashboardHome() {
             <div className="space-y-6">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-text text-sm opacity-60">Retainer utilization</span>
-                  <span className="font-mono text-xs font-bold">84%</span>
+                  <span className="font-text text-sm opacity-60">Avg. engagement progress</span>
+                  <span className="font-mono text-xs font-bold">{avgUtilization}%</span>
                 </div>
                 <div className="h-1.5 bg-paper/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-blue w-[84%]" />
+                  <div className="h-full bg-blue transition-all duration-700" style={{ width: `${avgUtilization}%` }} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-1">Total spend</p>
-                  <p className="font-display font-black text-lg">$42.8k</p>
+                  <p className="font-display font-black text-lg">${(totalSpend / 1000).toFixed(1)}k</p>
                 </div>
                 <div>
                   <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-1">Operators</p>
-                  <p className="font-display font-black text-lg">14</p>
+                  <p className="font-display font-black text-lg">{uniqueOperators}</p>
                 </div>
               </div>
             </div>

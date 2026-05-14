@@ -3,15 +3,17 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, Clock, DollarSign, Filter, Layers3, MapPin, Search, Users } from 'lucide-react'
+import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, DollarSign, Layers3, MapPin, Plus, Search, Users, X } from 'lucide-react'
 import { pods } from '@/lib/pods'
+import { jobs } from '@/lib/jobs'
 import { talentProfiles, getTalentProfile } from '@/lib/talent'
 
-type DiscoverTab = 'all' | 'pods'
+type DiscoverTab = 'all' | 'pods' | 'build'
 
 const pageSizes: Record<DiscoverTab, number> = {
   all: 12,
   pods: 6,
+  build: 12,
 }
 
 function Pagination({
@@ -129,7 +131,18 @@ export default function DiscoverPage() {
   const [activeTab, setActiveTab] = useState<DiscoverTab>('all')
   const [activePage, setActivePage] = useState(1)
   const [searchQuery, setSearchQuery] = useState('')
-  
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+
+  function toggleSelect(id: string) {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+
+  const selectedProfiles = talentProfiles.filter(p => selectedIds.has(p.id))
+
   // Filter states
   const [marketFilter, setMarketFilter] = useState('All')
   const [expertiseFilter, setExpertiseFilter] = useState('All')
@@ -171,15 +184,18 @@ export default function DiscoverPage() {
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1240px] mx-auto">
       <div className="flex gap-8 mb-6 border-b border-ink-10">
-        {(['all', 'pods'] as const).map((tab) => (
+        {([['all', 'All'], ['pods', 'Pods'], ['build', 'Build a pod']] as const).map(([tab, label]) => (
           <button
             key={tab}
             onClick={() => selectTab(tab)}
-            className={`pb-4 font-display font-black text-[16px] tracking-[-0.01em] transition-all relative ${
+            className={`pb-4 font-display font-black text-[16px] tracking-[-0.01em] transition-all relative inline-flex items-center gap-2 ${
               activeTab === tab ? 'text-blue' : 'text-ink-40 hover:text-ink'
             }`}
           >
-            {tab === 'pods' ? 'Pods' : 'All'}
+            {label}
+            {tab === 'build' && selectedIds.size > 0 && (
+              <span className="font-mono text-[10px] font-bold bg-blue text-paper px-1.5 py-0.5 rounded-full min-w-[18px] text-center">{selectedIds.size}</span>
+            )}
             {activeTab === tab && (
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue" />
             )}
@@ -299,50 +315,260 @@ export default function DiscoverPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {visibleTalent.map((profile) => (
-            <Link
-              key={profile.id}
-              href={`/client/dashboard/search/talent/${profile.id}`}
-              className="border border-ink-10 rounded-xl p-5 bg-paper hover:border-ink-20 hover:shadow-lg transition-all group flex flex-col"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className={`w-14 h-14 rounded-xl border border-ink-10 overflow-hidden relative flex items-center justify-center ${profile.color || 'bg-ink'} font-display font-black text-[16px] text-paper`}>
-                  {profile.image ? (
-                    <Image src={profile.image} alt={profile.name} fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
-                  ) : (
-                    profile.initials
-                  )}
-                </div>
-                <div className="p-1 rounded-full bg-ink-5 group-hover:bg-blue/10 transition-colors">
-                  <ArrowUpRight size={14} className="text-ink-20 group-hover:text-blue transition-colors" />
-                </div>
+          {visibleTalent.map((profile) => {
+            const selected = selectedIds.has(profile.id)
+            return (
+              <div
+                key={profile.id}
+                className={`relative border rounded-xl p-5 bg-paper transition-all group flex flex-col ${selected ? 'border-blue shadow-md' : 'border-ink-10 hover:border-ink-20 hover:shadow-lg'}`}
+              >
+                {/* Add/remove toggle */}
+                <button
+                  onClick={() => toggleSelect(profile.id)}
+                  className={`absolute top-3 right-3 w-7 h-7 rounded-full flex items-center justify-center transition-all z-10 ${selected ? 'bg-blue text-paper' : 'bg-ink-5 text-ink-40 hover:bg-blue/10 hover:text-blue'}`}
+                  aria-label={selected ? 'Remove from pod' : 'Add to pod'}
+                >
+                  {selected ? <Check size={12} strokeWidth={2.5} /> : <Plus size={12} strokeWidth={2} />}
+                </button>
+
+                <Link href={`/client/dashboard/search/talent/${profile.id}`} className="flex flex-col flex-1">
+                  <div className="mb-4">
+                    <div className={`w-14 h-14 rounded-xl border border-ink-10 overflow-hidden relative flex items-center justify-center ${profile.color || 'bg-ink'} font-display font-black text-[16px] text-paper`}>
+                      {profile.image ? (
+                        <Image src={profile.image} alt={profile.name} fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                      ) : (
+                        profile.initials
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex-1">
+                    <h3 className="font-display font-black text-[18px] tracking-[-0.01em] text-ink group-hover:text-blue transition-colors leading-tight pr-6">
+                      {profile.name}
+                    </h3>
+                    <p className="font-mono text-[9px] uppercase tracking-eyebrow text-blue/60 mt-1">{profile.role}</p>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-ink-5 flex items-center justify-between gap-2 text-ink-60 font-text text-[11px]">
+                    <div className="flex items-center gap-2 truncate">
+                      <MapPin size={10} className="text-ink-20" />
+                      <span className="truncate">{profile.bg}</span>
+                    </div>
+                    <div className="flex items-center gap-1 font-semibold text-ink shrink-0">
+                      <DollarSign size={10} className="text-ink-20" />
+                      {profile.rate?.replace('/mo', '')}
+                    </div>
+                  </div>
+                </Link>
               </div>
-              
-              <div className="flex-1">
-                <h3 className="font-display font-black text-[18px] tracking-[-0.01em] text-ink group-hover:text-blue transition-colors leading-tight">
-                  {profile.name}
-                </h3>
-                <p className="font-mono text-[9px] uppercase tracking-eyebrow text-blue/60 mt-1">{profile.role}</p>
-              </div>
-              
-              <div className="mt-4 pt-4 border-t border-ink-5 flex items-center justify-between gap-2 text-ink-60 font-text text-[11px]">
-                <div className="flex items-center gap-2 truncate">
-                  <MapPin size={10} className="text-ink-20" />
-                  <span className="truncate">{profile.bg}</span>
-                </div>
-                <div className="flex items-center gap-1 font-semibold text-ink shrink-0">
-                  <DollarSign size={10} className="text-ink-20" />
-                  {profile.rate?.replace('/mo', '')}
-                </div>
-              </div>
-            </Link>
-          ))}
+            )
+          })}
         </div>
       )}
 
       {totalPages > 1 && (
         <Pagination page={currentPage} totalPages={totalPages} onPageChange={setActivePage} />
       )}
+
+      {/* Pod builder tray */}
+      {selectedIds.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-ink text-paper rounded-2xl shadow-2xl px-5 py-4 flex items-center gap-5 min-w-[480px] max-w-[640px]">
+          <div className="flex -space-x-2 shrink-0">
+            {selectedProfiles.slice(0, 5).map(p => (
+              <div
+                key={p.id}
+                className={`w-9 h-9 rounded-full border-2 border-ink flex items-center justify-center font-display font-black text-[11px] text-paper shrink-0 overflow-hidden relative ${p.color || 'bg-blue'}`}
+              >
+                {p.image ? <Image src={p.image} alt={p.name} fill className="object-cover" /> : p.initials}
+              </div>
+            ))}
+            {selectedIds.size > 5 && (
+              <div className="w-9 h-9 rounded-full border-2 border-ink bg-paper/20 flex items-center justify-center font-mono text-[10px] text-paper">
+                +{selectedIds.size - 5}
+              </div>
+            )}
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <p className="font-display font-black text-[15px] leading-tight">
+              {selectedIds.size} operator{selectedIds.size !== 1 ? 's' : ''} selected
+            </p>
+            <p className="font-text text-[11px] text-paper/50 mt-0.5 truncate">
+              {selectedProfiles.map(p => p.name.split(' ')[0]).join(', ')}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className="w-8 h-8 rounded-full bg-paper/10 hover:bg-paper/20 flex items-center justify-center transition-colors"
+              aria-label="Clear selection"
+            >
+              <X size={13} />
+            </button>
+            <button
+              onClick={() => selectTab('build')}
+              className="font-text text-sm font-semibold px-5 py-2 bg-blue hover:bg-ink text-paper rounded-full transition-colors duration-[120ms]"
+            >
+              Build pod →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Build tab inline pod builder */}
+      {activeTab === 'build' && (
+        <BuildTab
+          memberIds={[...selectedIds]}
+          onRemove={(id) => toggleSelect(id)}
+          onAddMore={() => selectTab('all')}
+          openBriefs={jobs.filter(j => j.status !== 'Completed')}
+        />
+      )}
+    </div>
+  )
+}
+
+function BuildTab({
+  memberIds,
+  onRemove,
+  onAddMore,
+  openBriefs,
+}: {
+  memberIds: string[]
+  onRemove: (id: string) => void
+  onAddMore: () => void
+  openBriefs: import('@/lib/jobs').Job[]
+}) {
+  const [podName, setPodName] = useState('')
+  const [briefSlug, setBriefSlug] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+
+  const members = memberIds.map(id => { try { return getTalentProfile(id) } catch { return null } }).filter(Boolean)
+
+  if (submitted) {
+    return (
+      <div className="py-24 text-center max-w-[480px] mx-auto">
+        <div className="w-14 h-14 bg-blue/10 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="w-8 h-8 bg-blue rounded-full flex items-center justify-center">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+        </div>
+        <h2 className="font-display font-black text-[28px] tracking-[-0.03em] text-ink mb-3">Pod submitted</h2>
+        <p className="font-text text-ink-60 mb-8">
+          <strong className="text-ink">{podName}</strong> has been submitted for review. Your account lead will confirm fit and schedule intro calls within 48 hours.
+        </p>
+        <Link href="/client/dashboard" className="font-text text-sm font-semibold px-6 py-3 bg-ink text-paper rounded-full hover:bg-blue transition-colors duration-[120ms]">
+          Back to dashboard
+        </Link>
+      </div>
+    )
+  }
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8 items-start mt-2">
+      <div className="space-y-5">
+
+        {/* Team */}
+        <section className="bg-paper border border-ink-10 rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="font-display font-black text-[18px] tracking-[-0.02em] text-ink">Team ({members.length})</h2>
+            <button onClick={onAddMore} className="font-text text-xs text-blue hover:underline">+ Add operators</button>
+          </div>
+          {members.length === 0 ? (
+            <div className="py-10 text-center border border-dashed border-ink-10 rounded-xl">
+              <p className="font-text text-sm text-ink-40 mb-3">No operators selected yet.</p>
+              <button onClick={onAddMore} className="font-text text-xs text-blue hover:underline">Browse talent →</button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {members.map(profile => (
+                <div key={profile!.id} className="flex items-center gap-3 p-3 border border-ink-10 rounded-xl group hover:border-ink-20 transition-colors">
+                  <div className={`w-10 h-10 rounded-lg shrink-0 flex items-center justify-center font-display font-black text-[12px] text-paper overflow-hidden relative ${profile!.color || 'bg-ink'}`}>
+                    {profile!.image ? <Image src={profile!.image} alt={profile!.name} fill className="object-cover" /> : profile!.initials}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-display font-black text-[14px] text-ink leading-tight">{profile!.name}</p>
+                    <p className="font-text text-[11px] text-ink-60 truncate">{profile!.role}</p>
+                  </div>
+                  <button
+                    onClick={() => onRemove(profile!.id)}
+                    className="w-6 h-6 rounded-full bg-ink-5 hover:bg-red-50 hover:text-red-500 flex items-center justify-center text-ink-40 transition-colors opacity-0 group-hover:opacity-100"
+                  >
+                    <X size={11} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Name */}
+        <section className="bg-paper border border-ink-10 rounded-2xl p-6">
+          <h2 className="font-display font-black text-[18px] tracking-[-0.02em] text-ink mb-4">Name your pod</h2>
+          <input
+            type="text"
+            placeholder="e.g. Lagos Entry Team"
+            value={podName}
+            onChange={e => setPodName(e.target.value)}
+            className="w-full px-4 py-3 border border-ink-10 rounded-xl font-text text-[15px] focus:outline-none focus:border-blue/40 transition-colors"
+          />
+          <p className="font-text text-[11px] text-ink-40 mt-2">For your reference only — not shared with operators.</p>
+        </section>
+
+        {/* Attach to brief */}
+        <section className="bg-paper border border-ink-10 rounded-2xl p-6">
+          <h2 className="font-display font-black text-[18px] tracking-[-0.02em] text-ink mb-1">Attach to a brief</h2>
+          <p className="font-text text-[12px] text-ink-40 mb-4">Optional — you can attach later from the brief page.</p>
+          <div className="space-y-2">
+            <button
+              onClick={() => setBriefSlug('')}
+              className={`w-full text-left px-4 py-3 border rounded-xl font-text text-sm transition-colors ${briefSlug === '' ? 'border-blue bg-blue/5 text-blue font-semibold' : 'border-ink-10 text-ink-60 hover:border-ink-20'}`}
+            >
+              No brief yet — submit for review only
+            </button>
+            {openBriefs.map(job => (
+              <button
+                key={job.slug}
+                onClick={() => setBriefSlug(job.slug)}
+                className={`w-full text-left px-4 py-3 border rounded-xl transition-colors ${briefSlug === job.slug ? 'border-blue bg-blue/5' : 'border-ink-10 hover:border-ink-20'}`}
+              >
+                <p className={`font-text text-sm font-semibold ${briefSlug === job.slug ? 'text-blue' : 'text-ink'}`}>{job.title}</p>
+                <p className="font-text text-[11px] text-ink-40 mt-0.5">{job.client} · {job.status}</p>
+              </button>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      {/* Sidebar */}
+      <aside className="space-y-4 lg:sticky lg:top-6">
+        <div className="bg-ink text-paper rounded-2xl p-6">
+          <p className="font-mono text-[10px] uppercase tracking-eyebrow text-paper/40 mb-4">Pod summary</p>
+          <div className="flex -space-x-2 mb-4">
+            {members.slice(0, 5).map(p => (
+              <div key={p!.id} className={`w-10 h-10 rounded-full border-2 border-ink shrink-0 flex items-center justify-center font-display font-black text-[11px] text-paper overflow-hidden relative ${p!.color || 'bg-blue'}`}>
+                {p!.image ? <Image src={p!.image} alt={p!.name} fill className="object-cover" /> : p!.initials}
+              </div>
+            ))}
+          </div>
+          <p className="font-display font-black text-[18px] leading-tight text-paper mb-1">
+            {podName || <span className="text-paper/30 italic text-[16px]">Unnamed pod</span>}
+          </p>
+          <p className="font-text text-[12px] text-paper/50">
+            {members.length} operator{members.length !== 1 ? 's' : ''}
+            {briefSlug ? ` · ${openBriefs.find(j => j.slug === briefSlug)?.client}` : ''}
+          </p>
+        </div>
+        <button
+          onClick={() => { if (podName && members.length > 0) setSubmitted(true) }}
+          disabled={!podName || members.length === 0}
+          className="w-full py-3.5 bg-blue text-paper rounded-full font-text text-sm font-semibold hover:bg-ink transition-colors duration-[120ms] disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          Submit pod for review
+        </button>
+        <p className="font-text text-[11px] text-ink-40 text-center">Your account lead reviews fit within 48 hours.</p>
+      </aside>
     </div>
   )
 }

@@ -2,15 +2,15 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Briefcase, Clock, MapPin } from 'lucide-react'
-import { pods } from '@/lib/pods'
+import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
 import { getTalentProfile } from '@/lib/talent'
 import { jobs, getJobBySlug } from '@/lib/jobs'
 
 const statusStyles: Record<string, string> = {
-  'Active':     'bg-green-50 text-green-700 border-green-100',
-  'Completed':  'bg-blue-50 text-blue-700 border-blue-100',
-  'Paused':     'bg-orange-50 text-orange-700 border-orange-100',
-  'Scoping':    'bg-ink-10 text-ink-60 border-ink-10',
+  'Active': 'bg-green-50 text-green-700 border-green-100',
+  'Completed': 'bg-blue-50 text-blue-700 border-blue-100',
+  'Paused': 'bg-orange-50 text-orange-700 border-orange-100',
+  'Scoping': 'bg-ink-10 text-ink-60 border-ink-10',
   'Pod review': 'bg-violet/10 text-violet border-violet/20',
 }
 
@@ -32,6 +32,8 @@ export default async function JobDetailPage({
     notFound()
   }
 
+  const assignedPod = job.podSlug ? getPodBySlug(job.podSlug) : null
+  const assignedPodMembers = assignedPod ? getPodMembers(assignedPod) : []
   const primaryPods = pods.slice(0, 2)
 
   return (
@@ -66,7 +68,7 @@ export default async function JobDetailPage({
             Edit brief
           </button>
           <button className="px-5 py-2.5 bg-ink text-paper rounded-full font-text text-sm font-semibold hover:bg-blue transition-colors duration-[120ms]">
-            Manage project
+            Manage
           </button>
         </div>
       </div>
@@ -102,47 +104,151 @@ export default async function JobDetailPage({
             </div>
           </section>
 
-          <section>
-            <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink mb-6">Recommended pods</h2>
-            <div className="space-y-4">
-              {primaryPods.map((pod) => {
-                const lead = getTalentProfile(pod.leadId)
-                return (
-                  <Link key={pod.id} href={`/client/dashboard/search/${pod.slug}`} className="p-6 bg-paper border border-ink-10 rounded-2xl flex items-center gap-4 hover:border-ink-20 transition-all group">
-                    <div className="w-12 h-12 rounded-xl bg-ink flex items-center justify-center font-display font-black text-[13px] text-paper shrink-0 border border-ink-10 overflow-hidden relative">
-                      {lead.image ? (
-                        <Image src={lead.image} alt={lead.name} fill className="object-cover" />
-                      ) : (
-                        lead.initials
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="font-display font-black text-[18px] text-ink group-hover:text-blue transition-colors leading-tight">{pod.name}</h3>
-                      <div className="flex items-center gap-3 mt-1.5">
-                        <span className="font-text text-sm text-ink-60">{pod.focus}</span>
-                        <span className="w-1 h-1 bg-ink-10 rounded-full" />
-                        <span className="font-text text-sm text-blue font-semibold">{pod.fitScore}% Match</span>
+          {job.status === 'Active' ? (
+            <section className="space-y-4">
+              <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">Project tracking</h2>
+
+              {/* Progress bar */}
+              <div className="bg-paper border border-ink-10 rounded-2xl p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Overall progress</span>
+                  <span className="font-display font-black text-[20px] text-ink">{job.progress ?? 0}%</span>
+                </div>
+                <div className="h-2 bg-ink-10 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue rounded-full transition-all duration-500" style={{ width: `${job.progress ?? 0}%` }} />
+                </div>
+                <div className="flex items-center justify-between mt-4">
+                  <div>
+                    <p className="font-mono text-[9px] uppercase tracking-eyebrow text-ink-40 mb-0.5">Current phase</p>
+                    <p className="font-text text-sm font-semibold text-ink">{job.phase ?? '—'}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-mono text-[9px] uppercase tracking-eyebrow text-ink-40 mb-0.5">Next review</p>
+                    <p className="font-text text-sm font-semibold text-ink">{job.nextReview ?? '—'}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Next milestone */}
+              {job.nextMilestone && (
+                <div className="bg-blue/5 border border-blue/15 rounded-2xl p-5 flex items-center gap-4">
+                  <div className="w-8 h-8 bg-blue/10 rounded-full flex items-center justify-center shrink-0">
+                    <Briefcase size={14} className="text-blue" />
+                  </div>
+                  <div>
+                    <p className="font-mono text-[9px] uppercase tracking-eyebrow text-blue/60 mb-0.5">Next milestone</p>
+                    <p className="font-text text-sm font-semibold text-ink">{job.nextMilestone}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Recent updates */}
+              {job.updates && job.updates.length > 0 && (
+                <div className="bg-paper border border-ink-10 rounded-2xl p-6">
+                  <h3 className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mb-4">Recent updates</h3>
+                  <ul className="space-y-3">
+                    {job.updates.map((update, i) => (
+                      <li key={i} className="flex items-start gap-3 font-text text-sm text-ink-60">
+                        <div className="w-1.5 h-1.5 bg-blue rounded-full mt-1.5 shrink-0" />
+                        {update}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Next steps */}
+              {job.nextSteps && job.nextSteps.length > 0 && (
+                <div className="bg-paper border border-ink-10 rounded-2xl p-6">
+                  <h3 className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mb-4">Actions needed</h3>
+                  <ul className="space-y-3">
+                    {job.nextSteps.map((step, i) => (
+                      <li key={i} className="flex items-start gap-3">
+                        <div className="w-4 h-4 border border-ink-20 rounded-sm mt-0.5 shrink-0" />
+                        <span className="font-text text-sm text-ink">{step}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Assigned pod */}
+              {assignedPod && (
+                <div className="bg-paper border border-ink-10 rounded-2xl p-6">
+                  <div className="flex items-center justify-between mb-5">
+                    <h3 className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Assigned pod</h3>
+                    <Link href={`/client/dashboard/search/${assignedPod.slug}`} className="font-text text-xs text-blue hover:underline">
+                      View pod →
+                    </Link>
+                  </div>
+                  <p className="font-display font-black text-[20px] tracking-[-0.02em] text-ink mb-1">{assignedPod.name}</p>
+                  <p className="font-text text-sm text-ink-60 mb-5">{assignedPod.focus}</p>
+                  <div className="flex flex-wrap gap-3">
+                    {assignedPodMembers.map(member => (
+                      <Link key={member.id} href={`/talent/${member.id}`} className="flex items-center gap-2.5 group">
+                        <div className={`w-9 h-9 rounded-lg shrink-0 flex items-center justify-center font-display font-black text-[11px] text-paper overflow-hidden relative ${member.color || 'bg-ink'}`}>
+                          {member.image ? (
+                            <Image src={member.image} alt={member.name} fill className="object-cover" />
+                          ) : member.initials}
+                        </div>
+                        <div>
+                          <p className="font-text text-[12px] font-semibold text-ink group-hover:text-blue transition-colors leading-tight">{member.name.split(' ')[0]}</p>
+                          <p className="font-text text-[10px] text-ink-40 leading-tight">{member.role.split(' ')[0]}</p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </section>
+          ) : (
+            <section>
+              <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink mb-6">Recommended pods</h2>
+              <div className="space-y-4">
+                {primaryPods.map((pod) => {
+                  const lead = getTalentProfile(pod.leadId)
+                  return (
+                    <Link key={pod.id} href={`/client/dashboard/search/${pod.slug}`} className="p-6 bg-paper border border-ink-10 rounded-2xl flex items-center gap-4 hover:border-ink-20 transition-all group">
+                      <div className="w-12 h-12 rounded-xl bg-ink flex items-center justify-center font-display font-black text-[13px] text-paper shrink-0 border border-ink-10 overflow-hidden relative">
+                        {lead.image ? (
+                          <Image src={lead.image} alt={lead.name} fill className="object-cover" />
+                        ) : (
+                          lead.initials
+                        )}
                       </div>
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
-          </section>
+                      <div>
+                        <h3 className="font-display font-black text-[18px] text-ink group-hover:text-blue transition-colors leading-tight">{pod.name}</h3>
+                        <div className="flex items-center gap-3 mt-1.5">
+                          <span className="font-text text-sm text-ink-60">{pod.focus}</span>
+                          <span className="w-1 h-1 bg-ink-10 rounded-full" />
+                          <span className="font-text text-sm text-blue font-semibold">{pod.fitScore}% Match</span>
+                        </div>
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
+            </section>
+          )}
         </div>
 
         <aside className="space-y-6">
           <div className="p-6 bg-ink text-paper rounded-2xl">
-            <h3 className="font-display font-black text-[18px] mb-4">Brief context</h3>
             <div className="space-y-4">
               <div>
-                <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-1">Budget guidance</p>
-                <p className="font-display font-black text-lg">$15k - $25k / mo</p>
+                <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-1">Budget</p>
+                <p className="font-display font-black text-lg">{job.rate}</p>
               </div>
               <div>
                 <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-1">Timeline</p>
-                <p className="font-display font-black text-lg">Q3 - Q4 2024</p>
+                <p className="font-display font-black text-lg">{job.time}</p>
               </div>
+              {job.lead && (
+                <div>
+                  <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-1">Pod lead</p>
+                  <p className="font-display font-black text-lg">{job.lead}</p>
+                </div>
+              )}
             </div>
           </div>
 

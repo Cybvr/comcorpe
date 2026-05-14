@@ -23,6 +23,7 @@ export interface Job {
   nextMilestone?: string
   nextReview?: string
   lead?: string
+  podSlug?: string
   // Detail pages
   scope: string[]
   requirements: string[]
@@ -49,6 +50,7 @@ export const jobs: Job[] = [
     progress: 36,
     phase: 'Pod assembly',
     lead: 'Tobi Adeyemi',
+    podSlug: 'payments_strike',
     nextMilestone: 'Client approves final pod',
     nextReview: 'Jan 16',
     scope: [
@@ -217,12 +219,12 @@ export const jobs: Job[] = [
   },
   {
     id: 6,
-    slug: 'mtn-momo-wallet-depth',
+    slug: 'parady-wallet-depth',
     title: 'Wallet depth and financial habit formation',
-    client: 'MTN MoMo',
+    client: 'Volta Pay',
     type: 'RETAINED',
     status: 'Scoping',
-    summary: 'MoMo has Nigeria\'s most powerful distribution infrastructure — 150k agents, the largest telco base in the country. The problem is depth, not reach. Users register, top up, send money, and stop. Bill payments, merchant QR, lifestyle spend — flat. OPay and PalmPay are colonising the everyday financial relationship while MoMo sits on an underactivated asset. This pod reframes the commercial motion: from transactional wallet to the primary financial OS for the mass market.',
+    summary: 'Parady brand has Nigeria\'s most powerful distribution infrastructure — 150k agents, the largest telco base in the country. The problem is depth, not reach. Users register, top up, send money, and stop. Bill payments, merchant QR, lifestyle spend — flat. OPay and PalmPay are colonising the everyday financial relationship while the wallet sits on an underactivated asset. This pod reframes the commercial motion: from transactional wallet to the primary financial OS for the mass market.',
     rate: '$55k - 85k/mo',
     tags: ['FINTECH', 'CONSUMER', 'ACTIVATION'],
     location: 'Nigeria',
@@ -250,7 +252,7 @@ export const jobs: Job[] = [
       'Board-ready 90-day commercial operating plan',
     ],
     nextSteps: [
-      'Align on activation KPIs with MoMo growth leadership',
+      'Align on activation KPIs with Parady brand growth leadership',
       'Access anonymised cohort data for registration-to-use funnel',
       'Confirm priority merchant segments for first sprint',
     ],

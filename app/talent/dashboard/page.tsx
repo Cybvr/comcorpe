@@ -4,21 +4,18 @@ import {
   ChevronRight,
   Gift,
   MessageCircle,
-  RotateCcw,
   Users,
   Zap,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import ApplicationCard from '@/components/dashboard/ApplicationCard'
-import DashboardPostComposer from '@/components/dashboard/DashboardPostComposer'
 import JobCard from '@/components/dashboard/JobCard'
 import OperatorCard from '@/components/dashboard/OperatorCard'
-import PostCard from '@/components/dashboard/PostCard'
+import GrowthCommunity from '@/components/dashboard/GrowthCommunity'
 import SpaceCard from '@/components/dashboard/SpaceCard'
 import { applications } from '@/lib/applications'
 import { jobs } from '@/lib/jobs'
 import { topOperators } from '@/lib/operators'
-import { posts } from '@/lib/posts'
 import { referral } from '@/lib/referrals'
 import { spaces } from '@/lib/spaces'
 import { currentUser } from '@/lib/user'
@@ -174,24 +171,7 @@ export default function DashboardPage() {
           </section>
         </div>
 
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">Growth community</h2>
-            <Link href="/talent/dashboard/community" className="font-text text-xs text-blue hover:underline">View all posts</Link>
-          </div>
-
-          <DashboardPostComposer />
-
-          <div className="flex flex-col gap-3">
-            {posts.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
-          </div>
-
-          <button className="font-text text-sm text-ink-60 hover:text-ink transition-colors flex items-center gap-2 justify-center py-3 border border-ink-10 rounded-xl hover:border-ink-20">
-            <RotateCcw size={13} /> Load more posts
-          </button>
-        </div>
+        <GrowthCommunity audience="talent" />
       </div>
     </div>
   )
