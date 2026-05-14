@@ -34,7 +34,7 @@ export const jobs: Job[] = [
   {
     id: 1,
     slug: 'volta-pay-nigeria-entry',
-    title: 'Nigeria market-entry operating brief',
+    title: 'Team needed for Nigeria market-entry operating project',
     client: 'Volta Pay',
     type: 'RETAINED',
     status: 'Pod review',
