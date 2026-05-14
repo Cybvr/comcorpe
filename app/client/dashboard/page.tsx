@@ -16,7 +16,7 @@ import Image from 'next/image'
 import { pods } from '@/lib/pods'
 import GrowthCommunity from '@/components/dashboard/GrowthCommunity'
 import { getTalentProfile } from '@/lib/talent'
-import { jobs, type JobStatus } from '@/lib/jobs'
+import { jobs, type JobStatus, getJobProgress } from '@/lib/jobs'
 import { clientInvoices } from '@/lib/invoices'
 import { currentUser } from '@/lib/user'
 
@@ -36,7 +36,7 @@ const urgencyStyle: Record<string, string> = {
 
 export default function ClientDashboardHome() {
   const activeJobs = jobs.filter(j => j.status === 'Active' && j.client === currentUser.company)
-  const pendingDecisions = jobs.filter(j => j.client === currentUser.company && j.nextSteps && j.nextSteps.length > 0).slice(0, 4)
+  const pendingDecisions = jobs.filter(j => j.client === currentUser.company && j.milestones?.some(m => m.status === 'pending')).slice(0, 4)
   const primaryPods = pods.slice(0, 2)
   
   const totalSpend = clientInvoices.reduce((acc, inv) => {
@@ -46,7 +46,7 @@ export default function ClientDashboardHome() {
   
   const companyJobs = jobs.filter(j => j.client === currentUser.company)
   const uniqueOperators = new Set(companyJobs.map(j => j.lead).filter(Boolean)).size
-  const avgUtilization = Math.round(activeJobs.reduce((acc, j) => acc + (j.progress || 0), 0) / (activeJobs.length || 1))
+  const avgUtilization = Math.round(activeJobs.reduce((acc, j) => acc + getJobProgress(j), 0) / (activeJobs.length || 1))
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1280px] mx-auto">
@@ -90,7 +90,9 @@ export default function ClientDashboardHome() {
                       </span>
                       <ChevronRight size={14} className="text-ink-20 group-hover:text-blue transition-colors" />
                     </div>
-                    <h3 className="font-display font-black text-[16px] text-ink group-hover:text-blue transition-colors mb-1">{job.nextSteps![0]}</h3>
+                    <h3 className="font-display font-black text-[16px] text-ink group-hover:text-blue transition-colors mb-1">
+                      {job.milestones?.find(m => m.status === 'pending')?.title || job.title}
+                    </h3>
                     <p className="font-text text-xs text-ink-40 mb-3">{job.title}</p>
                     <p className="font-text text-sm text-ink-60 leading-relaxed">{job.summary}</p>
                   </Link>
@@ -108,35 +110,38 @@ export default function ClientDashboardHome() {
               </Link>
             </div>
             <div className="space-y-3">
-              {activeJobs.map((job) => (
-                <div key={job.id} className="p-4 bg-paper border border-ink-10 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-blue/5 flex items-center justify-center text-blue shrink-0">
-                      <Briefcase size={18} strokeWidth={1.5} />
-                    </div>
-                    <div>
-                      <h3 className="font-display font-black text-[16px] text-ink leading-tight">{job.title}</h3>
-                      <div className="flex items-center gap-3 mt-1">
-                        <span className="font-text text-xs text-ink-60">{job.type}</span>
-                        <span className="w-1 h-1 bg-ink-10 rounded-full" />
-                        <span className="font-text text-xs text-ink-60">{job.location}</span>
+              {activeJobs.map((job) => {
+                const progress = getJobProgress(job)
+                return (
+                  <div key={job.id} className="p-4 bg-paper border border-ink-10 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-blue/5 flex items-center justify-center text-blue shrink-0">
+                        <Briefcase size={18} strokeWidth={1.5} />
+                      </div>
+                      <div>
+                        <h3 className="font-display font-black text-[16px] text-ink leading-tight">{job.title}</h3>
+                        <div className="flex items-center gap-3 mt-1">
+                          <span className="font-text text-xs text-ink-60">{job.type}</span>
+                          <span className="w-1 h-1 bg-ink-10 rounded-full" />
+                          <span className="font-text text-xs text-ink-60">{job.location}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-ink-5">
-                    <div className="flex flex-col md:items-end">
-                      <p className="font-mono text-[9px] uppercase tracking-eyebrow text-ink-40">Next review</p>
-                      <p className="font-text text-sm text-ink font-semibold">Tomorrow</p>
+                    <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-ink-5">
+                      <div className="flex flex-col md:items-end">
+                        <p className="font-mono text-[9px] uppercase tracking-eyebrow text-ink-40">Next review</p>
+                        <p className="font-text text-sm text-ink font-semibold">Tomorrow</p>
+                      </div>
+                      <div className="w-24 h-1.5 bg-ink-10 rounded-full overflow-hidden">
+                        <div className="h-full bg-blue transition-all duration-500" style={{ width: `${progress}%` }} />
+                      </div>
+                      <Link href={`/client/dashboard/jobs/${job.slug}`} className="p-2 text-ink-20 hover:text-blue transition-colors">
+                        <ArrowUpRight size={18} />
+                      </Link>
                     </div>
-                    <div className="w-24 h-1.5 bg-ink-10 rounded-full overflow-hidden">
-                      <div className="h-full bg-blue transition-all duration-500" style={{ width: `${job.progress}%` }} />
-                    </div>
-                    <Link href={`/client/dashboard/jobs/${job.slug}`} className="p-2 text-ink-20 hover:text-blue transition-colors">
-                      <ArrowUpRight size={18} />
-                    </Link>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </section>
 

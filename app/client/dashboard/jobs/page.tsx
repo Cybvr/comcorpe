@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowUpRight, Briefcase, Clock, MapPin, Plus, CalendarDays, Users, Flag, Banknote } from 'lucide-react'
-import { jobs } from '@/lib/jobs'
+import { jobs, getJobProgress } from '@/lib/jobs'
 import { currentUser } from '@/lib/user'
 
 const statusStyles = {
@@ -154,12 +154,10 @@ export default function BriefsPage() {
                       {project.title}
                     </h2>
                   </div>
-                  {project.progress !== undefined && (
-                    <div className="text-right">
-                      <div className="font-display font-black text-[20px] text-ink leading-none">{project.progress}%</div>
-                      <div className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mt-1">Progress</div>
-                    </div>
-                  )}
+                  <div className="text-right">
+                    <div className="font-display font-black text-[20px] text-ink leading-none">{getJobProgress(project)}%</div>
+                    <div className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 mt-1">Progress</div>
+                  </div>
                 </div>
                 
                 <div className="flex flex-wrap items-center gap-x-10 gap-y-4 mb-8">
@@ -169,7 +167,9 @@ export default function BriefsPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Flag size={18} className="text-blue shrink-0" />
-                    <span className="font-text text-[15px] font-semibold text-ink-60">{project.nextMilestone || 'Scoping phase'}</span>
+                    <span className="font-text text-[15px] font-semibold text-ink-60">
+                      {project.milestones?.find(m => m.status === 'pending')?.title || 'Scoping phase'}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CalendarDays size={18} className="text-blue shrink-0" />
@@ -180,15 +180,13 @@ export default function BriefsPage() {
                     <span className="font-text text-[15px] font-semibold text-ink-60">{project.rate}</span>
                   </div>
                 </div>
-
-                {project.progress !== undefined && (
-                  <div className="h-2 bg-ink-10 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-blue rounded-full transition-all duration-700 ease-out" 
-                      style={{ width: `${project.progress}%` }} 
-                    />
-                  </div>
-                )}
+ 
+                <div className="h-2 bg-ink-10 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-blue rounded-full transition-all duration-700 ease-out" 
+                    style={{ width: `${getJobProgress(project)}%` }} 
+                  />
+                </div>
               </article>
             </Link>
           ))}

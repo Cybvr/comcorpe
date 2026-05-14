@@ -1,6 +1,15 @@
 export type JobType = 'RETAINED' | 'PROJECT' | 'EQUITY'
 export type JobStatus = 'Scoping' | 'Pod review' | 'Active' | 'Paused' | 'Completed'
 
+export interface Milestone {
+  id: string
+  title: string
+  amount: string
+  date: string
+  status: 'pending' | 'in-progress' | 'completed'
+  paymentStatus: 'unpaid' | 'paid' | 'processing'
+}
+
 export interface Job {
   id: number
   slug: string
@@ -22,85 +31,83 @@ export interface Job {
   phase?: string
   nextMilestone?: string
   nextReview?: string
-  lead?: string
   podSlug?: string
+  lead?: string
   startDate?: string
   endDate?: string
-  // Detail pages
   scope: string[]
   requirements: string[]
-  outcomes?: string[]
-  nextSteps?: string[]
+  milestones?: Milestone[]
 }
 
 export const jobs: Job[] = [
   {
     id: 1,
-    slug: 'volta-pay-nigeria-entry',
-    title: 'Team needed for Nigeria market-entry operating project',
-    client: 'Volta Pay',
-    type: 'RETAINED',
+    slug: 'volks-bank-loyalty-systems',
+    title: 'Digital loyalty and rewards ecosystem',
+    client: 'Volks Bank',
+    type: 'PROJECT',
     status: 'Active',
-    summary: 'Define the Lagos entry sequence, partner route, trust signals, and first commercial operating rhythm for a UK payments platform.',
-    rate: '$15k - 30k/mo',
-    tags: ['FINTECH', 'PAYMENTS', 'MARKET ENTRY'],
-    location: 'Lagos / London',
-    time: '12-week sprint',
-    updatedAt: 'Updated Jan 12',
-    startDate: 'Jan 12',
-    endDate: 'Apr 12',
+    podSlug: 'growth_squad',
+    summary: 'Reframing the digital banking relationship from utility to loyalty through a behavior-driven rewards engine.',
+    rate: '$120k - 180k',
+    tags: ['FINTECH', 'REWARDS', 'ACTIVE'],
+    location: 'Lagos / Remote',
+    time: '24-week engagement',
+    updatedAt: 'Updated 2h ago',
+    startDate: 'Jan 15',
+    endDate: 'Jun 30',
     arena: 'Technology & Fintech',
-    owner: 'Jide Pinheiro',
-    progress: 36,
-    phase: 'Pod assembly',
-    lead: 'Tobi Adeyemi',
-    podSlug: 'payments_strike',
-    nextMilestone: 'Client approves final pod',
-    nextReview: 'Jan 16',
+    owner: 'Product office',
+    updates: [
+      'Reward logic validated with focus group',
+      'Merchant API documentation drafted',
+      'V1 dashboard wireframes approved',
+    ],
+    phase: 'Build phase',
+    lead: 'Sarah Chen',
+    nextMilestone: 'Merchant API V1 Release',
+    nextReview: 'Jan 22',
     scope: [
-      'Map merchant acquisition channels and partnership routes',
-      'Shape launch sequencing for Lagos before wider expansion',
-      'Translate regulatory and trust constraints into commercial actions',
+      'Design behavior-based reward triggers and tiers',
+      'Merchant partner onboarding and API integration',
+      'End-to-end customer journey for point redemption',
     ],
     requirements: [
-      'Fintech or payments market-entry experience',
-      'Strong operator network in Nigeria',
-      'Comfort working across client leadership and local partners',
+      'Experience in loyalty/rewards design for financial services',
+      'Technical product management for API-led products',
+      'Strong background in behavioral economics',
     ],
-    outcomes: [
-      'Validated launch sequence for Lagos merchant acquisition',
-      'Shortlist of local distribution and trust-carrier partners',
-      'Board-ready operating cadence for first 90 days',
-    ],
-    nextSteps: [
-      'Approve pod composition',
-      'Confirm target merchant segments',
-      'Share regulatory counsel notes',
+    milestones: [
+      { id: 'm1', title: 'Behavioral reward logic sign-off', amount: '$35,000', date: 'Feb 15', status: 'completed', paymentStatus: 'paid' },
+      { id: 'm2', title: 'Merchant API V1 documentation', amount: '$45,000', date: 'Mar 22', status: 'in-progress', paymentStatus: 'unpaid' },
+      { id: 'm3', title: 'Loyalty dashboard MVP release', amount: '$60,000', date: 'May 10', status: 'pending', paymentStatus: 'unpaid' },
+      { id: 'm4', title: 'Merchant partner pilot launch', amount: '$40,000', date: 'Jun 30', status: 'pending', paymentStatus: 'unpaid' },
     ],
   },
   {
     id: 2,
-    slug: 'eazebank-growth-reset',
-    title: 'Acquisition and activation reset',
-    client: 'EazeBank',
-    type: 'PROJECT',
+    slug: 't-finance-retention-sprints',
+    title: 'Growth and retention operating sprint',
+    client: 'T-Finance',
+    type: 'RETAINED',
     status: 'Active',
-    summary: 'Diagnose stalled growth and turn the funnel reset into a 12-week operating sprint across acquisition, activation, and retention.',
-    rate: '$75k - 150k',
-    tags: ['FINTECH', 'GROWTH', 'RETENTION'],
-    location: 'Nigeria / Remote',
-    time: '3 - 6 months',
-    updatedAt: 'Updated Jan 10',
-    startDate: 'Jan 10',
-    endDate: 'Jul 10',
+    podSlug: 'growth_squad',
+    summary: 'Embedded growth pod focused on identifying and closing retention leaks in the core consumer lending funnel.',
+    rate: '$15k - 30k/mo',
+    tags: ['FINTECH', 'GROWTH', 'ACTIVE'],
+    location: 'Nairobi',
+    time: '12-week sprint',
+    updatedAt: 'Updated 4h ago',
+    startDate: 'Jan 12',
+    endDate: 'Apr 12',
     arena: 'Technology & Fintech',
-    owner: 'Commercial team',
+    owner: 'Growth office',
     updates: [
       'Diagnostic phase complete',
       'Retention leaks mapped',
       'Sprint cadence established',
     ],
-    progress: 58,
     phase: 'Diagnostic playback',
     lead: 'Daniel Osei',
     nextMilestone: 'Approve 12-week sprint plan',
@@ -115,15 +122,10 @@ export const jobs: Job[] = [
       'Ability to diagnose funnel and channel performance',
       'Experience with African fintech or regulated consumer finance',
     ],
-    outcomes: [
-      'Channel and activation leak audit',
-      'Weekly leadership scorecard',
-      'Retention experiments and ownership map',
-    ],
-    nextSteps: [
-      'Review diagnostic findings',
-      'Select retention test markets',
-      'Approve sprint governance',
+    milestones: [
+      { id: 'm1', title: 'Funnel diagnostic audit', amount: '$15,000', date: 'Feb 20', status: 'completed', paymentStatus: 'paid' },
+      { id: 'm2', title: '12-week growth sprint plan', amount: '$25,000', date: 'Mar 30', status: 'completed', paymentStatus: 'unpaid' },
+      { id: 'm3', title: 'Retention experiment execution', amount: '$45,000', date: 'Jul 10', status: 'pending', paymentStatus: 'unpaid' },
     ],
   },
   {
@@ -140,7 +142,6 @@ export const jobs: Job[] = [
     time: '8-week opportunity build',
     updatedAt: 'Updated Jan 8',
     startDate: 'Jan 8',
-    endDate: 'Mar 5',
     arena: 'Public Infrastructure',
     owner: 'Strategy office',
     scope: [
@@ -154,15 +155,10 @@ export const jobs: Job[] = [
       'Public-sector liaison',
       'Product strategist',
     ],
-    outcomes: [
-      'Strategic opportunity brief',
-      'Two validated demand clusters',
-      'Pilot economics and governance model',
-    ],
-    nextSteps: [
-      'Confirm cluster selection criteria',
-      'Share historic tender pipeline',
-      'Approve validation interview list',
+    milestones: [
+      { id: 'm1', title: 'Strategic opportunity brief', amount: '$10,000', date: 'Jan 25', status: 'pending', paymentStatus: 'unpaid' },
+      { id: 'm2', title: 'Demand cluster validation', amount: '$15,000', date: 'Feb 15', status: 'pending', paymentStatus: 'unpaid' },
+      { id: 'm3', title: 'Pilot economics model', amount: '$20,000', date: 'Mar 5', status: 'pending', paymentStatus: 'unpaid' },
     ],
   },
   {
@@ -214,15 +210,10 @@ export const jobs: Job[] = [
       'Comfortable operating as the sole senior commercial voice',
       'Strong distributor and retailer network in Lagos and Southwest Nigeria',
     ],
-    outcomes: [
-      'Unified brand and trade marketing calendar',
-      'Distributor performance scorecard and quarterly review cadence',
-      'Internal playbook for brand and commercial execution',
-    ],
-    nextSteps: [
-      'Share current brand guidelines and distributor contracts',
-      'Agree on operating cadence and reporting line',
-      'Shortlist two to three operators for a brief call',
+    milestones: [
+      { id: 'm1', title: 'Brand positioning framework', amount: '$4,000', date: 'Jun 15', status: 'pending', paymentStatus: 'unpaid' },
+      { id: 'm2', title: 'Distributor scorecard system', amount: '$4,000', date: 'Aug 10', status: 'pending', paymentStatus: 'unpaid' },
+      { id: 'm3', title: 'Trade marketing playbook', amount: '$6,000', date: 'Nov 14', status: 'pending', paymentStatus: 'unpaid' },
     ],
   },
   {
@@ -253,16 +244,10 @@ export const jobs: Job[] = [
       'Ability to work between board-level strategy and weekly execution',
       'Experience building merchant network depth in mass-market contexts',
     ],
-    outcomes: [
-      'Activation leak audit across registration, first transaction, and repeat use',
-      'Merchant and bill-payment channel playbook for Lagos and tier-2 cities',
-      'Trust signal and habit formation framework for unbanked segments',
-      'Board-ready 90-day commercial operating plan',
-    ],
-    nextSteps: [
-      'Align on activation KPIs with Parady brand growth leadership',
-      'Access anonymised cohort data for registration-to-use funnel',
-      'Confirm priority merchant segments for first sprint',
+    milestones: [
+      { id: 'm1', title: 'Activation leak audit', amount: '$15,000', date: 'Jun 20', status: 'pending', paymentStatus: 'unpaid' },
+      { id: 'm2', title: 'Merchant channel playbook', amount: '$20,000', date: 'Aug 15', status: 'pending', paymentStatus: 'unpaid' },
+      { id: 'm3', title: '90-day growth sprint delivery', amount: '$35,000', date: 'Sep 30', status: 'pending', paymentStatus: 'unpaid' },
     ],
   },
   {
@@ -290,10 +275,10 @@ export const jobs: Job[] = [
       'UK regulatory and FCA authorisation experience',
       'Payments and e-money institution compliance background',
     ],
-    outcomes: [
-      'FCA authorisation roadmap',
-      'Compliance operating model',
-      'Board-ready risk register',
+    milestones: [
+      { id: 'm1', title: 'FCA authorisation roadmap', amount: '$25,000', date: 'Aug 25', status: 'completed', paymentStatus: 'paid' },
+      { id: 'm2', title: 'Compliance governance structure', amount: '$30,000', date: 'Sep 20', status: 'completed', paymentStatus: 'paid' },
+      { id: 'm3', title: 'Regulatory risk register', amount: '$20,000', date: 'Oct 14', status: 'completed', paymentStatus: 'paid' },
     ],
   },
   {
@@ -321,14 +306,20 @@ export const jobs: Job[] = [
       'Consumer fintech go-to-market experience',
       'Channel economics and growth modelling',
     ],
-    outcomes: [
-      'Go-to-market playbook for three UK cities',
-      'Channel economics model',
-      'Launch messaging framework',
+    milestones: [
+      { id: 'm1', title: 'Customer segment definition', amount: '$15,000', date: 'Jun 15', status: 'completed', paymentStatus: 'paid' },
+      { id: 'm2', title: 'Channel economics model', amount: '$15,000', date: 'Jun 30', status: 'completed', paymentStatus: 'paid' },
+      { id: 'm3', title: 'Launch messaging framework', amount: '$20,000', date: 'Jul 22', status: 'completed', paymentStatus: 'paid' },
     ],
   },
 ]
 
 export function getJobBySlug(slug: string) {
   return jobs.find((job) => job.slug === slug) ?? null
+}
+
+export function getJobProgress(job: Job) {
+  if (!job.milestones || job.milestones.length === 0) return 0
+  const completed = job.milestones.filter(m => m.status === 'completed').length
+  return Math.round((completed / job.milestones.length) * 100)
 }
