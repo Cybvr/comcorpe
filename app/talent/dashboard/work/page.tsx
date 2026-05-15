@@ -1,19 +1,19 @@
-import ApplicationCard from '@/components/dashboard/ApplicationCard'
-import { applications } from '@/lib/applications'
+import TalentJobsBoard from '@/components/dashboard/TalentJobsBoard'
+import { jobs } from '@/lib/jobs'
+import { currentUser } from '@/lib/user'
 
 export default function WorkPage() {
-  return (
-    <div className="px-8 py-8 max-w-[900px] mx-auto">
-      <div className="mb-6">
-        <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">My work</p>
-        <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-none">Applications and active work</h1>
-      </div>
+  const assignedSlugs = currentUser.assignedJobSlugs ?? []
+  const assignedJobs = jobs.filter((job) => assignedSlugs.includes(job.slug))
 
-      <div className="flex flex-col gap-3">
-        {applications.map((application) => (
-          <ApplicationCard key={application.id} application={application} />
-        ))}
-      </div>
-    </div>
+  return (
+    <TalentJobsBoard
+      title="My work"
+      jobs={assignedJobs}
+      countLabel={`${assignedJobs.length} assigned`}
+      variant="assigned"
+      searchPlaceholder="Search assigned work..."
+      emptyLabel="assigned jobs"
+    />
   )
 }

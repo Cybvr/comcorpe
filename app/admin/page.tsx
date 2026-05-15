@@ -19,9 +19,12 @@ export default function AdminOverviewPage() {
   const [jobs, setJobs] = useState<Job[]>([])
 
   useEffect(() => {
-    setTalent(getTalent())
-    setClients(getClients())
-    setJobs(getJobs())
+    const frame = requestAnimationFrame(() => {
+      setTalent(getTalent())
+      setClients(getClients())
+      setJobs(getJobs())
+    })
+    return () => cancelAnimationFrame(frame)
   }, [])
 
   const activeJobs = jobs.filter(j => j.status === 'Active').length

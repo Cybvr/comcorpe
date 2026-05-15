@@ -6,7 +6,6 @@ const KEYS = {
   talent: 'admin_talent',
   clients: 'admin_clients',
   jobs: 'admin_jobs',
-  auth: 'admin_auth',
 }
 
 function read<T>(key: string, seed: T[]): T[] {
@@ -23,22 +22,6 @@ function read<T>(key: string, seed: T[]): T[] {
 function write<T>(key: string, data: T[]): void {
   if (typeof window === 'undefined') return
   localStorage.setItem(key, JSON.stringify(data))
-}
-
-// ─── Auth ──────────────────────────────────────────────────────────────────
-export function adminLogin(password: string): boolean {
-  if (password !== 'admin2026') return false
-  localStorage.setItem(KEYS.auth, '1')
-  return true
-}
-
-export function adminLogout(): void {
-  localStorage.removeItem(KEYS.auth)
-}
-
-export function isAdminAuthed(): boolean {
-  if (typeof window === 'undefined') return false
-  return localStorage.getItem(KEYS.auth) === '1'
 }
 
 // ─── Talent ────────────────────────────────────────────────────────────────

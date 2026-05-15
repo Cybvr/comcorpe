@@ -10,14 +10,16 @@ import {
   Gift,
   HelpCircle,
   Home,
+  LayoutDashboard,
   MessageCircle,
   Search,
+  Shield,
   Users,
   X,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
-export type DashboardAudience = 'talent' | 'client'
+export type DashboardAudience = 'talent' | 'client' | 'admin'
 
 type SidebarItem = {
   icon: LucideIcon
@@ -62,10 +64,21 @@ const dashboardConfig: Record<DashboardAudience, {
       { icon: HelpCircle, label: 'Help centre', href: '/client/dashboard/help' },
     ],
   },
+  admin: {
+    label: 'Admin',
+    root: '/admin',
+    primaryItems: [
+      { icon: LayoutDashboard, label: 'Overview', href: '/admin' },
+      { icon: Users, label: 'Talent', href: '/admin/talent' },
+      { icon: Briefcase, label: 'Jobs', href: '/admin/jobs' },
+      { icon: Shield, label: 'Clients', href: '/admin/clients' },
+    ],
+    supportItems: [],
+  },
 }
 
 function isActivePath(pathname: string, href: string) {
-  if (href === '/talent/dashboard' || href === '/client/dashboard') {
+  if (href === '/talent/dashboard' || href === '/client/dashboard' || href === '/admin') {
     return pathname === href
   }
 
@@ -99,8 +112,8 @@ function SidebarLink({ item }: { item: SidebarItem }) {
 
 function DashboardSwitch({ audience }: { audience: DashboardAudience }) {
   return (
-    <div className="grid grid-cols-2 gap-1 rounded-lg bg-ink-10 p-1 mt-4">
-      {(['talent', 'client'] as DashboardAudience[]).map((option) => {
+    <div className="grid grid-cols-3 gap-1 rounded-lg bg-ink-10 p-1 mt-4">
+      {(['talent', 'client', 'admin'] as DashboardAudience[]).map((option) => {
         const config = dashboardConfig[option]
         const active = option === audience
 
@@ -157,13 +170,15 @@ export default function DashboardSidebar({
         ))}
       </nav>
 
-      <div className="p-3 border-t border-ink-10">
-        {config.supportItems.map((item) => (
-          <div key={item.href} onClick={onClose}>
-            <SidebarLink item={item} />
-          </div>
-        ))}
-      </div>
+      {config.supportItems.length > 0 && (
+        <div className="p-3 border-t border-ink-10">
+          {config.supportItems.map((item) => (
+            <div key={item.href} onClick={onClose}>
+              <SidebarLink item={item} />
+            </div>
+          ))}
+        </div>
+      )}
     </aside>
   )
 }

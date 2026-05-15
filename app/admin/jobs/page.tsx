@@ -156,7 +156,10 @@ export default function AdminJobsPage() {
   const [search, setSearch] = useState('')
 
   function reload() { setJobs(getJobs()) }
-  useEffect(() => { reload() }, [])
+  useEffect(() => {
+    const frame = requestAnimationFrame(reload)
+    return () => cancelAnimationFrame(frame)
+  }, [])
 
   const filtered = jobs
     .filter(j => filter === 'All' || j.status === filter)

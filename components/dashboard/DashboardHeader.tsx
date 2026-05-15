@@ -1,15 +1,15 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Bell, ChevronDown, LogOut, Menu, Moon, Search, Settings, Sun, SwitchCamera } from 'lucide-react'
+import { Bell, ChevronDown, LogOut, Menu, Moon, Search, Settings, Shield, Sun, SwitchCamera, User } from 'lucide-react'
 import Link from 'next/link'
 import { currentUser } from '@/lib/user'
-
-type DashboardAudience = 'talent' | 'client'
+import type { DashboardAudience } from './DashboardSidebar'
 
 const searchPlaceholder: Record<DashboardAudience, string> = {
   talent: 'Search jobs, cases and resources',
   client: 'Search briefs, projects, talent and invoices',
+  admin: 'Search talent, jobs and clients',
 }
 
 export default function DashboardHeader({
@@ -54,9 +54,15 @@ export default function DashboardHeader({
     localStorage.setItem('theme', next ? 'dark' : 'light')
   }
 
-  const otherDashboard = audience === 'talent'
-    ? { label: 'Client dashboard', href: '/client/dashboard' }
-    : { label: 'Talent dashboard', href: '/talent/dashboard' }
+  const profileHref = audience === 'talent'
+    ? '/talent/dashboard/profile'
+    : '/client/dashboard/profile'
+
+  const dashboardLinks = [
+    { audience: 'client' as const, label: 'Client dashboard', href: '/client/dashboard', Icon: SwitchCamera },
+    { audience: 'talent' as const, label: 'Talent dashboard', href: '/talent/dashboard', Icon: SwitchCamera },
+    { audience: 'admin' as const, label: 'Admin', href: '/admin', Icon: Shield },
+  ].filter((item) => item.audience !== audience)
 
   return (
     <header className="h-13 shrink-0 border-b border-ink-10 flex items-center gap-3 px-4 lg:px-6 bg-paper">
@@ -78,14 +84,6 @@ export default function DashboardHeader({
       </div>
 
       <div className="flex items-center gap-2 ml-auto">
-        <button
-          type="button"
-          onClick={toggleDark}
-          aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-          className="hidden sm:flex w-8 h-8 items-center justify-center rounded-full text-ink-60 hover:bg-ink-10 transition-colors cursor-pointer"
-        >
-          {darkMode ? <Sun size={14} strokeWidth={1.5} /> : <Moon size={14} strokeWidth={1.5} />}
-        </button>
         <button
           type="button"
           aria-label="Notifications"
@@ -130,14 +128,26 @@ export default function DashboardHeader({
               {/* Menu items */}
               <div className="py-1.5">
                 <Link
-                  href={otherDashboard.href}
+                  href={profileHref}
                   role="menuitem"
                   onClick={() => setUserMenuOpen(false)}
                   className="flex items-center gap-3 px-4 py-2.5 font-text text-sm text-ink-60 hover:bg-ink-10 hover:text-ink transition-colors"
                 >
-                  <SwitchCamera size={14} strokeWidth={1.5} className="text-blue shrink-0" />
-                  {otherDashboard.label}
+                  <User size={14} strokeWidth={1.5} className="shrink-0" />
+                  My profile
                 </Link>
+                {dashboardLinks.map(({ href, label, Icon }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    role="menuitem"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 font-text text-sm text-ink-60 hover:bg-ink-10 hover:text-ink transition-colors"
+                  >
+                    <Icon size={14} strokeWidth={1.5} className="text-blue shrink-0" />
+                    {label}
+                  </Link>
+                ))}
                 <button
                   role="menuitem"
                   onClick={() => { toggleDark(); setUserMenuOpen(false) }}

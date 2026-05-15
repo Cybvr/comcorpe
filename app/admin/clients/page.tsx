@@ -79,7 +79,10 @@ export default function AdminClientsPage() {
   const [search, setSearch] = useState('')
 
   function reload() { setClients(getClients()) }
-  useEffect(() => { reload() }, [])
+  useEffect(() => {
+    const frame = requestAnimationFrame(reload)
+    return () => cancelAnimationFrame(frame)
+  }, [])
 
   const filtered = clients.filter(c =>
     c.name.toLowerCase().includes(search.toLowerCase()) ||

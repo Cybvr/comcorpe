@@ -19,6 +19,7 @@ export interface User {
   featured?: boolean
   image?: string
   rate?: string
+  assignedJobSlugs?: string[]
 }
 
 // ─── Client company users ─────────────────────────────────────────────────────
@@ -49,6 +50,11 @@ export const currentUser: User = {
   company: 'Volta Pay',
   clientId: 'volta-pay',
   credits: 3,
+  assignedJobSlugs: [
+    'volks-bank-loyalty-systems',
+    't-finance-retention-sprints',
+    'volta-pay-nigeria-entry',
+  ],
 }
 
 // ─── All platform users (talent operators) ────────────────────────────────────

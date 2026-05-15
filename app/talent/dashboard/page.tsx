@@ -8,12 +8,10 @@ import {
   Zap,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import ApplicationCard from '@/components/dashboard/ApplicationCard'
 import JobCard from '@/components/dashboard/JobCard'
 import OperatorCard from '@/components/dashboard/OperatorCard'
 import GrowthCommunity from '@/components/dashboard/GrowthCommunity'
 import SpaceCard from '@/components/dashboard/SpaceCard'
-import { applications } from '@/lib/applications'
 import { jobs } from '@/lib/jobs'
 import { topOperators } from '@/lib/operators'
 import { referral } from '@/lib/referrals'
@@ -49,6 +47,9 @@ const homeActions: HomeAction[] = [
 ]
 
 export default function DashboardPage() {
+  const assignedSlugs = currentUser.assignedJobSlugs ?? []
+  const assignedJobs = jobs.filter((job) => assignedSlugs.includes(job.slug))
+
   return (
     <div className="px-6 py-6 lg:px-8 lg:py-8 max-w-[1200px] mx-auto">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
@@ -111,14 +112,14 @@ export default function DashboardPage() {
 
           <section>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">I&apos;ve submitted to</h2>
+              <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">My assigned work</h2>
               <Link href="/talent/dashboard/work" className="font-text text-xs text-blue hover:underline flex items-center gap-1">
-                View all applications <ChevronRight size={12} />
+                View all work <ChevronRight size={12} />
               </Link>
             </div>
             <div className="flex flex-col gap-3">
-              {applications.map((application) => (
-                <ApplicationCard key={application.id} application={application} />
+              {assignedJobs.map((job) => (
+                <JobCard key={job.id} job={job} />
               ))}
             </div>
           </section>

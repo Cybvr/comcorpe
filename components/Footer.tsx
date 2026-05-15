@@ -47,7 +47,11 @@ export default function Footer() {
 
       <div className="px-6 md:px-24 py-6 flex flex-col md:flex-row items-center justify-between border-t border-paper/[0.12] font-mono text-xs text-paper/50 gap-4">
         <span>© 2026 Comcorpᵉ Ltd. All rights reserved.</span>
-        <span>A Growth Systems Company</span>
+        <div className="flex items-center gap-4">
+          <a href="/privacy" className="hover:text-blue transition-colors">Privacy</a>
+          <a href="/terms" className="hover:text-blue transition-colors">Terms</a>
+          <a href="/cookies" className="hover:text-blue transition-colors">Cookies</a>
+        </div>
       </div>
     </footer>
   )

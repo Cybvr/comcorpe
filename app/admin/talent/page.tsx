@@ -122,7 +122,10 @@ export default function AdminTalentPage() {
     setTalent(getTalent())
   }
 
-  useEffect(() => { reload() }, [])
+  useEffect(() => {
+    const frame = requestAnimationFrame(reload)
+    return () => cancelAnimationFrame(frame)
+  }, [])
 
   const filtered = talent.filter(u =>
     u.name.toLowerCase().includes(search.toLowerCase()) ||
