@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Bell, ChevronDown, LogOut, Menu, Moon, Search, Settings, Sun, SwitchCamera } from 'lucide-react'
+import { Bell, ChevronDown, LogOut, Menu, Search, Settings, SwitchCamera, User } from 'lucide-react'
 import Link from 'next/link'
 import { currentUser } from '@/lib/user'
 
@@ -19,22 +19,8 @@ export default function DashboardHeader({
   audience?: DashboardAudience
   onMenuClick?: () => void
 }) {
-  const [darkMode, setDarkMode] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const saved = localStorage.getItem('theme')
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const isDark = saved === 'dark' || (!saved && prefersDark)
-
-    if (isDark) {
-      document.documentElement.classList.add('dark')
-    }
-
-    const frame = requestAnimationFrame(() => setDarkMode(isDark))
-    return () => cancelAnimationFrame(frame)
-  }, [])
 
   // Close user menu on outside click
   useEffect(() => {
@@ -47,12 +33,7 @@ export default function DashboardHeader({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const toggleDark = () => {
-    const next = !darkMode
-    setDarkMode(next)
-    document.documentElement.classList.toggle('dark', next)
-    localStorage.setItem('theme', next ? 'dark' : 'light')
-  }
+  const profileHref = `/${audience}/dashboard/profile`
 
   const otherDashboard = audience === 'talent'
     ? { label: 'Client dashboard', href: '/client/dashboard' }
@@ -78,14 +59,6 @@ export default function DashboardHeader({
       </div>
 
       <div className="flex items-center gap-2 ml-auto">
-        <button
-          type="button"
-          onClick={toggleDark}
-          aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-          className="hidden sm:flex w-8 h-8 items-center justify-center rounded-full text-ink-60 hover:bg-ink-10 transition-colors cursor-pointer"
-        >
-          {darkMode ? <Sun size={14} strokeWidth={1.5} /> : <Moon size={14} strokeWidth={1.5} />}
-        </button>
         <button
           type="button"
           aria-label="Notifications"
@@ -130,6 +103,15 @@ export default function DashboardHeader({
               {/* Menu items */}
               <div className="py-1.5">
                 <Link
+                  href={profileHref}
+                  role="menuitem"
+                  onClick={() => setUserMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 font-text text-sm text-ink-60 hover:bg-ink-10 hover:text-ink transition-colors"
+                >
+                  <User size={14} strokeWidth={1.5} className="shrink-0" />
+                  My profile
+                </Link>
+                <Link
                   href={otherDashboard.href}
                   role="menuitem"
                   onClick={() => setUserMenuOpen(false)}
@@ -138,16 +120,6 @@ export default function DashboardHeader({
                   <SwitchCamera size={14} strokeWidth={1.5} className="text-blue shrink-0" />
                   {otherDashboard.label}
                 </Link>
-                <button
-                  role="menuitem"
-                  onClick={() => { toggleDark(); setUserMenuOpen(false) }}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 font-text text-sm text-ink-60 hover:bg-ink-10 hover:text-ink transition-colors"
-                >
-                  {darkMode
-                    ? <Sun size={14} strokeWidth={1.5} className="text-blue shrink-0" />
-                    : <Moon size={14} strokeWidth={1.5} className="text-blue shrink-0" />}
-                  {darkMode ? 'Light mode' : 'Dark mode'}
-                </button>
                 <Link
                   href="#settings"
                   role="menuitem"
