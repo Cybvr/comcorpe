@@ -3,54 +3,6 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme {
-  --font-display: 'Archivo Black', system-ui, sans-serif;
-  --font-text: 'Inter Tight', Inter, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
-
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-
-  --tracking-hero: -0.045em;
-  --tracking-display: -0.04em;
-  --tracking-h3: -0.02em;
-  --tracking-body: -0.005em;
-  --tracking-eyebrow: 0.12em;
-
-  --leading-display: 0.92;
-  --leading-tight: 1.04;
-  --leading-body: 1.55;
-  --leading-lede: 1.4;
-
-  --animate-ticker: ccticker 40s linear infinite;
-
-  @keyframes ccticker {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
-}
-
 :root {
   --radius: 0.75rem;
   --background: #F6F4EF;
@@ -109,9 +61,71 @@
   --input: #D4D2CC;
 }
 
-html { -webkit-text-size-adjust: 100%; }
-body { text-rendering: optimizeLegibility; }
-::selection { background: var(--foreground); color: var(--background); }
+@theme inline {
+  --font-display: 'Archivo Black', system-ui, sans-serif;
+  --font-text: 'Inter Tight', Inter, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --tracking-hero: -0.045em;
+  --tracking-display: -0.04em;
+  --tracking-h3: -0.02em;
+  --tracking-body: -0.005em;
+  --tracking-eyebrow: 0.12em;
+
+  --leading-display: 0.92;
+  --leading-tight: 1.04;
+  --leading-body: 1.55;
+  --leading-lede: 1.4;
+
+  --animate-ticker: ccticker 40s linear infinite;
+
+  @keyframes ccticker {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--foreground);
+  color: var(--background);
+}
 
 .gradient-e {
   background: linear-gradient(180deg, var(--primary) 0%, var(--accent) 100%);
