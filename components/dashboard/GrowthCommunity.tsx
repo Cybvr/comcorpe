@@ -10,8 +10,8 @@ export default function GrowthCommunity({ audience }: { audience: 'talent' | 'cl
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">Growth community</h2>
-        <Link href={communityHref} className="font-text text-xs text-blue hover:underline">View all posts</Link>
+        <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-foreground">Growth community</h2>
+        <Link href={communityHref} className="font-text text-xs text-primary hover:underline">View all posts</Link>
       </div>
 
       <DashboardPostComposer />
@@ -22,7 +22,7 @@ export default function GrowthCommunity({ audience }: { audience: 'talent' | 'cl
         ))}
       </div>
 
-      <button className="font-text text-sm text-ink-60 hover:text-ink transition-colors flex items-center gap-2 justify-center py-3 border border-ink-10 rounded-xl hover:border-ink-20">
+      <button className="font-text text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 justify-center py-3 border border-border rounded-xl hover:border-input">
         <RotateCcw size={13} /> Load more posts
       </button>
     </div>

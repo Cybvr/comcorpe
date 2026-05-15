@@ -8,11 +8,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="flex h-screen bg-paper overflow-hidden font-text">
+    <div className="flex h-screen bg-background overflow-hidden font-text">
       {/* Mobile Backdrop */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-ink/40 backdrop-blur-sm z-40 lg:hidden" 
+          className="fixed inset-0 bg-foreground/40 backdrop-blur-sm z-40 lg:hidden" 
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -30,7 +30,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           audience="client" 
           onMenuClick={() => setSidebarOpen(true)} 
         />
-        <main className="flex-1 overflow-y-auto bg-paper w-full">{children}</main>
+        <main className="flex-1 overflow-y-auto bg-background w-full">{children}</main>
       </div>
     </div>
   )

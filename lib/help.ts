@@ -118,7 +118,7 @@ export function getHelpTopic(slug: string) {
 }
 
 export const clientReferral = {
-  link: 'https://app.comcorpe.e/client/r/jide...',
+  link: 'https://app.comcorpe.com/client/r/jide...',
   channels: ['Email', 'LinkedIn', 'Board channel'],
   clientShare: '3%',
   talentShare: '1%',

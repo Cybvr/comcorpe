@@ -118,7 +118,7 @@ export default function Nav() {
 
   return (
     <>
-      <nav className={`sticky top-0 z-50 h-16 grid grid-cols-[auto_1fr_auto] items-center px-6 md:px-24 border-b transition-all duration-[240ms] ${scrolled || menuOpen ? 'bg-paper/95 backdrop-blur-md border-ink-10' : 'border-transparent bg-transparent'}`}>
+      <nav className={`sticky top-0 z-50 h-16 grid grid-cols-[auto_1fr_auto] items-center px-6 md:px-24 border-b transition-all duration-[240ms] ${scrolled || menuOpen ? 'bg-background/95 backdrop-blur-md border-border' : 'border-transparent bg-transparent'}`}>
         <Link href="/" className="block justify-self-start">
           <img src="/images/comcorpe.png" alt="Comcorpe" className="h-6 md:h-7 w-auto object-contain dark:invert" />
         </Link>
@@ -129,7 +129,7 @@ export default function Nav() {
             <div key={item.label} className="relative group">
               {item.dropdown ? (
                 <div className="py-5 cursor-default">
-                  <span className="font-text text-sm font-medium tracking-body text-ink pb-0.5 border-b border-transparent group-hover:border-blue group-hover:text-blue transition-colors duration-[120ms] inline-flex items-center gap-1.5">
+                  <span className="font-text text-sm font-medium tracking-body text-foreground pb-0.5 border-b border-transparent group-hover:border-primary group-hover:text-primary transition-colors duration-[120ms] inline-flex items-center gap-1.5">
                     {item.label}
                     <svg width="10" height="10" viewBox="0 0 10 10" className="opacity-40 group-hover:opacity-100 transition-opacity mt-px" fill="none">
                       <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
@@ -137,7 +137,7 @@ export default function Nav() {
                   </span>
 
                   {/* Dropdown panel */}
-                  <div className={`absolute top-full mt-0 bg-paper border border-ink-10 shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 p-3 gap-1
+                  <div className={`absolute top-full mt-0 bg-background border border-border shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 p-3 gap-1
                     ${item.dropdown.length === 3
                       ? 'left-1/2 -translate-x-1/2 w-[600px] grid grid-cols-3'
                       : 'left-1/2 -translate-x-1/2 w-[640px] grid grid-cols-2'
@@ -149,14 +149,14 @@ export default function Nav() {
                         <button
                           key={subItem.label}
                           onClick={() => handleNav(subItem)}
-                          className="text-left p-4 hover:bg-ink/[0.04] transition-colors duration-150 border-0 bg-transparent cursor-pointer flex flex-col gap-3 rounded-sm group/sub"
+                          className="text-left p-4 hover:bg-foreground/[0.04] transition-colors duration-150 border-0 bg-transparent cursor-pointer flex flex-col gap-3 rounded-sm group/sub"
                         >
-                          <div className="w-10 h-10 shrink-0 bg-ink-10 border border-ink-10 flex items-center justify-center text-ink-60 group-hover/sub:bg-blue/10 group-hover/sub:border-blue/20 group-hover/sub:text-blue transition-colors duration-150">
+                          <div className="w-10 h-10 shrink-0 bg-border border border-border flex items-center justify-center text-muted-foreground group-hover/sub:bg-primary/10 group-hover/sub:border-primary/20 group-hover/sub:text-primary transition-colors duration-150">
                             <Icon size={18} strokeWidth={1.5} />
                           </div>
                           <div className="flex flex-col gap-1">
-                            <span className="font-display font-black text-[16px] tracking-[-0.01em] text-ink group-hover/sub:text-blue transition-colors duration-150 leading-tight">{subItem.label}</span>
-                            <span className="font-text text-[12px] leading-relaxed text-ink-60">{subItem.desc}</span>
+                            <span className="font-display font-black text-[16px] tracking-[-0.01em] text-foreground group-hover/sub:text-primary transition-colors duration-150 leading-tight">{subItem.label}</span>
+                            <span className="font-text text-[12px] leading-relaxed text-muted-foreground">{subItem.desc}</span>
                           </div>
                         </button>
                       )
@@ -166,7 +166,7 @@ export default function Nav() {
               ) : (
                 <button
                   onClick={() => handleNav(item)}
-                  className="font-text text-sm font-medium tracking-body text-ink cursor-pointer pb-0.5 border-b border-transparent hover:border-blue hover:text-blue transition-colors duration-[120ms] bg-transparent border-0"
+                  className="font-text text-sm font-medium tracking-body text-foreground cursor-pointer pb-0.5 border-b border-transparent hover:border-primary hover:text-primary transition-colors duration-[120ms] bg-transparent border-0"
                 >
                   {item.label}
                 </button>
@@ -180,20 +180,20 @@ export default function Nav() {
           <button
             onClick={toggleDark}
             aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-            className="w-8 h-8 flex items-center justify-center rounded-full text-ink hover:bg-ink-10 transition-colors duration-[120ms] cursor-pointer"
+            className="w-8 h-8 flex items-center justify-center rounded-full text-foreground hover:bg-border transition-colors duration-[120ms] cursor-pointer"
           >
             {darkMode ? <Sun size={15} strokeWidth={1.5} /> : <Moon size={15} strokeWidth={1.5} />}
           </button>
           <Link
             href={currentUser.role === 'client' ? '/client/dashboard' : '/talent/dashboard'}
-            className="font-text text-[13px] font-semibold px-[16px] py-[9px] rounded-full border border-ink-20 text-ink hover:border-blue hover:text-blue transition-colors duration-[120ms] inline-flex items-center gap-1.5"
+            className="font-text text-[13px] font-semibold px-[16px] py-[9px] rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms] inline-flex items-center gap-1.5"
           >
             <LayoutDashboard size={14} strokeWidth={1.6} />
             Dashboard
           </Link>
           <Link
             href="/book"
-            className="font-text text-[13px] font-semibold px-[18px] py-[10px] rounded-full bg-ink text-paper hover:bg-blue transition-colors duration-[120ms]"
+            className="font-text text-[13px] font-semibold px-[18px] py-[10px] rounded-full bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
           >
             Book a session call
           </Link>
@@ -204,27 +204,27 @@ export default function Nav() {
           <button
             onClick={toggleDark}
             aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-            className="w-8 h-8 flex items-center justify-center rounded-full text-ink hover:bg-ink-10 transition-colors duration-[120ms] cursor-pointer"
+            className="w-8 h-8 flex items-center justify-center rounded-full text-foreground hover:bg-border transition-colors duration-[120ms] cursor-pointer"
           >
             {darkMode ? <Sun size={15} strokeWidth={1.5} /> : <Moon size={15} strokeWidth={1.5} />}
           </button>
           <Link
             href={currentUser.role === 'client' ? '/client/dashboard' : '/talent/dashboard'}
             aria-label="Dashboard"
-            className="w-8 h-8 flex items-center justify-center rounded-full border border-ink-20 text-ink hover:border-blue hover:text-blue transition-colors duration-[120ms]"
+            className="w-8 h-8 flex items-center justify-center rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms]"
           >
             <LayoutDashboard size={15} strokeWidth={1.6} />
           </Link>
           <Link
             href="/book"
             aria-label="Book a session call"
-            className="sm:hidden w-8 h-8 flex items-center justify-center rounded-full bg-ink text-paper hover:bg-blue transition-colors duration-[120ms]"
+            className="sm:hidden w-8 h-8 flex items-center justify-center rounded-full bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
           >
             <CalendarDays size={15} strokeWidth={1.6} />
           </Link>
           <Link
             href="/book"
-            className="hidden sm:inline-flex font-text text-[12px] font-semibold px-4 py-2.5 rounded-full bg-ink text-paper hover:bg-blue transition-colors duration-[120ms]"
+            className="hidden sm:inline-flex font-text text-[12px] font-semibold px-4 py-2.5 rounded-full bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
           >
             Book a session call
           </Link>
@@ -233,21 +233,21 @@ export default function Nav() {
             className="w-9 h-9 flex flex-col justify-center items-center gap-1.5 bg-transparent border-0 cursor-pointer"
             aria-label="Toggle menu"
           >
-            <span className={`block w-5 h-px bg-ink transition-all duration-[240ms] ${menuOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
-            <span className={`block w-5 h-px bg-ink transition-all duration-[240ms] ${menuOpen ? 'opacity-0' : ''}`} />
-            <span className={`block w-5 h-px bg-ink transition-all duration-[240ms] ${menuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
+            <span className={`block w-5 h-px bg-foreground transition-all duration-[240ms] ${menuOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
+            <span className={`block w-5 h-px bg-foreground transition-all duration-[240ms] ${menuOpen ? 'opacity-0' : ''}`} />
+            <span className={`block w-5 h-px bg-foreground transition-all duration-[240ms] ${menuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
           </button>
         </div>
       </nav>
 
       {/* Mobile menu drawer */}
-      <div className={`fixed inset-0 top-16 z-40 bg-paper flex flex-col lg:hidden transition-all duration-[300ms] ${menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} overflow-y-auto pb-12`}>
+      <div className={`fixed inset-0 top-16 z-40 bg-background flex flex-col lg:hidden transition-all duration-[300ms] ${menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} overflow-y-auto pb-12`}>
         <div className="flex flex-col px-6 py-8 gap-1">
           {items.map((item) => (
             <div key={item.label}>
               {item.dropdown ? (
-                <div className="py-4 border-b border-ink-10">
-                  <div className="font-display font-black text-[28px] tracking-hero text-ink text-left w-full mb-5 opacity-40">
+                <div className="py-4 border-b border-border">
+                  <div className="font-display font-black text-[28px] tracking-hero text-foreground text-left w-full mb-5 opacity-40">
                     {item.label}
                   </div>
                   <div className="flex flex-col gap-4 pl-1">
@@ -259,12 +259,12 @@ export default function Nav() {
                           onClick={() => handleNav(subItem)}
                           className="text-left bg-transparent border-0 cursor-pointer flex gap-4 items-center group/mob w-full"
                         >
-                          <div className="w-11 h-11 shrink-0 bg-ink-10 border border-ink-10 flex items-center justify-center text-ink-60 group-hover/mob:border-blue group-hover/mob:text-blue group-hover/mob:bg-blue/10 transition-colors duration-200">
+                          <div className="w-11 h-11 shrink-0 bg-border border border-border flex items-center justify-center text-muted-foreground group-hover/mob:border-primary group-hover/mob:text-primary group-hover/mob:bg-primary/10 transition-colors duration-200">
                             <Icon size={18} strokeWidth={1.5} />
                           </div>
                           <div className="flex flex-col gap-0.5">
-                            <span className="font-display font-black text-[19px] tracking-[-0.01em] text-ink group-hover/mob:text-blue transition-colors duration-200 leading-tight">{subItem.label}</span>
-                            <span className="font-text text-[12px] leading-relaxed text-ink-60">{subItem.desc}</span>
+                            <span className="font-display font-black text-[19px] tracking-[-0.01em] text-foreground group-hover/mob:text-primary transition-colors duration-200 leading-tight">{subItem.label}</span>
+                            <span className="font-text text-[12px] leading-relaxed text-muted-foreground">{subItem.desc}</span>
                           </div>
                         </button>
                       )
@@ -274,7 +274,7 @@ export default function Nav() {
               ) : (
                 <button
                   onClick={() => handleNav(item)}
-                  className="font-display font-black text-[32px] tracking-hero text-ink text-left py-4 border-b border-ink-10 bg-transparent border-x-0 border-t-0 cursor-pointer hover:text-blue transition-colors duration-[120ms] w-full"
+                  className="font-display font-black text-[32px] tracking-hero text-foreground text-left py-4 border-b border-border bg-transparent border-x-0 border-t-0 cursor-pointer hover:text-primary transition-colors duration-[120ms] w-full"
                 >
                   {item.label}
                 </button>

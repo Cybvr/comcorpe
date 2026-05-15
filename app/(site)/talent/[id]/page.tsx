@@ -29,7 +29,7 @@ const archetypeMap: Record<string, { label: string; skills: string[]; markets: s
   'tobi-adeyemi':{ label: 'The Operator',   skills: ['Fintech Commercial Strategy', 'Regulated Markets', 'Revenue Architecture', 'CBN Navigation'], markets: ['Nigeria', 'UK', 'Pan-Africa'] },
 }
 
-const bgColors = ['bg-blue', 'bg-violet', 'bg-ink']
+const bgColors = ['bg-primary', 'bg-accent', 'bg-foreground']
 
 export default async function TalentProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -44,21 +44,21 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
   const bgColor = profile.color ?? bgColors[talentProfiles.findIndex(p => p.id === id) % bgColors.length]
 
   return (
-    <div className="bg-paper min-h-screen">
+    <div className="bg-background min-h-screen">
 
       {/* Hero */}
-      <div className="border-b border-ink">
+      <div className="border-b border-foreground">
         <div className="px-6 md:px-24 pt-14 pb-16 md:pt-20 md:pb-20">
 
           {/* Breadcrumb */}
-          <Link href="/talent" className="inline-flex items-center gap-2 font-mono text-xs text-ink-40 hover:text-blue transition-colors duration-[120ms] mb-12">
+          <Link href="/talent" className="inline-flex items-center gap-2 font-mono text-xs text-muted-foreground/70 hover:text-primary transition-colors duration-[120ms] mb-12">
             <ArrowLeft size={12} strokeWidth={1.5} />
             All talent
           </Link>
 
           <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-10 md:gap-16 items-start">
             {/* Avatar */}
-            <div className={`w-24 h-24 md:w-32 md:h-32 rounded-2xl ${bgColor} flex items-center justify-center font-display font-black text-[32px] md:text-[40px] text-paper shrink-0 border border-ink-10 overflow-hidden relative shadow-sm`}>
+            <div className={`w-24 h-24 md:w-32 md:h-32 rounded-2xl ${bgColor} flex items-center justify-center font-display font-black text-[32px] md:text-[40px] text-background shrink-0 border border-border overflow-hidden relative shadow-sm`}>
               {profile.image ? (
                 <Image src={profile.image} alt={profile.name} fill className="object-cover" />
               ) : (
@@ -69,12 +69,12 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
             {/* Info */}
             <div>
               <div className="flex flex-wrap items-center gap-3 mb-3">
-                <span className="font-mono text-[11px] uppercase tracking-eyebrow text-blue border border-blue px-2.5 py-1">{extra.label}</span>
-                <span className="font-mono text-[11px] uppercase tracking-eyebrow text-ink-40 border border-ink-20 px-2.5 py-1">Available for briefs</span>
+                <span className="font-mono text-[11px] uppercase tracking-eyebrow text-primary border border-primary px-2.5 py-1">{extra.label}</span>
+                <span className="font-mono text-[11px] uppercase tracking-eyebrow text-muted-foreground/70 border border-input px-2.5 py-1">Available for briefs</span>
               </div>
-              <h1 className="font-display font-black text-[clamp(40px,5vw,72px)] leading-[0.92] tracking-hero text-ink mb-3">{profile.name}</h1>
-              <p className="font-text text-[18px] text-ink-60 mb-4">{profile.role}</p>
-              <div className="flex items-center gap-2 font-mono text-xs text-ink-40">
+              <h1 className="font-display font-black text-[clamp(40px,5vw,72px)] leading-[0.92] tracking-hero text-foreground mb-3">{profile.name}</h1>
+              <p className="font-text text-[18px] text-muted-foreground mb-4">{profile.role}</p>
+              <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground/70">
                 <MapPin size={11} strokeWidth={1.5} />
                 {extra.markets[0]} · {profile.bg}
               </div>
@@ -82,13 +82,13 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href="/request"
-                  className="font-text text-sm font-semibold px-6 py-3 bg-ink text-paper hover:bg-blue transition-colors duration-[120ms] inline-flex items-center gap-2"
+                  className="font-text text-sm font-semibold px-6 py-3 bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms] inline-flex items-center gap-2"
                 >
                   Request this operator
                 </Link>
                 <Link
                   href="/book"
-                  className="font-text text-sm font-semibold px-6 py-3 border border-ink text-ink hover:bg-ink hover:text-paper transition-colors duration-[120ms] inline-flex items-center gap-2"
+                  className="font-text text-sm font-semibold px-6 py-3 border border-foreground text-foreground hover:bg-foreground hover:text-background transition-colors duration-[120ms] inline-flex items-center gap-2"
                 >
                   Book a brief call
                 </Link>
@@ -107,56 +107,56 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
 
             {/* About */}
             <div>
-              <div className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
-                <span className="w-6 h-px bg-ink-40" />
+              <div className="font-mono text-xs text-muted-foreground/70 uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
+                <span className="w-6 h-px bg-muted-foreground/70" />
                 About
               </div>
-              <p className="font-text text-[19px] md:text-[22px] leading-lede text-ink-60 max-w-[52ch]">
+              <p className="font-text text-[19px] md:text-[22px] leading-lede text-muted-foreground max-w-[52ch]">
                 {profile.desc}
               </p>
             </div>
 
             {/* Capabilities */}
             <div>
-              <div className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
-                <span className="w-6 h-px bg-ink-40" />
+              <div className="font-mono text-xs text-muted-foreground/70 uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
+                <span className="w-6 h-px bg-muted-foreground/70" />
                 Capabilities
               </div>
               <div className="flex flex-wrap gap-2">
                 {extra.skills.map(s => (
-                  <span key={s} className="font-mono text-[11px] tracking-eyebrow uppercase text-ink px-3 py-2 border border-ink-20 hover:border-ink transition-colors">{s}</span>
+                  <span key={s} className="font-mono text-[11px] tracking-eyebrow uppercase text-foreground px-3 py-2 border border-input hover:border-foreground transition-colors">{s}</span>
                 ))}
               </div>
             </div>
 
             {/* Markets */}
             <div>
-              <div className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
-                <span className="w-6 h-px bg-ink-40" />
+              <div className="font-mono text-xs text-muted-foreground/70 uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
+                <span className="w-6 h-px bg-muted-foreground/70" />
                 Markets
               </div>
               <div className="flex flex-wrap gap-2">
                 {extra.markets.map(m => (
-                  <span key={m} className="font-mono text-[11px] tracking-eyebrow uppercase text-blue border border-blue px-3 py-2">{m}</span>
+                  <span key={m} className="font-mono text-[11px] tracking-eyebrow uppercase text-primary border border-primary px-3 py-2">{m}</span>
                 ))}
               </div>
             </div>
 
             {/* How they work */}
             <div>
-              <div className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
-                <span className="w-6 h-px bg-ink-40" />
+              <div className="font-mono text-xs text-muted-foreground/70 uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
+                <span className="w-6 h-px bg-muted-foreground/70" />
                 Engagement model
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-ink border border-ink overflow-hidden">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-foreground border border-foreground overflow-hidden">
                 {[
                   { type: 'Retainer', desc: 'Ongoing system oversight and orchestration' },
                   { type: 'Project', desc: 'Scoped build or execution sprint' },
                   { type: 'Pod lead', desc: 'Leads a specialist pod on a live client brief' },
                 ].map(e => (
-                  <div key={e.type} className="bg-paper p-6 flex flex-col gap-2">
-                    <span className="font-display font-black text-[18px] tracking-[-0.02em] text-ink">{e.type}</span>
-                    <span className="font-text text-sm text-ink-60">{e.desc}</span>
+                  <div key={e.type} className="bg-background p-6 flex flex-col gap-2">
+                    <span className="font-display font-black text-[18px] tracking-[-0.02em] text-foreground">{e.type}</span>
+                    <span className="font-text text-sm text-muted-foreground">{e.desc}</span>
                   </div>
                 ))}
               </div>
@@ -167,17 +167,17 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
           <div className="flex flex-col gap-6">
 
             {/* CTA card */}
-            <div className="bg-ink dark-inv-section p-8 flex flex-col gap-5">
-              <div className="font-mono text-xs text-paper/50 uppercase tracking-eyebrow">Deploy this operator</div>
-              <p className="font-display font-black text-[22px] leading-tight tracking-[-0.02em] text-paper">
+            <div className="bg-foreground dark-inv-section p-8 flex flex-col gap-5">
+              <div className="font-mono text-xs text-background/50 uppercase tracking-eyebrow">Deploy this operator</div>
+              <p className="font-display font-black text-[22px] leading-tight tracking-[-0.02em] text-background">
                 Ready to place {profile.name.split(' ')[0]} on your brief?
               </p>
-              <p className="font-text text-sm text-paper/70">
+              <p className="font-text text-sm text-background/70">
                 Submit a brief and we&apos;ll assess fit within 48 hours. No retainer required to start.
               </p>
               <Link
                 href="/request"
-                className="font-text text-sm font-semibold px-5 py-3 bg-blue text-white hover:bg-blue-hover transition-colors duration-[120ms] inline-flex items-center gap-2 w-fit"
+                className="font-text text-sm font-semibold px-5 py-3 bg-primary text-white hover:bg-primary/85 transition-colors duration-[120ms] inline-flex items-center gap-2 w-fit"
               >
                 Request a brief
                 <ExternalLink size={13} strokeWidth={1.5} />
@@ -185,8 +185,8 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
             </div>
 
             {/* Quick facts */}
-            <div className="border border-ink-10 p-6 flex flex-col gap-5">
-              <div className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow">Quick facts</div>
+            <div className="border border-border p-6 flex flex-col gap-5">
+              <div className="font-mono text-xs text-muted-foreground/70 uppercase tracking-eyebrow">Quick facts</div>
               {[
                 { label: 'Archetype',   value: extra.label },
                 { label: 'Background',  value: profile.bg },
@@ -194,15 +194,15 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
                 { label: 'Languages',   value: 'English' },
               ].map(f => (
                 <div key={f.label} className="flex flex-col gap-0.5">
-                  <span className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">{f.label}</span>
-                  <span className="font-text text-sm text-ink">{f.value}</span>
+                  <span className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">{f.label}</span>
+                  <span className="font-text text-sm text-foreground">{f.value}</span>
                 </div>
               ))}
             </div>
 
             {/* Other talent */}
-            <div className="border border-ink-10 p-6 flex flex-col gap-4">
-              <div className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow">Similar operators</div>
+            <div className="border border-border p-6 flex flex-col gap-4">
+              <div className="font-mono text-xs text-muted-foreground/70 uppercase tracking-eyebrow">Similar operators</div>
               {talentProfiles
                 .filter(p => p.id !== id && p.featured)
                 .slice(0, 3)
@@ -212,7 +212,7 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
                     href={`/talent/${p.id}`}
                     className="flex items-center gap-3 group"
                   >
-                    <div className={`w-9 h-9 rounded-lg ${p.color ?? 'bg-ink'} border border-ink-10 flex items-center justify-center font-display font-black text-[12px] text-paper shrink-0 overflow-hidden relative group-hover:border-blue transition-all`}>
+                    <div className={`w-9 h-9 rounded-lg ${p.color ?? 'bg-foreground'} border border-border flex items-center justify-center font-display font-black text-[12px] text-background shrink-0 overflow-hidden relative group-hover:border-primary transition-all`}>
                       {p.image ? (
                         <Image src={p.image} alt={p.name} fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-300" />
                       ) : (
@@ -220,12 +220,12 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
                       )}
                     </div>
                     <div>
-                      <div className="font-display font-black text-[14px] tracking-[-0.01em] text-ink group-hover:text-blue transition-colors leading-tight">{p.name}</div>
-                      <div className="font-text text-[11px] text-ink-60">{p.role}</div>
+                      <div className="font-display font-black text-[14px] tracking-[-0.01em] text-foreground group-hover:text-primary transition-colors leading-tight">{p.name}</div>
+                      <div className="font-text text-[11px] text-muted-foreground">{p.role}</div>
                     </div>
                   </Link>
                 ))}
-              <Link href="/talent" className="font-mono text-xs text-blue hover:underline mt-1 inline-flex items-center gap-1">
+              <Link href="/talent" className="font-mono text-xs text-primary hover:underline mt-1 inline-flex items-center gap-1">
                 View all talent →
               </Link>
             </div>

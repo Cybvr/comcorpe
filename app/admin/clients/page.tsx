@@ -25,8 +25,8 @@ function ClientForm({
   }
 
   const F = 'flex flex-col gap-1.5'
-  const L = 'font-mono text-[11px] tracking-eyebrow uppercase text-ink-60'
-  const I = 'w-full px-4 py-3 border border-ink-20 bg-white font-text text-sm text-ink placeholder:text-ink-40 focus:outline-none focus:border-ink transition-colors duration-100'
+  const L = 'font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground'
+  const I = 'w-full px-4 py-3 border border-input bg-white font-text text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors duration-100'
 
   return (
     <form
@@ -59,10 +59,10 @@ function ClientForm({
       </div>
 
       <div className="flex gap-3 pt-2">
-        <button type="submit" className="flex-1 py-3 bg-ink text-paper font-text text-sm font-semibold hover:bg-blue transition-colors duration-100">
+        <button type="submit" className="flex-1 py-3 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100">
           Save
         </button>
-        <button type="button" onClick={onCancel} className="flex-1 py-3 border border-ink-20 text-ink font-text text-sm hover:bg-ink-10 transition-colors duration-100">
+        <button type="button" onClick={onCancel} className="flex-1 py-3 border border-input text-foreground font-text text-sm hover:bg-border transition-colors duration-100">
           Cancel
         </button>
       </div>
@@ -111,12 +111,12 @@ export default function AdminClientsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-[28px] tracking-hero text-ink">Clients</h1>
-          <p className="text-sm text-ink-60 mt-0.5">{clients.length} companies</p>
+          <h1 className="font-display text-[28px] tracking-hero text-foreground">Clients</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{clients.length} companies</p>
         </div>
         <button
           onClick={() => setModal('create')}
-          className="px-5 py-2.5 bg-ink text-paper font-text text-sm font-semibold hover:bg-blue transition-colors duration-100"
+          className="px-5 py-2.5 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100"
         >
           + Add client
         </button>
@@ -127,28 +127,28 @@ export default function AdminClientsPage() {
         placeholder="Search clients…"
         value={search}
         onChange={e => setSearch(e.target.value)}
-        className="w-full max-w-sm px-4 py-2.5 border border-ink-20 bg-white font-text text-sm text-ink placeholder:text-ink-40 focus:outline-none focus:border-ink transition-colors duration-100"
+        className="w-full max-w-sm px-4 py-2.5 border border-input bg-white font-text text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors duration-100"
       />
 
-      <div className="border border-ink-10 divide-y divide-ink-10">
+      <div className="border border-border divide-y divide-border">
         {filtered.length === 0 && (
-          <p className="px-5 py-8 text-sm text-ink-40 text-center">No clients found.</p>
+          <p className="px-5 py-8 text-sm text-muted-foreground/70 text-center">No clients found.</p>
         )}
         {filtered.map(client => (
           <div key={client.id} className="px-5 py-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-4 min-w-0">
-              <div className="w-9 h-9 shrink-0 border border-ink-20 flex items-center justify-center font-mono text-[11px] font-semibold text-ink">
+              <div className="w-9 h-9 shrink-0 border border-input flex items-center justify-center font-mono text-[11px] font-semibold text-foreground">
                 {client.initials}
               </div>
               <div className="min-w-0">
-                <p className="font-text text-sm font-semibold text-ink">{client.name}</p>
-                <p className="font-mono text-[11px] text-ink-40 mt-0.5">{client.id}</p>
+                <p className="font-text text-sm font-semibold text-foreground">{client.name}</p>
+                <p className="font-mono text-[11px] text-muted-foreground/70 mt-0.5">{client.id}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setModal({ client })}
-                className="px-3 py-1.5 border border-ink-20 font-text text-xs text-ink hover:bg-ink hover:text-paper hover:border-ink transition-colors duration-100"
+                className="px-3 py-1.5 border border-input font-text text-xs text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-colors duration-100"
               >
                 Edit
               </button>
@@ -178,14 +178,14 @@ export default function AdminClientsPage() {
 
       {deleteTarget && (
         <Modal title="Delete client" onClose={() => setDeleteTarget(null)}>
-          <p className="font-text text-sm text-ink-60 mb-6">
-            Remove <strong className="text-ink">{deleteTarget.name}</strong>? This cannot be undone.
+          <p className="font-text text-sm text-muted-foreground mb-6">
+            Remove <strong className="text-foreground">{deleteTarget.name}</strong>? This cannot be undone.
           </p>
           <div className="flex gap-3">
             <button onClick={confirmDelete} className="flex-1 py-3 bg-red-600 text-white font-text text-sm font-semibold hover:bg-red-700 transition-colors duration-100">
               Delete
             </button>
-            <button onClick={() => setDeleteTarget(null)} className="flex-1 py-3 border border-ink-20 text-ink font-text text-sm hover:bg-ink-10 transition-colors duration-100">
+            <button onClick={() => setDeleteTarget(null)} className="flex-1 py-3 border border-input text-foreground font-text text-sm hover:bg-border transition-colors duration-100">
               Cancel
             </button>
           </div>

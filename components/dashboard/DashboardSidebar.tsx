@@ -14,7 +14,13 @@ import {
   MessageCircle,
   Search,
   Shield,
+  Sparkles,
   Users,
+  Activity,
+  CheckCircle2,
+  PenTool,
+  Share2,
+  BrainCircuit,
   X,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -32,6 +38,7 @@ const dashboardConfig: Record<DashboardAudience, {
   label: string
   root: string
   primaryItems: SidebarItem[]
+  intelligenceItems?: SidebarItem[]
   supportItems: SidebarItem[]
 }> = {
   talent: {
@@ -56,9 +63,13 @@ const dashboardConfig: Record<DashboardAudience, {
       { icon: Home, label: 'Home', href: '/client/dashboard' },
       { icon: Briefcase, label: 'My Jobs', href: '/client/dashboard/jobs' },
       { icon: Search, label: 'Search', href: '/client/dashboard/search', badge: 3 },
+      { icon: Sparkles, label: 'Analytics', href: '/client/dashboard/analytics' },
       { icon: MessageCircle, label: 'Community', href: '/client/dashboard/community' },
       { icon: CreditCard, label: 'Billing', href: '/client/dashboard/billing' },
       { icon: Gift, label: 'Refer & grow', href: '/client/dashboard/referrals' },
+    ],
+    intelligenceItems: [
+      { icon: Activity, label: 'Quality & Safety', href: '/client/dashboard/quality' },
     ],
     supportItems: [
       { icon: HelpCircle, label: 'Help centre', href: '/client/dashboard/help' },
@@ -95,14 +106,14 @@ function SidebarLink({ item }: { item: SidebarItem }) {
       href={item.href}
       aria-current={active ? 'page' : undefined}
       className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-text text-sm transition-colors duration-150 ${active
-          ? 'bg-blue/10 text-blue font-semibold'
-          : 'text-ink-60 hover:bg-ink-10 hover:text-ink'
+          ? 'bg-primary/10 text-primary font-semibold'
+          : 'text-muted-foreground hover:bg-border hover:text-foreground'
         }`}
     >
       <Icon size={16} strokeWidth={1.8} />
       <span className="flex-1">{item.label}</span>
       {item.badge && (
-        <span className="font-mono text-[10px] font-bold bg-blue text-paper px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+        <span className="font-mono text-[10px] font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
           {item.badge}
         </span>
       )}
@@ -112,7 +123,7 @@ function SidebarLink({ item }: { item: SidebarItem }) {
 
 function DashboardSwitch({ audience }: { audience: DashboardAudience }) {
   return (
-    <div className="grid grid-cols-3 gap-1 rounded-lg bg-ink-10 p-1 mt-4">
+    <div className="grid grid-cols-3 gap-1 rounded-lg bg-border p-1 mt-4">
       {(['talent', 'client', 'admin'] as DashboardAudience[]).map((option) => {
         const config = dashboardConfig[option]
         const active = option === audience
@@ -121,7 +132,7 @@ function DashboardSwitch({ audience }: { audience: DashboardAudience }) {
           <Link
             key={option}
             href={config.root}
-            className={`text-center rounded-md px-2 py-1.5 font-text text-xs font-semibold transition-colors ${active ? 'bg-paper text-blue shadow-sm' : 'text-ink-60 hover:text-ink'
+            className={`text-center rounded-md px-2 py-1.5 font-text text-xs font-semibold transition-colors ${active ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground hover:text-foreground'
               }`}
           >
             {config.label}
@@ -142,11 +153,11 @@ export default function DashboardSidebar({
   const config = dashboardConfig[audience]
 
   return (
-    <aside className="w-64 lg:w-56 shrink-0 border-r border-ink-10 flex flex-col h-full overflow-y-auto bg-paper shadow-2xl lg:shadow-none">
-      <div className="px-4 pt-5 pb-4 border-b border-ink-10 relative">
+    <aside className="w-64 lg:w-56 shrink-0 border-r border-border flex flex-col h-full overflow-y-auto bg-background shadow-2xl lg:shadow-none">
+      <div className="px-4 pt-5 pb-4 border-b border-border relative">
         <Link href={config.root} className="flex items-center gap-2.5" onClick={onClose}>
           <Image src="/images/comcorpe.png" alt="Comcorpe" width={118} height={24} className="h-6 w-auto object-contain dark:invert" priority />
-          <span className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 border-l border-ink-20 pl-2">
+          <span className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 border-l border-input pl-2">
             {config.label}
           </span>
         </Link>
@@ -154,7 +165,7 @@ export default function DashboardSidebar({
         {/* Mobile Close Button */}
         <button
           onClick={onClose}
-          className="lg:hidden absolute right-3 top-5 p-1 text-ink-40 hover:text-ink transition-colors"
+          className="lg:hidden absolute right-3 top-5 p-1 text-muted-foreground/70 hover:text-foreground transition-colors"
         >
           <X size={18} />
         </button>
@@ -170,8 +181,21 @@ export default function DashboardSidebar({
         ))}
       </nav>
 
+      {config.intelligenceItems && config.intelligenceItems.length > 0 && (
+        <div className="px-3 py-2">
+          <p className="px-3 mb-2 font-mono text-[9px] uppercase tracking-[0.2em] text-primary font-black">Intelligence Suite</p>
+          <div className="flex flex-col gap-0.5">
+            {config.intelligenceItems.map((item) => (
+              <div key={item.href} onClick={onClose}>
+                <SidebarLink item={item} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {config.supportItems.length > 0 && (
-        <div className="p-3 border-t border-ink-10">
+        <div className="p-3 border-t border-border">
           {config.supportItems.map((item) => (
             <div key={item.href} onClick={onClose}>
               <SidebarLink item={item} />

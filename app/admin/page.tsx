@@ -7,10 +7,10 @@ import type { User } from '@/lib/user'
 
 const STATUS_COLOR: Record<string, string> = {
   Active: 'bg-green-100 text-green-700',
-  Scoping: 'bg-blue/10 text-blue',
-  Completed: 'bg-ink-10 text-ink-60',
+  Scoping: 'bg-primary/10 text-primary',
+  Completed: 'bg-border text-muted-foreground',
   Paused: 'bg-yellow-100 text-yellow-700',
-  'Pod review': 'bg-violet/10 text-violet',
+  'Pod review': 'bg-accent/10 text-accent',
 }
 
 export default function AdminOverviewPage() {
@@ -33,8 +33,8 @@ export default function AdminOverviewPage() {
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="font-display text-[32px] tracking-hero text-ink leading-tight">Overview</h1>
-        <p className="text-sm text-ink-60 mt-1">Manage platform data stored in localStorage.</p>
+        <h1 className="font-display text-[32px] tracking-hero text-foreground leading-tight">Overview</h1>
+        <p className="text-sm text-muted-foreground mt-1">Manage platform data stored in localStorage.</p>
       </div>
 
       {/* Stats */}
@@ -48,12 +48,12 @@ export default function AdminOverviewPage() {
           <Link
             key={stat.label}
             href={stat.href}
-            className="border border-ink-10 p-5 hover:border-ink transition-colors duration-100 group"
+            className="border border-border p-5 hover:border-foreground transition-colors duration-100 group"
           >
-            <p className="font-display text-[36px] leading-none text-ink group-hover:text-blue transition-colors duration-100">
+            <p className="font-display text-[36px] leading-none text-foreground group-hover:text-primary transition-colors duration-100">
               {stat.value}
             </p>
-            <p className="font-mono text-[11px] tracking-eyebrow uppercase text-ink-40 mt-2">
+            <p className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground/70 mt-2">
               {stat.label}
             </p>
           </Link>
@@ -63,19 +63,19 @@ export default function AdminOverviewPage() {
       {/* Recent Jobs */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display text-xl tracking-h3 text-ink">Recent Jobs</h2>
-          <Link href="/admin/jobs" className="font-mono text-[11px] tracking-eyebrow uppercase text-ink-40 hover:text-ink transition-colors duration-100">
+          <h2 className="font-display text-xl tracking-h3 text-foreground">Recent Jobs</h2>
+          <Link href="/admin/jobs" className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground/70 hover:text-foreground transition-colors duration-100">
             View all →
           </Link>
         </div>
-        <div className="border border-ink-10 divide-y divide-ink-10">
+        <div className="border border-border divide-y divide-border">
           {jobs.slice(0, 5).map(job => (
             <div key={job.id} className="px-5 py-4 flex items-center justify-between gap-4">
               <div className="min-w-0">
-                <p className="font-text text-sm font-semibold text-ink truncate">{job.title}</p>
-                <p className="font-mono text-[11px] text-ink-40 mt-0.5">{job.clientId} · {job.type}</p>
+                <p className="font-text text-sm font-semibold text-foreground truncate">{job.title}</p>
+                <p className="font-mono text-[11px] text-muted-foreground/70 mt-0.5">{job.clientId} · {job.type}</p>
               </div>
-              <span className={`shrink-0 font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 ${STATUS_COLOR[job.status] ?? 'bg-ink-10 text-ink-60'}`}>
+              <span className={`shrink-0 font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 ${STATUS_COLOR[job.status] ?? 'bg-border text-muted-foreground'}`}>
                 {job.status}
               </span>
             </div>
@@ -93,7 +93,7 @@ export default function AdminOverviewPage() {
           <Link
             key={link.href}
             href={link.href}
-            className="border border-ink-10 px-5 py-4 font-text text-sm font-semibold text-ink hover:bg-ink hover:text-paper transition-colors duration-100"
+            className="border border-border px-5 py-4 font-text text-sm font-semibold text-foreground hover:bg-foreground hover:text-background transition-colors duration-100"
           >
             + {link.label}
           </Link>

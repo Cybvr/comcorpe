@@ -9,10 +9,10 @@ const JOB_TYPES: JobType[] = ['RETAINED', 'PROJECT', 'EQUITY']
 
 const STATUS_COLOR: Record<string, string> = {
   Active: 'bg-green-100 text-green-700',
-  Scoping: 'bg-blue/10 text-blue',
-  Completed: 'bg-ink-10 text-ink-60',
+  Scoping: 'bg-primary/10 text-primary',
+  Completed: 'bg-border text-muted-foreground',
   Paused: 'bg-yellow-100 text-yellow-700',
-  'Pod review': 'bg-violet/10 text-violet',
+  'Pod review': 'bg-accent/10 text-accent',
 }
 
 const EMPTY_JOB: Omit<Job, 'id'> = {
@@ -61,8 +61,8 @@ function JobForm({
   }
 
   const F = 'flex flex-col gap-1.5'
-  const L = 'font-mono text-[11px] tracking-eyebrow uppercase text-ink-60'
-  const I = 'w-full px-4 py-3 border border-ink-20 bg-white font-text text-sm text-ink placeholder:text-ink-40 focus:outline-none focus:border-ink transition-colors duration-100'
+  const L = 'font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground'
+  const I = 'w-full px-4 py-3 border border-input bg-white font-text text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors duration-100'
   const S = `${I} appearance-none`
 
   return (
@@ -135,10 +135,10 @@ function JobForm({
       </div>
 
       <div className="flex gap-3 pt-2">
-        <button type="submit" className="flex-1 py-3 bg-ink text-paper font-text text-sm font-semibold hover:bg-blue transition-colors duration-100">
+        <button type="submit" className="flex-1 py-3 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100">
           Save
         </button>
-        <button type="button" onClick={onCancel} className="flex-1 py-3 border border-ink-20 text-ink font-text text-sm hover:bg-ink-10 transition-colors duration-100">
+        <button type="button" onClick={onCancel} className="flex-1 py-3 border border-input text-foreground font-text text-sm hover:bg-border transition-colors duration-100">
           Cancel
         </button>
       </div>
@@ -190,12 +190,12 @@ export default function AdminJobsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-[28px] tracking-hero text-ink">Jobs</h1>
-          <p className="text-sm text-ink-60 mt-0.5">{jobs.length} total</p>
+          <h1 className="font-display text-[28px] tracking-hero text-foreground">Jobs</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{jobs.length} total</p>
         </div>
         <button
           onClick={() => setModal('create')}
-          className="px-5 py-2.5 bg-ink text-paper font-text text-sm font-semibold hover:bg-blue transition-colors duration-100"
+          className="px-5 py-2.5 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100"
         >
           + New job
         </button>
@@ -207,7 +207,7 @@ export default function AdminJobsPage() {
           placeholder="Search jobs…"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="px-4 py-2.5 border border-ink-20 bg-white font-text text-sm text-ink placeholder:text-ink-40 focus:outline-none focus:border-ink transition-colors duration-100 w-full max-w-xs"
+          className="px-4 py-2.5 border border-input bg-white font-text text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors duration-100 w-full max-w-xs"
         />
         <div className="flex items-center gap-1">
           {(['All', ...JOB_STATUSES] as const).map(s => (
@@ -215,7 +215,7 @@ export default function AdminJobsPage() {
               key={s}
               onClick={() => setFilter(s)}
               className={`px-3 py-1.5 font-mono text-[11px] tracking-eyebrow uppercase transition-colors duration-100 ${
-                filter === s ? 'bg-ink text-paper' : 'border border-ink-20 text-ink-60 hover:text-ink hover:border-ink'
+                filter === s ? 'bg-foreground text-background' : 'border border-input text-muted-foreground hover:text-foreground hover:border-foreground'
               }`}
             >
               {s}
@@ -224,27 +224,27 @@ export default function AdminJobsPage() {
         </div>
       </div>
 
-      <div className="border border-ink-10 divide-y divide-ink-10">
+      <div className="border border-border divide-y divide-border">
         {filtered.length === 0 && (
-          <p className="px-5 py-8 text-sm text-ink-40 text-center">No jobs found.</p>
+          <p className="px-5 py-8 text-sm text-muted-foreground/70 text-center">No jobs found.</p>
         )}
         {filtered.map(job => (
           <div key={job.id} className="px-5 py-4 flex items-start justify-between gap-4">
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <p className="font-text text-sm font-semibold text-ink">{job.title}</p>
-                <span className={`font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 ${STATUS_COLOR[job.status] ?? 'bg-ink-10 text-ink-60'}`}>
+                <p className="font-text text-sm font-semibold text-foreground">{job.title}</p>
+                <span className={`font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 ${STATUS_COLOR[job.status] ?? 'bg-border text-muted-foreground'}`}>
                   {job.status}
                 </span>
               </div>
-              <p className="font-mono text-[11px] text-ink-40 mt-1">
+              <p className="font-mono text-[11px] text-muted-foreground/70 mt-1">
                 {job.clientId} · {job.type} · {job.rate}
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0 mt-0.5">
               <button
                 onClick={() => setModal({ job })}
-                className="px-3 py-1.5 border border-ink-20 font-text text-xs text-ink hover:bg-ink hover:text-paper hover:border-ink transition-colors duration-100"
+                className="px-3 py-1.5 border border-input font-text text-xs text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-colors duration-100"
               >
                 Edit
               </button>
@@ -274,14 +274,14 @@ export default function AdminJobsPage() {
 
       {deleteTarget && (
         <Modal title="Delete job" onClose={() => setDeleteTarget(null)}>
-          <p className="font-text text-sm text-ink-60 mb-6">
-            Delete <strong className="text-ink">{deleteTarget.title}</strong>? This cannot be undone.
+          <p className="font-text text-sm text-muted-foreground mb-6">
+            Delete <strong className="text-foreground">{deleteTarget.title}</strong>? This cannot be undone.
           </p>
           <div className="flex gap-3">
             <button onClick={confirmDelete} className="flex-1 py-3 bg-red-600 text-white font-text text-sm font-semibold hover:bg-red-700 transition-colors duration-100">
               Delete
             </button>
-            <button onClick={() => setDeleteTarget(null)} className="flex-1 py-3 border border-ink-20 text-ink font-text text-sm hover:bg-ink-10 transition-colors duration-100">
+            <button onClick={() => setDeleteTarget(null)} className="flex-1 py-3 border border-input text-foreground font-text text-sm hover:bg-border transition-colors duration-100">
               Cancel
             </button>
           </div>

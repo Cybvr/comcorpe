@@ -11,10 +11,10 @@ export default function ImagePlaceholder({
 }: ImagePlaceholderProps) {
   const isDark = tone === 'dark'
   const frame = isDark
-    ? 'bg-paper/[0.06] border-paper/[0.18] text-paper/50'
-    : 'bg-ink-10 border-ink-10 text-ink-40'
-  const line = isDark ? 'border-paper/[0.12]' : 'border-ink-20'
-  const marker = isDark ? 'bg-blue' : 'bg-blue'
+    ? 'bg-background/[0.06] border-background/[0.18] text-background/50'
+    : 'bg-border border-border text-muted-foreground/70'
+  const line = isDark ? 'border-background/[0.12]' : 'border-input'
+  const marker = isDark ? 'bg-primary' : 'bg-primary'
 
   return (
     <div

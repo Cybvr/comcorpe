@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, DollarSign, Layers3, MapPin, Plus, Search, Users, X } from 'lucide-react'
+import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, DollarSign, Layers3, MapPin, Plus, Search, Users, X, Sparkles, BrainCircuit } from 'lucide-react'
 import { pods } from '@/lib/pods'
 import { jobs } from '@/lib/jobs'
 import { talentProfiles, getTalentProfile, getClientUser } from '@/lib/user'
@@ -26,12 +26,12 @@ function Pagination({
   onPageChange: (page: number) => void
 }) {
   return (
-    <nav className="flex items-center justify-center gap-2 mt-12 py-6 border-t border-ink-5" aria-label="Pagination">
+    <nav className="flex items-center justify-center gap-2 mt-12 py-6 border-t border-muted" aria-label="Pagination">
       <button
         type="button"
         onClick={() => onPageChange(Math.max(1, page - 1))}
         disabled={page === 1}
-        className="flex items-center gap-2 px-3 py-2 rounded-md border border-ink-10 text-ink-60 hover:bg-ink-5 disabled:opacity-30 transition-all font-text text-sm"
+        className="flex items-center gap-2 px-3 py-2 rounded-md border border-border text-muted-foreground hover:bg-muted disabled:opacity-30 transition-all font-text text-sm"
       >
         <ChevronLeft size={16} /> Previous
       </button>
@@ -44,8 +44,8 @@ function Pagination({
             onClick={() => onPageChange(item)}
             className={`h-9 w-9 rounded-md font-mono text-[12px] font-bold transition-all ${
               item === page
-                ? 'bg-ink text-paper'
-                : 'text-ink-40 hover:bg-ink-5'
+                ? 'bg-foreground text-background'
+                : 'text-muted-foreground/70 hover:bg-muted'
             }`}
           >
             {item}
@@ -57,7 +57,7 @@ function Pagination({
         type="button"
         onClick={() => onPageChange(Math.min(totalPages, page + 1))}
         disabled={page === totalPages}
-        className="flex items-center gap-2 px-3 py-2 rounded-md border border-ink-10 text-ink-60 hover:bg-ink-5 disabled:opacity-30 transition-all font-text text-sm"
+        className="flex items-center gap-2 px-3 py-2 rounded-md border border-border text-muted-foreground hover:bg-muted disabled:opacity-30 transition-all font-text text-sm"
       >
         Next <ChevronRight size={16} />
       </button>
@@ -96,16 +96,16 @@ function FilterDropdown({
         onClick={() => setIsOpen(!isOpen)}
         className={`flex items-center gap-2 px-4 py-2 border rounded-xl font-text text-sm transition-all whitespace-nowrap ${
           value !== 'All' 
-            ? 'bg-blue/5 border-blue/20 text-blue font-semibold' 
-            : 'bg-paper border-ink-10 text-ink-60 hover:border-ink-20 hover:text-ink'
+            ? 'bg-primary/5 border-primary/20 text-primary font-semibold' 
+            : 'bg-background border-border text-muted-foreground hover:border-input hover:text-foreground'
         }`}
       >
         {value === 'All' ? label : value} 
-        <ChevronDown size={14} className={`text-ink-40 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown size={14} className={`text-muted-foreground/70 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-56 bg-paper border border-ink-10 rounded-xl shadow-xl z-50 py-1.5 overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+        <div className="absolute top-full left-0 mt-2 w-56 bg-background border border-border rounded-xl shadow-xl z-50 py-1.5 overflow-hidden animate-in fade-in zoom-in-95 duration-100">
           {['All', ...options].map((opt) => (
             <button
               key={opt}
@@ -115,7 +115,7 @@ function FilterDropdown({
                 setIsOpen(false)
               }}
               className={`w-full text-left px-4 py-2 text-sm transition-colors ${
-                value === opt ? 'bg-blue/5 text-blue font-semibold' : 'text-ink-60 hover:bg-ink-5 hover:text-ink'
+                value === opt ? 'bg-primary/5 text-primary font-semibold' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
             >
               {opt}
@@ -131,6 +131,8 @@ export default function DiscoverPage() {
   const [activeTab, setActiveTab] = useState<DiscoverTab>('all')
   const [activePage, setActivePage] = useState(1)
   const [searchQuery, setSearchQuery] = useState('')
+  const [isSmartSearch, setIsSmartSearch] = useState(false)
+  const [isAILoading, setIsAILoading] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   function toggleSelect(id: string) {
@@ -184,41 +186,66 @@ export default function DiscoverPage() {
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1240px] mx-auto">
       <div className="mb-6">
-        <p className="font-mono text-xs uppercase tracking-eyebrow text-blue mb-2">Search</p>
-        <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-ink leading-none">Talent & Pods</h1>
+        <p className="font-mono text-xs uppercase tracking-eyebrow text-primary mb-2">Search</p>
+        <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-foreground leading-none">Talent & Pods</h1>
       </div>
-      <div className="flex gap-8 mb-6 border-b border-ink-10">
+      <div className="flex gap-8 mb-6 border-b border-border">
         {([['all', 'All'], ['pods', 'Pods'], ['build', 'Build a pod']] as const).map(([tab, label]) => (
           <button
             key={tab}
             onClick={() => selectTab(tab)}
             className={`pb-4 font-display font-black text-[16px] tracking-[-0.01em] transition-all relative inline-flex items-center gap-2 ${
-              activeTab === tab ? 'text-blue' : 'text-ink-40 hover:text-ink'
+              activeTab === tab ? 'text-primary' : 'text-muted-foreground/70 hover:text-foreground'
             }`}
           >
             {label}
             {tab === 'build' && selectedIds.size > 0 && (
-              <span className="font-mono text-[10px] font-bold bg-blue text-paper px-1.5 py-0.5 rounded-full min-w-[18px] text-center">{selectedIds.size}</span>
+              <span className="font-mono text-[10px] font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full min-w-[18px] text-center">{selectedIds.size}</span>
             )}
             {activeTab === tab && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue" />
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
             )}
           </button>
         ))}
       </div>
 
       {/* Filter Section */}
-      <section className="mb-8 p-1.5 bg-ink-5 rounded-2xl flex flex-col lg:flex-row gap-2">
+      <section className="mb-8 p-1.5 bg-muted rounded-2xl flex flex-col lg:flex-row gap-2">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-40" />
+          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/70" />
           <input
             type="text"
             placeholder={`Search ${activeTab === 'all' ? 'talent' : 'pods'}...`}
             value={searchQuery}
             onChange={(e) => { setSearchQuery(e.target.value); setActivePage(1); }}
-            className="w-full pl-12 pr-4 py-3 bg-paper border border-ink-10 rounded-xl focus:outline-none focus:border-blue/30 transition-all font-text text-[15px]"
+            className="w-full pl-12 pr-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:border-primary/30 transition-all font-text text-[15px]"
           />
+          {isAILoading && (
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+              <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
+              <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]" />
+              <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
+            </div>
+          )}
         </div>
+        
+        <button
+          onClick={() => {
+            setIsSmartSearch(!isSmartSearch)
+            if (!isSmartSearch && searchQuery) {
+              setIsAILoading(true)
+              setTimeout(() => setIsAILoading(false), 800)
+            }
+          }}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-text text-sm transition-all whitespace-nowrap ${
+            isSmartSearch 
+              ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20' 
+              : 'bg-background border-border text-muted-foreground hover:border-input'
+          }`}
+        >
+          <BrainCircuit size={16} className={isSmartSearch ? 'animate-pulse' : ''} />
+          Smart Search
+        </button>
         
         <div className="flex items-center gap-2 px-2 overflow-x-auto no-scrollbar">
           <FilterDropdown 
@@ -243,11 +270,11 @@ export default function DiscoverPage() {
       </section>
 
       {itemCount === 0 ? (
-        <div className="py-20 text-center bg-paper border border-dashed border-ink-10 rounded-2xl">
-          <p className="font-text text-ink-40">No results match your current filters.</p>
+        <div className="py-20 text-center bg-background border border-dashed border-border rounded-2xl">
+          <p className="font-text text-muted-foreground/70">No results match your current filters.</p>
           <button 
             onClick={() => { setSearchQuery(''); setMarketFilter('All'); setExpertiseFilter('All'); setBudgetFilter('All'); }}
-            className="mt-4 text-blue text-sm font-semibold hover:underline"
+            className="mt-4 text-primary text-sm font-semibold hover:underline"
           >
             Reset all filters
           </button>
@@ -260,11 +287,11 @@ export default function DiscoverPage() {
               <Link
                 key={pod.id}
                 href={`/client/dashboard/search/${pod.slug}`}
-                className="border border-ink-10 rounded-xl p-6 bg-paper hover:border-ink-20 hover:shadow-xl transition-all group flex flex-col"
+                className="border border-border rounded-xl p-6 bg-background hover:border-input hover:shadow-xl transition-all group flex flex-col"
               >
                 <div className="mb-6">
-                  <p className="font-mono text-[10px] uppercase tracking-eyebrow text-blue mb-1">{pod.focus}</p>
-                  <h2 className="font-display font-black text-[22px] tracking-[-0.02em] text-ink group-hover:text-blue transition-colors leading-tight">
+                  <p className="font-mono text-[10px] uppercase tracking-eyebrow text-primary mb-1">{pod.focus}</p>
+                  <h2 className="font-display font-black text-[22px] tracking-[-0.02em] text-foreground group-hover:text-primary transition-colors leading-tight">
                     {pod.name}
                   </h2>
                 </div>
@@ -277,8 +304,8 @@ export default function DiscoverPage() {
                         key={memberId}
                         className={`aspect-square rounded-lg flex items-center justify-center font-display font-black text-[16px] transition-all duration-300 border overflow-hidden relative ${
                           i === 0 && !profile.image
-                            ? 'bg-ink text-paper border-ink shadow-sm' 
-                            : 'bg-ink-10/40 text-ink-40 border-ink-10 group-hover:border-ink-20'
+                            ? 'bg-foreground text-background border-foreground shadow-sm' 
+                            : 'bg-border/40 text-muted-foreground/70 border-border group-hover:border-input'
                         }`}
                       >
                         {profile.image ? (
@@ -296,22 +323,22 @@ export default function DiscoverPage() {
                   })}
                 </div>
 
-                <div className="mt-auto pt-5 border-t border-ink-5 flex items-center justify-between">
+                <div className="mt-auto pt-5 border-t border-muted flex items-center justify-between">
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                    <div className="flex items-center gap-1.5 font-text text-[13px] text-ink-60">
-                      <Users size={14} strokeWidth={1.5} className="text-ink-40" />
-                      <span className="font-semibold text-ink">{lead.name.split(' ')[0]}</span>
+                    <div className="flex items-center gap-1.5 font-text text-[13px] text-muted-foreground">
+                      <Users size={14} strokeWidth={1.5} className="text-muted-foreground/70" />
+                      <span className="font-semibold text-foreground">{lead.name.split(' ')[0]}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 font-text text-[13px] text-ink-60">
-                      <Clock size={14} strokeWidth={1.5} className="text-ink-40" />
+                    <div className="flex items-center gap-1.5 font-text text-[13px] text-muted-foreground">
+                      <Clock size={14} strokeWidth={1.5} className="text-muted-foreground/70" />
                       <span>{pod.availability.replace('Ready in ', '')}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 font-text text-[13px] text-ink-60">
-                      <DollarSign size={14} strokeWidth={1.5} className="text-ink-40" />
-                      <span className="font-semibold text-ink">{pod.rate.replace('/mo', '')}</span>
+                    <div className="flex items-center gap-1.5 font-text text-[13px] text-muted-foreground">
+                      <DollarSign size={14} strokeWidth={1.5} className="text-muted-foreground/70" />
+                      <span className="font-semibold text-foreground">{pod.rate.replace('/mo', '')}</span>
                     </div>
                   </div>
-                  <ArrowUpRight size={16} className="text-ink-20 group-hover:text-blue group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                  <ArrowUpRight size={16} className="text-input group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                 </div>
               </Link>
             )
@@ -324,12 +351,12 @@ export default function DiscoverPage() {
             return (
               <div
                 key={profile.id}
-                className={`relative border rounded-xl p-5 bg-paper transition-all group flex flex-col ${selected ? 'border-blue shadow-md' : 'border-ink-10 hover:border-ink-20 hover:shadow-lg'}`}
+                className={`relative border rounded-xl p-5 bg-background transition-all group flex flex-col ${selected ? 'border-primary shadow-md' : 'border-border hover:border-input hover:shadow-lg'}`}
               >
                 {/* Add/remove toggle */}
                 <button
                   onClick={() => toggleSelect(profile.id)}
-                  className={`absolute top-3 right-3 w-7 h-7 rounded-full flex items-center justify-center transition-all z-10 ${selected ? 'bg-blue text-paper' : 'bg-ink-5 text-ink-40 hover:bg-blue/10 hover:text-blue'}`}
+                  className={`absolute top-3 right-3 w-7 h-7 rounded-full flex items-center justify-center transition-all z-10 ${selected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground/70 hover:bg-primary/10 hover:text-primary'}`}
                   aria-label={selected ? 'Remove from pod' : 'Add to pod'}
                 >
                   {selected ? <Check size={12} strokeWidth={2.5} /> : <Plus size={12} strokeWidth={2} />}
@@ -337,7 +364,7 @@ export default function DiscoverPage() {
 
                 <Link href={`/client/dashboard/search/talent/${profile.id}`} className="flex flex-col flex-1">
                   <div className="mb-4">
-                    <div className={`w-14 h-14 rounded-xl border border-ink-10 overflow-hidden relative flex items-center justify-center ${profile.color || 'bg-ink'} font-display font-black text-[16px] text-paper`}>
+                    <div className={`w-14 h-14 rounded-xl border border-border overflow-hidden relative flex items-center justify-center ${profile.color || 'bg-foreground'} font-display font-black text-[16px] text-background`}>
                       {profile.image ? (
                         <Image src={profile.image} alt={profile.name} fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                       ) : (
@@ -347,19 +374,19 @@ export default function DiscoverPage() {
                   </div>
 
                   <div className="flex-1">
-                    <h3 className="font-display font-black text-[18px] tracking-[-0.01em] text-ink group-hover:text-blue transition-colors leading-tight pr-6">
+                    <h3 className="font-display font-black text-[18px] tracking-[-0.01em] text-foreground group-hover:text-primary transition-colors leading-tight pr-6">
                       {profile.name}
                     </h3>
-                    <p className="font-mono text-[9px] uppercase tracking-eyebrow text-blue/60 mt-1">{profile.role}</p>
+                    <p className="font-mono text-[9px] uppercase tracking-eyebrow text-primary/60 mt-1">{profile.role}</p>
                   </div>
 
-                  <div className="mt-4 pt-4 border-t border-ink-5 flex items-center justify-between gap-2 text-ink-60 font-text text-[11px]">
+                  <div className="mt-4 pt-4 border-t border-muted flex items-center justify-between gap-2 text-muted-foreground font-text text-[11px]">
                     <div className="flex items-center gap-2 truncate">
-                      <MapPin size={10} className="text-ink-20" />
+                      <MapPin size={10} className="text-input" />
                       <span className="truncate">{profile.bg}</span>
                     </div>
-                    <div className="flex items-center gap-1 font-semibold text-ink shrink-0">
-                      <DollarSign size={10} className="text-ink-20" />
+                    <div className="flex items-center gap-1 font-semibold text-foreground shrink-0">
+                      <DollarSign size={10} className="text-input" />
                       {profile.rate?.replace('/mo', '')}
                     </div>
                   </div>
@@ -376,18 +403,18 @@ export default function DiscoverPage() {
 
       {/* Pod builder tray */}
       {selectedIds.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-ink text-paper rounded-2xl shadow-2xl px-5 py-4 flex items-center gap-5 min-w-[480px] max-w-[640px]">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-foreground text-background rounded-2xl shadow-2xl px-5 py-4 flex items-center gap-5 min-w-[480px] max-w-[640px]">
           <div className="flex -space-x-2 shrink-0">
             {selectedProfiles.slice(0, 5).map(p => (
               <div
                 key={p.id}
-                className={`w-9 h-9 rounded-full border-2 border-ink flex items-center justify-center font-display font-black text-[11px] text-paper shrink-0 overflow-hidden relative ${p.color || 'bg-blue'}`}
+                className={`w-9 h-9 rounded-full border-2 border-foreground flex items-center justify-center font-display font-black text-[11px] text-background shrink-0 overflow-hidden relative ${p.color || 'bg-primary'}`}
               >
                 {p.image ? <Image src={p.image} alt={p.name} fill className="object-cover" /> : p.initials}
               </div>
             ))}
             {selectedIds.size > 5 && (
-              <div className="w-9 h-9 rounded-full border-2 border-ink bg-paper/20 flex items-center justify-center font-mono text-[10px] text-paper">
+              <div className="w-9 h-9 rounded-full border-2 border-foreground bg-background/20 flex items-center justify-center font-mono text-[10px] text-background">
                 +{selectedIds.size - 5}
               </div>
             )}
@@ -397,7 +424,7 @@ export default function DiscoverPage() {
             <p className="font-display font-black text-[15px] leading-tight">
               {selectedIds.size} operator{selectedIds.size !== 1 ? 's' : ''} selected
             </p>
-            <p className="font-text text-[11px] text-paper/50 mt-0.5 truncate">
+            <p className="font-text text-[11px] text-background/50 mt-0.5 truncate">
               {selectedProfiles.map(p => p.name.split(' ')[0]).join(', ')}
             </p>
           </div>
@@ -405,14 +432,14 @@ export default function DiscoverPage() {
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => setSelectedIds(new Set())}
-              className="w-8 h-8 rounded-full bg-paper/10 hover:bg-paper/20 flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-full bg-background/10 hover:bg-background/20 flex items-center justify-center transition-colors"
               aria-label="Clear selection"
             >
               <X size={13} />
             </button>
             <button
               onClick={() => selectTab('build')}
-              className="font-text text-sm font-semibold px-5 py-2 bg-blue hover:bg-ink text-paper rounded-full transition-colors duration-[120ms]"
+              className="font-text text-sm font-semibold px-5 py-2 bg-primary hover:bg-foreground text-primary-foreground rounded-full transition-colors duration-[120ms]"
             >
               Build pod →
             </button>
@@ -453,16 +480,16 @@ function BuildTab({
   if (submitted) {
     return (
       <div className="py-24 text-center max-w-[480px] mx-auto">
-        <div className="w-14 h-14 bg-blue/10 rounded-full flex items-center justify-center mx-auto mb-6">
-          <div className="w-8 h-8 bg-blue rounded-full flex items-center justify-center">
+        <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
           </div>
         </div>
-        <h2 className="font-display font-black text-[28px] tracking-[-0.03em] text-ink mb-3">Pod submitted</h2>
-        <p className="font-text text-ink-60 mb-8">
-          <strong className="text-ink">{podName}</strong> has been submitted for review. Your account lead will confirm fit and schedule intro calls within 48 hours.
+        <h2 className="font-display font-black text-[28px] tracking-[-0.03em] text-foreground mb-3">Pod submitted</h2>
+        <p className="font-text text-muted-foreground mb-8">
+          <strong className="text-foreground">{podName}</strong> has been submitted for review. Your account lead will confirm fit and schedule intro calls within 48 hours.
         </p>
-        <Link href="/client/dashboard" className="font-text text-sm font-semibold px-6 py-3 bg-ink text-paper rounded-full hover:bg-blue transition-colors duration-[120ms]">
+        <Link href="/client/dashboard" className="font-text text-sm font-semibold px-6 py-3 bg-foreground text-background rounded-full hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]">
           Back to dashboard
         </Link>
       </div>
@@ -474,30 +501,30 @@ function BuildTab({
       <div className="space-y-5">
 
         {/* Team */}
-        <section className="bg-paper border border-ink-10 rounded-2xl p-6">
+        <section className="bg-background border border-border rounded-2xl p-6">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display font-black text-[18px] tracking-[-0.02em] text-ink">Team ({members.length})</h2>
-            <button onClick={onAddMore} className="font-text text-xs text-blue hover:underline">+ Add operators</button>
+            <h2 className="font-display font-black text-[18px] tracking-[-0.02em] text-foreground">Team ({members.length})</h2>
+            <button onClick={onAddMore} className="font-text text-xs text-primary hover:underline">+ Add operators</button>
           </div>
           {members.length === 0 ? (
-            <div className="py-10 text-center border border-dashed border-ink-10 rounded-xl">
-              <p className="font-text text-sm text-ink-40 mb-3">No operators selected yet.</p>
-              <button onClick={onAddMore} className="font-text text-xs text-blue hover:underline">Browse talent →</button>
+            <div className="py-10 text-center border border-dashed border-border rounded-xl">
+              <p className="font-text text-sm text-muted-foreground/70 mb-3">No operators selected yet.</p>
+              <button onClick={onAddMore} className="font-text text-xs text-primary hover:underline">Browse talent →</button>
             </div>
           ) : (
             <div className="space-y-2">
               {members.map(profile => (
-                <div key={profile!.id} className="flex items-center gap-3 p-3 border border-ink-10 rounded-xl group hover:border-ink-20 transition-colors">
-                  <div className={`w-10 h-10 rounded-lg shrink-0 flex items-center justify-center font-display font-black text-[12px] text-paper overflow-hidden relative ${profile!.color || 'bg-ink'}`}>
+                <div key={profile!.id} className="flex items-center gap-3 p-3 border border-border rounded-xl group hover:border-input transition-colors">
+                  <div className={`w-10 h-10 rounded-lg shrink-0 flex items-center justify-center font-display font-black text-[12px] text-background overflow-hidden relative ${profile!.color || 'bg-foreground'}`}>
                     {profile!.image ? <Image src={profile!.image} alt={profile!.name} fill className="object-cover" /> : profile!.initials}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-display font-black text-[14px] text-ink leading-tight">{profile!.name}</p>
-                    <p className="font-text text-[11px] text-ink-60 truncate">{profile!.role}</p>
+                    <p className="font-display font-black text-[14px] text-foreground leading-tight">{profile!.name}</p>
+                    <p className="font-text text-[11px] text-muted-foreground truncate">{profile!.role}</p>
                   </div>
                   <button
                     onClick={() => onRemove(profile!.id)}
-                    className="w-6 h-6 rounded-full bg-ink-5 hover:bg-red-50 hover:text-red-500 flex items-center justify-center text-ink-40 transition-colors opacity-0 group-hover:opacity-100"
+                    className="w-6 h-6 rounded-full bg-muted hover:bg-red-50 hover:text-red-500 flex items-center justify-center text-muted-foreground/70 transition-colors opacity-0 group-hover:opacity-100"
                   >
                     <X size={11} />
                   </button>
@@ -508,26 +535,26 @@ function BuildTab({
         </section>
 
         {/* Name */}
-        <section className="bg-paper border border-ink-10 rounded-2xl p-6">
-          <h2 className="font-display font-black text-[18px] tracking-[-0.02em] text-ink mb-4">Name your pod</h2>
+        <section className="bg-background border border-border rounded-2xl p-6">
+          <h2 className="font-display font-black text-[18px] tracking-[-0.02em] text-foreground mb-4">Name your pod</h2>
           <input
             type="text"
             placeholder="e.g. Lagos Entry Team"
             value={podName}
             onChange={e => setPodName(e.target.value)}
-            className="w-full px-4 py-3 border border-ink-10 rounded-xl font-text text-[15px] focus:outline-none focus:border-blue/40 transition-colors"
+            className="w-full px-4 py-3 border border-border rounded-xl font-text text-[15px] focus:outline-none focus:border-primary/40 transition-colors"
           />
-          <p className="font-text text-[11px] text-ink-40 mt-2">For your reference only — not shared with operators.</p>
+          <p className="font-text text-[11px] text-muted-foreground/70 mt-2">For your reference only — not shared with operators.</p>
         </section>
 
         {/* Attach to brief */}
-        <section className="bg-paper border border-ink-10 rounded-2xl p-6">
-          <h2 className="font-display font-black text-[18px] tracking-[-0.02em] text-ink mb-1">Attach to a brief</h2>
-          <p className="font-text text-[12px] text-ink-40 mb-4">Optional — you can attach later from the brief page.</p>
+        <section className="bg-background border border-border rounded-2xl p-6">
+          <h2 className="font-display font-black text-[18px] tracking-[-0.02em] text-foreground mb-1">Attach to a brief</h2>
+          <p className="font-text text-[12px] text-muted-foreground/70 mb-4">Optional — you can attach later from the brief page.</p>
           <div className="space-y-2">
             <button
               onClick={() => setBriefSlug('')}
-              className={`w-full text-left px-4 py-3 border rounded-xl font-text text-sm transition-colors ${briefSlug === '' ? 'border-blue bg-blue/5 text-blue font-semibold' : 'border-ink-10 text-ink-60 hover:border-ink-20'}`}
+              className={`w-full text-left px-4 py-3 border rounded-xl font-text text-sm transition-colors ${briefSlug === '' ? 'border-primary bg-primary/5 text-primary font-semibold' : 'border-border text-muted-foreground hover:border-input'}`}
             >
               No brief yet — submit for review only
             </button>
@@ -535,10 +562,10 @@ function BuildTab({
               <button
                 key={job.slug}
                 onClick={() => setBriefSlug(job.slug)}
-                className={`w-full text-left px-4 py-3 border rounded-xl transition-colors ${briefSlug === job.slug ? 'border-blue bg-blue/5' : 'border-ink-10 hover:border-ink-20'}`}
+                className={`w-full text-left px-4 py-3 border rounded-xl transition-colors ${briefSlug === job.slug ? 'border-primary bg-primary/5' : 'border-border hover:border-input'}`}
               >
-                <p className={`font-text text-sm font-semibold ${briefSlug === job.slug ? 'text-blue' : 'text-ink'}`}>{job.title}</p>
-                <p className="font-text text-[11px] text-ink-40 mt-0.5">{getClientUser(job.clientId).name} · {job.status}</p>
+                <p className={`font-text text-sm font-semibold ${briefSlug === job.slug ? 'text-primary' : 'text-foreground'}`}>{job.title}</p>
+                <p className="font-text text-[11px] text-muted-foreground/70 mt-0.5">{getClientUser(job.clientId).name} · {job.status}</p>
               </button>
             ))}
           </div>
@@ -547,19 +574,19 @@ function BuildTab({
 
       {/* Sidebar */}
       <aside className="space-y-4 lg:sticky lg:top-6">
-        <div className="bg-ink text-paper rounded-2xl p-6">
-          <p className="font-mono text-[10px] uppercase tracking-eyebrow text-paper/40 mb-4">Pod summary</p>
+        <div className="bg-foreground text-background rounded-2xl p-6">
+          <p className="font-mono text-[10px] uppercase tracking-eyebrow text-background/40 mb-4">Pod summary</p>
           <div className="flex -space-x-2 mb-4">
             {members.slice(0, 5).map(p => (
-              <div key={p!.id} className={`w-10 h-10 rounded-full border-2 border-ink shrink-0 flex items-center justify-center font-display font-black text-[11px] text-paper overflow-hidden relative ${p!.color || 'bg-blue'}`}>
+              <div key={p!.id} className={`w-10 h-10 rounded-full border-2 border-foreground shrink-0 flex items-center justify-center font-display font-black text-[11px] text-background overflow-hidden relative ${p!.color || 'bg-primary'}`}>
                 {p!.image ? <Image src={p!.image} alt={p!.name} fill className="object-cover" /> : p!.initials}
               </div>
             ))}
           </div>
-          <p className="font-display font-black text-[18px] leading-tight text-paper mb-1">
-            {podName || <span className="text-paper/30 italic text-[16px]">Unnamed pod</span>}
+          <p className="font-display font-black text-[18px] leading-tight text-background mb-1">
+            {podName || <span className="text-background/30 italic text-[16px]">Unnamed pod</span>}
           </p>
-          <p className="font-text text-[12px] text-paper/50">
+          <p className="font-text text-[12px] text-background/50">
             {members.length} operator{members.length !== 1 ? 's' : ''}
             {briefSlug ? ` · ${openBriefs.find(j => j.slug === briefSlug)?.clientId}` : ''}
           </p>
@@ -567,11 +594,11 @@ function BuildTab({
         <button
           onClick={() => { if (podName && members.length > 0) setSubmitted(true) }}
           disabled={!podName || members.length === 0}
-          className="w-full py-3.5 bg-blue text-paper rounded-full font-text text-sm font-semibold hover:bg-ink transition-colors duration-[120ms] disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full py-3.5 bg-primary text-primary-foreground rounded-full font-text text-sm font-semibold hover:bg-foreground transition-colors duration-[120ms] disabled:opacity-40 disabled:cursor-not-allowed"
         >
           Submit pod for review
         </button>
-        <p className="font-text text-[11px] text-ink-40 text-center">Your account lead reviews fit within 48 hours.</p>
+        <p className="font-text text-[11px] text-muted-foreground/70 text-center">Your account lead reviews fit within 48 hours.</p>
       </aside>
     </div>
   )

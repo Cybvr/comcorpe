@@ -140,7 +140,7 @@ export const users: User[] = [
     bg: 'Lagos operator network',
     desc: 'Builds market-specific growth systems for early and expansion-stage companies.',
     dashboardTitle: 'Growth Architect - Lagos',
-    color: 'bg-violet',
+    color: 'bg-accent',
     rate: '$10k - $15k/mo',
   },
   {
@@ -152,7 +152,7 @@ export const users: User[] = [
     bg: 'Fintech operator network',
     desc: 'Leads commercial strategy and regulated-market growth for fintech teams.',
     dashboardTitle: 'Fintech Commercial Lead',
-    color: 'bg-blue',
+    color: 'bg-primary',
     rate: '$15k - $20k/mo',
   },
   {

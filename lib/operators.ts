@@ -20,6 +20,6 @@ export const topOperators: Operator[] = featuredOperatorIds.map((id, index) => {
     name: talent.name,
     title: talent.dashboardTitle ?? talent.role,
     initials: talent.initials,
-    color: talent.color ?? 'bg-ink',
+    color: talent.color ?? 'bg-foreground',
   }
 })

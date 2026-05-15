@@ -88,18 +88,18 @@ export default function BookPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-[80vh] bg-ink dark-inv-section flex items-center justify-center px-6">
+      <div className="min-h-[80vh] bg-foreground dark-inv-section flex items-center justify-center px-6">
         <div className="max-w-[560px] w-full py-24">
-          <div className="font-mono text-xs text-paper/50 uppercase tracking-eyebrow mb-6">Brief received</div>
-          <h1 className="font-display font-black text-[clamp(48px,7vw,80px)] leading-[0.92] tracking-hero text-paper mb-8">
+          <div className="font-mono text-xs text-background/50 uppercase tracking-eyebrow mb-6">Brief received</div>
+          <h1 className="font-display font-black text-[clamp(48px,7vw,80px)] leading-[0.92] tracking-hero text-background mb-8">
             We&apos;ll be in touch.
           </h1>
-          <p className="font-text text-[18px] leading-relaxed text-paper/70 max-w-[40ch]">
-            Thank you, <strong className="text-paper font-semibold">{form.firstName}</strong>. Someone from the Comcorpᵉ team
+          <p className="font-text text-[18px] leading-relaxed text-background/70 max-w-[40ch]">
+            Thank you, <strong className="text-background font-semibold">{form.firstName}</strong>. Someone from the Comcorpᵉ team
             will review your brief and reach out within 48 hours.
           </p>
-          <div className="mt-12 pt-8 border-t border-paper/20">
-            <Link href="/" className="font-text text-sm font-semibold px-6 py-3.5 bg-blue text-white hover:bg-blue-hover transition-colors duration-[120ms] inline-flex items-center gap-2">
+          <div className="mt-12 pt-8 border-t border-background/20">
+            <Link href="/" className="font-text text-sm font-semibold px-6 py-3.5 bg-primary text-white hover:bg-primary/85 transition-colors duration-[120ms] inline-flex items-center gap-2">
               Back to Comcorpᵉ
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
             </Link>
@@ -110,19 +110,19 @@ export default function BookPage() {
   }
 
   return (
-    <div className="bg-paper">
+    <div className="bg-background">
       <div className="max-w-[760px] mx-auto px-6 md:px-12 py-16 md:py-24">
 
         {/* Page header */}
         <div className="mb-16">
-          <div className="font-mono text-xs text-ink-60 uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
-            <span className="w-6 h-px bg-ink-60 inline-block" />
+          <div className="font-mono text-xs text-muted-foreground uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
+            <span className="w-6 h-px bg-muted-foreground inline-block" />
             Book a session
           </div>
-          <h1 className="font-display font-black text-[clamp(40px,6vw,72px)] leading-[0.94] tracking-hero text-ink mb-6 text-balance">
+          <h1 className="font-display font-black text-[clamp(40px,6vw,72px)] leading-[0.94] tracking-hero text-foreground mb-6 text-balance">
             Tell us about<br />your challenge.
           </h1>
-          <p className="font-text text-[18px] leading-relaxed text-ink-60 max-w-[48ch]">
+          <p className="font-text text-[18px] leading-relaxed text-muted-foreground max-w-[48ch]">
             The more you share, the better we can assess fit and come prepared. This takes about 5 minutes.
           </p>
         </div>
@@ -131,7 +131,7 @@ export default function BookPage() {
 
           {/* Section 1 — Contact */}
           <fieldset className="border-0 p-0 m-0">
-            <legend className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow mb-8 pb-4 border-b border-ink-10 w-full">
+            <legend className="font-mono text-xs text-muted-foreground/70 uppercase tracking-eyebrow mb-8 pb-4 border-b border-border w-full">
               01 / Your details
             </legend>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -158,7 +158,7 @@ export default function BookPage() {
 
           {/* Section 2 — Engagement */}
           <fieldset className="border-0 p-0 m-0">
-            <legend className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow mb-8 pb-4 border-b border-ink-10 w-full">
+            <legend className="font-mono text-xs text-muted-foreground/70 uppercase tracking-eyebrow mb-8 pb-4 border-b border-border w-full">
               02 / The engagement
             </legend>
             <div className="flex flex-col gap-8">
@@ -168,7 +168,7 @@ export default function BookPage() {
                     <button
                       key={a} type="button"
                       onClick={() => toggle('arena', a)}
-                      className={`px-4 py-3 text-left font-text text-sm border transition-colors duration-[120ms] ${form.arena === a ? 'bg-ink text-paper border-ink' : 'bg-transparent text-ink border-ink-20 hover:border-ink'}`}
+                      className={`px-4 py-3 text-left font-text text-sm border transition-colors duration-[120ms] ${form.arena === a ? 'bg-foreground text-background border-foreground' : 'bg-transparent text-foreground border-input hover:border-foreground'}`}
                     >
                       {a}
                     </button>
@@ -182,7 +182,7 @@ export default function BookPage() {
                     <button
                       key={t} type="button"
                       onClick={() => toggle('engagementType', t)}
-                      className={`px-4 py-3 text-left font-text text-sm border transition-colors duration-[120ms] ${form.engagementType === t ? 'bg-ink text-paper border-ink' : 'bg-transparent text-ink border-ink-20 hover:border-ink'}`}
+                      className={`px-4 py-3 text-left font-text text-sm border transition-colors duration-[120ms] ${form.engagementType === t ? 'bg-foreground text-background border-foreground' : 'bg-transparent text-foreground border-input hover:border-foreground'}`}
                     >
                       {t}
                     </button>
@@ -204,7 +204,7 @@ export default function BookPage() {
 
           {/* Section 3 — Challenge */}
           <fieldset className="border-0 p-0 m-0">
-            <legend className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow mb-8 pb-4 border-b border-ink-10 w-full">
+            <legend className="font-mono text-xs text-muted-foreground/70 uppercase tracking-eyebrow mb-8 pb-4 border-b border-border w-full">
               03 / The challenge
             </legend>
             <Field label="Describe the growth challenge you're facing" required>
@@ -221,7 +221,7 @@ export default function BookPage() {
 
           {/* Section 4 — Practicalities */}
           <fieldset className="border-0 p-0 m-0">
-            <legend className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow mb-8 pb-4 border-b border-ink-10 w-full">
+            <legend className="font-mono text-xs text-muted-foreground/70 uppercase tracking-eyebrow mb-8 pb-4 border-b border-border w-full">
               04 / Practicalities
             </legend>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -231,7 +231,7 @@ export default function BookPage() {
                     <button
                       key={b} type="button"
                       onClick={() => toggle('budget', b)}
-                      className={`px-4 py-3 text-left font-text text-sm border transition-colors duration-[120ms] ${form.budget === b ? 'bg-ink text-paper border-ink' : 'bg-transparent text-ink border-ink-20 hover:border-ink'}`}
+                      className={`px-4 py-3 text-left font-text text-sm border transition-colors duration-[120ms] ${form.budget === b ? 'bg-foreground text-background border-foreground' : 'bg-transparent text-foreground border-input hover:border-foreground'}`}
                     >
                       {b}
                     </button>
@@ -244,7 +244,7 @@ export default function BookPage() {
                     <button
                       key={t} type="button"
                       onClick={() => toggle('timeline', t)}
-                      className={`px-4 py-3 text-left font-text text-sm border transition-colors duration-[120ms] ${form.timeline === t ? 'bg-ink text-paper border-ink' : 'bg-transparent text-ink border-ink-20 hover:border-ink'}`}
+                      className={`px-4 py-3 text-left font-text text-sm border transition-colors duration-[120ms] ${form.timeline === t ? 'bg-foreground text-background border-foreground' : 'bg-transparent text-foreground border-input hover:border-foreground'}`}
                     >
                       {t}
                     </button>
@@ -256,7 +256,7 @@ export default function BookPage() {
 
           {/* Section 5 — How they heard */}
           <fieldset className="border-0 p-0 m-0">
-            <legend className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow mb-8 pb-4 border-b border-ink-10 w-full">
+            <legend className="font-mono text-xs text-muted-foreground/70 uppercase tracking-eyebrow mb-8 pb-4 border-b border-border w-full">
               05 / One last thing
             </legend>
             <Field label="How did you hear about Comcorpᵉ?">
@@ -271,14 +271,14 @@ export default function BookPage() {
           </fieldset>
 
           {/* Submit */}
-          <div className="pt-4 border-t border-ink flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <p className="font-mono text-xs text-ink-60 max-w-[36ch]">
+          <div className="pt-4 border-t border-foreground flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <p className="font-mono text-xs text-muted-foreground max-w-[36ch]">
               We&apos;ll review your brief and respond within 48 hours.
             </p>
             <button
               type="submit"
               disabled={loading}
-              className="font-text text-sm font-semibold px-8 py-4 bg-blue text-white hover:bg-blue-hover transition-colors duration-[120ms] disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-3 whitespace-nowrap"
+              className="font-text text-sm font-semibold px-8 py-4 bg-primary text-white hover:bg-primary/85 transition-colors duration-[120ms] disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-3 whitespace-nowrap"
             >
               {loading ? 'Submitting…' : 'Book session'}
               {!loading && (
@@ -293,7 +293,7 @@ export default function BookPage() {
   )
 }
 
-const inputCls = 'w-full px-4 py-3.5 border border-ink-20 bg-paper-pure font-text text-sm text-ink placeholder:text-ink-40 focus:outline-none focus:border-ink transition-colors duration-[120ms]'
+const inputCls = 'w-full px-4 py-3.5 border border-input bg-card font-text text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors duration-[120ms]'
 
 interface FieldProps {
   label: string;
@@ -304,8 +304,8 @@ interface FieldProps {
 function Field({ label, required, children }: FieldProps) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="font-mono text-[11px] tracking-eyebrow uppercase text-ink-60">
-        {label}{required && <span className="text-blue ml-1">*</span>}
+      <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">
+        {label}{required && <span className="text-primary ml-1">*</span>}
       </label>
       {children}
     </div>

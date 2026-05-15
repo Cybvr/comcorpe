@@ -14,29 +14,29 @@ export default function Home() {
       <Hero />
       
       {/* High-level navigation section */}
-      <section className="py-24 md:py-40 px-6 md:px-24 bg-paper">
+      <section className="py-24 md:py-40 px-6 md:px-24 bg-background">
         <div className="flex items-baseline gap-6 mb-20">
-          <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-ink inline-flex items-center gap-2.5">
-            <span className="w-6 h-px bg-ink inline-block" />
+          <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-foreground inline-flex items-center gap-2.5">
+            <span className="w-6 h-px bg-foreground inline-block" />
             The Foundation
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-ink border border-ink overflow-hidden rounded-sm">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-foreground border border-foreground overflow-hidden rounded-sm">
           {sections.map((s) => (
             <Link 
               key={s.label} 
               href={s.href}
-              className="group p-8 md:p-12 bg-paper hover:bg-blue/[0.03] transition-all duration-300 flex flex-col min-h-[320px]"
+              className="group p-8 md:p-12 bg-background hover:bg-primary/[0.03] transition-all duration-300 flex flex-col min-h-[320px]"
             >
-              <div className="font-mono text-xs text-ink-40 uppercase tracking-widest mb-8">{s.label}</div>
-              <h2 className="font-display font-black text-[32px] md:text-[42px] leading-tight tracking-tight text-ink group-hover:text-blue transition-colors duration-300 mb-6">
+              <div className="font-mono text-xs text-muted-foreground/70 uppercase tracking-widest mb-8">{s.label}</div>
+              <h2 className="font-display font-black text-[32px] md:text-[42px] leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors duration-300 mb-6">
                 {s.title}
               </h2>
-              <p className="font-text text-[16px] leading-relaxed text-ink-60 m-0 mb-auto">
+              <p className="font-text text-[16px] leading-relaxed text-muted-foreground m-0 mb-auto">
                 {s.description}
               </p>
-              <div className="mt-12 font-mono text-xs text-blue flex items-center gap-2 group-hover:gap-4 transition-all duration-300">
+              <div className="mt-12 font-mono text-xs text-primary flex items-center gap-2 group-hover:gap-4 transition-all duration-300">
                 Explore section <span>→</span>
               </div>
             </Link>

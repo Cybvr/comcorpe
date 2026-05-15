@@ -9,10 +9,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="flex h-screen bg-paper overflow-hidden font-text">
+    <div className="flex h-screen bg-background overflow-hidden font-text">
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-ink/40 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-foreground/40 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -29,7 +29,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           audience="admin"
           onMenuClick={() => setSidebarOpen(true)}
         />
-        <main className="flex-1 overflow-y-auto bg-paper w-full">
+        <main className="flex-1 overflow-y-auto bg-background w-full">
           <div className="px-6 py-6 lg:px-8 lg:py-8 max-w-[1200px] mx-auto">
             {children}
           </div>

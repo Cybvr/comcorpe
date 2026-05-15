@@ -11,21 +11,21 @@ export const metadata: Metadata = {
 
 export default function CaseStudiesPage() {
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="min-h-screen bg-background">
       <div className="px-6 md:px-24 pt-16 md:pt-24 pb-24 md:pb-40">
 
         {/* Page header */}
-        <div className="mb-16 md:mb-24 border-b border-ink pb-14 md:pb-20">
-          <div className="font-mono text-xs text-ink-60 uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
-            <span className="w-6 h-px bg-ink-60 inline-block" />
+        <div className="mb-16 md:mb-24 border-b border-foreground pb-14 md:pb-20">
+          <div className="font-mono text-xs text-muted-foreground uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
+            <span className="w-6 h-px bg-muted-foreground inline-block" />
             Case Studies
           </div>
           <div className="flex flex-col md:flex-row md:items-end gap-8 md:gap-24">
-            <h1 className="font-display font-black text-[clamp(48px,7vw,96px)] leading-[0.92] tracking-hero text-ink m-0 text-balance">
+            <h1 className="font-display font-black text-[clamp(48px,7vw,96px)] leading-[0.92] tracking-hero text-foreground m-0 text-balance">
               Work that<br />
-              <span className="text-blue">compounds.</span>
+              <span className="text-primary">compounds.</span>
             </h1>
-            <p className="font-text text-[18px] leading-lede text-ink-60 max-w-[36ch] md:mb-2">
+            <p className="font-text text-[18px] leading-lede text-muted-foreground max-w-[36ch] md:mb-2">
               Each engagement is documented as a reusable asset — for the client and for us.
               These are the cases that shaped the model.
             </p>
@@ -42,13 +42,13 @@ export default function CaseStudiesPage() {
             <Link
               key={c.slug}
               href={`/case-studies/${c.slug}`}
-              className="group grid grid-cols-1 md:grid-cols-[220px_1.6fr_0.9fr] gap-8 md:gap-12 py-12 md:py-14 border-b border-ink-10 hover:bg-ink-10/40 transition-colors duration-[120ms] -mx-6 md:-mx-24 px-6 md:px-24"
+              className="group grid grid-cols-1 md:grid-cols-[220px_1.6fr_0.9fr] gap-8 md:gap-12 py-12 md:py-14 border-b border-border hover:bg-border/40 transition-colors duration-[120ms] -mx-6 md:-mx-24 px-6 md:px-24"
             >
               {/* Left: number + arena */}
               <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-3">
-                  <span className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow">{c.number}</span>
-                  <span className="font-mono text-[11px] text-ink-40 uppercase tracking-eyebrow">
+                  <span className="font-mono text-xs text-muted-foreground/70 uppercase tracking-eyebrow">{c.number}</span>
+                  <span className="font-mono text-[11px] text-muted-foreground/70 uppercase tracking-eyebrow">
                     {c.arena}
                   </span>
                 </div>
@@ -60,13 +60,13 @@ export default function CaseStudiesPage() {
 
               {/* Centre: solution + client title + lede */}
               <div className="flex flex-col gap-3">
-                <div className="font-mono text-[11px] text-blue uppercase tracking-eyebrow border border-blue px-2 py-1 w-fit">
+                <div className="font-mono text-[11px] text-primary uppercase tracking-eyebrow border border-primary px-2 py-1 w-fit">
                   Solution / {c.solution}
                 </div>
-                <h2 className="font-display font-black text-[clamp(28px,3.5vw,48px)] leading-tight tracking-h3 text-ink m-0 group-hover:text-blue transition-colors duration-[120ms]">
+                <h2 className="font-display font-black text-[clamp(28px,3.5vw,48px)] leading-tight tracking-h3 text-foreground m-0 group-hover:text-primary transition-colors duration-[120ms]">
                   {c.title}
                 </h2>
-                <p className="font-text text-[15px] leading-relaxed text-ink-60 m-0 max-w-[48ch]">
+                <p className="font-text text-[15px] leading-relaxed text-muted-foreground m-0 max-w-[48ch]">
                   {c.lede}
                 </p>
               </div>
@@ -76,16 +76,16 @@ export default function CaseStudiesPage() {
                 <div className="grid grid-cols-2 md:grid-cols-1 gap-4 md:gap-3">
                   {c.outcome.stats.slice(0, 3).map(s => (
                     <div key={s.label}>
-                      <div className="font-display font-black text-[26px] tracking-[-0.03em] leading-none text-ink">
+                      <div className="font-display font-black text-[26px] tracking-[-0.03em] leading-none text-foreground">
                         {s.value}
                       </div>
-                      <div className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-60 mt-0.5">
+                      <div className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground mt-0.5">
                         {s.label}
                       </div>
                     </div>
                   ))}
                 </div>
-                <span className="font-mono text-xs text-blue inline-flex items-center gap-1.5 group-hover:gap-3 transition-all duration-[200ms]">
+                <span className="font-mono text-xs text-primary inline-flex items-center gap-1.5 group-hover:gap-3 transition-all duration-[200ms]">
                   Read case <span>→</span>
                 </span>
               </div>
@@ -94,16 +94,16 @@ export default function CaseStudiesPage() {
         </div>
 
         {/* Next engagement callout */}
-        <div className="mt-20 pt-12 border-t border-ink-10 flex flex-col md:flex-row md:items-center gap-6 justify-between">
+        <div className="mt-20 pt-12 border-t border-border flex flex-col md:flex-row md:items-center gap-6 justify-between">
           <div>
-            <div className="font-mono text-xs text-ink-40 uppercase tracking-eyebrow mb-2">Three patterns</div>
-            <p className="font-text text-[17px] text-ink-60 m-0 max-w-[40ch]">
+            <div className="font-mono text-xs text-muted-foreground/70 uppercase tracking-eyebrow mb-2">Three patterns</div>
+            <p className="font-text text-[17px] text-muted-foreground m-0 max-w-[40ch]">
               Market entry, growth stagnation, and opportunity creation are now documented as reusable growth playbooks.
             </p>
           </div>
           <Link
             href="/book"
-            className="font-text text-sm font-semibold px-6 py-3.5 bg-ink text-paper hover:bg-blue transition-colors duration-[120ms] inline-flex items-center gap-2.5 whitespace-nowrap"
+            className="font-text text-sm font-semibold px-6 py-3.5 bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms] inline-flex items-center gap-2.5 whitespace-nowrap"
           >
             Become a case study
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>

@@ -8,7 +8,7 @@ interface FooterLinkProps {
 
 function FooterLink({ children, href = '#' }: FooterLinkProps) {
   return (
-    <a href={href} className="font-text text-sm text-paper cursor-pointer border-b border-transparent hover:border-blue hover:text-blue transition-colors duration-[120ms] pb-px w-fit">
+    <a href={href} className="font-text text-sm text-background cursor-pointer border-b border-transparent hover:border-primary hover:text-primary transition-colors duration-[120ms] pb-px w-fit">
       {children}
     </a>
   )
@@ -16,15 +16,15 @@ function FooterLink({ children, href = '#' }: FooterLinkProps) {
 
 export default function Footer() {
   return (
-    <footer className="bg-ink text-paper dark-inv-section">
-      <div className="px-6 md:px-24 pt-20 md:pt-[120px] pb-16 md:pb-24 border-b border-paper/[0.12]">
-        <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-paper inline-flex items-center gap-2.5 mb-8">
-          <span className="w-6 h-px bg-paper inline-block" />
+    <footer className="bg-foreground text-background dark-inv-section">
+      <div className="px-6 md:px-24 pt-20 md:pt-[120px] pb-16 md:pb-24 border-b border-background/[0.12]">
+        <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-background inline-flex items-center gap-2.5 mb-8">
+          <span className="w-6 h-px bg-background inline-block" />
           Orchestrating capability
         </span>
         <img src="/images/comcorpe.png" alt="Comcorpe" className="h-24 md:h-40 lg:h-56 w-auto object-contain brightness-0 invert" />
-        <div className="mt-8 font-display font-black text-[22px] tracking-[-0.02em] text-paper">
-          Orchestrating capability. <span className="text-paper/50">Delivering outcomes. Scaling impact.</span>
+        <div className="mt-8 font-display font-black text-[22px] tracking-[-0.02em] text-background">
+          Orchestrating capability. <span className="text-background/50">Delivering outcomes. Scaling impact.</span>
         </div>
       </div>
 
@@ -36,7 +36,7 @@ export default function Footer() {
           { head: 'Contact', links: [{ label: 'Book a session call', href: '/book' }, { label: 'hello@comcorp.e', href: 'mailto:hello@comcorp.e' }, { label: 'Plot 5 Chief Yesufu Abiodun Oniru Rd, Victoria Island, Lagos 106104, Lagos', href: '#' }, { label: 'London · Lagos · Oslo', href: '#' }] },
         ].map(({ head, links }) => (
           <div key={head} className="flex flex-col gap-3.5">
-            <span className="font-text text-[11px] font-semibold tracking-eyebrow uppercase text-paper/50 mb-2">{head}</span>
+            <span className="font-text text-[11px] font-semibold tracking-eyebrow uppercase text-background/50 mb-2">{head}</span>
             {links.map(l => typeof l === 'string'
               ? <FooterLink key={l}>{l}</FooterLink>
               : <FooterLink key={l.label} href={l.href}>{l.label}</FooterLink>
@@ -45,12 +45,12 @@ export default function Footer() {
         ))}
       </div>
 
-      <div className="px-6 md:px-24 py-6 flex flex-col md:flex-row items-center justify-between border-t border-paper/[0.12] font-mono text-xs text-paper/50 gap-4">
+      <div className="px-6 md:px-24 py-6 flex flex-col md:flex-row items-center justify-between border-t border-background/[0.12] font-mono text-xs text-background/50 gap-4">
         <span>© 2026 Comcorpᵉ Ltd. All rights reserved.</span>
         <div className="flex items-center gap-4">
-          <a href="/privacy" className="hover:text-blue transition-colors">Privacy</a>
-          <a href="/terms" className="hover:text-blue transition-colors">Terms</a>
-          <a href="/cookies" className="hover:text-blue transition-colors">Cookies</a>
+          <a href="/privacy" className="hover:text-primary transition-colors">Privacy</a>
+          <a href="/terms" className="hover:text-primary transition-colors">Terms</a>
+          <a href="/cookies" className="hover:text-primary transition-colors">Cookies</a>
         </div>
       </div>
     </footer>

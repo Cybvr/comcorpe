@@ -28,65 +28,65 @@ export default async function CommunityPostPage({
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">
-      <Link href="/client/dashboard/community" className="font-text text-sm text-ink-60 hover:text-blue transition-colors inline-flex items-center gap-2 mb-8">
+      <Link href="/client/dashboard/community" className="font-text text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2 mb-8">
         <ArrowLeft size={14} /> Back to community
       </Link>
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-8 items-start">
-        <article className="border border-ink-10 rounded-xl p-8 bg-paper">
+        <article className="border border-border rounded-xl p-8 bg-background">
           <div className="flex items-center gap-3 mb-8">
             <Link href={`/talent/${author.id}`} className="shrink-0">
-              <div className="w-11 h-11 rounded-full bg-ink-20 flex items-center justify-center font-display font-black text-[12px] text-ink hover:bg-blue/20 transition-colors">
+              <div className="w-11 h-11 rounded-full bg-input flex items-center justify-center font-display font-black text-[12px] text-foreground hover:bg-primary/20 transition-colors">
                 {author.initials}
               </div>
             </Link>
             <div>
-              <Link href={`/talent/${author.id}`} className="font-display font-black text-[16px] text-ink hover:text-blue transition-colors leading-none block">
+              <Link href={`/talent/${author.id}`} className="font-display font-black text-[16px] text-foreground hover:text-primary transition-colors leading-none block">
                 {author.name}
               </Link>
-              <div className="font-text text-xs text-ink-40 mt-1">{post.role}</div>
+              <div className="font-text text-xs text-muted-foreground/70 mt-1">{post.role}</div>
             </div>
-            <span className="ml-auto font-mono text-[10px] px-2 py-1 bg-blue/10 text-blue border border-blue/20 rounded-sm uppercase tracking-eyebrow">
+            <span className="ml-auto font-mono text-[10px] px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded-sm uppercase tracking-eyebrow">
               {post.badge}
             </span>
           </div>
 
-          <h1 className="font-display font-black text-[34px] tracking-[-0.03em] text-ink leading-tight max-w-[18ch]">
+          <h1 className="font-display font-black text-[34px] tracking-[-0.03em] text-foreground leading-tight max-w-[18ch]">
             {post.title}
           </h1>
-          <p className="font-text text-[16px] leading-relaxed text-ink-60 mt-6">{post.body}</p>
-          <p className="font-text text-[16px] leading-relaxed text-ink-60 mt-5">
+          <p className="font-text text-[16px] leading-relaxed text-muted-foreground mt-6">{post.body}</p>
+          <p className="font-text text-[16px] leading-relaxed text-muted-foreground mt-5">
             The useful pattern here is not the tactic by itself. It is the sequence: start with the trust carrier, prove the commercial motion, then move direct once the market has a reason to believe you.
           </p>
 
-          <div className="mt-8 pt-5 border-t border-ink-10 flex items-center gap-4">
-            <button className="flex items-center gap-1.5 font-text text-xs text-ink-40 hover:text-ink transition-colors">
+          <div className="mt-8 pt-5 border-t border-border flex items-center gap-4">
+            <button className="flex items-center gap-1.5 font-text text-xs text-muted-foreground/70 hover:text-foreground transition-colors">
               <TrendingUp size={12} /> {post.likes}
             </button>
-            <button className="flex items-center gap-1.5 font-text text-xs text-ink-40 hover:text-ink transition-colors">
+            <button className="flex items-center gap-1.5 font-text text-xs text-muted-foreground/70 hover:text-foreground transition-colors">
               <MessageCircle size={12} /> {post.replies}
             </button>
-            <button className="flex items-center gap-1.5 font-text text-xs text-ink-40 hover:text-ink transition-colors" aria-label="Share post">
+            <button className="flex items-center gap-1.5 font-text text-xs text-muted-foreground/70 hover:text-foreground transition-colors" aria-label="Share post">
               <Share2 size={12} />
             </button>
-            <button className="flex items-center gap-1.5 font-text text-xs text-ink-40 hover:text-ink transition-colors ml-auto" aria-label="Save post">
+            <button className="flex items-center gap-1.5 font-text text-xs text-muted-foreground/70 hover:text-foreground transition-colors ml-auto" aria-label="Save post">
               <Bookmark size={12} />
             </button>
           </div>
         </article>
 
-        <aside className="border border-ink-10 rounded-xl p-5 bg-paper">
-          <p className="font-mono text-[10px] uppercase tracking-eyebrow text-blue mb-4">Talent profile</p>
+        <aside className="border border-border rounded-xl p-5 bg-background">
+          <p className="font-mono text-[10px] uppercase tracking-eyebrow text-primary mb-4">Talent profile</p>
           <Link href={`/talent/${author.id}`} className="block group">
-            <div className="w-12 h-12 rounded-full bg-ink flex items-center justify-center font-display font-black text-[13px] text-paper mb-4 group-hover:bg-blue transition-colors">
+            <div className="w-12 h-12 rounded-full bg-foreground flex items-center justify-center font-display font-black text-[13px] text-background mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
               {author.initials}
             </div>
-            <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink group-hover:text-blue transition-colors leading-tight">{author.name}</h2>
+            <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-foreground group-hover:text-primary transition-colors leading-tight">{author.name}</h2>
           </Link>
-          <p className="font-mono text-[10px] uppercase tracking-eyebrow text-blue mt-2">{author.role}</p>
-          <p className="font-text text-sm text-ink-60 mt-4">{author.desc}</p>
-          <p className="font-text text-xs text-ink-40 mt-4">{author.bg}</p>
-          <Link href={`/talent/${author.id}`} className="mt-5 inline-flex font-text text-xs font-semibold px-4 py-2 bg-ink text-paper hover:bg-blue transition-colors duration-[120ms]">
+          <p className="font-mono text-[10px] uppercase tracking-eyebrow text-primary mt-2">{author.role}</p>
+          <p className="font-text text-sm text-muted-foreground mt-4">{author.desc}</p>
+          <p className="font-text text-xs text-muted-foreground/70 mt-4">{author.bg}</p>
+          <Link href={`/talent/${author.id}`} className="mt-5 inline-flex font-text text-xs font-semibold px-4 py-2 bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]">
             View full profile →
           </Link>
         </aside>
@@ -95,8 +95,8 @@ export default async function CommunityPostPage({
       {otherPosts.length > 0 && (
         <section className="mt-10">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-ink">More from the community</h2>
-            <Link href="/client/dashboard/community" className="font-text text-xs text-blue hover:underline">
+            <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-foreground">More from the community</h2>
+            <Link href="/client/dashboard/community" className="font-text text-xs text-primary hover:underline">
               View all posts
             </Link>
           </div>

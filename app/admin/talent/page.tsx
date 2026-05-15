@@ -36,8 +36,8 @@ function TalentForm({
   }
 
   const F = 'flex flex-col gap-1.5'
-  const L = 'font-mono text-[11px] tracking-eyebrow uppercase text-ink-60'
-  const I = 'w-full px-4 py-3 border border-ink-20 bg-white font-text text-sm text-ink placeholder:text-ink-40 focus:outline-none focus:border-ink transition-colors duration-100'
+  const L = 'font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground'
+  const I = 'w-full px-4 py-3 border border-input bg-white font-text text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors duration-100'
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -95,16 +95,16 @@ function TalentForm({
           type="checkbox"
           checked={form.featured ?? false}
           onChange={e => set('featured', e.target.checked)}
-          className="w-4 h-4 accent-ink"
+          className="w-4 h-4 accent-foreground"
         />
-        <label htmlFor="featured" className="font-text text-sm text-ink-60">Featured on public talent page</label>
+        <label htmlFor="featured" className="font-text text-sm text-muted-foreground">Featured on public talent page</label>
       </div>
 
       <div className="flex gap-3 pt-2">
-        <button type="submit" className="flex-1 py-3 bg-ink text-paper font-text text-sm font-semibold hover:bg-blue transition-colors duration-100">
+        <button type="submit" className="flex-1 py-3 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100">
           Save
         </button>
-        <button type="button" onClick={onCancel} className="flex-1 py-3 border border-ink-20 text-ink font-text text-sm hover:bg-ink-10 transition-colors duration-100">
+        <button type="button" onClick={onCancel} className="flex-1 py-3 border border-input text-foreground font-text text-sm hover:bg-border transition-colors duration-100">
           Cancel
         </button>
       </div>
@@ -154,12 +154,12 @@ export default function AdminTalentPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-[28px] tracking-hero text-ink">Talent</h1>
-          <p className="text-sm text-ink-60 mt-0.5">{talent.length} operators</p>
+          <h1 className="font-display text-[28px] tracking-hero text-foreground">Talent</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{talent.length} operators</p>
         </div>
         <button
           onClick={() => setModal('create')}
-          className="px-5 py-2.5 bg-ink text-paper font-text text-sm font-semibold hover:bg-blue transition-colors duration-100"
+          className="px-5 py-2.5 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100"
         >
           + Add operator
         </button>
@@ -170,34 +170,34 @@ export default function AdminTalentPage() {
         placeholder="Search by name or role…"
         value={search}
         onChange={e => setSearch(e.target.value)}
-        className="w-full max-w-sm px-4 py-2.5 border border-ink-20 bg-white font-text text-sm text-ink placeholder:text-ink-40 focus:outline-none focus:border-ink transition-colors duration-100"
+        className="w-full max-w-sm px-4 py-2.5 border border-input bg-white font-text text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors duration-100"
       />
 
-      <div className="border border-ink-10 divide-y divide-ink-10">
+      <div className="border border-border divide-y divide-border">
         {filtered.length === 0 && (
-          <p className="px-5 py-8 text-sm text-ink-40 text-center">No operators found.</p>
+          <p className="px-5 py-8 text-sm text-muted-foreground/70 text-center">No operators found.</p>
         )}
         {filtered.map(user => (
           <div key={user.id} className="px-5 py-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-4 min-w-0">
-              <div className="w-9 h-9 shrink-0 bg-ink text-paper flex items-center justify-center font-mono text-[11px] font-semibold">
+              <div className="w-9 h-9 shrink-0 bg-foreground text-background flex items-center justify-center font-mono text-[11px] font-semibold">
                 {user.initials}
               </div>
               <div className="min-w-0">
-                <p className="font-text text-sm font-semibold text-ink">{user.name}</p>
-                <p className="font-mono text-[11px] text-ink-40 mt-0.5 truncate">{user.talentRole}</p>
+                <p className="font-text text-sm font-semibold text-foreground">{user.name}</p>
+                <p className="font-mono text-[11px] text-muted-foreground/70 mt-0.5 truncate">{user.talentRole}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
               {user.featured && (
-                <span className="font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 bg-blue/10 text-blue">
+                <span className="font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 bg-primary/10 text-primary">
                   Featured
                 </span>
               )}
-              <span className="hidden sm:block font-mono text-[11px] text-ink-40">{user.rate}</span>
+              <span className="hidden sm:block font-mono text-[11px] text-muted-foreground/70">{user.rate}</span>
               <button
                 onClick={() => setModal({ user })}
-                className="px-3 py-1.5 border border-ink-20 font-text text-xs text-ink hover:bg-ink hover:text-paper hover:border-ink transition-colors duration-100"
+                className="px-3 py-1.5 border border-input font-text text-xs text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-colors duration-100"
               >
                 Edit
               </button>
@@ -229,8 +229,8 @@ export default function AdminTalentPage() {
       {/* Delete confirm */}
       {deleteTarget && (
         <Modal title="Delete operator" onClose={() => setDeleteTarget(null)}>
-          <p className="font-text text-sm text-ink-60 mb-6">
-            Remove <strong className="text-ink">{deleteTarget.name}</strong> from the platform? This cannot be undone.
+          <p className="font-text text-sm text-muted-foreground mb-6">
+            Remove <strong className="text-foreground">{deleteTarget.name}</strong> from the platform? This cannot be undone.
           </p>
           <div className="flex gap-3">
             <button
@@ -241,7 +241,7 @@ export default function AdminTalentPage() {
             </button>
             <button
               onClick={() => setDeleteTarget(null)}
-              className="flex-1 py-3 border border-ink-20 text-ink font-text text-sm hover:bg-ink-10 transition-colors duration-100"
+              className="flex-1 py-3 border border-input text-foreground font-text text-sm hover:bg-border transition-colors duration-100"
             >
               Cancel
             </button>
