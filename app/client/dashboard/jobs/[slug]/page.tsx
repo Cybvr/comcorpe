@@ -37,6 +37,7 @@ const statusStyles: Record<string, string> = {
   'Paused': 'bg-orange-50 text-orange-700 border-orange-100',
   'Scoping': 'bg-border text-muted-foreground border-border',
   'Pod review': 'bg-accent/10 text-accent border-accent/20',
+  'Cancelled': 'bg-red-50 text-red-600 border-red-200',
 }
 
 export default function JobDetailPage({
@@ -57,6 +58,7 @@ export default function JobDetailPage({
 
   const liveJob = getJobs().find(j => j.id === job.id)
   const [jobStatus, setJobStatus] = useState(liveJob?.status ?? job.status)
+  const [confirmCancel, setConfirmCancel] = useState(false)
 
   const handlePause = () => {
     updateJob(job.id, { status: 'Paused' })
@@ -66,6 +68,12 @@ export default function JobDetailPage({
   const handleResume = () => {
     updateJob(job.id, { status: 'Active' })
     setJobStatus('Active')
+  }
+
+  const handleCancel = () => {
+    updateJob(job.id, { status: 'Cancelled' })
+    setJobStatus('Cancelled')
+    setConfirmCancel(false)
   }
 
   // Local state for milestones
@@ -150,7 +158,7 @@ export default function JobDetailPage({
             </div>
           </div>
         </div>
-        {jobStatus !== 'Completed' && (
+        {jobStatus !== 'Completed' && jobStatus !== 'Cancelled' && (
           <div className="flex items-center gap-3">
             <button className="px-5 py-2.5 bg-background border border-border rounded-full font-text text-sm font-semibold hover:border-input transition-colors">
               Edit brief
@@ -170,6 +178,31 @@ export default function JobDetailPage({
               >
                 Resume engagement
               </button>
+            )}
+            {(jobStatus === 'Active' || jobStatus === 'Paused') && !confirmCancel && (
+              <button
+                onClick={() => setConfirmCancel(true)}
+                className="px-5 py-2.5 bg-background border border-red-200 text-red-500 rounded-full font-text text-sm font-semibold hover:bg-red-50 transition-colors duration-[120ms]"
+              >
+                Cancel
+              </button>
+            )}
+            {confirmCancel && (
+              <div className="flex items-center gap-2">
+                <span className="font-text text-sm text-muted-foreground">Are you sure?</span>
+                <button
+                  onClick={handleCancel}
+                  className="px-4 py-2 bg-red-600 text-white rounded-full font-text text-sm font-semibold hover:bg-red-700 transition-colors"
+                >
+                  Yes, cancel
+                </button>
+                <button
+                  onClick={() => setConfirmCancel(false)}
+                  className="px-4 py-2 border border-border rounded-full font-text text-sm font-semibold hover:bg-muted transition-colors"
+                >
+                  Keep it
+                </button>
+              </div>
             )}
           </div>
         )}

@@ -1,5 +1,5 @@
 export type JobType = 'RETAINED' | 'PROJECT' | 'EQUITY'
-export type JobStatus = 'Scoping' | 'Pod review' | 'Active' | 'Paused' | 'Completed'
+export type JobStatus = 'Scoping' | 'Pod review' | 'Active' | 'Paused' | 'Completed' | 'Cancelled'
 
 export interface Milestone {
   id: string

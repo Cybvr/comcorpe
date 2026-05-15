@@ -6,7 +6,7 @@ import { invoices as seedInvoices, type Invoice, type InvoiceStatus } from '@/li
 import { payouts as seedPayouts, type Payout, type PayoutStatus } from '@/lib/payouts'
 import Modal from '@/components/admin/Modal'
 
-const JOB_STATUSES: JobStatus[] = ['Scoping', 'Pod review', 'Active', 'Paused', 'Completed']
+const JOB_STATUSES: JobStatus[] = ['Scoping', 'Pod review', 'Active', 'Paused', 'Completed', 'Cancelled']
 const JOB_TYPES: JobType[] = ['RETAINED', 'PROJECT', 'EQUITY']
 
 const STATUS_COLOR: Record<string, string> = {
@@ -15,6 +15,7 @@ const STATUS_COLOR: Record<string, string> = {
   Completed: 'bg-border text-muted-foreground',
   Paused: 'bg-yellow-100 text-yellow-700',
   'Pod review': 'bg-accent/10 text-accent',
+  Cancelled: 'bg-red-100 text-red-600',
 }
 
 const EMPTY_JOB: Omit<Job, 'id'> = {
