@@ -26,6 +26,7 @@ import {
 import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
 import { getTalentProfile } from '@/lib/user'
 import { jobs, getJobBySlug, getJobProgress } from '@/lib/jobs'
+import { getJobs, updateJob } from '@/lib/admin/store'
 import { invoices, getInvoice } from '@/lib/invoices'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -53,6 +54,19 @@ export default function JobDetailPage({
   const assignedPod = job.podSlug ? getPodBySlug(job.podSlug) : null
   const assignedPodMembers = assignedPod ? getPodMembers(assignedPod) : []
   const primaryPods = pods.slice(0, 2)
+
+  const liveJob = getJobs().find(j => j.id === job.id)
+  const [jobStatus, setJobStatus] = useState(liveJob?.status ?? job.status)
+
+  const handlePause = () => {
+    updateJob(job.id, { status: 'Paused' })
+    setJobStatus('Paused')
+  }
+
+  const handleResume = () => {
+    updateJob(job.id, { status: 'Active' })
+    setJobStatus('Active')
+  }
 
   // Local state for milestones
   const [localMilestones, setLocalMilestones] = useState(job.milestones || [])
@@ -120,8 +134,8 @@ export default function JobDetailPage({
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-0.5 rounded-sm border ${statusStyles[job.status as keyof typeof statusStyles]}`}>
-              {job.status}
+            <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-0.5 rounded-sm border ${statusStyles[jobStatus as keyof typeof statusStyles]}`}>
+              {jobStatus}
             </span>
           </div>
           <h1 className="font-display font-black text-[28px] tracking-[-0.03em] text-foreground leading-tight">{job.title}</h1>
@@ -136,14 +150,25 @@ export default function JobDetailPage({
             </div>
           </div>
         </div>
-        {job.status !== 'Completed' && (
+        {jobStatus !== 'Completed' && (
           <div className="flex items-center gap-3">
             <button className="px-5 py-2.5 bg-background border border-border rounded-full font-text text-sm font-semibold hover:border-input transition-colors">
               Edit brief
             </button>
-            {job.status === 'Active' && (
-              <button className="px-5 py-2.5 bg-foreground text-background rounded-full font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]">
+            {jobStatus === 'Active' && (
+              <button
+                onClick={handlePause}
+                className="px-5 py-2.5 bg-foreground text-background rounded-full font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
+              >
                 Pause engagement
+              </button>
+            )}
+            {jobStatus === 'Paused' && (
+              <button
+                onClick={handleResume}
+                className="px-5 py-2.5 bg-orange-500 text-white rounded-full font-text text-sm font-semibold hover:bg-orange-600 transition-colors duration-[120ms]"
+              >
+                Resume engagement
               </button>
             )}
           </div>
