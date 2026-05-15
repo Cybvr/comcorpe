@@ -4,11 +4,12 @@ import { useState, use } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { ArrowLeft, Briefcase, Clock, MapPin, Target, LayoutDashboard, Users2 } from 'lucide-react'
+import { ArrowLeft, Briefcase, Clock, MapPin, Target, LayoutDashboard, Users2, CreditCard } from 'lucide-react'
 import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
 import { getTalentProfile, getClientUser } from '@/lib/user'
 import { jobs, getJobBySlug, getJobProgress } from '@/lib/jobs'
 import { getInvoice } from '@/lib/invoices'
+import { payouts } from '@/lib/payouts'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -78,6 +79,9 @@ export default function TalentJobDetailPage({
           </TabsTrigger>
           <TabsTrigger value="pod" className="flex items-center gap-2">
             <Users2 size={14} /> Team
+          </TabsTrigger>
+          <TabsTrigger value="payments" className="flex items-center gap-2">
+            <CreditCard size={14} /> Payments
           </TabsTrigger>
         </TabsList>
 
@@ -218,6 +222,80 @@ export default function TalentJobDetailPage({
                   </div>
                 )}
               </section>
+            </TabsContent>
+
+            <TabsContent value="payments" className="mt-0">
+              {(() => {
+                const jobPayouts = payouts.filter(p => p.jobSlug === job.slug)
+                const cleared = jobPayouts.filter(p => p.status === 'Cleared').reduce((a, p) => a + p.amountRaw, 0)
+                const pending = jobPayouts.filter(p => p.status === 'Pending' || p.status === 'Processing').reduce((a, p) => a + p.amountRaw, 0)
+                const nextPayout = jobPayouts.filter(p => p.status === 'Pending').sort((a, b) => a.id - b.id)[0]
+                const payoutStatusStyles: Record<string, string> = {
+                  Cleared:    'bg-green-50 text-green-700 border-green-200',
+                  Pending:    'bg-amber-50 text-amber-700 border-amber-200',
+                  Processing: 'bg-primary/10 text-primary border-primary/20',
+                }
+                return (
+                  <section className="border-t border-border">
+                    <h2 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-6 mt-4">Your earnings</h2>
+                    <div className="grid grid-cols-3 gap-4 mb-8">
+                      <div className="bg-foreground text-background rounded-2xl p-5">
+                        <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-2">Cleared</p>
+                        <p className="font-display font-black text-[28px] tracking-[-0.03em] leading-none">${cleared.toLocaleString()}</p>
+                      </div>
+                      <div className={`border rounded-2xl p-5 bg-background ${pending > 0 ? 'border-amber-200' : 'border-border'}`}>
+                        <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-2">Pending</p>
+                        <p className={`font-display font-black text-[28px] tracking-[-0.03em] leading-none ${pending > 0 ? 'text-amber-600' : 'text-foreground'}`}>${pending.toLocaleString()}</p>
+                      </div>
+                      <div className="border border-border rounded-2xl p-5 bg-background">
+                        <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-2">Next payout</p>
+                        {nextPayout ? (
+                          <p className="font-display font-black text-[22px] tracking-[-0.03em] text-foreground leading-none">{nextPayout.amount}</p>
+                        ) : (
+                          <p className="font-display font-black text-[18px] tracking-[-0.02em] text-muted-foreground/50 leading-none">Nothing due</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="border border-border overflow-hidden">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-border bg-muted/50">
+                            <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70">Status</th>
+                            <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70">Milestone</th>
+                            <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 text-right">Amount</th>
+                            <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70">Date</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border">
+                          {jobPayouts.map(p => (
+                            <tr key={p.id} className="hover:bg-muted/30 transition-colors">
+                              <td className="px-4 py-3">
+                                <span className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider ${payoutStatusStyles[p.status]}`}>
+                                  {p.status}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3">
+                                <p className="font-text text-sm font-semibold text-foreground">{p.label}</p>
+                                <p className="font-text text-[10px] text-muted-foreground/60 mt-0.5">{p.meta}</p>
+                              </td>
+                              <td className="px-4 py-3 text-right">
+                                <span className="font-mono text-[11px] font-bold text-foreground">{p.amount}</span>
+                              </td>
+                              <td className="px-4 py-3">
+                                <span className="font-text text-xs text-muted-foreground">{p.date}</span>
+                              </td>
+                            </tr>
+                          ))}
+                          {jobPayouts.length === 0 && (
+                            <tr><td colSpan={4} className="px-4 py-10 text-center font-text text-sm text-muted-foreground/70">No payouts yet.</td></tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                    <p className="font-text text-[11px] text-muted-foreground/50 mt-3">Comcorpe holds client payments in escrow and releases to you on milestone sign-off.</p>
+                  </section>
+                )
+              })()}
             </TabsContent>
           </div>
 

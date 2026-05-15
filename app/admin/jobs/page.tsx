@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react'
 import { getJobs, createJob, updateJob, deleteJob } from '@/lib/admin/store'
 import type { Job, JobStatus, JobType } from '@/lib/jobs'
+import { invoices as seedInvoices, type Invoice, type InvoiceStatus } from '@/lib/invoices'
+import { payouts as seedPayouts, type Payout, type PayoutStatus } from '@/lib/payouts'
 import Modal from '@/components/admin/Modal'
 
 const JOB_STATUSES: JobStatus[] = ['Scoping', 'Pod review', 'Active', 'Paused', 'Completed']
@@ -146,7 +148,103 @@ function JobForm({
   )
 }
 
-type ModalState = 'create' | { job: Job } | null
+const INVOICE_STATUSES: InvoiceStatus[] = ['Due', 'Processing', 'Paid']
+const PAYOUT_STATUSES: PayoutStatus[] = ['Pending', 'Processing', 'Cleared']
+
+const INVOICE_STATUS_STYLES: Record<InvoiceStatus, string> = {
+  Paid:       'bg-green-100 text-green-700',
+  Due:        'bg-amber-100 text-amber-700',
+  Processing: 'bg-primary/10 text-primary',
+}
+const PAYOUT_STATUS_STYLES: Record<PayoutStatus, string> = {
+  Cleared:    'bg-green-100 text-green-700',
+  Pending:    'bg-amber-100 text-amber-700',
+  Processing: 'bg-primary/10 text-primary',
+}
+
+function PaymentsPanel({ job, invoices, payouts, onUpdateInvoice, onUpdatePayout }: {
+  job: Job
+  invoices: Invoice[]
+  payouts: Payout[]
+  onUpdateInvoice: (id: number, status: InvoiceStatus) => void
+  onUpdatePayout: (id: number, status: PayoutStatus) => void
+}) {
+  const jobInvoices = invoices.filter(i => i.jobSlug === job.slug)
+  const jobPayouts = payouts.filter(p => p.jobSlug === job.slug)
+  const totalInvoiced = jobInvoices.reduce((a, i) => a + i.amountRaw, 0)
+  const totalPaidOut = jobPayouts.filter(p => p.status === 'Cleared').reduce((a, p) => a + p.amountRaw, 0)
+
+  const F = 'flex flex-col gap-1.5'
+  const L = 'font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground'
+  const S = 'px-2 py-1 border border-input bg-white font-text text-xs text-foreground focus:outline-none focus:border-foreground transition-colors duration-100 appearance-none'
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 gap-3">
+        <div className="p-4 bg-foreground text-background rounded">
+          <p className="font-mono text-[10px] uppercase tracking-eyebrow opacity-40 mb-1">Client invoiced</p>
+          <p className="font-display font-black text-2xl">${totalInvoiced.toLocaleString()}</p>
+        </div>
+        <div className="p-4 border border-border rounded">
+          <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Talent paid out</p>
+          <p className="font-display font-black text-2xl text-foreground">${totalPaidOut.toLocaleString()}</p>
+        </div>
+      </div>
+
+      <div>
+        <p className={L + ' mb-2'}>Client invoices → Comcorpe</p>
+        {jobInvoices.length === 0 ? (
+          <p className="font-text text-xs text-muted-foreground/60 py-3">No invoices for this job.</p>
+        ) : (
+          <div className="border border-border divide-y divide-border">
+            {jobInvoices.map(inv => (
+              <div key={inv.id} className="px-3 py-2.5 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-text text-xs font-semibold text-foreground truncate">{inv.label}</p>
+                  <p className="font-mono text-[10px] text-muted-foreground/70">{inv.amount} · {inv.date}</p>
+                </div>
+                <select
+                  value={inv.status}
+                  onChange={e => onUpdateInvoice(inv.id, e.target.value as InvoiceStatus)}
+                  className={`${S} ${INVOICE_STATUS_STYLES[inv.status]} border-0 font-mono text-[10px] uppercase tracking-eyebrow font-bold`}
+                >
+                  {INVOICE_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div>
+        <p className={L + ' mb-2'}>Comcorpe → Talent payouts</p>
+        {jobPayouts.length === 0 ? (
+          <p className="font-text text-xs text-muted-foreground/60 py-3">No payouts for this job.</p>
+        ) : (
+          <div className="border border-border divide-y divide-border">
+            {jobPayouts.map(p => (
+              <div key={p.id} className="px-3 py-2.5 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-text text-xs font-semibold text-foreground truncate">{p.label}</p>
+                  <p className="font-mono text-[10px] text-muted-foreground/70">{p.amount} · {p.date}</p>
+                </div>
+                <select
+                  value={p.status}
+                  onChange={e => onUpdatePayout(p.id, e.target.value as PayoutStatus)}
+                  className={`${S} ${PAYOUT_STATUS_STYLES[p.status]} border-0 font-mono text-[10px] uppercase tracking-eyebrow font-bold`}
+                >
+                  {PAYOUT_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+type ModalState = 'create' | { job: Job } | { payments: Job } | null
 
 export default function AdminJobsPage() {
   const [jobs, setJobs] = useState<Job[]>([])
@@ -154,6 +252,8 @@ export default function AdminJobsPage() {
   const [deleteTarget, setDeleteTarget] = useState<Job | null>(null)
   const [filter, setFilter] = useState<JobStatus | 'All'>('All')
   const [search, setSearch] = useState('')
+  const [localInvoices, setLocalInvoices] = useState<Invoice[]>(seedInvoices)
+  const [localPayouts, setLocalPayouts] = useState<Payout[]>(seedPayouts)
 
   function reload() { setJobs(getJobs()) }
   useEffect(() => {
@@ -171,11 +271,19 @@ export default function AdminJobsPage() {
   function handleSave(data: Partial<Job>) {
     if (modal === 'create') {
       createJob(data as Omit<Job, 'id'>)
-    } else if (modal && typeof modal === 'object') {
-      updateJob((modal as { job: Job }).job.id, data)
+    } else if (modal && typeof modal === 'object' && 'job' in modal) {
+      updateJob(modal.job.id, data)
     }
     setModal(null)
     reload()
+  }
+
+  function handleUpdateInvoice(id: number, status: InvoiceStatus) {
+    setLocalInvoices(prev => prev.map(i => i.id === id ? { ...i, status } : i))
+  }
+
+  function handleUpdatePayout(id: number, status: PayoutStatus) {
+    setLocalPayouts(prev => prev.map(p => p.id === id ? { ...p, status } : p))
   }
 
   function confirmDelete() {
@@ -243,6 +351,12 @@ export default function AdminJobsPage() {
             </div>
             <div className="flex items-center gap-2 shrink-0 mt-0.5">
               <button
+                onClick={() => setModal({ payments: job })}
+                className="px-3 py-1.5 border border-input font-text text-xs text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-colors duration-100"
+              >
+                Payments
+              </button>
+              <button
                 onClick={() => setModal({ job })}
                 className="px-3 py-1.5 border border-input font-text text-xs text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-colors duration-100"
               >
@@ -259,9 +373,21 @@ export default function AdminJobsPage() {
         ))}
       </div>
 
-      {modal !== null && (
+      {modal !== null && modal !== 'create' && 'payments' in modal && (
+        <Modal title={`Payments — ${modal.payments.title}`} onClose={() => setModal(null)}>
+          <PaymentsPanel
+            job={modal.payments}
+            invoices={localInvoices}
+            payouts={localPayouts}
+            onUpdateInvoice={handleUpdateInvoice}
+            onUpdatePayout={handleUpdatePayout}
+          />
+        </Modal>
+      )}
+
+      {modal !== null && (modal === 'create' || 'job' in modal) && (
         <Modal
-          title={modal === 'create' ? 'New job' : `Edit job`}
+          title={modal === 'create' ? 'New job' : 'Edit job'}
           onClose={() => setModal(null)}
         >
           <JobForm

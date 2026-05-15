@@ -5,27 +5,28 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { 
-  ArrowLeft, 
-  Briefcase, 
-  Clock, 
-  MapPin, 
-  Target, 
-  LayoutDashboard, 
-  Users2, 
-  FileText, 
-  Upload, 
-  Send, 
+  ArrowLeft,
+  Briefcase,
+  Clock,
+  MapPin,
+  Target,
+  LayoutDashboard,
+  Users2,
+  FileText,
+  Upload,
+  Send,
   Sparkles,
   BrainCircuit,
   Search,
-  Plus, 
-  X, 
-  Check 
+  Plus,
+  X,
+  Check,
+  CreditCard,
 } from 'lucide-react'
 import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
 import { getTalentProfile } from '@/lib/user'
 import { jobs, getJobBySlug, getJobProgress } from '@/lib/jobs'
-import { getInvoice } from '@/lib/invoices'
+import { invoices, getInvoice } from '@/lib/invoices'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -70,16 +71,27 @@ export default function JobDetailPage({
   const handleAddMilestone = () => {
     if (!newMilestone.title || !newMilestone.date) return
     const id = `m_custom_${Date.now()}`
+    const rawAmount = newMilestone.amount.replace(/[^0-9.]/g, '')
+    const formattedAmount = rawAmount
+      ? `$${parseInt(rawAmount).toLocaleString()}`
+      : '—'
+    const [y, m, d] = newMilestone.date.split('-')
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+    const formattedDate = y && m && d ? `${parseInt(d)} ${months[parseInt(m)-1]} ${y}` : newMilestone.date
     const ms: any = {
       id,
       title: newMilestone.title,
-      date: newMilestone.date,
+      date: formattedDate,
       status: 'pending',
-      amount: newMilestone.amount || '—'
+      amount: formattedAmount,
     }
     setLocalMilestones([...localMilestones, ms])
     setNewMilestone({ title: '', date: '', amount: '' })
     setIsAddingMilestone(false)
+  }
+
+  const handleDeleteMilestone = (id: string) => {
+    setLocalMilestones(prev => prev.filter(m => m.id !== id))
   }
 
   const handleAsk = (e: React.FormEvent) => {
@@ -139,20 +151,25 @@ export default function JobDetailPage({
       </div>
 
       <Tabs defaultValue="brief" className="w-full">
-        <TabsList className="mb-8">
-          <TabsTrigger value="brief" className="flex items-center gap-2">
-            <Target size={14} /> Brief
-          </TabsTrigger>
-          <TabsTrigger value="milestones" className="flex items-center gap-2">
-            <LayoutDashboard size={14} /> Milestones
-          </TabsTrigger>
-          <TabsTrigger value="pod" className="flex items-center gap-2">
-            <Users2 size={14} /> Pod
-          </TabsTrigger>
-          <TabsTrigger value="knowledge" className="flex items-center gap-2">
-            <FileText size={14} /> Knowledge
-          </TabsTrigger>
-        </TabsList>
+        <div className="mb-8 w-full overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <TabsList className="w-max">
+            <TabsTrigger value="brief" className="flex items-center gap-2">
+              <Target size={14} /> Brief
+            </TabsTrigger>
+            <TabsTrigger value="milestones" className="flex items-center gap-2">
+              <LayoutDashboard size={14} /> Milestones
+            </TabsTrigger>
+            <TabsTrigger value="pod" className="flex items-center gap-2">
+              <Users2 size={14} /> Pod
+            </TabsTrigger>
+            <TabsTrigger value="knowledge" className="flex items-center gap-2">
+              <FileText size={14} /> Knowledge
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="flex items-center gap-2">
+              <CreditCard size={14} /> Payments
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-8 items-start">
           <div className="space-y-8">
@@ -215,6 +232,7 @@ export default function JobDetailPage({
                         <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 font-semibold">Milestone</th>
                         <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 font-semibold w-[100px]">Due</th>
                         <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 font-semibold text-right w-[100px]">Amount</th>
+                        <th className="w-8" />
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
@@ -241,24 +259,23 @@ export default function JobDetailPage({
                             />
                           </td>
                           <td className="px-4 py-3">
-                            <input 
-                              type="text"
-                              placeholder="e.g. Jun 30"
-                              className="w-full bg-transparent border-none focus:ring-0 font-text text-[10px] text-muted-foreground/70 uppercase tracking-tight placeholder:text-input p-0"
+                            <input
+                              type="date"
+                              className="w-full bg-transparent border-none focus:ring-0 font-text text-[10px] text-muted-foreground/70 uppercase tracking-tight p-0"
                               value={newMilestone.date}
                               onChange={e => setNewMilestone({...newMilestone, date: e.target.value})}
                             />
                           </td>
                           <td className="px-4 py-3 text-right">
                             <div className="flex items-center justify-end gap-2">
-                              <input 
+                              <input
                                 type="text"
                                 placeholder="$0"
                                 className="w-16 bg-transparent border-none focus:ring-0 font-mono text-[11px] font-bold text-foreground placeholder:text-input p-0 text-right"
                                 value={newMilestone.amount}
                                 onChange={e => setNewMilestone({...newMilestone, amount: e.target.value})}
                               />
-                              <button 
+                              <button
                                 onClick={handleAddMilestone}
                                 disabled={!newMilestone.title || !newMilestone.date}
                                 className="p-1 bg-foreground text-background rounded-sm hover:bg-primary hover:text-primary-foreground disabled:opacity-30 transition-all"
@@ -267,6 +284,7 @@ export default function JobDetailPage({
                               </button>
                             </div>
                           </td>
+                          <td />
                         </tr>
                       )}
                       {localMilestones.map((ms) => {
@@ -305,6 +323,14 @@ export default function JobDetailPage({
                               <span className="font-mono text-[11px] font-bold text-foreground">
                                 {inv?.amount ?? (ms.id.startsWith('m_custom_') ? (ms as any).amount : '—')}
                               </span>
+                            </td>
+                            <td className="pr-3 py-3 text-right">
+                              <button
+                                onClick={() => handleDeleteMilestone(ms.id)}
+                                className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground/50 hover:text-red-500 transition-all"
+                              >
+                                <X size={12} />
+                              </button>
                             </td>
                           </tr>
                         )
@@ -480,6 +506,76 @@ export default function JobDetailPage({
                   </div>
                 </div>
               </section>
+            </TabsContent>
+
+            <TabsContent value="payments" className="mt-0">
+              {(() => {
+                const jobInvoices = invoices.filter(i => i.jobSlug === job.slug)
+                const paid = jobInvoices.filter(i => i.status === 'Paid').reduce((a, i) => a + i.amountRaw, 0)
+                const due = jobInvoices.filter(i => i.status === 'Due').reduce((a, i) => a + i.amountRaw, 0)
+                const invoiceStatusStyles: Record<string, string> = {
+                  Paid:       'bg-green-50 text-green-700 border-green-200',
+                  Due:        'bg-amber-50 text-amber-700 border-amber-200',
+                  Processing: 'bg-primary/10 text-primary border-primary/20',
+                }
+                return (
+                  <section className="border-t border-border">
+                    <h2 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-6 mt-4">Payment schedule</h2>
+                    <div className="grid grid-cols-3 gap-4 mb-8">
+                      <div className="bg-foreground text-background rounded-2xl p-5">
+                        <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-2">Total invoiced</p>
+                        <p className="font-display font-black text-[28px] tracking-[-0.03em] leading-none">
+                          ${jobInvoices.reduce((a, i) => a + i.amountRaw, 0).toLocaleString()}
+                        </p>
+                      </div>
+                      <div className="border border-border rounded-2xl p-5 bg-background">
+                        <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-2">Paid</p>
+                        <p className="font-display font-black text-[28px] tracking-[-0.03em] text-foreground leading-none">${paid.toLocaleString()}</p>
+                      </div>
+                      <div className={`border rounded-2xl p-5 bg-background ${due > 0 ? 'border-amber-200' : 'border-border'}`}>
+                        <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-2">Outstanding</p>
+                        <p className={`font-display font-black text-[28px] tracking-[-0.03em] leading-none ${due > 0 ? 'text-amber-600' : 'text-foreground'}`}>${due.toLocaleString()}</p>
+                      </div>
+                    </div>
+                    <div className="border border-border overflow-hidden">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-border bg-muted/50">
+                            <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70">Status</th>
+                            <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70">Milestone</th>
+                            <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 text-right">Amount</th>
+                            <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70">Date</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border">
+                          {jobInvoices.map(inv => (
+                            <tr key={inv.id} className="hover:bg-muted/30 transition-colors">
+                              <td className="px-4 py-3">
+                                <span className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider ${invoiceStatusStyles[inv.status]}`}>
+                                  {inv.status}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3">
+                                <p className="font-text text-sm font-semibold text-foreground">{inv.label}</p>
+                              </td>
+                              <td className="px-4 py-3 text-right">
+                                <span className="font-mono text-[11px] font-bold text-foreground">{inv.amount}</span>
+                              </td>
+                              <td className="px-4 py-3">
+                                <span className="font-text text-xs text-muted-foreground">{inv.date}</span>
+                              </td>
+                            </tr>
+                          ))}
+                          {jobInvoices.length === 0 && (
+                            <tr><td colSpan={4} className="px-4 py-10 text-center font-text text-sm text-muted-foreground/70">No invoices yet.</td></tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                    <p className="font-text text-[11px] text-muted-foreground/50 mt-3">Payments are processed by Comcorpe and held in escrow until milestone sign-off.</p>
+                  </section>
+                )
+              })()}
             </TabsContent>
           </div>
 
