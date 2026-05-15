@@ -561,7 +561,7 @@ function BuildTab({
           </p>
           <p className="font-text text-[12px] text-paper/50">
             {members.length} operator{members.length !== 1 ? 's' : ''}
-            {briefSlug ? ` · ${openBriefs.find(j => j.slug === briefSlug)?.client}` : ''}
+            {briefSlug ? ` · ${openBriefs.find(j => j.slug === briefSlug)?.clientId}` : ''}
           </p>
         </div>
         <button
