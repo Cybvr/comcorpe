@@ -5,12 +5,13 @@ import Link from 'next/link'
 import { Search } from 'lucide-react'
 import { invoices, type InvoiceStatus } from '@/lib/invoices'
 import { jobs } from '@/lib/jobs'
+import { getPodBySlug } from '@/lib/pods'
 import { currentClientId } from '@/lib/session'
 
 const statusStyles: Record<InvoiceStatus, string> = {
-  Paid:  'bg-green-50 text-green-700 border-green-200',
-  Due:   'bg-amber-50 text-amber-700 border-amber-200',
-  Draft: 'bg-ink-5 text-ink-60 border-ink-10',
+  Paid:       'bg-green-50 text-green-700 border-green-200',
+  Due:        'bg-amber-50 text-amber-700 border-amber-200',
+  Processing: 'bg-blue-50 text-blue-700 border-blue-200',
 }
 
 export default function ClientBillingPage() {
@@ -36,7 +37,6 @@ export default function ClientBillingPage() {
 
   const filtered = clientInvoices.filter(i =>
     i.label.toLowerCase().includes(search.toLowerCase()) ||
-    i.meta.toLowerCase().includes(search.toLowerCase()) ||
     i.status.toLowerCase().includes(search.toLowerCase())
   )
 
@@ -62,7 +62,7 @@ export default function ClientBillingPage() {
             ${outstanding.toLocaleString()}
           </p>
           <p className={`font-text text-sm mt-4 ${outstanding > 0 ? 'text-amber-600' : 'text-ink-60'}`}>
-            {clientInvoices.filter(i => i.status === 'Due').length} invoice{clientInvoices.filter(i => i.status === 'Due').length !== 1 ? 's' : ''} due
+            {clientInvoices.filter(i => i.status === 'Due').length} milestone{clientInvoices.filter(i => i.status === 'Due').length !== 1 ? 's' : ''} due
           </p>
         </div>
 
@@ -72,7 +72,7 @@ export default function ClientBillingPage() {
             ${paidTotal.toLocaleString()}
           </p>
           <p className="font-text text-sm text-ink-60 mt-4">
-            {clientInvoices.filter(i => i.status === 'Paid').length} invoices cleared
+            {clientInvoices.filter(i => i.status === 'Paid').length} milestones cleared
           </p>
         </div>
       </div>
@@ -99,8 +99,9 @@ export default function ClientBillingPage() {
             <thead>
               <tr className="border-b border-ink-10 bg-ink-5/50">
                 <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Status</th>
-                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Invoice</th>
+                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Milestone</th>
                 <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Job</th>
+                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Pod</th>
                 <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 text-right">Amount</th>
                 <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Date</th>
               </tr>
@@ -108,6 +109,7 @@ export default function ClientBillingPage() {
             <tbody className="divide-y divide-ink-10">
               {filtered.map(invoice => {
                 const job = jobs.find(j => j.slug === invoice.jobSlug)
+                const pod = job?.podSlug ? getPodBySlug(job.podSlug) : null
                 return (
                   <tr key={invoice.id} className="hover:bg-ink-5/30 transition-colors">
                     <td className="px-5 py-4">
@@ -115,9 +117,8 @@ export default function ClientBillingPage() {
                         {invoice.status}
                       </span>
                     </td>
-                    <td className="px-5 py-4">
-                      <p className="font-text text-sm font-semibold text-ink leading-tight">{invoice.label}</p>
-                      <p className="font-text text-xs text-ink-40 mt-0.5">{invoice.meta}</p>
+                    <td className="px-5 py-4 max-w-[240px]">
+                      <p className="font-text text-sm font-semibold text-ink leading-tight truncate">{invoice.label}</p>
                     </td>
                     <td className="px-5 py-4">
                       {job ? (
@@ -125,6 +126,13 @@ export default function ClientBillingPage() {
                           {job.title}
                         </Link>
                       ) : <span className="text-ink-40">—</span>}
+                    </td>
+                    <td className="px-5 py-4">
+                      {pod ? (
+                        <Link href={`/client/dashboard/search/${pod.slug}`} className="font-text text-sm text-blue hover:underline">
+                          {pod.name}
+                        </Link>
+                      ) : <span className="font-text text-sm text-ink-40">—</span>}
                     </td>
                     <td className="px-5 py-4 text-right">
                       <span className="font-mono text-sm font-bold text-ink">{invoice.amount}</span>
@@ -136,7 +144,7 @@ export default function ClientBillingPage() {
                 )
               })}
               {filtered.length === 0 && (
-                <tr><td colSpan={5} className="px-5 py-12 text-center font-text text-sm text-ink-40">No invoices match your search.</td></tr>
+                <tr><td colSpan={6} className="px-5 py-12 text-center font-text text-sm text-ink-40">No invoices match your search.</td></tr>
               )}
             </tbody>
           </table>

@@ -25,7 +25,7 @@ export const payouts: Payout[] = [
     amount: '$12,250',
     amountRaw: 12250,
     status: 'Cleared',
-    date: 'Paid Feb 18',
+    date: '18 Feb 2026',
   },
   {
     id: 2,
@@ -36,8 +36,7 @@ export const payouts: Payout[] = [
     amount: '$15,750',
     amountRaw: 15750,
     status: 'Pending',
-    date: 'Clears Mar 25',
-    note: 'Awaiting client payment',
+    date: '25 Mar 2026',
   },
   {
     id: 3,
@@ -48,7 +47,7 @@ export const payouts: Payout[] = [
     amount: '$5,250',
     amountRaw: 5250,
     status: 'Cleared',
-    date: 'Paid Feb 22',
+    date: '22 Feb 2026',
   },
   {
     id: 4,
@@ -59,8 +58,7 @@ export const payouts: Payout[] = [
     amount: '$8,750',
     amountRaw: 8750,
     status: 'Pending',
-    date: 'Clears Apr 2',
-    note: 'Awaiting client payment',
+    date: '02 Apr 2026',
   },
   {
     id: 5,
@@ -71,7 +69,7 @@ export const payouts: Payout[] = [
     amount: '$4,200',
     amountRaw: 4200,
     status: 'Cleared',
-    date: 'Paid Dec 20',
+    date: '20 Dec 2025',
   },
   {
     id: 6,
@@ -82,7 +80,7 @@ export const payouts: Payout[] = [
     amount: '$25,200',
     amountRaw: 25200,
     status: 'Cleared',
-    date: 'Paid Oct 16',
+    date: '16 Oct 2025',
   },
   {
     id: 7,
@@ -93,6 +91,6 @@ export const payouts: Payout[] = [
     amount: '$16,800',
     amountRaw: 16800,
     status: 'Cleared',
-    date: 'Paid Jul 24',
+    date: '24 Jul 2025',
   },
 ]

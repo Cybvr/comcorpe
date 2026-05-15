@@ -8,8 +8,10 @@ import { ArrowLeft, Briefcase, Clock, MapPin, Target, LayoutDashboard, Users2 } 
 import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
 import { getTalentProfile } from '@/lib/user'
 import { jobs, getJobBySlug, getJobProgress } from '@/lib/jobs'
+import { getInvoice } from '@/lib/invoices'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Plus, X, Check } from 'lucide-react'
 
 const statusStyles: Record<string, string> = {
   'Active': 'bg-green-50 text-green-700 border-green-100',
@@ -34,6 +36,28 @@ export default function JobDetailPage({
   const assignedPod = job.podSlug ? getPodBySlug(job.podSlug) : null
   const assignedPodMembers = assignedPod ? getPodMembers(assignedPod) : []
   const primaryPods = pods.slice(0, 2)
+
+  // Local state for milestones
+  const [localMilestones, setLocalMilestones] = useState(job.milestones || [])
+  const [isAddingMilestone, setIsAddingMilestone] = useState(false)
+  const [newMilestone, setNewMilestone] = useState({ title: '', date: '', amount: '' })
+
+  const handleAddMilestone = () => {
+    if (!newMilestone.title || !newMilestone.date) return
+
+    const id = `m_custom_${Date.now()}`
+    const ms: any = {
+      id,
+      title: newMilestone.title,
+      date: newMilestone.date,
+      status: 'pending',
+      amount: newMilestone.amount || '—'
+    }
+
+    setLocalMilestones([...localMilestones, ms])
+    setNewMilestone({ title: '', date: '', amount: '' })
+    setIsAddingMilestone(false)
+  }
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">
@@ -123,10 +147,19 @@ export default function JobDetailPage({
             <TabsContent value="milestones" className="mt-0 space-y-8">
               <section className="border-t border-ink-10">
                 <div className="flex items-center justify-between py-4">
-                  <h2 className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Milestones</h2>
+                  <div className="flex items-center gap-4">
+                    <h2 className="font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Milestones</h2>
+                    <button 
+                      onClick={() => setIsAddingMilestone(!isAddingMilestone)}
+                      className="p-1 hover:bg-ink-5 rounded-sm text-blue transition-colors flex items-center gap-1 font-mono text-[9px] uppercase tracking-tight"
+                    >
+                      {isAddingMilestone ? <X size={12} /> : <Plus size={12} />}
+                      {isAddingMilestone ? 'Cancel' : 'Add milestone'}
+                    </button>
+                  </div>
                   <div className="flex items-center gap-1.5">
                     <div className="w-1.5 h-1.5 rounded-full bg-blue" />
-                    <span className="font-mono text-[9px] uppercase tracking-eyebrow text-ink-40">{getJobProgress(job)}% Velocity</span>
+                    <span className="font-mono text-[9px] uppercase tracking-eyebrow text-ink-40">{getJobProgress({...job, milestones: localMilestones})}% Velocity</span>
                   </div>
                 </div>
                 
@@ -134,49 +167,105 @@ export default function JobDetailPage({
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="border-b border-ink-10 bg-ink-5/50">
-                        <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-ink-40 font-semibold">Milestone Status</th>
-                        <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-ink-40 font-semibold">Payment</th>
+                        <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-ink-40 font-semibold w-[120px]">Milestone Status</th>
+                        <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-ink-40 font-semibold w-[100px]">Payment</th>
                         <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-ink-40 font-semibold">Milestone</th>
-                        <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-ink-40 font-semibold">Due</th>
-                        <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-ink-40 font-semibold text-right">Amount</th>
+                        <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-ink-40 font-semibold w-[100px]">Due</th>
+                        <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-ink-40 font-semibold text-right w-[100px]">Amount</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-ink-10">
-                      {job.milestones?.map((ms) => (
-                        <tr key={ms.id} className="group hover:bg-ink-5/30 transition-colors">
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider ${
-                              ms.status === 'completed' ? 'bg-blue-50 text-blue border-blue-200' :
-                              ms.status === 'in-progress' ? 'bg-violet/5 text-violet border-violet/20' :
-                              'bg-ink-10 text-ink-40 border-ink-20'
-                            }`}>
-                              {ms.status}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider ${
-                              ms.paymentStatus === 'paid' ? 'bg-green-50 text-green-700 border-green-200' :
-                              ms.paymentStatus === 'processing' ? 'bg-orange-50 text-orange-700 border-orange-200' :
-                              'bg-ink-5 text-ink-40 border-ink-10 opacity-50'
-                            }`}>
-                              {ms.paymentStatus}
+                      {isAddingMilestone && (
+                        <tr className="bg-blue/5">
+                          <td className="px-4 py-3">
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider bg-ink-10 text-ink-40 border-ink-20">
+                              PENDING
                             </span>
                           </td>
                           <td className="px-4 py-3">
-                            <p className="font-text text-sm font-bold text-ink group-hover:text-blue transition-colors">
-                              {ms.title}
-                            </p>
+                             <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider bg-ink-5 text-ink-40 border-ink-10">
+                               UNSET
+                             </span>
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <p className="font-text text-[10px] text-ink-40 uppercase tracking-tight">{ms.date}</p>
+                          <td className="px-4 py-3">
+                            <input 
+                              type="text"
+                              placeholder="Milestone title..."
+                              autoFocus
+                              className="w-full bg-transparent border-none focus:ring-0 font-text text-sm font-bold text-ink placeholder:text-ink-20 p-0"
+                              value={newMilestone.title}
+                              onChange={e => setNewMilestone({...newMilestone, title: e.target.value})}
+                            />
+                          </td>
+                          <td className="px-4 py-3">
+                            <input 
+                              type="text"
+                              placeholder="e.g. Jun 30"
+                              className="w-full bg-transparent border-none focus:ring-0 font-text text-[10px] text-ink-40 uppercase tracking-tight placeholder:text-ink-20 p-0"
+                              value={newMilestone.date}
+                              onChange={e => setNewMilestone({...newMilestone, date: e.target.value})}
+                            />
                           </td>
                           <td className="px-4 py-3 text-right">
-                            <span className="font-mono text-[11px] font-bold text-ink">
-                              {ms.amount}
-                            </span>
+                            <div className="flex items-center justify-end gap-2">
+                              <input 
+                                type="text"
+                                placeholder="$0"
+                                className="w-16 bg-transparent border-none focus:ring-0 font-mono text-[11px] font-bold text-ink placeholder:text-ink-20 p-0 text-right"
+                                value={newMilestone.amount}
+                                onChange={e => setNewMilestone({...newMilestone, amount: e.target.value})}
+                              />
+                              <button 
+                                onClick={handleAddMilestone}
+                                disabled={!newMilestone.title || !newMilestone.date}
+                                className="p-1 bg-ink text-paper rounded-sm hover:bg-blue disabled:opacity-30 transition-all"
+                              >
+                                <Check size={12} />
+                              </button>
+                            </div>
                           </td>
                         </tr>
-                      ))}
+                      )}
+                      {localMilestones.map((ms) => {
+                        const inv = getInvoice(job.slug, ms.id)
+                        return (
+                          <tr key={ms.id} className="group hover:bg-ink-5/30 transition-colors">
+                            <td className="px-4 py-3 whitespace-nowrap">
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider ${
+                                ms.status === 'completed'  ? 'bg-blue-50 text-blue border-blue-200' :
+                                ms.status === 'in-progress' ? 'bg-violet/5 text-violet border-violet/20' :
+                                'bg-ink-10 text-ink-40 border-ink-20'
+                              }`}>
+                                {ms.status}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap">
+                              {inv && (
+                                <span className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider ${
+                                  inv.status === 'Paid'       ? 'bg-green-50 text-green-700 border-green-200' :
+                                  inv.status === 'Processing' ? 'bg-orange-50 text-orange-700 border-orange-200' :
+                                  'bg-ink-5 text-ink-40 border-ink-10'
+                                }`}>
+                                  {inv.status}
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3">
+                              <p className="font-text text-sm font-bold text-ink group-hover:text-blue transition-colors">
+                                {ms.title}
+                              </p>
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap">
+                              <p className="font-text text-[10px] text-ink-40 uppercase tracking-tight">{ms.date}</p>
+                            </td>
+                            <td className="px-4 py-3 text-right">
+                              <span className="font-mono text-[11px] font-bold text-ink">
+                                {inv?.amount ?? (ms.id.startsWith('m_custom_') ? (ms as any).amount : '—')}
+                              </span>
+                            </td>
+                          </tr>
+                        )
+                      })}
                     </tbody>
                   </table>
                 </div>

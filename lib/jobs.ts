@@ -4,10 +4,8 @@ export type JobStatus = 'Scoping' | 'Pod review' | 'Active' | 'Paused' | 'Comple
 export interface Milestone {
   id: string
   title: string
-  amount: string
   date: string
   status: 'pending' | 'in-progress' | 'completed'
-  paymentStatus: 'unpaid' | 'paid' | 'processing'
 }
 
 export interface Job {
@@ -79,10 +77,10 @@ export const jobs: Job[] = [
       'Strong background in behavioral economics',
     ],
     milestones: [
-      { id: 'm1', title: 'Behavioral reward logic sign-off', amount: '$35,000', date: 'Feb 15', status: 'completed', paymentStatus: 'paid' },
-      { id: 'm2', title: 'Merchant API V1 documentation', amount: '$45,000', date: 'Mar 22', status: 'in-progress', paymentStatus: 'unpaid' },
-      { id: 'm3', title: 'Loyalty dashboard MVP release', amount: '$60,000', date: 'May 10', status: 'pending', paymentStatus: 'unpaid' },
-      { id: 'm4', title: 'Merchant partner pilot launch', amount: '$40,000', date: 'Jun 30', status: 'pending', paymentStatus: 'unpaid' },
+      { id: 'm1', title: 'Behavioral reward logic sign-off', date: 'Feb 15', status: 'completed' },
+      { id: 'm2', title: 'Merchant API V1 documentation',   date: 'Mar 22', status: 'in-progress' },
+      { id: 'm3', title: 'Loyalty dashboard MVP release',    date: 'May 10', status: 'pending' },
+      { id: 'm4', title: 'Merchant partner pilot launch',    date: 'Jun 30', status: 'pending' },
     ],
   },
   {
@@ -123,9 +121,9 @@ export const jobs: Job[] = [
       'Experience with African fintech or regulated consumer finance',
     ],
     milestones: [
-      { id: 'm1', title: 'Funnel diagnostic audit', amount: '$15,000', date: 'Feb 20', status: 'completed', paymentStatus: 'paid' },
-      { id: 'm2', title: '12-week growth sprint plan', amount: '$25,000', date: 'Mar 30', status: 'completed', paymentStatus: 'unpaid' },
-      { id: 'm3', title: 'Retention experiment execution', amount: '$45,000', date: 'Jul 10', status: 'pending', paymentStatus: 'unpaid' },
+      { id: 'm1', title: 'Funnel diagnostic audit',         date: 'Feb 20', status: 'completed' },
+      { id: 'm2', title: '12-week growth sprint plan',      date: 'Mar 30', status: 'completed' },
+      { id: 'm3', title: 'Retention experiment execution',  date: 'Jul 10', status: 'pending' },
     ],
   },
   {
@@ -156,9 +154,9 @@ export const jobs: Job[] = [
       'Product strategist',
     ],
     milestones: [
-      { id: 'm1', title: 'Strategic opportunity brief', amount: '$10,000', date: 'Jan 25', status: 'pending', paymentStatus: 'unpaid' },
-      { id: 'm2', title: 'Demand cluster validation', amount: '$15,000', date: 'Feb 15', status: 'pending', paymentStatus: 'unpaid' },
-      { id: 'm3', title: 'Pilot economics model', amount: '$20,000', date: 'Mar 5', status: 'pending', paymentStatus: 'unpaid' },
+      { id: 'm1', title: 'Strategic opportunity brief', date: 'Jan 25', status: 'pending' },
+      { id: 'm2', title: 'Demand cluster validation',   date: 'Feb 15', status: 'pending' },
+      { id: 'm3', title: 'Pilot economics model',       date: 'Mar 5',  status: 'pending' },
     ],
   },
   {
@@ -211,9 +209,9 @@ export const jobs: Job[] = [
       'Strong distributor and retailer network in Lagos and Southwest Nigeria',
     ],
     milestones: [
-      { id: 'm1', title: 'Brand positioning framework', amount: '$4,000', date: 'Jun 15', status: 'pending', paymentStatus: 'unpaid' },
-      { id: 'm2', title: 'Distributor scorecard system', amount: '$4,000', date: 'Aug 10', status: 'pending', paymentStatus: 'unpaid' },
-      { id: 'm3', title: 'Trade marketing playbook', amount: '$6,000', date: 'Nov 14', status: 'pending', paymentStatus: 'unpaid' },
+      { id: 'm1', title: 'Brand positioning framework', date: 'Jun 15', status: 'pending' },
+      { id: 'm2', title: 'Distributor scorecard system', date: 'Aug 10', status: 'pending' },
+      { id: 'm3', title: 'Trade marketing playbook',     date: 'Nov 14', status: 'pending' },
     ],
   },
   {
@@ -245,9 +243,9 @@ export const jobs: Job[] = [
       'Experience building merchant network depth in mass-market contexts',
     ],
     milestones: [
-      { id: 'm1', title: 'Activation leak audit', amount: '$15,000', date: 'Jun 20', status: 'pending', paymentStatus: 'unpaid' },
-      { id: 'm2', title: 'Merchant channel playbook', amount: '$20,000', date: 'Aug 15', status: 'pending', paymentStatus: 'unpaid' },
-      { id: 'm3', title: '90-day growth sprint delivery', amount: '$35,000', date: 'Sep 30', status: 'pending', paymentStatus: 'unpaid' },
+      { id: 'm1', title: 'Activation leak audit',          date: 'Jun 20', status: 'pending' },
+      { id: 'm2', title: 'Merchant channel playbook',       date: 'Aug 15', status: 'pending' },
+      { id: 'm3', title: '90-day growth sprint delivery',   date: 'Sep 30', status: 'pending' },
     ],
   },
   {
@@ -276,9 +274,9 @@ export const jobs: Job[] = [
       'Payments and e-money institution compliance background',
     ],
     milestones: [
-      { id: 'm1', title: 'FCA authorisation roadmap', amount: '$25,000', date: 'Aug 25', status: 'completed', paymentStatus: 'paid' },
-      { id: 'm2', title: 'Compliance governance structure', amount: '$30,000', date: 'Sep 20', status: 'completed', paymentStatus: 'paid' },
-      { id: 'm3', title: 'Regulatory risk register', amount: '$20,000', date: 'Oct 14', status: 'completed', paymentStatus: 'paid' },
+      { id: 'm1', title: 'FCA authorisation roadmap',       date: 'Aug 25', status: 'completed' },
+      { id: 'm2', title: 'Compliance governance structure',  date: 'Sep 20', status: 'completed' },
+      { id: 'm3', title: 'Regulatory risk register',        date: 'Oct 14', status: 'completed' },
     ],
   },
   {
@@ -307,9 +305,9 @@ export const jobs: Job[] = [
       'Channel economics and growth modelling',
     ],
     milestones: [
-      { id: 'm1', title: 'Customer segment definition', amount: '$15,000', date: 'Jun 15', status: 'completed', paymentStatus: 'paid' },
-      { id: 'm2', title: 'Channel economics model', amount: '$15,000', date: 'Jun 30', status: 'completed', paymentStatus: 'paid' },
-      { id: 'm3', title: 'Launch messaging framework', amount: '$20,000', date: 'Jul 22', status: 'completed', paymentStatus: 'paid' },
+      { id: 'm1', title: 'Customer segment definition',  date: 'Jun 15', status: 'completed' },
+      { id: 'm2', title: 'Channel economics model',      date: 'Jun 30', status: 'completed' },
+      { id: 'm3', title: 'Launch messaging framework',   date: 'Jul 22', status: 'completed' },
     ],
   },
   {
@@ -337,8 +335,8 @@ export const jobs: Job[] = [
       'Merchant acquisition and payments background',
     ],
     milestones: [
-      { id: 'm1', title: 'Regulatory roadmap sign-off', amount: '$15,000', date: 'Jan 30', status: 'completed', paymentStatus: 'paid' },
-      { id: 'm2', title: 'Merchant ecosystem audit', amount: '$20,000', date: 'Mar 15', status: 'in-progress', paymentStatus: 'unpaid' },
+      { id: 'm1', title: 'Regulatory roadmap sign-off', date: 'Jan 30', status: 'completed' },
+      { id: 'm2', title: 'Merchant ecosystem audit',    date: 'Mar 15', status: 'in-progress' },
     ],
   },
 ]

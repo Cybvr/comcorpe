@@ -8,6 +8,7 @@ import { ArrowLeft, Briefcase, Clock, MapPin, Target, LayoutDashboard, Users2 } 
 import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
 import { getTalentProfile, getClientUser } from '@/lib/user'
 import { jobs, getJobBySlug, getJobProgress } from '@/lib/jobs'
+import { getInvoice } from '@/lib/invoices'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -134,32 +135,35 @@ export default function TalentJobDetailPage({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-ink-10">
-                      {job.milestones?.map((ms) => (
-                        <tr key={ms.id} className="group hover:bg-ink-5/30 transition-colors">
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider ${
-                              ms.status === 'completed' ? 'bg-blue-50 text-blue border-blue-200' :
-                              ms.status === 'in-progress' ? 'bg-violet/5 text-violet border-violet/20' :
-                              'bg-ink-10 text-ink-40 border-ink-20'
-                            }`}>
-                              {ms.status}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3">
-                            <p className="font-text text-sm font-bold text-ink group-hover:text-blue transition-colors">
-                              {ms.title}
-                            </p>
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <p className="font-text text-[10px] text-ink-40 uppercase tracking-tight">{ms.date}</p>
-                          </td>
-                          <td className="px-4 py-3 text-right">
-                            <span className="font-mono text-[11px] font-bold text-ink">
-                              {ms.amount}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
+                      {job.milestones?.map((ms) => {
+                        const inv = getInvoice(job.slug, ms.id)
+                        return (
+                          <tr key={ms.id} className="group hover:bg-ink-5/30 transition-colors">
+                            <td className="px-4 py-3 whitespace-nowrap">
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider ${
+                                ms.status === 'completed'   ? 'bg-blue-50 text-blue border-blue-200' :
+                                ms.status === 'in-progress' ? 'bg-violet/5 text-violet border-violet/20' :
+                                'bg-ink-10 text-ink-40 border-ink-20'
+                              }`}>
+                                {ms.status}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3">
+                              <p className="font-text text-sm font-bold text-ink group-hover:text-blue transition-colors">
+                                {ms.title}
+                              </p>
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap">
+                              <p className="font-text text-[10px] text-ink-40 uppercase tracking-tight">{ms.date}</p>
+                            </td>
+                            <td className="px-4 py-3 text-right">
+                              <span className="font-mono text-[11px] font-bold text-ink">
+                                {inv?.amount ?? '—'}
+                              </span>
+                            </td>
+                          </tr>
+                        )
+                      })}
                     </tbody>
                   </table>
                 </div>

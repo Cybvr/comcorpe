@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Search } from 'lucide-react'
 import { payouts, ccreditsBalance, type PayoutStatus } from '@/lib/payouts'
 import { jobs } from '@/lib/jobs'
+import { getPodBySlug } from '@/lib/pods'
 import { getClientUser } from '@/lib/user'
 
 const statusStyles: Record<PayoutStatus, string> = {
@@ -103,8 +104,9 @@ export default function TalentBillingPage() {
             <thead>
               <tr className="border-b border-ink-10 bg-ink-5/50">
                 <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Status</th>
-                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Description</th>
+                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Milestone</th>
                 <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Client</th>
+                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Pod</th>
                 <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40 text-right">Amount</th>
                 <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-ink-40">Date</th>
               </tr>
@@ -112,6 +114,7 @@ export default function TalentBillingPage() {
             <tbody className="divide-y divide-ink-10">
               {filtered.map(payout => {
                 const job = jobs.find(j => j.slug === payout.jobSlug)
+                const pod = job?.podSlug ? getPodBySlug(job.podSlug) : null
                 return (
                   <tr key={payout.id} className="hover:bg-ink-5/30 transition-colors">
                     <td className="px-5 py-4">
@@ -119,9 +122,8 @@ export default function TalentBillingPage() {
                         {payout.status}
                       </span>
                     </td>
-                    <td className="px-5 py-4">
-                      <p className="font-text text-sm font-semibold text-ink leading-tight">{payout.label}</p>
-                      {payout.note && <p className="font-text text-xs text-ink-40 mt-0.5">{payout.note}</p>}
+                    <td className="px-5 py-4 max-w-[260px]">
+                      <p className="font-text text-sm font-semibold text-ink leading-tight truncate">{payout.label}</p>
                     </td>
                     <td className="px-5 py-4">
                       {job ? (
@@ -131,6 +133,13 @@ export default function TalentBillingPage() {
                       ) : (
                         <span className="font-text text-sm text-ink-60">{getClientUser(payout.clientId).name}</span>
                       )}
+                    </td>
+                    <td className="px-5 py-4">
+                      {pod ? (
+                        <Link href={`/talent/dashboard/search/${pod.slug}`} className="font-text text-sm text-blue hover:underline">
+                          {pod.name}
+                        </Link>
+                      ) : <span className="font-text text-sm text-ink-40">—</span>}
                     </td>
                     <td className="px-5 py-4 text-right">
                       <span className="font-mono text-sm font-bold text-ink">{payout.amount}</span>
@@ -142,7 +151,7 @@ export default function TalentBillingPage() {
                 )
               })}
               {filtered.length === 0 && (
-                <tr><td colSpan={5} className="px-5 py-12 text-center font-text text-sm text-ink-40">No payouts match your search.</td></tr>
+                <tr><td colSpan={6} className="px-5 py-12 text-center font-text text-sm text-ink-40">No payouts match your search.</td></tr>
               )}
             </tbody>
           </table>
