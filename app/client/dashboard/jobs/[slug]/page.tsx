@@ -22,12 +22,15 @@ import {
   X,
   Check,
   CreditCard,
+  ShieldCheck,
+  Download,
 } from 'lucide-react'
 import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
 import { getTalentProfile } from '@/lib/user'
 import { jobs, getJobBySlug, getJobProgress } from '@/lib/jobs'
 import { getJobs, updateJob } from '@/lib/admin/store'
 import { invoices, getInvoice } from '@/lib/invoices'
+import { contractTerms } from '@/lib/contract'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -40,7 +43,7 @@ const statusStyles: Record<string, string> = {
   'Cancelled': 'bg-red-50 text-red-600 border-red-200',
 }
 
-const jobTabs = ['brief', 'milestones', 'pod', 'knowledge', 'payments'] as const
+const jobTabs = ['brief', 'milestones', 'pod', 'knowledge', 'payments', 'contract'] as const
 type JobTab = (typeof jobTabs)[number]
 
 function isJobTab(value: string | null): value is JobTab {
@@ -257,6 +260,11 @@ export default function JobDetailPage({
             <TabsTrigger value="payments" className="flex items-center gap-2" asChild>
               <Link href={tabHref('payments')} scroll={false}>
                 <CreditCard size={14} /> Payments
+              </Link>
+            </TabsTrigger>
+            <TabsTrigger value="contract" className="flex items-center gap-2" asChild>
+              <Link href={tabHref('contract')} scroll={false}>
+                <ShieldCheck size={14} /> Contract
               </Link>
             </TabsTrigger>
           </TabsList>
@@ -674,6 +682,84 @@ export default function JobDetailPage({
                   </section>
                 )
               })()}
+            </TabsContent>
+
+            <TabsContent value="contract" className="mt-0">
+              <section className="border-t border-border">
+                <div className="flex items-center justify-between py-4 mb-2">
+                  <h3 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Engagement Letter</h3>
+                  <button className="font-mono text-[9px] uppercase tracking-eyebrow text-primary hover:underline flex items-center gap-1.5">
+                    <Download size={12} /> Export PDF
+                  </button>
+                </div>
+
+                <div className="h-[calc(100vh-220px)] min-h-[480px] overflow-y-auto rounded-sm border border-border bg-muted/20 p-3 md:p-4 [scrollbar-gutter:stable]">
+                  <div className="bg-[#fcfcfc] border border-border shadow-[0_4px_20px_rgba(0,0,0,0.03)] rounded-sm mx-auto max-w-[800px] p-10 md:p-14 relative overflow-hidden text-slate-900">
+                    {/* Compact Letterhead */}
+                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-200">
+                      <div>
+                        <p className="font-display font-black text-xl tracking-tighter">COMCORPE</p>
+                        <p className="font-mono text-[8px] uppercase tracking-[0.2em] text-slate-400 leading-none">London · Lagos · Nairobi</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-mono text-[9px] text-slate-400 uppercase tracking-wider leading-none mb-1">
+                          <span className="text-primary font-bold">Jan 12, 2025</span>
+                        </p>
+                        <p className="font-mono text-[9px] text-slate-400 uppercase tracking-widest font-bold">
+                          REF: <span className="text-primary">{job.slug.toUpperCase()}</span>/LOE-042
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Body with Full Terms */}
+                    <div className="font-text text-[13px] leading-relaxed space-y-6 text-slate-800">
+                      <p>Dear Partners,</p>
+                      <p>This Letter of Engagement confirms the terms upon which Comcorpe Ltd (&quot;the Partner&quot;) will provide strategic services to <strong className="text-primary">{job.clientId.replace(/-/g, ' ').toUpperCase()}</strong> (&quot;the Client&quot;) for the project <em className="text-primary font-bold">&quot;{job.title}&quot;</em>.</p>
+                      
+                      <div className="space-y-6">
+                        {contractTerms.map((term) => (
+                          <section key={term.id}>
+                            <h3 className="font-display font-bold uppercase text-[10px] tracking-widest text-slate-900 mb-1.5">
+                              {term.id}. {term.title}
+                            </h3>
+                            <p className="text-slate-600 leading-[1.6]">
+                              {term.content.split(/(Commercial Structure|Brief|Milestones|estimated at|Job Title)/g).map((part, i) => {
+                                if (part === 'estimated at') return <span key={i} className="text-primary font-bold">estimated at {job.rate}</span>
+                                return part
+                              })}
+                            </p>
+                          </section>
+                        ))}
+                      </div>
+
+                      <p className="pt-4">We look forward to a successful collaboration and are committed to delivering exceptional value through this strategic engagement.</p>
+                    </div>
+
+                    {/* Compact Signature Section */}
+                    <div className="mt-10 pt-8 border-t border-slate-100 grid grid-cols-2 gap-12">
+                      <div className="space-y-3">
+                        <div className="h-10 flex items-end">
+                          <span className="font-display italic text-xl text-primary/40 pb-1 border-b border-slate-200 block w-full underline decoration-primary/20">Jide Pinheiro</span>
+                        </div>
+                        <div>
+                          <p className="font-display font-bold text-[11px] text-primary uppercase tracking-tight">Jide Pinheiro</p>
+                          <p className="font-mono text-[8px] text-slate-400 uppercase tracking-widest leading-none">Partner, Comcorpe</p>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-3 text-right">
+                        <div className="h-10 flex items-end justify-end">
+                          <span className="font-display italic text-xl text-primary/40 pb-1 border-b border-slate-200 block w-full underline decoration-primary/20">/s/ Authorized Signatory</span>
+                        </div>
+                        <div>
+                          <p className="font-display font-bold text-[11px] text-primary uppercase tracking-tight">{job.clientId.split('-')[0].toUpperCase()} REPRESENTATIVE</p>
+                          <p className="font-mono text-[9px] text-slate-400 uppercase tracking-widest leading-none">Client Signatory</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
             </TabsContent>
           </div>
 

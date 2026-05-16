@@ -70,20 +70,22 @@ export default function TalentJobDetailPage({
       </div>
 
       <Tabs defaultValue="job" className="w-full">
-        <TabsList className="mb-8">
-          <TabsTrigger value="job" className="flex items-center gap-2">
-            <Target size={14} /> Job
-          </TabsTrigger>
-          <TabsTrigger value="milestones" className="flex items-center gap-2">
-            <LayoutDashboard size={14} /> Milestones
-          </TabsTrigger>
-          <TabsTrigger value="pod" className="flex items-center gap-2">
-            <Users2 size={14} /> Team
-          </TabsTrigger>
-          <TabsTrigger value="payments" className="flex items-center gap-2">
-            <CreditCard size={14} /> Payments
-          </TabsTrigger>
-        </TabsList>
+        <div className="mb-8 w-full overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <TabsList className="w-max">
+            <TabsTrigger value="job" className="flex items-center gap-2">
+              <Target size={14} /> Job
+            </TabsTrigger>
+            <TabsTrigger value="milestones" className="flex items-center gap-2">
+              <LayoutDashboard size={14} /> Milestones
+            </TabsTrigger>
+            <TabsTrigger value="pod" className="flex items-center gap-2">
+              <Users2 size={14} /> Team
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="flex items-center gap-2">
+              <CreditCard size={14} /> Payments
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-8 items-start">
           <div className="space-y-8">

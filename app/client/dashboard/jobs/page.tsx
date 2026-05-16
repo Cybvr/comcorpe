@@ -21,7 +21,7 @@ export default function JobsPage() {
   const displayJobs = filter === 'active' ? clientJobs.filter(j => j.status === 'Active') : clientJobs
 
   return (
-    <div className="px-8 py-8 max-w-[1240px] mx-auto">
+    <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1240px] mx-auto">
       {/* Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
         <div className="flex flex-col gap-4">
