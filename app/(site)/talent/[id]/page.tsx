@@ -20,11 +20,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 const archetypeMap: Record<string, { label: string; skills: string[]; markets: string[] }> = {
   'tunde-a':     { label: 'The Architect',  skills: ['Go-to-Market Strategy', 'Unit Economics', 'Commercial Design', 'Pan-Africa Expansion'], markets: ['Nigeria', 'Ghana', 'Kenya', 'UK'] },
-  'sarah-m':     { label: 'The Operator',   skills: ['Revenue Operations', 'Sales Pipeline Automation', 'CRM Architecture', 'Data Platforms'], markets: ['Nigeria', 'South Africa', 'Pan-Africa'] },
-  'david-o':     { label: 'The Integrator', skills: ['Regulatory Navigation', 'Market Entry', 'Government Relations', 'Foreign Brand Launch'], markets: ['Nigeria', 'West Africa', 'East Africa'] },
-  'amira-h':     { label: 'The Architect',  skills: ['Brand Strategy', 'Campaign Architecture', 'Cultural Localisation', 'B2C Comms'], markets: ['Nigeria', 'MENA', 'UK', 'Pan-Africa'] },
-  'james-k':     { label: 'The Operator',   skills: ['Performance Marketing', 'Customer Acquisition', 'Growth Loops', 'Paid Media at Scale'], markets: ['Nigeria', 'Egypt', 'Pan-Africa'] },
-  'elena-r':     { label: 'The Integrator', skills: ['Strategic Partnerships', 'B2B Distribution', 'Corporate Networks', 'Alliance Building'], markets: ['South Africa', 'Nigeria', 'East Africa'] },
+  'sarah-m':     { label: 'The Operator',   skills: ['Revenue Operations', 'Sales Pipeline Automation', 'CRM Architecture', 'Data Platforms'], markets: ['Kenya', 'South Africa', 'Pan-Africa'] },
+  'david-o':     { label: 'The Integrator', skills: ['Regulatory Navigation', 'Market Entry', 'Government Relations', 'Foreign Brand Launch'], markets: ['Ghana', 'West Africa', 'East Africa'] },
+  'amira-h':     { label: 'The Architect',  skills: ['Brand Strategy', 'Campaign Architecture', 'Cultural Localisation', 'B2C Comms'], markets: ["Cote d'Ivoire", 'Francophone West Africa', 'Pan-Africa'] },
+  'james-k':     { label: 'The Operator',   skills: ['Performance Marketing', 'Customer Acquisition', 'Growth Loops', 'Paid Media at Scale'], markets: ['South Africa', 'Ghana', 'Pan-Africa'] },
+  'elena-r':     { label: 'The Integrator', skills: ['Strategic Partnerships', 'B2B Distribution', 'Corporate Networks', 'Alliance Building'], markets: ['South Africa', 'Kenya', 'Nigeria'] },
   'amara-nwosu': { label: 'The Architect',  skills: ['Growth Systems', 'Early-stage Strategy', 'Market Fit', 'Expansion Playbooks'], markets: ['Lagos', 'Pan-Africa', 'Global'] },
   'tobi-adeyemi':{ label: 'The Operator',   skills: ['Fintech Commercial Strategy', 'Regulated Markets', 'Revenue Architecture', 'CBN Navigation'], markets: ['Nigeria', 'UK', 'Pan-Africa'] },
 }

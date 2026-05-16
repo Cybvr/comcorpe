@@ -20,8 +20,12 @@ export default function JobCard({
     <Link href={`${baseHref}/${job.slug}`} className="block border border-border rounded-xl p-5 hover:border-input hover:shadow-sm transition-all duration-150 bg-background group cursor-pointer">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3 flex-1 min-w-0">
-          <div className="w-10 h-10 rounded-lg bg-border border border-border flex items-center justify-center font-display font-black text-[13px] text-foreground shrink-0">
-            {getClientUser(job.clientId).name[0]}
+          <div className="w-10 h-10 rounded-lg bg-border border border-border flex items-center justify-center font-display font-black text-[13px] text-foreground shrink-0 overflow-hidden">
+            {getClientUser(job.clientId).image ? (
+              <img src={getClientUser(job.clientId).image} alt={getClientUser(job.clientId).name} className="w-full h-full object-cover" />
+            ) : (
+              getClientUser(job.clientId).name[0]
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1 flex-wrap">

@@ -63,7 +63,7 @@ export const jobs: Job[] = [
       'V1 dashboard wireframes approved',
     ],
     phase: 'Build phase',
-    lead: 'Sarah Chen',
+    lead: 'Wanjiku Mwangi',
     nextMilestone: 'Merchant API V1 Release',
     nextReview: 'Jan 22',
     scope: [

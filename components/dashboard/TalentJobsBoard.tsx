@@ -155,8 +155,12 @@ export default function TalentJobsBoard({
                 className="border border-border rounded-2xl p-6 bg-background hover:border-input hover:shadow-xl transition-all group flex flex-col"
               >
                 <div className="flex items-start justify-between gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-muted border border-border flex items-center justify-center text-input group-hover:text-primary transition-colors shrink-0 font-display font-black text-sm">
-                    {client.name[0]}
+                  <div className="w-12 h-12 rounded-xl bg-muted border border-border flex items-center justify-center text-input group-hover:text-primary transition-colors shrink-0 font-display font-black text-sm overflow-hidden">
+                    {client.image ? (
+                      <img src={client.image} alt={client.name} className="w-full h-full object-cover" />
+                    ) : (
+                      client.name[0]
+                    )}
                   </div>
                   <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${statusStyles[job.status]}`}>
                     {job.status}

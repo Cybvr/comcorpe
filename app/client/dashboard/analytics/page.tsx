@@ -30,6 +30,23 @@ import { pods } from '@/lib/pods'
 import { jobs, getJobProgress } from '@/lib/jobs'
 import { invoices } from '@/lib/invoices'
 
+function CurrencyTooltip({ active, payload, label }: any) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-card border border-border p-3 rounded-lg shadow-lg">
+        <p className="font-text text-xs font-bold mb-2 text-foreground">{label}</p>
+        {payload.map((entry: any, index: number) => (
+          <p key={index} className="font-text text-xs flex items-center gap-2 mb-1" style={{ color: entry.color }}>
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+            {entry.name}: ${entry.value.toLocaleString()}
+          </p>
+        ))}
+      </div>
+    )
+  }
+  return null
+}
+
 export default function AnalyticsPage() {
   const [isSearching, setIsSearching] = useState(false)
   const [result, setResult] = useState<string | null>(null)
@@ -75,24 +92,6 @@ export default function AnalyticsPage() {
       Progress: getJobProgress(j),
     }))
   }, [activeJobs])
-
-  // Custom Tooltip for Currency
-  const CurrencyTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-card border border-border p-3 rounded-lg shadow-lg">
-          <p className="font-text text-xs font-bold mb-2 text-foreground">{label}</p>
-          {payload.map((entry: any, index: number) => (
-            <p key={index} className="font-text text-xs flex items-center gap-2 mb-1" style={{ color: entry.color }}>
-              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-              {entry.name}: ${entry.value.toLocaleString()}
-            </p>
-          ))}
-        </div>
-      )
-    }
-    return null
-  }
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1400px] mx-auto bg-background min-h-screen">

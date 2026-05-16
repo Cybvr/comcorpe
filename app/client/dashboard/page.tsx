@@ -29,38 +29,38 @@ export default function ClientDashboardHome() {
   const slackMessages = [
     {
       id: 1,
-      user: "Sarah Chen",
+      user: "Wanjiku Mwangi",
       role: "Pod Lead",
       content: "Hey @Jide, I've just uploaded the revised Q3 strategic roadmap for the AI Governance project. Let me know if the milestones align.",
       time: "10:24 AM",
-      avatar: "SC",
+      avatar: "WM",
       color: "bg-primary/10 text-primary"
     },
     {
       id: 2,
-      user: "Alex Rivers",
+      user: "Kwame Mensah",
       role: "Technical Architect",
       content: "The initial security audit for the LLM deployment is complete. No critical vulnerabilities found. Summary is in #project-alpha.",
       time: "9:45 AM",
-      avatar: "AR",
+      avatar: "KM",
       color: "bg-amber-100 text-amber-700"
     },
     {
       id: 3,
-      user: "Jordan Smith",
+      user: "Awa Kone",
       role: "Operator",
       content: "Just a heads up that we're onboarding the two specialist consultants for the data pipeline optimization tomorrow morning.",
       time: "Yesterday",
-      avatar: "JS",
+      avatar: "AK",
       color: "bg-green-600/10 text-green-700"
     },
     {
       id: 4,
-      user: "Taylor Wong",
+      user: "Thandi Mokoena",
       role: "Designer",
       content: "The new UX prototypes for the enterprise dashboard are ready for review. I've incorporated the feedback from our last session.",
       time: "Yesterday",
-      avatar: "TW",
+      avatar: "TM",
       color: "bg-purple-100 text-purple-700"
     },
     {

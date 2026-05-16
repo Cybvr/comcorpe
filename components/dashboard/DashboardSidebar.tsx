@@ -21,6 +21,7 @@ import {
   PenTool,
   Share2,
   BrainCircuit,
+  BookOpen,
   X,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -64,7 +65,7 @@ const dashboardConfig: Record<DashboardAudience, {
       { icon: Briefcase, label: 'My Jobs', href: '/client/dashboard/jobs' },
       { icon: Search, label: 'Search', href: '/client/dashboard/search', badge: 3 },
       { icon: Sparkles, label: 'Analytics', href: '/client/dashboard/analytics' },
-      { icon: MessageCircle, label: 'Community', href: '/client/dashboard/community' },
+      { icon: BookOpen, label: 'Insights', href: '/client/dashboard/insights' },
       { icon: CreditCard, label: 'Billing', href: '/client/dashboard/billing' },
       { icon: Gift, label: 'Refer & grow', href: '/client/dashboard/referrals' },
     ],
