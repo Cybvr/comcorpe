@@ -59,7 +59,7 @@ function TalentForm({
         </div>
         <div className={F}>
           <label className={L}>Rate</label>
-          <input className={I} value={form.rate ?? ''} onChange={e => set('rate', e.target.value)} placeholder="$12k - $18k/mo" />
+          <input className={I} value={form.rate ?? ''} onChange={e => set('rate', e.target.value)} placeholder="$120 - $180/hr" />
         </div>
       </div>
 

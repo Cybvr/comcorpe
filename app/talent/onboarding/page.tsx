@@ -222,7 +222,7 @@ export default function TalentOnboardingPage() {
             </div>
             <div className="p-5 bg-foreground text-background rounded-xl">
               <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-2">What happens next</p>
-              <p className="font-text text-sm leading-relaxed opacity-80">Your profile goes to our vetting team. We'll review your background and reach out within 48 hours to discuss pod placement.</p>
+              <p className="font-text text-sm leading-relaxed opacity-80">Your profile goes to our vetting team. We&apos;ll review your background and reach out within 48 hours to discuss pod placement.</p>
             </div>
           </div>
         )}

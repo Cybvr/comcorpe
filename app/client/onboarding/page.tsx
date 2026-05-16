@@ -136,7 +136,7 @@ export default function ClientOnboardingPage() {
             <div>
               <p className="font-mono text-[10px] uppercase tracking-eyebrow text-primary mb-2">Step 2</p>
               <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-foreground leading-tight">What you need</h1>
-              <p className="font-text text-sm text-muted-foreground mt-2">Help us understand the challenge you're bringing to Comcorpe.</p>
+              <p className="font-text text-sm text-muted-foreground mt-2">Help us understand the challenge you&apos;re bringing to Comcorpe.</p>
             </div>
             <div>
               <label className={L}>Primary challenge (pick all that apply)</label>

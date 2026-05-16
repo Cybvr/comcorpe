@@ -67,7 +67,7 @@ export default function TalentProfilePage() {
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Rate</label>
-                  <input className={I} value={rate} onChange={e => setRate(e.target.value)} placeholder="$12k - $18k/mo" />
+                  <input className={I} value={rate} onChange={e => setRate(e.target.value)} placeholder="$120 - $180/hr" />
                 </div>
               </div>
               <div className="flex flex-col gap-1.5">

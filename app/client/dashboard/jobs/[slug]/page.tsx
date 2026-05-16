@@ -3,7 +3,7 @@
 import { useState, use } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { notFound } from 'next/navigation'
+import { notFound, usePathname, useSearchParams } from 'next/navigation'
 import { 
   ArrowLeft,
   Briefcase,
@@ -40,6 +40,13 @@ const statusStyles: Record<string, string> = {
   'Cancelled': 'bg-red-50 text-red-600 border-red-200',
 }
 
+const jobTabs = ['brief', 'milestones', 'pod', 'knowledge', 'payments'] as const
+type JobTab = (typeof jobTabs)[number]
+
+function isJobTab(value: string | null): value is JobTab {
+  return value !== null && (jobTabs as readonly string[]).includes(value)
+}
+
 export default function JobDetailPage({
   params,
 }: {
@@ -55,6 +62,22 @@ export default function JobDetailPage({
   const assignedPod = job.podSlug ? getPodBySlug(job.podSlug) : null
   const assignedPodMembers = assignedPod ? getPodMembers(assignedPod) : []
   const primaryPods = pods.slice(0, 2)
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const requestedTab = searchParams.get('tab')
+  const activeTab = isJobTab(requestedTab) ? requestedTab : 'brief'
+
+  function tabHref(tab: JobTab) {
+    const params = new URLSearchParams(searchParams.toString())
+    if (tab === 'brief') {
+      params.delete('tab')
+    } else {
+      params.set('tab', tab)
+    }
+
+    const query = params.toString()
+    return query ? `${pathname}?${query}` : pathname
+  }
 
   const liveJob = getJobs().find(j => j.id === job.id)
   const [jobStatus, setJobStatus] = useState(liveJob?.status ?? job.status)
@@ -208,23 +231,33 @@ export default function JobDetailPage({
         )}
       </div>
 
-      <Tabs defaultValue="brief" className="w-full">
+      <Tabs value={activeTab} className="w-full">
         <div className="mb-8 w-full overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <TabsList className="w-max">
-            <TabsTrigger value="brief" className="flex items-center gap-2">
-              <Target size={14} /> Brief
+            <TabsTrigger value="brief" className="flex items-center gap-2" asChild>
+              <Link href={tabHref('brief')} scroll={false}>
+                <Target size={14} /> Brief
+              </Link>
             </TabsTrigger>
-            <TabsTrigger value="milestones" className="flex items-center gap-2">
-              <LayoutDashboard size={14} /> Milestones
+            <TabsTrigger value="milestones" className="flex items-center gap-2" asChild>
+              <Link href={tabHref('milestones')} scroll={false}>
+                <LayoutDashboard size={14} /> Milestones
+              </Link>
             </TabsTrigger>
-            <TabsTrigger value="pod" className="flex items-center gap-2">
-              <Users2 size={14} /> Pod
+            <TabsTrigger value="pod" className="flex items-center gap-2" asChild>
+              <Link href={tabHref('pod')} scroll={false}>
+                <Users2 size={14} /> Pod
+              </Link>
             </TabsTrigger>
-            <TabsTrigger value="knowledge" className="flex items-center gap-2">
-              <FileText size={14} /> Knowledge
+            <TabsTrigger value="knowledge" className="flex items-center gap-2" asChild>
+              <Link href={tabHref('knowledge')} scroll={false}>
+                <FileText size={14} /> Knowledge
+              </Link>
             </TabsTrigger>
-            <TabsTrigger value="payments" className="flex items-center gap-2">
-              <CreditCard size={14} /> Payments
+            <TabsTrigger value="payments" className="flex items-center gap-2" asChild>
+              <Link href={tabHref('payments')} scroll={false}>
+                <CreditCard size={14} /> Payments
+              </Link>
             </TabsTrigger>
           </TabsList>
         </div>
@@ -419,13 +452,18 @@ export default function JobDetailPage({
                 <section className="border-t border-border">
                   <div className="flex items-center justify-between py-4">
                     <h3 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Assigned pod</h3>
-                    <Link href={`/client/dashboard/search/${assignedPod.slug}`} className="font-mono text-[9px] uppercase tracking-eyebrow text-primary hover:underline">
+                    <Link href={`/client/dashboard/search/${assignedPod.slug}?returnTo=${encodeURIComponent(tabHref('pod'))}`} className="font-mono text-[9px] uppercase tracking-eyebrow text-primary hover:underline">
                       View profile
                     </Link>
                   </div>
                   
                   <p className="font-display font-black text-[22px] tracking-[-0.02em] text-foreground mb-2">{assignedPod.name}</p>
-                  <p className="font-text text-sm text-muted-foreground mb-8 leading-relaxed max-w-[65ch]">{assignedPod.focus}</p>
+                  <p className="font-text text-sm text-muted-foreground mb-5 leading-relaxed max-w-[65ch]">{assignedPod.focus}</p>
+
+                  <div className="mb-8 inline-flex items-center gap-2 border border-border rounded-lg px-3 py-2 bg-background">
+                    <span className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70">Pod/hour</span>
+                    <span className="font-display font-black text-[15px] tracking-[-0.01em] text-foreground">{assignedPod.rate}</span>
+                  </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border border border-border overflow-hidden">
                     {assignedPodMembers.map(member => (
@@ -437,7 +475,7 @@ export default function JobDetailPage({
                         </div>
                         <div>
                           <p className="font-text text-sm font-bold text-foreground group-hover:text-primary transition-colors leading-tight">{member.name}</p>
-                          <p className="font-text text-[11px] text-muted-foreground/70 leading-tight mt-0.5">{member.role}</p>
+                          <p className="font-text text-[11px] text-muted-foreground/70 leading-tight mt-0.5">{member.talentRole ?? member.role}</p>
                         </div>
                       </Link>
                     ))}
@@ -450,7 +488,7 @@ export default function JobDetailPage({
                     {primaryPods.map((pod) => {
                       const lead = getTalentProfile(pod.leadId)
                       return (
-                        <Link key={pod.id} href={`/client/dashboard/search/${pod.slug}`} className="p-4 bg-background flex items-center gap-4 hover:bg-muted transition-all group">
+                        <Link key={pod.id} href={`/client/dashboard/search/${pod.slug}?returnTo=${encodeURIComponent(tabHref('pod'))}`} className="p-4 bg-background flex items-center gap-4 hover:bg-muted transition-all group">
                           <div className="w-10 h-10 rounded-sm bg-foreground flex items-center justify-center font-display font-black text-[11px] text-background shrink-0 border border-border overflow-hidden relative">
                             {lead.image ? (
                               <Image src={lead.image} alt={lead.name} fill className="object-cover" />
@@ -464,6 +502,8 @@ export default function JobDetailPage({
                               <span className="font-text text-[12px] text-muted-foreground">{pod.focus}</span>
                               <span className="w-1 h-1 bg-border rounded-full" />
                               <span className="font-text text-[12px] text-primary font-semibold">{pod.fitScore}%</span>
+                              <span className="w-1 h-1 bg-border rounded-full" />
+                              <span className="font-text text-[12px] text-foreground font-semibold">{pod.rate}</span>
                             </div>
                           </div>
                         </Link>

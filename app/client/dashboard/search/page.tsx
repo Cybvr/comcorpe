@@ -16,6 +16,15 @@ const pageSizes: Record<DiscoverTab, number> = {
   build: 12,
 }
 
+function getTalentTitle(profile: { talentRole?: string; role: string }) {
+  return profile.talentRole ?? profile.role
+}
+
+function getStartingRate(rate?: string) {
+  const match = rate?.match(/\$?([\d,]+)/)
+  return match ? Number(match[1].replace(/,/g, '')) : 0
+}
+
 function Pagination({
   page,
   totalPages,
@@ -158,15 +167,18 @@ export default function DiscoverPage() {
                          p.focus.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesMarket = marketFilter === 'All' || p.markets.some(m => m.includes(marketFilter))
     const matchesExpertise = expertiseFilter === 'All' || p.focus.includes(expertiseFilter)
-    const matchesBudget = budgetFilter === 'All' || (budgetFilter === '<$50k' && parseInt(p.rate.replace(/\D/g, '')) < 50) || (budgetFilter === '>$50k' && parseInt(p.rate.replace(/\D/g, '')) >= 50)
+    const startingRate = getStartingRate(p.rate)
+    const matchesBudget = budgetFilter === 'All' || (budgetFilter === '<$600/hr' && startingRate < 600) || (budgetFilter === '>$600/hr' && startingRate >= 600)
     return matchesSearch && matchesMarket && matchesExpertise && matchesBudget
   })
   
   const filteredTalent = talentProfiles.filter(t => {
+    const talentTitle = getTalentTitle(t)
     const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         t.role.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesExpertise = expertiseFilter === 'All' || t.role.includes(expertiseFilter)
-    const matchesBudget = budgetFilter === 'All' || (budgetFilter === '<$15k' && parseInt(t.rate?.replace(/\D/g, '') || '0') < 15) || (budgetFilter === '>$15k' && parseInt(t.rate?.replace(/\D/g, '') || '0') >= 15)
+                         talentTitle.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesExpertise = expertiseFilter === 'All' || talentTitle.toLowerCase().includes(expertiseFilter.toLowerCase())
+    const startingRate = getStartingRate(t.rate)
+    const matchesBudget = budgetFilter === 'All' || (budgetFilter === '<$150/hr' && startingRate < 150) || (budgetFilter === '>$150/hr' && startingRate >= 150)
     return matchesSearch && matchesExpertise && matchesBudget
   })
 
@@ -181,6 +193,7 @@ export default function DiscoverPage() {
   function selectTab(tab: DiscoverTab) {
     setActiveTab(tab)
     setActivePage(1)
+    setBudgetFilter('All')
   }
 
   return (
@@ -261,8 +274,8 @@ export default function DiscoverPage() {
             onChange={(val) => { setExpertiseFilter(val); setActivePage(1); }}
           />
           <FilterDropdown 
-            label="Monthly Budget" 
-            options={activeTab === 'pods' ? ['<$50k', '>$50k'] : ['<$15k', '>$15k']} 
+            label="Hourly rate" 
+            options={activeTab === 'pods' ? ['<$600/hr', '>$600/hr'] : ['<$150/hr', '>$150/hr']} 
             value={budgetFilter}
             onChange={(val) => { setBudgetFilter(val); setActivePage(1); }}
           />
@@ -287,11 +300,11 @@ export default function DiscoverPage() {
               <Link
                 key={pod.id}
                 href={`/client/dashboard/search/${pod.slug}`}
-                className="border border-border rounded-xl p-6 bg-background hover:border-input hover:shadow-xl transition-all group flex flex-col"
+                className="border border-border rounded-xl p-6 bg-background flex flex-col"
               >
                 <div className="mb-6">
                   <p className="font-mono text-[10px] uppercase tracking-eyebrow text-primary mb-1">{pod.focus}</p>
-                  <h2 className="font-display font-black text-[22px] tracking-[-0.02em] text-foreground group-hover:text-primary transition-colors leading-tight">
+                  <h2 className="font-display font-black text-[22px] tracking-[-0.02em] text-foreground leading-tight">
                     {pod.name}
                   </h2>
                 </div>
@@ -305,7 +318,7 @@ export default function DiscoverPage() {
                         className={`aspect-square rounded-lg flex items-center justify-center font-display font-black text-[16px] transition-all duration-300 border overflow-hidden relative ${
                           i === 0 && !profile.image
                             ? 'bg-foreground text-background border-foreground shadow-sm' 
-                            : 'bg-border/40 text-muted-foreground/70 border-border group-hover:border-input'
+                            : 'bg-border/40 text-muted-foreground/70 border-border'
                         }`}
                       >
                         {profile.image ? (
@@ -313,7 +326,7 @@ export default function DiscoverPage() {
                             src={profile.image} 
                             alt={profile.name} 
                             fill 
-                            className="object-cover transition-transform group-hover:scale-110" 
+                            className="object-cover" 
                           />
                         ) : (
                           profile.initials
@@ -335,10 +348,11 @@ export default function DiscoverPage() {
                     </div>
                     <div className="flex items-center gap-1.5 font-text text-[13px] text-muted-foreground">
                       <DollarSign size={14} strokeWidth={1.5} className="text-muted-foreground/70" />
-                      <span className="font-semibold text-foreground">{pod.rate.replace('/mo', '')}</span>
+                      <span className="text-muted-foreground/70">Pod/hr</span>
+                      <span className="font-semibold text-foreground">{pod.rate}</span>
                     </div>
                   </div>
-                  <ArrowUpRight size={16} className="text-input group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                  <ArrowUpRight size={16} className="text-input" />
                 </div>
               </Link>
             )
@@ -377,7 +391,7 @@ export default function DiscoverPage() {
                     <h3 className="font-display font-black text-[18px] tracking-[-0.01em] text-foreground group-hover:text-primary transition-colors leading-tight pr-6">
                       {profile.name}
                     </h3>
-                    <p className="font-mono text-[9px] uppercase tracking-eyebrow text-primary/60 mt-1">{profile.role}</p>
+                    <p className="font-mono text-[9px] uppercase tracking-eyebrow text-primary/60 mt-1">{getTalentTitle(profile)}</p>
                   </div>
 
                   <div className="mt-4 pt-4 border-t border-muted flex items-center justify-between gap-2 text-muted-foreground font-text text-[11px]">
@@ -387,7 +401,7 @@ export default function DiscoverPage() {
                     </div>
                     <div className="flex items-center gap-1 font-semibold text-foreground shrink-0">
                       <DollarSign size={10} className="text-input" />
-                      {profile.rate?.replace('/mo', '')}
+                      {profile.rate}
                     </div>
                   </div>
                 </Link>
@@ -520,7 +534,7 @@ function BuildTab({
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-display font-black text-[14px] text-foreground leading-tight">{profile!.name}</p>
-                    <p className="font-text text-[11px] text-muted-foreground truncate">{profile!.role}</p>
+                    <p className="font-text text-[11px] text-muted-foreground truncate">{getTalentTitle(profile!)}</p>
                   </div>
                   <button
                     onClick={() => onRemove(profile!.id)}

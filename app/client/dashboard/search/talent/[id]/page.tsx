@@ -18,6 +18,7 @@ export default async function ClientDashboardTalentDetailPage({
 }) {
   const { id } = await params
   const profile = getTalentProfile(id)
+  const talentTitle = profile.talentRole ?? profile.role
 
   if (!profile) {
     notFound()
@@ -41,7 +42,7 @@ export default async function ClientDashboardTalentDetailPage({
               <div>
                 <p className="font-mono text-xs uppercase tracking-eyebrow text-primary mb-2">Verified Operator</p>
                 <h1 className="font-display font-black text-[36px] tracking-[-0.03em] text-foreground leading-tight">{profile.name}</h1>
-                <p className="font-text text-[17px] text-muted-foreground mt-1">{profile.role}</p>
+                <p className="font-text text-[17px] text-muted-foreground mt-1">{talentTitle}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/5 border border-primary/10 rounded-full">
@@ -68,7 +69,7 @@ export default async function ClientDashboardTalentDetailPage({
             </div>
             <div className="border border-border rounded-xl p-4">
               <DollarSign size={16} strokeWidth={1.5} className="text-primary mb-3" />
-              <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Monthly Rate</p>
+              <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Hourly Rate</p>
               <div className="font-text text-sm font-medium text-foreground leading-tight">{profile.rate}</div>
             </div>
           </div>
@@ -76,7 +77,7 @@ export default async function ClientDashboardTalentDetailPage({
           <section className="mt-12">
             <h2 className="font-display font-black text-[22px] tracking-[-0.02em] text-foreground mb-4">Professional Overview</h2>
             <p className="font-text text-[16px] leading-relaxed text-muted-foreground max-w-[65ch]">
-              {profile.desc} This operator has been vetted for senior leadership roles in high-growth environments, specializing in {profile.role.toLowerCase()} and strategic execution.
+              {profile.desc} This operator has been vetted for senior leadership roles in high-growth environments, specializing in {talentTitle.toLowerCase()} and strategic execution.
             </p>
           </section>
 

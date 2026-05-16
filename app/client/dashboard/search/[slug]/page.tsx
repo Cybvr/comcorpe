@@ -11,12 +11,24 @@ export function generateStaticParams() {
   }))
 }
 
+function getBackHref(value: string | string[] | undefined) {
+  const href = Array.isArray(value) ? value[0] : value
+  if (!href || !href.startsWith('/') || href.startsWith('//')) {
+    return '/client/dashboard/search'
+  }
+
+  return href
+}
+
 export default async function TalentPodDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>
+  searchParams: Promise<{ returnTo?: string | string[] | undefined }>
 }) {
   const { slug } = await params
+  const { returnTo } = await searchParams
   const pod = getPodBySlug(slug)
 
   if (!pod) {
@@ -25,11 +37,12 @@ export default async function TalentPodDetailPage({
 
   const members = getPodMembers(pod)
   const lead = getTalentProfile(pod.leadId)
+  const backHref = getBackHref(returnTo)
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">
-      <Link href="/client/dashboard/search" className="font-text text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2 mb-8">
-        <ArrowLeft size={14} /> Back to talent pods
+      <Link href={backHref} className="font-text text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2 mb-8">
+        <ArrowLeft size={14} /> Back
       </Link>
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-8 items-start">
@@ -72,7 +85,7 @@ export default async function TalentPodDetailPage({
             </div>
             <div className="border border-border rounded-xl p-4">
               <DollarSign size={16} strokeWidth={1.5} className="text-primary mb-3" />
-              <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Monthly Budget</p>
+              <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Pod/hour</p>
               <div className="font-display font-black text-[17px] tracking-[-0.01em] text-foreground leading-tight">{pod.rate}</div>
             </div>
           </div>
@@ -96,7 +109,7 @@ export default async function TalentPodDetailPage({
                     </div>
                     <div className="flex-1">
                       <p className="font-bold text-foreground group-hover:text-primary transition-colors">{member.name}</p>
-                      <p className="text-[11px] opacity-70">{member.role}</p>
+                      <p className="text-[11px] opacity-70">{member.talentRole ?? member.role}</p>
                     </div>
                     <ArrowUpRight size={14} className="text-input group-hover:text-primary transition-all" />
                   </Link>

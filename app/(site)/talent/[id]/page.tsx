@@ -42,6 +42,7 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
     markets: ['Pan-Africa'],
   }
   const bgColor = profile.color ?? bgColors[talentProfiles.findIndex(p => p.id === id) % bgColors.length]
+  const talentTitle = profile.talentRole ?? profile.role
 
   return (
     <div className="bg-background min-h-screen">
@@ -73,7 +74,7 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
                 <span className="font-mono text-[11px] uppercase tracking-eyebrow text-muted-foreground/70 border border-input px-2.5 py-1">Available for briefs</span>
               </div>
               <h1 className="font-display font-black text-[clamp(40px,5vw,72px)] leading-[0.92] tracking-hero text-foreground mb-3">{profile.name}</h1>
-              <p className="font-text text-[18px] text-muted-foreground mb-4">{profile.role}</p>
+              <p className="font-text text-[18px] text-muted-foreground mb-4">{talentTitle}</p>
               <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground/70">
                 <MapPin size={11} strokeWidth={1.5} />
                 {extra.markets[0]} · {profile.bg}

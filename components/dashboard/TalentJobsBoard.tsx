@@ -15,6 +15,7 @@ const statusStyles: Record<JobStatus, string> = {
   Active: 'bg-green-600/10 text-green-700 border-green-600/20',
   Paused: 'bg-border text-muted-foreground border-input',
   Completed: 'bg-border text-muted-foreground border-input',
+  Cancelled: 'bg-red-50 text-red-600 border-red-200',
 }
 
 const secondaryFilter: Record<JobsBoardVariant, { key: Exclude<FilterKey, 'all'>; label: string }> = {

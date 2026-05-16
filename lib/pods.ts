@@ -34,7 +34,7 @@ export const pods: Pod[] = [
     availability: 'Ready in 5 days',
     fitScore: 96,
     nextStep: 'Approve pod interview sequence',
-    rate: '$45k - $60k/mo'
+    rate: '$560 - $800/hr'
   },
   {
     id: 'p-2',
@@ -53,7 +53,7 @@ export const pods: Pod[] = [
     availability: 'Ready in 9 days',
     fitScore: 91,
     nextStep: 'Shortlist for EazeBank sprint',
-    rate: '$38k - $52k/mo'
+    rate: '$510 - $720/hr'
   },
   {
     id: 'p-3',
@@ -72,7 +72,7 @@ export const pods: Pod[] = [
     availability: 'Ready in 7 days',
     fitScore: 94,
     nextStep: 'Align on activation KPIs with MoMo growth team',
-    rate: '$55k - $85k/mo',
+    rate: '$520 - $720/hr',
   },
 ]
 

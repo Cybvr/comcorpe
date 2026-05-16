@@ -69,7 +69,7 @@ export const users: User[] = [
     desc: 'Designs go-to-market strategies for pan-African fintech expansions.',
     featured: true,
     image: '/images/talent/Tunde A.png',
-    rate: '$15k - $22k/mo',
+    rate: '$150 - $220/hr',
   },
   {
     id: 'sarah-m',
@@ -81,7 +81,7 @@ export const users: User[] = [
     desc: 'Builds revenue operations systems for enterprise sales teams across East Africa.',
     featured: true,
     image: '/images/talent/Sarah M.png',
-    rate: '$14k - $20k/mo',
+    rate: '$140 - $200/hr',
   },
   {
     id: 'david-o',
@@ -93,7 +93,7 @@ export const users: User[] = [
     desc: 'Navigates regulatory, partner, and public-sector pathways for West African launches.',
     featured: true,
     image: '/images/talent/David O.png',
-    rate: '$12k - $18k/mo',
+    rate: '$120 - $180/hr',
   },
   {
     id: 'amira-h',
@@ -105,7 +105,7 @@ export const users: User[] = [
     desc: 'Translates global brand equity into localized campaigns for Francophone markets.',
     featured: true,
     image: '/images/talent/Amira H.png',
-    rate: '$12k - $16k/mo',
+    rate: '$120 - $160/hr',
   },
   {
     id: 'james-k',
@@ -117,7 +117,7 @@ export const users: User[] = [
     desc: 'Drives customer acquisition and performance marketing across high-volume consumer channels.',
     featured: true,
     image: '/images/talent/James K.png',
-    rate: '$13k - $19k/mo',
+    rate: '$130 - $190/hr',
   },
   {
     id: 'elena-r',
@@ -129,7 +129,7 @@ export const users: User[] = [
     desc: 'Builds high-trust corporate networks to accelerate B2B distribution.',
     featured: true,
     image: '/images/talent/Elena R.png',
-    rate: '$14k - $21k/mo',
+    rate: '$140 - $210/hr',
   },
   {
     id: 'amara-nwosu',
@@ -141,7 +141,7 @@ export const users: User[] = [
     desc: 'Builds market-specific growth systems for early and expansion-stage companies.',
     dashboardTitle: 'Growth Architect - Lagos',
     color: 'bg-accent',
-    rate: '$10k - $15k/mo',
+    rate: '$100 - $150/hr',
   },
   {
     id: 'tobi-adeyemi',
@@ -153,7 +153,7 @@ export const users: User[] = [
     desc: 'Leads commercial strategy and regulated-market growth for fintech teams.',
     dashboardTitle: 'Fintech Commercial Lead',
     color: 'bg-primary',
-    rate: '$15k - $20k/mo',
+    rate: '$150 - $200/hr',
   },
   {
     id: 'yetunde-bello',
@@ -164,6 +164,7 @@ export const users: User[] = [
     bg: 'Market entry operator',
     desc: 'Turns local trust signals and partnership networks into launch momentum.',
     communityRole: 'Growth Lead - 4 days ago',
+    rate: '$110 - $160/hr',
   },
   {
     id: 'daniel-osei',
@@ -175,7 +176,7 @@ export const users: User[] = [
     desc: 'Clarifies strategic briefs and turns ambiguous growth problems into executable work.',
     communityRole: 'Strategy - 2 days ago',
     image: '/images/talent/Daniel Osei.png',
-    rate: '$14k - $19k/mo',
+    rate: '$140 - $190/hr',
   },
   {
     id: 'kemi-adaora',
@@ -187,7 +188,7 @@ export const users: User[] = [
     desc: 'Designs market-specific brand systems for consumer growth across African markets.',
     communityRole: 'Brand Systems - 1 day ago',
     image: '/images/talent/Kemi Adaora.png',
-    rate: '$12k - $17k/mo',
+    rate: '$120 - $170/hr',
   },
 ]
 

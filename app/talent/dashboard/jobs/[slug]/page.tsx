@@ -210,7 +210,7 @@ export default function TalentJobDetailPage({
                           </div>
                           <div>
                             <p className="font-text text-sm font-bold text-foreground leading-tight">{member.name}</p>
-                            <p className="font-text text-[11px] text-muted-foreground/70 leading-tight mt-0.5">{member.role}</p>
+                            <p className="font-text text-[11px] text-muted-foreground/70 leading-tight mt-0.5">{member.talentRole ?? member.role}</p>
                           </div>
                         </div>
                       ))}

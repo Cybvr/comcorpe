@@ -24,6 +24,7 @@ export default async function ClientInsightPage({
   }
 
   const author = getTalentProfile(insight.authorId)
+  const authorTitle = author.talentRole ?? insight.role
   const otherInsights = clientInsights.filter((item) => item.slug !== slug)
 
   return (
@@ -83,7 +84,7 @@ export default async function ClientInsightPage({
             </div>
             <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-foreground group-hover:text-primary transition-colors leading-tight">{author.name}</h2>
           </Link>
-          <p className="font-mono text-[10px] uppercase tracking-eyebrow text-primary mt-2">{author.role}</p>
+          <p className="font-mono text-[10px] uppercase tracking-eyebrow text-primary mt-2">{authorTitle}</p>
           <p className="font-text text-sm text-muted-foreground mt-4">{author.desc}</p>
           <p className="font-text text-xs text-muted-foreground/70 mt-4">{author.bg}</p>
           <Link href={`/talent/${author.id}`} className="mt-5 inline-flex font-text text-xs font-semibold px-4 py-2 bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]">
