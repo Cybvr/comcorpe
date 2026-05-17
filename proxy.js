@@ -39,7 +39,7 @@ export function proxy(request) {
 
   // 1. Admin area protection: only admins can access /admin
   if (matchesPath(pathname, '/admin') && pathname !== '/admin/login') {
-    if (role !== 'admin') {
+    if (role !== 'admin' && !isDev) {
       const fallbackUrl = new URL(role === 'talent' ? '/talent/dashboard' : '/client/dashboard', request.url)
       return NextResponse.redirect(fallbackUrl)
     }
@@ -47,14 +47,14 @@ export function proxy(request) {
 
   // 2. Talent area protection: only talent and admins can access /talent/dashboard
   if (matchesPath(pathname, '/talent/dashboard')) {
-    if (role !== 'talent' && role !== 'admin') {
+    if (role !== 'talent' && role !== 'admin' && !isDev) {
       return NextResponse.redirect(new URL('/client/dashboard', request.url))
     }
   }
 
   // 3. Client area protection: only clients and admins can access /client/dashboard
   if (matchesPath(pathname, '/client/dashboard')) {
-    if (role !== 'client' && role !== 'admin') {
+    if (role !== 'client' && role !== 'admin' && !isDev) {
       return NextResponse.redirect(new URL('/talent/dashboard', request.url))
     }
   }

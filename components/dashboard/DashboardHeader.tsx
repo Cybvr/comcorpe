@@ -154,9 +154,14 @@ export default function DashboardHeader({
               className="absolute right-0 top-full mt-2 w-56 bg-background border border-border rounded-xl shadow-xl z-50 overflow-hidden"
             >
               {/* User info */}
-              <div className="px-4 py-3 border-b border-border">
+              <div className="px-4 py-3 border-b border-border flex flex-col gap-0.5">
                 <p className="font-display font-black text-[14px] tracking-[-0.01em] text-foreground leading-tight">{currentUser?.name ?? 'Loading profile'}</p>
-                <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mt-0.5 capitalize">
+                {currentUser?.email && (
+                  <p className="font-text text-[12px] text-muted-foreground/80 lowercase truncate leading-tight">
+                    {currentUser.email}
+                  </p>
+                )}
+                <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mt-1 capitalize">
                   {currentUser ? `${currentUser.role} · ${currentUser.company ?? 'Comcorpe'}` : 'Firebase'}
                 </p>
               </div>
