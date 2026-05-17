@@ -62,19 +62,12 @@ export default function LoginPage() {
     }, 4500)
   }
 
-  // ─── Gate: enforce @comcorpe.com domain ────────────────────────────────────
-  async function enforceComcorpeDomain(user: User) {
-    if (!user.email?.toLowerCase().endsWith(ALLOWED_DOMAIN)) {
-      await signOut(auth)
-      setError('Access is restricted to Comcorpᵉ team members only.')
-      return false
-    }
-    return true
-  }
+
 
   // ─── Post-auth: verify token server-side, set session cookie, redirect ──────
   async function finishLogin(user: User) {
     const emailLower = user.email?.toLowerCase().trim() ?? ''
+
     let role = 'client'
     let matchedDocId: string | null = null
 
@@ -121,28 +114,10 @@ export default function LoginPage() {
     setLoading('google')
     try {
       const result = await signInWithPopup(auth, googleProvider)
-      if (!(await enforceComcorpeDomain(result.user))) return
       await finishLogin(result.user)
     } catch (err: unknown) {
       if ((err as { code?: string }).code !== 'auth/popup-closed-by-user') {
         setError('Google sign-in failed. Please try again.')
-      }
-    } finally {
-      setLoading(null)
-    }
-  }
-
-  // ─── Microsoft sign-in ──────────────────────────────────────────────────────
-  async function handleMicrosoft() {
-    setError('')
-    setLoading('microsoft')
-    try {
-      const result = await signInWithPopup(auth, microsoftProvider)
-      if (!(await enforceComcorpeDomain(result.user))) return
-      await finishLogin(result.user)
-    } catch (err: unknown) {
-      if ((err as { code?: string }).code !== 'auth/popup-closed-by-user') {
-        setError('Microsoft sign-in failed. Please try again.')
       }
     } finally {
       setLoading(null)
@@ -161,7 +136,6 @@ export default function LoginPage() {
     setLoading('email')
     try {
       const result = await signInWithEmailAndPassword(auth, emailLower, password)
-      if (!(await enforceComcorpeDomain(result.user))) return
       await finishLogin(result.user)
     } catch (err: unknown) {
       const code = (err as { code?: string }).code
@@ -223,15 +197,6 @@ export default function LoginPage() {
           >
             <GoogleIcon />
             <span className="flex-1 text-left">{loading === 'google' ? 'Signing in…' : 'Continue with Google'}</span>
-          </button>
-
-          <button
-            onClick={handleMicrosoft}
-            disabled={loading !== null}
-            className="w-full flex items-center gap-3 px-4 py-3.5 border border-input bg-card font-text text-sm text-foreground hover:bg-card/80 hover:border-foreground/30 transition-colors duration-[120ms] disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <MicrosoftIcon />
-            <span className="flex-1 text-left">{loading === 'microsoft' ? 'Signing in…' : 'Continue with Microsoft'}</span>
           </button>
         </div>
 

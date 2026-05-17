@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { getTalent, getClients, getJobs } from '@/lib/admin/store'
 import type { Job } from '@/lib/jobs'
 import type { User } from '@/lib/user'
+import AdminDashboardLoading from './loading'
 
 const STATUS_COLOR: Record<string, string> = {
   Active: 'bg-green-100 text-green-700',
@@ -17,14 +18,30 @@ export default function AdminOverviewPage() {
   const [talent, setTalent] = useState<User[]>([])
   const [clients, setClients] = useState<User[]>([])
   const [jobs, setJobs] = useState<Job[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     ;(async () => {
-      setTalent(await getTalent())
-      setClients(await getClients())
-      setJobs(await getJobs())
+      try {
+        const [talentData, clientData, jobData] = await Promise.all([
+          getTalent(),
+          getClients(),
+          getJobs(),
+        ])
+        setTalent(talentData)
+        setClients(clientData)
+        setJobs(jobData)
+      } catch (err) {
+        console.error('Error fetching admin overview data:', err)
+      } finally {
+        setLoading(false)
+      }
     })()
   }, [])
+
+  if (loading) {
+    return <AdminDashboardLoading />
+  }
 
   const activeJobs = jobs.filter(j => j.status === 'Active').length
   const scopingJobs = jobs.filter(j => j.status === 'Scoping').length

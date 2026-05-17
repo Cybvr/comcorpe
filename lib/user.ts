@@ -1,3 +1,14 @@
+import { useEffect, useState } from 'react'
+import { auth, db } from './firebase'
+import { onAuthStateChanged } from 'firebase/auth'
+import { collection, getDocs, doc, setDoc } from 'firebase/firestore'
+
+export async function updateUserProfile(id: string, data: Partial<User>): Promise<void> {
+  const userRef = doc(db, 'users', id)
+  const cleanData = JSON.parse(JSON.stringify(data))
+  await setDoc(userRef, cleanData, { merge: true })
+}
+
 export type UserRole = 'client' | 'talent' | 'admin'
 
 export interface User {
@@ -24,15 +35,7 @@ export interface User {
 }
 
 // ─── Client company users ─────────────────────────────────────────────────────
-export const clientUsers: User[] = [
-  { id: 'volta-pay',     name: 'Volta Pay',     initials: 'VP', role: 'client', company: 'Volta Pay', image: '/images/clients/voltapay.png' },
-  { id: 't-finance',     name: 'T-Finance',     initials: 'TF', role: 'client', company: 'T-Finance' },
-  { id: 'gridwell',      name: 'GridWell',      initials: 'GW', role: 'client', company: 'GridWell' },
-  { id: 'stealth-co',    name: 'Stealth Co.',   initials: 'SC', role: 'client', company: 'Stealth Co.' },
-  { id: 'wazobia-foods', name: 'Wazobia Foods', initials: 'WF', role: 'client', company: 'Wazobia Foods' },
-  { id: 'volks-bank',    name: 'Volks Bank',    initials: 'VB', role: 'client', company: 'Volks Bank' },
-  { id: 'eazebank',      name: 'EazeBank',      initials: 'EB', role: 'client', company: 'EazeBank' },
-]
+export const clientUsers: User[] = []
 
 const clientMap = new Map(clientUsers.map(u => [u.id, u]))
 
@@ -59,139 +62,7 @@ export const currentUser: User = {
 }
 
 // ─── All platform users (talent operators) ────────────────────────────────────
-export const users: User[] = [
-  {
-    id: 'tunde-a',
-    name: 'Tunde A.',
-    initials: 'TA',
-    role: 'talent',
-    talentRole: 'Commercial Strategy Lead',
-    bg: 'Formerly at McKinsey & Company',
-    desc: 'Designs go-to-market strategies for pan-African fintech expansions.',
-    featured: true,
-    image: '/images/talent/Tunde A.png',
-    rate: '$150 - $220/hr',
-  },
-  {
-    id: 'sarah-m',
-    name: 'Wanjiku Mwangi',
-    initials: 'WM',
-    role: 'talent',
-    talentRole: 'Revenue Operations Director',
-    bg: 'Formerly at Safaricom',
-    desc: 'Builds revenue operations systems for enterprise sales teams across East Africa.',
-    featured: true,
-    image: '/images/talent/Sarah M.png',
-    rate: '$140 - $200/hr',
-  },
-  {
-    id: 'david-o',
-    name: 'Kwame Mensah',
-    initials: 'KM',
-    role: 'talent',
-    talentRole: 'Market Entry Specialist',
-    bg: 'Formerly at KPMG Ghana',
-    desc: 'Navigates regulatory, partner, and public-sector pathways for West African launches.',
-    featured: true,
-    image: '/images/talent/David O.png',
-    rate: '$120 - $180/hr',
-  },
-  {
-    id: 'amira-h',
-    name: 'Awa Kone',
-    initials: 'AK',
-    role: 'talent',
-    talentRole: 'Brand & Comms Architect',
-    bg: 'Abidjan brand operator network',
-    desc: 'Translates global brand equity into localized campaigns for Francophone markets.',
-    featured: true,
-    image: '/images/talent/Amira H.png',
-    rate: '$120 - $160/hr',
-  },
-  {
-    id: 'james-k',
-    name: 'Thandi Mokoena',
-    initials: 'TM',
-    role: 'talent',
-    talentRole: 'Growth Marketing Lead',
-    bg: 'South Africa growth operator network',
-    desc: 'Drives customer acquisition and performance marketing across high-volume consumer channels.',
-    featured: true,
-    image: '/images/talent/James K.png',
-    rate: '$130 - $190/hr',
-  },
-  {
-    id: 'elena-r',
-    name: 'Nandi Khumalo',
-    initials: 'NK',
-    role: 'talent',
-    talentRole: 'Strategic Partnerships',
-    bg: 'Formerly at Standard Bank',
-    desc: 'Builds high-trust corporate networks to accelerate B2B distribution.',
-    featured: true,
-    image: '/images/talent/Elena R.png',
-    rate: '$140 - $210/hr',
-  },
-  {
-    id: 'amara-nwosu',
-    name: 'Amara Nwosu',
-    initials: 'AN',
-    role: 'talent',
-    talentRole: 'Growth Architect',
-    bg: 'Lagos operator network',
-    desc: 'Builds market-specific growth systems for early and expansion-stage companies.',
-    dashboardTitle: 'Growth Architect - Lagos',
-    color: 'bg-accent',
-    rate: '$100 - $150/hr',
-  },
-  {
-    id: 'tobi-adeyemi',
-    name: 'Tobi Adeyemi',
-    initials: 'TA',
-    role: 'talent',
-    talentRole: 'Fintech Commercial Lead',
-    bg: 'Fintech operator network',
-    desc: 'Leads commercial strategy and regulated-market growth for fintech teams.',
-    dashboardTitle: 'Fintech Commercial Lead',
-    color: 'bg-primary',
-    rate: '$150 - $200/hr',
-  },
-  {
-    id: 'yetunde-bello',
-    name: 'Yetunde Bello',
-    initials: 'YB',
-    role: 'talent',
-    talentRole: 'Growth Lead',
-    bg: 'Market entry operator',
-    desc: 'Turns local trust signals and partnership networks into launch momentum.',
-    communityRole: 'Growth Lead - 4 days ago',
-    rate: '$110 - $160/hr',
-  },
-  {
-    id: 'daniel-osei',
-    name: 'Daniel Osei',
-    initials: 'DO',
-    role: 'talent',
-    talentRole: 'Strategy Lead',
-    bg: 'Growth strategy operator',
-    desc: 'Clarifies strategic briefs and turns ambiguous growth problems into executable work.',
-    communityRole: 'Strategy - 2 days ago',
-    image: '/images/talent/Daniel Osei.png',
-    rate: '$140 - $190/hr',
-  },
-  {
-    id: 'kemi-adaora',
-    name: 'Kemi Adaora',
-    initials: 'KA',
-    role: 'talent',
-    talentRole: 'Brand Systems Lead',
-    bg: 'Consumer trust strategist',
-    desc: 'Designs market-specific brand systems for consumer growth across African markets.',
-    communityRole: 'Brand Systems - 1 day ago',
-    image: '/images/talent/Kemi Adaora.png',
-    rate: '$120 - $170/hr',
-  },
-]
+export const users: User[] = []
 
 // ─── Derived views ────────────────────────────────────────────────────────────
 export const talentUsers = users.filter(u => u.role === 'talent')
@@ -208,3 +79,46 @@ export function getTalentProfile(id: string): User {
 
 // Legacy alias so any code referencing talentProfiles still works
 export const talentProfiles = talentUsers
+
+// ─── Dynamic user profile hook ────────────────────────────────────────────────
+export function useCurrentUser() {
+  const [userProfile, setUserProfile] = useState<User>(currentUser)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    return onAuthStateChanged(auth, async (fbUser) => {
+      if (fbUser) {
+        try {
+          const emailLower = fbUser.email?.toLowerCase().trim() ?? ''
+          const usersSnap = await getDocs(collection(db, 'users'))
+          const matched = usersSnap.docs.find(d => d.data().email?.toLowerCase() === emailLower)
+          if (matched) {
+            const data = matched.data()
+            setUserProfile({
+              id: matched.id,
+              name: data.name || fbUser.displayName || 'User',
+              initials: data.initials || (data.name || fbUser.displayName || 'U')
+                .split(' ')
+                .map((n: string) => n.charAt(0))
+                .join('')
+                .toUpperCase()
+                .slice(0, 3),
+              role: data.role || 'client',
+              email: emailLower,
+              company: data.company,
+              clientId: data.clientId || data.id,
+              credits: data.credits ?? 3,
+              assignedJobSlugs: data.assignedJobSlugs || [],
+              image: data.image || fbUser.photoURL || undefined,
+            })
+          }
+        } catch (err) {
+          console.error('Error fetching dynamic user profile:', err)
+        }
+      }
+      setLoading(false)
+    })
+  }, [])
+
+  return { user: userProfile, loading }
+}

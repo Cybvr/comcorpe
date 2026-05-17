@@ -20,9 +20,16 @@ import GrowthCommunity from '@/components/dashboard/GrowthCommunity'
 import { getTalentProfile } from '@/lib/user'
 import { jobs, type JobStatus, getJobProgress } from '@/lib/jobs'
 import { invoices } from '@/lib/invoices'
-import { currentUser } from '@/lib/user'
+import { currentUser, useCurrentUser } from '@/lib/user'
+import ClientDashboardLoading from './loading'
 
 export default function ClientDashboardHome() {
+  const { user: currentUser, loading } = useCurrentUser()
+  
+  if (loading) {
+    return <ClientDashboardLoading />
+  }
+
   const activeJobs = jobs.filter(j => j.status === 'Active' && j.clientId === currentUser.clientId)
   const primaryPods = pods.slice(0, 2)
   
@@ -117,7 +124,7 @@ export default function ClientDashboardHome() {
               <Sparkles size={18} />
               <span className="font-mono text-[10px] uppercase tracking-[0.2em] font-black">AI Strategic Summary</span>
             </div>
-            <h2 className="font-display font-black text-2xl text-foreground mb-2">Hello Jide, you have 1 major growth opportunity.</h2>
+            <h2 className="font-display font-black text-2xl text-foreground mb-2">Hello {currentUser.name.split(' ')[0]}, you have 1 major growth opportunity.</h2>
             <p className="font-text text-muted-foreground text-sm max-w-2xl mb-6 leading-relaxed">
               Claude has analyzed your active pods and project velocity. We suggest expanding your <span className="font-semibold text-foreground">AI Governance</span> pod to include 2 more security specialists based on Q3 projections.
             </p>

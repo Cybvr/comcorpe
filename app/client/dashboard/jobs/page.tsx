@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowUpRight, Briefcase, Clock, MapPin, Plus, CalendarDays, Users, Flag, Banknote } from 'lucide-react'
 import { jobs, getJobProgress } from '@/lib/jobs'
-import { currentUser, getClientUser } from '@/lib/user'
+import { currentUser, useCurrentUser, getClientUser } from '@/lib/user'
 
 const statusStyles = {
   Scoping: 'bg-amber-100 text-amber-700 border-amber-200',
@@ -14,6 +14,7 @@ const statusStyles = {
 }
 
 export default function JobsPage() {
+  const { user: currentUser } = useCurrentUser()
   const [filter, setFilter] = useState<'all' | 'active'>('all')
   const [view, setView] = useState<'grid' | 'list'>('grid')
   

@@ -10,7 +10,7 @@ import {
   Lightbulb, Network, Users, Target,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import { currentUser } from '@/lib/user'
+import { currentUser, useCurrentUser } from '@/lib/user'
 
 type DropdownItem = {
   label: string
@@ -29,6 +29,7 @@ type NavItem = {
 export default function Nav() {
   const pathname = usePathname()
   const router = useRouter()
+  const { user: currentUser } = useCurrentUser()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [darkMode, setDarkMode] = useState(false)

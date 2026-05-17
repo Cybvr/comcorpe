@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import {
   Briefcase,
@@ -16,7 +18,8 @@ import { jobs } from '@/lib/jobs'
 import { topOperators } from '@/lib/operators'
 import { referral } from '@/lib/referrals'
 import { spaces } from '@/lib/spaces'
-import { currentUser } from '@/lib/user'
+import { currentUser, useCurrentUser } from '@/lib/user'
+import TalentDashboardLoading from './loading'
 
 type HomeAction = {
   icon: LucideIcon
@@ -47,6 +50,12 @@ const homeActions: HomeAction[] = [
 ]
 
 export default function DashboardPage() {
+  const { user: currentUser, loading } = useCurrentUser()
+
+  if (loading) {
+    return <TalentDashboardLoading />
+  }
+
   const assignedSlugs = currentUser.assignedJobSlugs ?? []
   const assignedJobs = jobs.filter((job) => assignedSlugs.includes(job.slug))
 

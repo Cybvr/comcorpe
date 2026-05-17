@@ -1,14 +1,55 @@
 'use client'
 import { useState } from 'react'
 import { Briefcase, Building2, CreditCard, Mail, Pencil, X } from 'lucide-react'
-import { currentUser } from '@/lib/user'
+import { currentUser, useCurrentUser, updateUserProfile } from '@/lib/user'
 import { jobs } from '@/lib/jobs'
 import { invoices } from '@/lib/invoices'
+import { useEffect } from 'react'
 
 export default function ClientProfilePage() {
+  const { user: currentUser } = useCurrentUser()
   const [editing, setEditing] = useState(false)
-  const [name, setName] = useState(currentUser.name)
-  const [company, setCompany] = useState(currentUser.company ?? '')
+  const [name, setName] = useState('')
+  const [company, setCompany] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    if (currentUser) {
+      setName(currentUser.name)
+      setCompany(currentUser.company ?? '')
+    }
+  }, [currentUser])
+
+  const handleSave = async () => {
+    if (!currentUser) return
+    setSaving(true)
+    try {
+      const computedInitials = name
+        .split(' ')
+        .filter(Boolean)
+        .map(n => n.charAt(0))
+        .join('')
+        .toUpperCase()
+        .slice(0, 3)
+
+      await updateUserProfile(currentUser.id, {
+        name,
+        company,
+        initials: computedInitials,
+      })
+
+      // Update state local references for instant response
+      currentUser.name = name
+      currentUser.company = company
+      currentUser.initials = computedInitials
+
+      setEditing(false)
+    } catch (err) {
+      console.error('Error saving profile changes:', err)
+    } finally {
+      setSaving(false)
+    }
+  }
 
   const clientJobs = jobs.filter(j => j.clientId === currentUser.clientId)
   const activeJobs = clientJobs.filter(j => j.status === 'Active')
@@ -59,12 +100,13 @@ export default function ClientProfilePage() {
                 <input className={I} value={company} onChange={e => setCompany(e.target.value)} />
               </div>
               <button
-                onClick={() => setEditing(false)}
-                className="px-6 py-2.5 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100"
+                onClick={handleSave}
+                disabled={saving}
+                className="px-6 py-2.5 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100 disabled:opacity-50"
               >
-                Save changes
+                {saving ? 'Saving...' : 'Save changes'}
               </button>
-              <p className="font-mono text-[10px] text-muted-foreground/70">Changes are saved locally in this browser.</p>
+              <p className="font-mono text-[10px] text-muted-foreground/70">Changes are saved directly in Firebase Firestore.</p>
             </div>
           ) : (
             <div className="space-y-1">

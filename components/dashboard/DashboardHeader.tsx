@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Bell, ChevronDown, LogOut, Menu, Moon, Search, Settings, Shield, Sun, SwitchCamera, User, Sparkles, BrainCircuit, Share2 } from 'lucide-react'
 import Link from 'next/link'
-import { currentUser } from '@/lib/user'
+import { currentUser, useCurrentUser } from '@/lib/user'
 import type { DashboardAudience } from './DashboardSidebar'
 
 const searchPlaceholder: Record<DashboardAudience, string> = {
@@ -21,6 +21,7 @@ export default function DashboardHeader({
   onMenuClick?: () => void
 }) {
   const router = useRouter()
+  const { user: currentUser } = useCurrentUser()
   const [darkMode, setDarkMode] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [isMCPSearch, setIsMCPSearch] = useState(false)

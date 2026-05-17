@@ -1,8 +1,11 @@
+'use client'
+
 import TalentJobsBoard from '@/components/dashboard/TalentJobsBoard'
 import { jobs } from '@/lib/jobs'
-import { currentUser } from '@/lib/user'
+import { currentUser, useCurrentUser } from '@/lib/user'
 
 export default function WorkPage() {
+  const { user: currentUser } = useCurrentUser()
   const assignedSlugs = currentUser.assignedJobSlugs ?? []
   const assignedJobs = jobs.filter((job) => assignedSlugs.includes(job.slug))
 

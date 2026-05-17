@@ -2,18 +2,67 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { MapPin, Pencil, Star, X, Zap } from 'lucide-react'
-import { currentUser, users } from '@/lib/user'
+import { currentUser, useCurrentUser, users, updateUserProfile } from '@/lib/user'
 import { applications } from '@/lib/applications'
-
-const profile = users.find(u => u.role === 'talent' && u.featured) ?? users.find(u => u.role === 'talent') ?? currentUser
+import { useEffect } from 'react'
 
 export default function TalentProfilePage() {
+  const { user: currentUser } = useCurrentUser()
+  const profile = currentUser
   const [editing, setEditing] = useState(false)
-  const [name, setName] = useState(profile.name)
-  const [role, setRole] = useState(profile.talentRole ?? '')
-  const [bg, setBg] = useState(profile.bg ?? '')
-  const [desc, setDesc] = useState(profile.desc ?? '')
-  const [rate, setRate] = useState(profile.rate ?? '')
+  const [name, setName] = useState('')
+  const [role, setRole] = useState('')
+  const [bg, setBg] = useState('')
+  const [desc, setDesc] = useState('')
+  const [rate, setRate] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    if (currentUser) {
+      setName(currentUser.name)
+      setRole(currentUser.talentRole ?? '')
+      setBg(currentUser.bg ?? '')
+      setDesc(currentUser.desc ?? '')
+      setRate(currentUser.rate ?? '')
+    }
+  }, [currentUser])
+
+  const handleSave = async () => {
+    if (!currentUser) return
+    setSaving(true)
+    try {
+      const computedInitials = name
+        .split(' ')
+        .filter(Boolean)
+        .map(n => n.charAt(0))
+        .join('')
+        .toUpperCase()
+        .slice(0, 3)
+
+      await updateUserProfile(currentUser.id, {
+        name,
+        talentRole: role,
+        bg,
+        desc,
+        rate,
+        initials: computedInitials,
+      })
+
+      // Update state local references for instant response
+      currentUser.name = name
+      currentUser.talentRole = role
+      currentUser.bg = bg
+      currentUser.desc = desc
+      currentUser.rate = rate
+      currentUser.initials = computedInitials
+
+      setEditing(false)
+    } catch (err) {
+      console.error('Error saving profile changes:', err)
+    } finally {
+      setSaving(false)
+    }
+  }
 
   const submittedCount = applications.length
   const activeCount = applications.filter(a => a.status.toLowerCase() === 'active').length
@@ -41,15 +90,15 @@ export default function TalentProfilePage() {
       <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 items-start">
         <div className="flex flex-col items-center gap-3">
           <div className="w-20 h-20 bg-foreground shrink-0 overflow-hidden relative">
-            {profile.image ? (
+            {profile && profile.image ? (
               <Image src={profile.image} alt={profile.name} fill className="object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center font-display font-black text-[24px] text-background">
-                {profile.initials}
+                {profile ? profile.initials : 'U'}
               </div>
             )}
           </div>
-          {profile.featured && (
+          {profile && profile.featured && (
             <div className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-eyebrow text-primary border border-primary/20 px-2 py-0.5 bg-primary/5">
               <Star size={10} strokeWidth={2} />
               Featured
@@ -83,12 +132,13 @@ export default function TalentProfilePage() {
                 <textarea className={`${I} resize-none`} rows={3} value={desc} onChange={e => setDesc(e.target.value)} />
               </div>
               <button
-                onClick={() => setEditing(false)}
-                className="px-6 py-2.5 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100"
+                onClick={handleSave}
+                disabled={saving}
+                className="px-6 py-2.5 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100 disabled:opacity-50"
               >
-                Save changes
+                {saving ? 'Saving...' : 'Save changes'}
               </button>
-              <p className="font-mono text-[10px] text-muted-foreground/70">Changes are saved locally in this browser.</p>
+              <p className="font-mono text-[10px] text-muted-foreground/70">Changes are saved directly in Firebase Firestore.</p>
             </div>
           ) : (
             <>

@@ -9,7 +9,7 @@ export interface Operator {
   color: string
 }
 
-const featuredOperatorIds = ['amara-nwosu', 'tobi-adeyemi']
+const featuredOperatorIds: string[] = []
 
 export const topOperators: Operator[] = featuredOperatorIds.map((id, index) => {
   const talent = getTalentProfile(id)
