@@ -22,6 +22,20 @@ export interface User {
   rate?: string
   assignedJobSlugs?: string[]
   isOnboarded?: boolean
+  // Onboarding / additional fields
+  industry?: string
+  companySize?: string
+  challenges?: string[]
+  budget?: string
+  timeline?: string
+  source?: string
+  notes?: string
+  location?: string
+  yearsExp?: string
+  disciplines?: string[]
+  portfolioUrl?: string
+  linkedinUrl?: string
+  availability?: string
 }
 
 // ─── Client company users ─────────────────────────────────────────────────────

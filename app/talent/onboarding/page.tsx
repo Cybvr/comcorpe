@@ -96,7 +96,28 @@ export default function TalentOnboardingPage() {
       localStorage.setItem('talent_onboarding', JSON.stringify({ ...form, completedAt: new Date().toISOString() }))
     }
     if (currentUser) {
-      await updateUserProfile(currentUser.id, { isOnboarded: true })
+      const calculatedInitials = form.fullName
+        .split(' ')
+        .map((n: string) => n.charAt(0))
+        .join('')
+        .toUpperCase()
+        .slice(0, 3)
+
+      await updateUserProfile(currentUser.id, {
+        isOnboarded: true,
+        name: form.fullName,
+        initials: calculatedInitials,
+        talentRole: form.role,
+        location: form.location,
+        yearsExp: form.yearsExp,
+        disciplines: form.disciplines,
+        portfolioUrl: form.portfolioUrl,
+        linkedinUrl: form.linkedinUrl,
+        availability: form.availability,
+        rate: form.rate,
+        desc: form.bio,
+        source: form.source,
+      })
     }
     router.push('/talent/dashboard')
   }

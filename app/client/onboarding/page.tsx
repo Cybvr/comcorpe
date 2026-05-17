@@ -92,7 +92,17 @@ export default function ClientOnboardingPage() {
       localStorage.setItem('client_onboarding', JSON.stringify({ ...form, completedAt: new Date().toISOString() }))
     }
     if (currentUser) {
-      await updateUserProfile(currentUser.id, { isOnboarded: true })
+      await updateUserProfile(currentUser.id, {
+        isOnboarded: true,
+        company: form.companyName,
+        industry: form.industry,
+        companySize: form.size,
+        challenges: form.challenges,
+        budget: form.budget,
+        timeline: form.timeline,
+        source: form.source,
+        notes: form.anythingElse,
+      })
     }
     router.push('/client/dashboard')
   }

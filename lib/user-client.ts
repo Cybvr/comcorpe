@@ -55,6 +55,19 @@ export function useCurrentUser() {
               image: data.image || fbUser.photoURL || undefined,
               rate: data.rate,
               isOnboarded: data.isOnboarded ?? true,
+              industry: data.industry,
+              companySize: data.companySize,
+              challenges: data.challenges,
+              budget: data.budget,
+              timeline: data.timeline,
+              source: data.source,
+              notes: data.notes,
+              location: data.location,
+              yearsExp: data.yearsExp,
+              disciplines: data.disciplines,
+              portfolioUrl: data.portfolioUrl,
+              linkedinUrl: data.linkedinUrl,
+              availability: data.availability,
             })
           } else {
             const fallbackName = fbUser.displayName || emailLower.split('@')[0] || 'User'
