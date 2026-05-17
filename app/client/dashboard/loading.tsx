@@ -18,22 +18,6 @@ export default function ClientDashboardLoading() {
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-8 items-start">
         {/* Main Content Area */}
         <div className="space-y-10">
-          {/* AI Strategic Summary - INTEGRATED SKELETON */}
-          <section className="p-6 bg-primary/5 border border-primary/10 rounded-3xl relative overflow-hidden">
-            <div className="flex items-center gap-2 mb-4">
-              <Skeleton className="h-4.5 w-4.5 rounded bg-primary/20" />
-              <Skeleton className="h-3 w-36 bg-primary/20" />
-            </div>
-            <Skeleton className="h-7 w-3/4 sm:w-2/3 mb-2 bg-primary/20" />
-            <div className="space-y-2 mb-6">
-              <Skeleton className="h-4 w-full bg-primary/10" />
-              <Skeleton className="h-4 w-4/5 bg-primary/10" />
-            </div>
-            <div className="flex flex-wrap gap-4">
-              <Skeleton className="h-7 w-28 bg-primary/15 rounded-lg" />
-              <Skeleton className="h-4 w-28 mt-1.5 bg-primary/15" />
-            </div>
-          </section>
 
           {/* Slack Messages Feed */}
           <section className="space-y-4">

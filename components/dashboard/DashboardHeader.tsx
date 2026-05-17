@@ -138,7 +138,7 @@ export default function DashboardHeader({
             className="flex items-center gap-2 rounded-full pl-1 pr-2 py-1 hover:bg-border transition-colors cursor-pointer group"
           >
             <div className="w-7 h-7 rounded-full bg-foreground flex items-center justify-center font-display font-black text-[10px] text-background shrink-0">
-              {currentUser.initials}
+              {currentUser?.initials ?? ''}
             </div>
             <ChevronDown
               size={12}
@@ -155,8 +155,10 @@ export default function DashboardHeader({
             >
               {/* User info */}
               <div className="px-4 py-3 border-b border-border">
-                <p className="font-display font-black text-[14px] tracking-[-0.01em] text-foreground leading-tight">{currentUser.name}</p>
-                <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mt-0.5 capitalize">{currentUser.role} · {currentUser.company}</p>
+                <p className="font-display font-black text-[14px] tracking-[-0.01em] text-foreground leading-tight">{currentUser?.name ?? 'Loading profile'}</p>
+                <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mt-0.5 capitalize">
+                  {currentUser ? `${currentUser.role} · ${currentUser.company ?? 'Comcorpe'}` : 'Firebase'}
+                </p>
               </div>
 
               {/* Menu items */}

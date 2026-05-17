@@ -21,6 +21,7 @@ export interface User {
   image?: string
   rate?: string
   assignedJobSlugs?: string[]
+  isOnboarded?: boolean
 }
 
 // ─── Client company users ─────────────────────────────────────────────────────
@@ -69,22 +70,6 @@ export function getClientUser(id: string): User {
   const user = clientMap.get(id)
   if (!user) throw new Error(`Unknown client: ${id}`)
   return user
-}
-
-// ─── Current session (mock auth) ──────────────────────────────────────────────
-export const currentUser: User = {
-  id: 'jide-p',
-  name: 'Jide',
-  initials: 'JP',
-  role: 'client',
-  company: 'Volta Pay',
-  clientId: 'volta-pay',
-  credits: 3,
-  assignedJobSlugs: [
-    'volks-bank-loyalty-systems',
-    't-finance-retention-sprints',
-    'volta-pay-nigeria-entry',
-  ],
 }
 
 // ─── All platform users (talent operators) ────────────────────────────────────

@@ -29,7 +29,7 @@ type NavItem = {
 export default function Nav() {
   const pathname = usePathname()
   const router = useRouter()
-  const { user: currentUser } = useCurrentUser()
+  const { user: currentUser, isAuthenticated } = useCurrentUser()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
@@ -117,6 +117,14 @@ export default function Nav() {
     { label: 'Insights', href: '/insights' },
   ]
 
+  const dashboardHref = currentUser?.role === 'admin'
+    ? '/admin'
+    : currentUser?.role === 'talent'
+      ? '/talent/dashboard'
+      : '/client/dashboard'
+  const accountHref = isAuthenticated ? dashboardHref : '/login'
+  const accountLabel = isAuthenticated ? 'Dashboard' : 'Login'
+
   return (
     <>
       <nav className={`sticky top-0 z-50 h-16 grid grid-cols-[auto_1fr_auto] items-center px-6 md:px-24 border-b transition-all duration-[240ms] ${scrolled || menuOpen ? 'bg-background/95 backdrop-blur-md border-border' : 'border-transparent bg-transparent'}`}>
@@ -186,11 +194,11 @@ export default function Nav() {
             {darkMode ? <Sun size={15} strokeWidth={1.5} /> : <Moon size={15} strokeWidth={1.5} />}
           </button>
           <Link
-            href={currentUser.role === 'client' ? '/client/dashboard' : '/talent/dashboard'}
+            href={accountHref}
             className="font-text text-[13px] font-semibold px-[16px] py-[9px] rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms] inline-flex items-center gap-1.5"
           >
-            <LayoutDashboard size={14} strokeWidth={1.6} />
-            Dashboard
+            {isAuthenticated && <LayoutDashboard size={14} strokeWidth={1.6} />}
+            {accountLabel}
           </Link>
           <Link
             href="/book"
@@ -210,11 +218,11 @@ export default function Nav() {
             {darkMode ? <Sun size={15} strokeWidth={1.5} /> : <Moon size={15} strokeWidth={1.5} />}
           </button>
           <Link
-            href={currentUser.role === 'client' ? '/client/dashboard' : '/talent/dashboard'}
-            aria-label="Dashboard"
-            className="w-8 h-8 flex items-center justify-center rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms]"
+            href={accountHref}
+            aria-label={accountLabel}
+            className={`${isAuthenticated ? 'w-8 px-0' : 'px-3'} h-8 flex items-center justify-center rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms] font-text text-[12px] font-semibold`}
           >
-            <LayoutDashboard size={15} strokeWidth={1.6} />
+            {isAuthenticated ? <LayoutDashboard size={15} strokeWidth={1.6} /> : accountLabel}
           </Link>
           <Link
             href="/book"

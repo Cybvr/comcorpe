@@ -10,8 +10,6 @@ import {
   MessageSquare, 
   Search,
   Users,
-  Sparkles,
-  TrendingUp,
 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -26,7 +24,7 @@ import ClientDashboardLoading from './loading'
 export default function ClientDashboardHome() {
   const { user: currentUser, loading } = useCurrentUser()
   
-  if (loading) {
+  if (loading || !currentUser) {
     return <ClientDashboardLoading />
   }
 
@@ -115,29 +113,6 @@ export default function ClientDashboardHome() {
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-8 items-start">
         {/* Main Content Area */}
         <div className="space-y-10">
-          {/* AI Strategic Summary - INTEGRATED */}
-          <section className="p-6 bg-primary/5 border border-primary/10 rounded-3xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Sparkles size={120} className="text-primary" />
-            </div>
-            <div className="flex items-center gap-2 text-primary mb-4">
-              <Sparkles size={18} />
-              <span className="font-mono text-[10px] uppercase tracking-[0.2em] font-black">AI Strategic Summary</span>
-            </div>
-            <h2 className="font-display font-black text-2xl text-foreground mb-2">Hello {currentUser.name.split(' ')[0]}, you have 1 major growth opportunity.</h2>
-            <p className="font-text text-muted-foreground text-sm max-w-2xl mb-6 leading-relaxed">
-              Claude has analyzed your active pods and project velocity. We suggest expanding your <span className="font-semibold text-foreground">AI Governance</span> pod to include 2 more security specialists based on Q3 projections.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-background border border-primary/10 rounded-lg shadow-sm">
-                <TrendingUp size={14} className="text-green-600" />
-                <span className="font-text text-xs font-semibold text-foreground">+12% Velocity</span>
-              </div>
-              <button className="font-text text-xs text-primary font-bold hover:underline flex items-center gap-1">
-                View full analysis <ArrowUpRight size={12} />
-              </button>
-            </div>
-          </section>
 
           {/* Slack Messages Feed */}
           <section>

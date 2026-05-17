@@ -15,9 +15,17 @@ const statusStyles = {
 }
 
 export default function JobsPage() {
-  const { user: currentUser } = useCurrentUser()
+  const { user: currentUser, loading } = useCurrentUser()
   const [filter, setFilter] = useState<'all' | 'active'>('all')
   const [view, setView] = useState<'grid' | 'list'>('grid')
+
+  if (loading || !currentUser) {
+    return (
+      <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1240px] mx-auto">
+        <p className="font-text text-sm text-muted-foreground">Loading jobs...</p>
+      </div>
+    )
+  }
   
   const clientJobs = jobs.filter(j => j.clientId === currentUser.clientId)
   const displayJobs = filter === 'active' ? clientJobs.filter(j => j.status === 'Active') : clientJobs

@@ -94,6 +94,7 @@ export default function LoginPage() {
         name: defaultName,
         email: emailLower,
         role: 'client', // default new user role
+        isOnboarded: false,
       })
     }
 

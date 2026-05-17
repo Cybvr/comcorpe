@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Check, ArrowRight, ArrowLeft } from 'lucide-react'
+import { useCurrentUser, updateUserProfile } from '@/lib/user-client'
 
 const INDUSTRIES = ['Fintech', 'Banking', 'FMCG', 'Retail', 'Healthcare', 'Energy', 'Media', 'Other']
 const COMPANY_SIZES = ['1–10', '11–50', '51–200', '201–1000', '1000+']
@@ -51,6 +52,7 @@ function StepIndicator({ current, total }: { current: number; total: number }) {
 
 export default function ClientOnboardingPage() {
   const router = useRouter()
+  const { user: currentUser } = useCurrentUser()
   const [step, setStep] = useState(1)
 
   const [form, setForm] = useState({
@@ -84,10 +86,13 @@ export default function ClientOnboardingPage() {
     return false
   }
 
-  function next() {
+  async function next() {
     if (step < TOTAL_STEPS) { setStep(s => s + 1); return }
     if (typeof window !== 'undefined') {
       localStorage.setItem('client_onboarding', JSON.stringify({ ...form, completedAt: new Date().toISOString() }))
+    }
+    if (currentUser) {
+      await updateUserProfile(currentUser.id, { isOnboarded: true })
     }
     router.push('/client/dashboard')
   }

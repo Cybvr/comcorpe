@@ -4,21 +4,14 @@ import { Briefcase, Building2, CreditCard, Mail, Pencil, X } from 'lucide-react'
 import { useCurrentUser, updateUserProfile } from '@/lib/user-client'
 import { jobs } from '@/lib/jobs'
 import { invoices } from '@/lib/invoices'
-import { useEffect } from 'react'
 
 export default function ClientProfilePage() {
   const { user: currentUser } = useCurrentUser()
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState('')
   const [company, setCompany] = useState('')
+  const [profileOverride, setProfileOverride] = useState<{ name?: string; company?: string; initials?: string }>({})
   const [saving, setSaving] = useState(false)
-
-  useEffect(() => {
-    if (currentUser) {
-      setName(currentUser.name)
-      setCompany(currentUser.company ?? '')
-    }
-  }, [currentUser])
 
   const handleSave = async () => {
     if (!currentUser) return
@@ -38,17 +31,32 @@ export default function ClientProfilePage() {
         initials: computedInitials,
       })
 
-      // Update state local references for instant response
-      currentUser.name = name
-      currentUser.company = company
-      currentUser.initials = computedInitials
-
+      setProfileOverride({ name, company, initials: computedInitials })
       setEditing(false)
     } catch (err) {
       console.error('Error saving profile changes:', err)
     } finally {
       setSaving(false)
     }
+  }
+
+  if (!currentUser) {
+    return (
+      <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[860px] mx-auto">
+        <p className="font-text text-sm text-muted-foreground">Loading profile...</p>
+      </div>
+    )
+  }
+
+  const handleEditToggle = () => {
+    if (!currentUser) return
+    if (editing) {
+      setEditing(false)
+      return
+    }
+    setName(profileOverride.name ?? currentUser.name)
+    setCompany(profileOverride.company ?? currentUser.company ?? '')
+    setEditing(true)
   }
 
   const clientJobs = jobs.filter(j => j.clientId === currentUser.clientId)
@@ -59,6 +67,9 @@ export default function ClientProfilePage() {
     .reduce((sum, i) => sum + i.amountRaw, 0)
 
   const I = 'w-full px-4 py-3 border border-input bg-white font-text text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors duration-100'
+  const displayName = profileOverride.name ?? currentUser.name
+  const displayCompany = profileOverride.company ?? currentUser.company ?? ''
+  const displayInitials = profileOverride.initials ?? currentUser.initials
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[860px] mx-auto">
@@ -70,7 +81,7 @@ export default function ClientProfilePage() {
           </h1>
         </div>
         <button
-          onClick={() => setEditing(e => !e)}
+          onClick={handleEditToggle}
           className="flex items-center gap-2 px-4 py-2 border border-input font-text text-sm text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-colors duration-100"
         >
           {editing ? <X size={14} strokeWidth={1.5} /> : <Pencil size={14} strokeWidth={1.5} />}
@@ -81,7 +92,7 @@ export default function ClientProfilePage() {
       <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 items-start">
         <div className="flex flex-col items-center gap-3">
           <div className="w-20 h-20 bg-foreground flex items-center justify-center font-display font-black text-[24px] text-background">
-            {currentUser.initials}
+            {displayInitials}
           </div>
           <span className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 border border-input px-2 py-0.5">
             {currentUser.role}
@@ -110,8 +121,8 @@ export default function ClientProfilePage() {
             </div>
           ) : (
             <div className="space-y-1">
-              <h2 className="font-display font-black text-[22px] tracking-[-0.02em] text-foreground">{name}</h2>
-              <p className="font-text text-sm text-muted-foreground">{company}</p>
+              <h2 className="font-display font-black text-[22px] tracking-[-0.02em] text-foreground">{displayName}</h2>
+              <p className="font-text text-sm text-muted-foreground">{displayCompany}</p>
             </div>
           )}
 

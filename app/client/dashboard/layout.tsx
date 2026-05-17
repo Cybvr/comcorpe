@@ -1,11 +1,32 @@
 'use client'
 import type React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useCurrentUser } from '@/lib/user-client'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { user, loading } = useCurrentUser()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!loading && user && user.isOnboarded === false) {
+      router.push('/client/onboarding')
+    }
+  }, [user, loading, router])
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="animate-pulse flex flex-col items-center gap-2">
+          <div className="h-6 w-24 bg-muted rounded"></div>
+          <div className="h-4 w-48 bg-muted rounded"></div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex h-screen bg-background overflow-hidden font-text">

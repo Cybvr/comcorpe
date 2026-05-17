@@ -52,7 +52,7 @@ const homeActions: HomeAction[] = [
 export default function DashboardPage() {
   const { user: currentUser, loading } = useCurrentUser()
 
-  if (loading) {
+  if (loading || !currentUser) {
     return <TalentDashboardLoading />
   }
 

@@ -8,6 +8,7 @@ const EMPTY: Partial<User> = {
   name: '',
   email: '',
   role: 'client',
+  isOnboarded: true,
 }
 
 function UserForm({
@@ -21,7 +22,7 @@ function UserForm({
 }) {
   const [form, setForm] = useState({ ...EMPTY, ...initial })
 
-  function set(field: string, value: string) {
+  function set(field: string, value: any) {
     setForm(f => ({ ...f, [field]: value }))
   }
 
@@ -58,6 +59,14 @@ function UserForm({
           <option value="client">Client</option>
           <option value="talent">Talent (Operator)</option>
           <option value="admin">Administrator</option>
+        </select>
+      </div>
+
+      <div className={F}>
+        <label className={L}>Onboarding Status *</label>
+        <select className={S} value={form.isOnboarded !== false ? 'completed' : 'incomplete'} onChange={e => set('isOnboarded', e.target.value === 'completed')}>
+          <option value="completed">Completed / Onboarded</option>
+          <option value="incomplete">Incomplete / Needs Onboarding</option>
         </select>
       </div>
 
@@ -163,6 +172,7 @@ export default function AdminUsersPage() {
               <tr className="border-b border-border bg-muted/30">
                 <th className="px-6 py-4 font-mono text-[10px] tracking-eyebrow uppercase text-muted-foreground">User</th>
                 <th className="px-6 py-4 font-mono text-[10px] tracking-eyebrow uppercase text-muted-foreground">Role</th>
+                <th className="px-6 py-4 font-mono text-[10px] tracking-eyebrow uppercase text-muted-foreground">Onboarding</th>
                 <th className="px-6 py-4 font-mono text-[10px] tracking-eyebrow uppercase text-muted-foreground">Firebase UID</th>
                 <th className="px-6 py-4 font-mono text-[10px] tracking-eyebrow uppercase text-muted-foreground text-right">Actions</th>
               </tr>
@@ -192,6 +202,26 @@ export default function AdminUsersPage() {
                       {user.role}
                     </button>
                   </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={async () => {
+                        const currentStatus = user.isOnboarded !== false
+                        await updateSystemUser(user.id, { isOnboarded: !currentStatus })
+                        reload()
+                      }}
+                      title="Click to toggle onboarding status"
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-mono text-[10px] font-bold uppercase tracking-wider transition-all duration-150 border hover:scale-105 active:scale-95 ${
+                        user.isOnboarded !== false
+                          ? 'bg-green-50 text-green-700 border-green-200'
+                          : 'bg-amber-50 text-amber-700 border-amber-200'
+                      }`}
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full ${
+                        user.isOnboarded !== false ? 'bg-green-500' : 'bg-amber-500'
+                      }`} />
+                      {user.isOnboarded !== false ? 'Onboarded' : 'Not Onboarded'}
+                    </button>
+                  </td>
                   <td className="px-6 py-4 font-mono text-xs text-muted-foreground/80">
                     {user.id}
                   </td>
@@ -215,7 +245,7 @@ export default function AdminUsersPage() {
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-sm text-muted-foreground">
+                  <td colSpan={5} className="px-6 py-12 text-center text-sm text-muted-foreground">
                     No users found.
                   </td>
                 </tr>

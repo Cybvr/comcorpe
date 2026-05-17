@@ -6,7 +6,7 @@ import { Search } from 'lucide-react'
 import { invoices, type InvoiceStatus } from '@/lib/invoices'
 import { jobs } from '@/lib/jobs'
 import { getPodBySlug } from '@/lib/pods'
-import { currentClientId } from '@/lib/session'
+import { useCurrentUser } from '@/lib/user-client'
 
 const statusStyles: Record<InvoiceStatus, string> = {
   Paid:       'bg-green-50 text-green-700 border-green-200',
@@ -15,8 +15,18 @@ const statusStyles: Record<InvoiceStatus, string> = {
 }
 
 export default function ClientBillingPage() {
+  const { user: currentUser, loading } = useCurrentUser()
   const [search, setSearch] = useState('')
 
+  if (loading || !currentUser) {
+    return (
+      <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1100px] mx-auto">
+        <p className="font-text text-sm text-muted-foreground">Loading billing...</p>
+      </div>
+    )
+  }
+
+  const currentClientId = currentUser.clientId ?? currentUser.id
   const clientInvoices = invoices.filter(i => i.clientId === currentClientId)
   const clientJobs = jobs.filter(j => j.clientId === currentClientId)
 

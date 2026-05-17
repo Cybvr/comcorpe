@@ -6,7 +6,7 @@ import { useCurrentUser } from '@/lib/user-client'
 
 export default function WorkPage() {
   const { user: currentUser } = useCurrentUser()
-  const assignedSlugs = currentUser.assignedJobSlugs ?? []
+  const assignedSlugs = currentUser?.assignedJobSlugs ?? []
   const assignedJobs = jobs.filter((job) => assignedSlugs.includes(job.slug))
 
   return (

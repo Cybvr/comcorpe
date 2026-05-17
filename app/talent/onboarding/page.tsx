@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Check, ArrowRight, ArrowLeft } from 'lucide-react'
+import { useCurrentUser, updateUserProfile } from '@/lib/user-client'
 
 const DISCIPLINES = ['Growth Strategy', 'Brand & Marketing', 'Product Management', 'Operations', 'Finance & Revenue', 'Data & Analytics', 'Tech & Engineering', 'Customer Experience', 'Market Entry', 'Fundraising']
 const LOCATIONS = ['Lagos', 'London', 'Nairobi', 'Accra', 'Cape Town', 'New York', 'Remote only', 'Other']
@@ -51,6 +52,7 @@ function StepIndicator({ current, total }: { current: number; total: number }) {
 
 export default function TalentOnboardingPage() {
   const router = useRouter()
+  const { user: currentUser } = useCurrentUser()
   const [step, setStep] = useState(1)
 
   const [form, setForm] = useState({
@@ -88,10 +90,13 @@ export default function TalentOnboardingPage() {
     return false
   }
 
-  function next() {
+  async function next() {
     if (step < TOTAL_STEPS) { setStep(s => s + 1); return }
     if (typeof window !== 'undefined') {
       localStorage.setItem('talent_onboarding', JSON.stringify({ ...form, completedAt: new Date().toISOString() }))
+    }
+    if (currentUser) {
+      await updateUserProfile(currentUser.id, { isOnboarded: true })
     }
     router.push('/talent/dashboard')
   }
