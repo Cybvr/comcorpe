@@ -1,31 +1,40 @@
+'use client'
+
+import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Bookmark, MessageCircle, Share2, TrendingUp } from 'lucide-react'
 import PostCard from '@/components/dashboard/PostCard'
-import { getPostBySlug, posts } from '@/lib/posts'
-import { getTalentProfile } from '@/lib/user'
+import { getPosts, getTalent } from '@/lib/admin/store'
+import type { Post } from '@/lib/posts'
+import type { User } from '@/lib/user'
 
-export function generateStaticParams() {
-  return posts.map((post) => ({
-    slug: post.slug,
-  }))
-}
-
-export default async function CommunityPostPage({
+export default function CommunityPostPage({
   params,
 }: {
   params: Promise<{ slug: string }>
 }) {
-  const { slug } = await params
-  const post = getPostBySlug(slug)
+  const { slug } = use(params)
+  const [post, setPost] = useState<Post | null | undefined>(undefined)
+  const [otherPosts, setOtherPosts] = useState<Post[]>([])
+  const [author, setAuthor] = useState<User | null>(null)
 
-  if (!post) {
-    notFound()
-  }
+  useEffect(() => {
+    Promise.all([getPosts(), getTalent()]).then(([all, talent]) => {
+      const found = all.find(p => p.slug === slug) ?? null
+      setPost(found)
+      setOtherPosts(all.filter(p => p.slug !== slug))
+      if (found) {
+        setAuthor(talent.find(t => t.id === found.authorId) ?? null)
+      }
+    })
+  }, [slug])
 
-  const author = getTalentProfile(post.authorId)
-  const authorTitle = author.talentRole ?? post.role
-  const otherPosts = posts.filter((p) => p.slug !== slug)
+  if (post === undefined) return null
+  if (!post) notFound()
+
+  const authorTitle = author?.talentRole ?? post.role
+  const authorInitials = author?.initials ?? post.author.split(' ').map(n => n[0]).join('')
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">
@@ -36,15 +45,11 @@ export default async function CommunityPostPage({
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-8 items-start">
         <article className="border border-border rounded-xl p-8 bg-background">
           <div className="flex items-center gap-3 mb-8">
-            <Link href={`/talent/${author.id}`} className="shrink-0">
-              <div className="w-11 h-11 rounded-full bg-input flex items-center justify-center font-display font-black text-[12px] text-foreground hover:bg-primary/20 transition-colors">
-                {author.initials}
-              </div>
-            </Link>
+            <div className="w-11 h-11 rounded-full bg-input flex items-center justify-center font-display font-black text-[12px] text-foreground shrink-0">
+              {authorInitials}
+            </div>
             <div>
-              <Link href={`/talent/${author.id}`} className="font-display font-black text-[16px] text-foreground hover:text-primary transition-colors leading-none block">
-                {author.name}
-              </Link>
+              <div className="font-display font-black text-[16px] text-foreground leading-none">{post.author}</div>
               <div className="font-text text-xs text-muted-foreground/70 mt-1">{post.role}</div>
             </div>
             <span className="ml-auto font-mono text-[10px] px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded-sm uppercase tracking-eyebrow">
@@ -78,18 +83,13 @@ export default async function CommunityPostPage({
 
         <aside className="border border-border rounded-xl p-5 bg-background">
           <p className="font-mono text-[10px] uppercase tracking-eyebrow text-primary mb-4">Talent profile</p>
-          <Link href={`/talent/${author.id}`} className="block group">
-            <div className="w-12 h-12 rounded-full bg-foreground flex items-center justify-center font-display font-black text-[13px] text-background mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-              {author.initials}
-            </div>
-            <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-foreground group-hover:text-primary transition-colors leading-tight">{author.name}</h2>
-          </Link>
+          <div className="w-12 h-12 rounded-full bg-foreground flex items-center justify-center font-display font-black text-[13px] text-background mb-4">
+            {authorInitials}
+          </div>
+          <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-foreground leading-tight">{post.author}</h2>
           <p className="font-mono text-[10px] uppercase tracking-eyebrow text-primary mt-2">{authorTitle}</p>
-          <p className="font-text text-sm text-muted-foreground mt-4">{author.desc}</p>
-          <p className="font-text text-xs text-muted-foreground/70 mt-4">{author.bg}</p>
-          <Link href={`/talent/${author.id}`} className="mt-5 inline-flex font-text text-xs font-semibold px-4 py-2 bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]">
-            View full profile →
-          </Link>
+          {author?.desc && <p className="font-text text-sm text-muted-foreground mt-4">{author.desc}</p>}
+          {author?.bg && <p className="font-text text-xs text-muted-foreground/70 mt-4">{author.bg}</p>}
         </aside>
       </div>
 
