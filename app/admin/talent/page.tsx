@@ -118,13 +118,12 @@ export default function AdminTalentPage() {
   const [deleteTarget, setDeleteTarget] = useState<User | null>(null)
   const [search, setSearch] = useState('')
 
-  function reload() {
-    setTalent(getTalent())
+  async function reload() {
+    setTalent(await getTalent())
   }
 
   useEffect(() => {
-    const frame = requestAnimationFrame(reload)
-    return () => cancelAnimationFrame(frame)
+    reload()
   }, [])
 
   const filtered = talent.filter(u =>
@@ -132,21 +131,21 @@ export default function AdminTalentPage() {
     (u.talentRole ?? '').toLowerCase().includes(search.toLowerCase())
   )
 
-  function handleSave(data: Partial<User>) {
+  async function handleSave(data: Partial<User>) {
     if (modal === 'create') {
-      createTalent(data as Omit<User, 'role'>)
+      await createTalent(data as Omit<User, 'role'>)
     } else if (modal && typeof modal === 'object') {
-      updateTalent(modal.user.id, data)
+      await updateTalent(modal.user.id, data)
     }
     setModal(null)
-    reload()
+    await reload()
   }
 
-  function confirmDelete() {
+  async function confirmDelete() {
     if (deleteTarget) {
-      deleteTalent(deleteTarget.id)
+      await deleteTalent(deleteTarget.id)
       setDeleteTarget(null)
-      reload()
+      await reload()
     }
   }
 

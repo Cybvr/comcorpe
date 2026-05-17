@@ -19,12 +19,11 @@ export default function AdminOverviewPage() {
   const [jobs, setJobs] = useState<Job[]>([])
 
   useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      setTalent(getTalent())
-      setClients(getClients())
-      setJobs(getJobs())
-    })
-    return () => cancelAnimationFrame(frame)
+    ;(async () => {
+      setTalent(await getTalent())
+      setClients(await getClients())
+      setJobs(await getJobs())
+    })()
   }, [])
 
   const activeJobs = jobs.filter(j => j.status === 'Active').length
@@ -34,7 +33,7 @@ export default function AdminOverviewPage() {
     <div className="space-y-10">
       <div>
         <h1 className="font-display text-[32px] tracking-hero text-foreground leading-tight">Overview</h1>
-        <p className="text-sm text-muted-foreground mt-1">Manage platform data stored in localStorage.</p>
+        <p className="text-sm text-muted-foreground mt-1">Manage platform data stored in Firestore.</p>
       </div>
 
       {/* Stats */}

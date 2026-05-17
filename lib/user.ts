@@ -1,10 +1,11 @@
-export type UserRole = 'client' | 'talent'
+export type UserRole = 'client' | 'talent' | 'admin'
 
 export interface User {
   id: string
   name: string
   initials: string
   role: UserRole
+  email?: string
   // Client fields
   company?: string
   clientId?: string

@@ -28,7 +28,7 @@ import {
 import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
 import { getTalentProfile } from '@/lib/user'
 import { jobs, getJobBySlug, getJobProgress } from '@/lib/jobs'
-import { getJobs, updateJob } from '@/lib/admin/store'
+import { updateJob } from '@/lib/admin/store'
 import { invoices, getInvoice } from '@/lib/invoices'
 import { contractTerms } from '@/lib/contract'
 
@@ -82,22 +82,21 @@ export default function JobDetailPage({
     return query ? `${pathname}?${query}` : pathname
   }
 
-  const liveJob = getJobs().find(j => j.id === job.id)
-  const [jobStatus, setJobStatus] = useState(liveJob?.status ?? job.status)
+  const [jobStatus, setJobStatus] = useState(job.status)
   const [confirmCancel, setConfirmCancel] = useState(false)
 
-  const handlePause = () => {
-    updateJob(job.id, { status: 'Paused' })
+  const handlePause = async () => {
+    await updateJob(job.id, { status: 'Paused' })
     setJobStatus('Paused')
   }
 
-  const handleResume = () => {
-    updateJob(job.id, { status: 'Active' })
+  const handleResume = async () => {
+    await updateJob(job.id, { status: 'Active' })
     setJobStatus('Active')
   }
 
-  const handleCancel = () => {
-    updateJob(job.id, { status: 'Cancelled' })
+  const handleCancel = async () => {
+    await updateJob(job.id, { status: 'Cancelled' })
     setJobStatus('Cancelled')
     setConfirmCancel(false)
   }

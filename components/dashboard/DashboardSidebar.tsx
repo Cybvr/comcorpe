@@ -84,6 +84,7 @@ const dashboardConfig: Record<DashboardAudience, {
       { icon: Users, label: 'Talent', href: '/admin/talent' },
       { icon: Briefcase, label: 'Jobs', href: '/admin/jobs' },
       { icon: Shield, label: 'Clients', href: '/admin/clients' },
+      { icon: Users, label: 'Users', href: '/admin/users' },
     ],
     supportItems: [],
   },

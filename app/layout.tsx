@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import React from 'react'
 import './globals.css'
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
+import CookieConsent from '@/components/CookieConsent'
 
 export const metadata: Metadata = {
   title: 'Comcorpᵉ — A Growth Systems Company',
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-background text-foreground font-text antialiased leading-body tracking-body">
         <ServiceWorkerRegistration />
         {children}
+        <CookieConsent />
       </body>
     </html>
   )

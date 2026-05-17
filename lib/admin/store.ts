@@ -1,91 +1,133 @@
 'use client'
+import {
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  deleteDoc,
+  type DocumentData,
+} from 'firebase/firestore'
+import { db } from '@/lib/firebase'
 import { users, clientUsers, type User } from '@/lib/user'
 import { jobs, type Job } from '@/lib/jobs'
 
-const KEYS = {
-  talent: 'admin_talent',
-  clients: 'admin_clients',
-  jobs: 'admin_jobs',
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+/** Strip undefined values before writing to Firestore */
+function clean<T extends object>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj)) as T
 }
 
-function read<T>(key: string, seed: T[]): T[] {
-  if (typeof window === 'undefined') return seed
+async function readAll<T>(collectionName: string, seed: T[]): Promise<T[]> {
   try {
-    const raw = localStorage.getItem(key)
-    if (!raw) return seed
-    return JSON.parse(raw) as T[]
+    const snap = await getDocs(collection(db, collectionName))
+    if (snap.empty) return seed
+    return snap.docs.map(d => ({ id: d.id, ...d.data() } as T))
   } catch {
     return seed
   }
 }
 
-function write<T>(key: string, data: T[]): void {
-  if (typeof window === 'undefined') return
-  localStorage.setItem(key, JSON.stringify(data))
+async function upsert(collectionName: string, id: string, data: DocumentData): Promise<void> {
+  await setDoc(doc(db, collectionName, id), clean(data), { merge: true })
 }
 
-// ─── Talent ────────────────────────────────────────────────────────────────
+async function remove(collectionName: string, id: string): Promise<void> {
+  await deleteDoc(doc(db, collectionName, id))
+}
+
+// ─── Talent ────────────────────────────────────────────────────────────────────
 const talentSeed = users.filter(u => u.role === 'talent')
 
-export function getTalent(): User[] {
-  return read<User>(KEYS.talent, talentSeed)
+export async function getTalent(): Promise<User[]> {
+  const allUsers = await readAll<User>('users', [])
+  const talent = allUsers.filter(u => u.role === 'talent')
+  return talent.length > 0 ? talent : talentSeed
 }
 
-export function createTalent(data: Omit<User, 'role'>): User {
-  const all = getTalent()
+export async function createTalent(data: Omit<User, 'role'>): Promise<User> {
   const record: User = { ...data, role: 'talent' }
-  write(KEYS.talent, [...all, record])
+  await upsert('users', record.id, record)
   return record
 }
 
-export function updateTalent(id: string, data: Partial<User>): void {
-  const all = getTalent().map(u => u.id === id ? { ...u, ...data } : u)
-  write(KEYS.talent, all)
+export async function updateTalent(id: string, data: Partial<User>): Promise<void> {
+  const all = await getTalent()
+  const existing = all.find(u => u.id === id) ?? {}
+  await upsert('users', id, { ...existing, ...data })
 }
 
-export function deleteTalent(id: string): void {
-  write(KEYS.talent, getTalent().filter(u => u.id !== id))
+export async function deleteTalent(id: string): Promise<void> {
+  await remove('users', id)
 }
 
-// ─── Clients ───────────────────────────────────────────────────────────────
-export function getClients(): User[] {
-  return read<User>(KEYS.clients, clientUsers)
+// ─── Clients ───────────────────────────────────────────────────────────────────
+export async function getClients(): Promise<User[]> {
+  const allUsers = await readAll<User>('users', [])
+  const clients = allUsers.filter(u => u.role === 'client')
+  return clients.length > 0 ? clients : clientUsers
 }
 
-export function createClient(data: Omit<User, 'role'>): User {
-  const all = getClients()
+export async function createClient(data: Omit<User, 'role'>): Promise<User> {
   const record: User = { ...data, role: 'client' }
-  write(KEYS.clients, [...all, record])
+  await upsert('users', record.id, record)
   return record
 }
 
-export function updateClient(id: string, data: Partial<User>): void {
-  const all = getClients().map(u => u.id === id ? { ...u, ...data } : u)
-  write(KEYS.clients, all)
+export async function updateClient(id: string, data: Partial<User>): Promise<void> {
+  const all = await getClients()
+  const existing = all.find(u => u.id === id) ?? {}
+  await upsert('users', id, { ...existing, ...data })
 }
 
-export function deleteClient(id: string): void {
-  write(KEYS.clients, getClients().filter(u => u.id !== id))
+export async function deleteClient(id: string): Promise<void> {
+  await remove('users', id)
 }
 
-// ─── Jobs ──────────────────────────────────────────────────────────────────
-export function getJobs(): Job[] {
-  return read<Job>(KEYS.jobs, jobs)
+// ─── Jobs ──────────────────────────────────────────────────────────────────────
+export async function getJobs(): Promise<Job[]> {
+  return readAll<Job>('jobs', jobs)
 }
 
-export function createJob(data: Omit<Job, 'id'>): Job {
-  const all = getJobs()
-  const id = all.length > 0 ? Math.max(...all.map(j => j.id)) + 1 : 1
+export async function createJob(data: Omit<Job, 'id'>): Promise<Job> {
+  const all = await getJobs()
+  const id  = all.length > 0 ? Math.max(...all.map(j => j.id)) + 1 : 1
   const record: Job = { ...data, id }
-  write(KEYS.jobs, [...all, record])
+  await upsert('jobs', record.slug, record)
   return record
 }
 
-export function updateJob(id: number, data: Partial<Job>): void {
-  const all = getJobs().map(j => j.id === id ? { ...j, ...data } : j)
-  write(KEYS.jobs, all)
+export async function updateJob(id: number, data: Partial<Job>): Promise<void> {
+  const all = await getJobs()
+  const existing = all.find(j => j.id === id)
+  if (!existing) return
+  await upsert('jobs', existing.slug, { ...existing, ...data })
 }
 
-export function deleteJob(id: number): void {
-  write(KEYS.jobs, getJobs().filter(j => j.id !== id))
+export async function deleteJob(id: number): Promise<void> {
+  const all = await getJobs()
+  const existing = all.find(j => j.id === id)
+  if (!existing) return
+  await remove('jobs', existing.slug)
+}
+
+// ─── System Users ─────────────────────────────────────────────────────────────
+export async function getSystemUsers(): Promise<User[]> {
+  return readAll<User>('users', [])
+}
+
+export async function createSystemUser(data: Partial<User>): Promise<User> {
+  const id = data.id || Math.random().toString(36).substring(7)
+  const record = { id, name: data.name || '', email: data.email || '', role: data.role || 'client' }
+  await upsert('users', id, record)
+  return record as User
+}
+
+export async function updateSystemUser(id: string, data: Partial<User>): Promise<void> {
+  const all = await getSystemUsers()
+  const existing = all.find(u => u.id === id) ?? {}
+  await upsert('users', id, { ...existing, ...data })
+}
+
+export async function deleteSystemUser(id: string): Promise<void> {
+  await remove('users', id)
 }

@@ -2,54 +2,197 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { Eye, EyeOff } from 'lucide-react'
+import {
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  signOut,
+  type User,
+} from 'firebase/auth'
+import { doc, setDoc, collection, getDocs } from 'firebase/firestore'
+import { auth, db, googleProvider, microsoftProvider } from '@/lib/firebase'
 import HighTechLoading from '@/components/HighTechLoading'
 
+const ALLOWED_DOMAIN = '@comcorpe.com'
+
+function dashboardPathForRole(role: string | undefined) {
+  if (role === 'admin') return '/admin'
+  if (role === 'talent') return '/talent/dashboard'
+  return '/client/dashboard'
+}
+
+// ─── Icons ─────────────────────────────────────────────────────────────────────
+function GoogleIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.64 9.205c0-.639-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z" fill="#4285F4"/>
+      <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18Z" fill="#34A853"/>
+      <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332Z" fill="#FBBC05"/>
+      <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58Z" fill="#EA4335"/>
+    </svg>
+  )
+}
+
+function MicrosoftIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 0h8.571v8.571H0z" fill="#F25022"/>
+      <path d="M9.429 0H18v8.571H9.429z" fill="#7FBA00"/>
+      <path d="M0 9.429h8.571V18H0z" fill="#00A4EF"/>
+      <path d="M9.429 9.429H18V18H9.429z" fill="#FFB900"/>
+    </svg>
+  )
+}
+
+// ─── Main component ─────────────────────────────────────────────────────────────
 export default function LoginPage() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [email, setEmail]       = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [error, setError]       = useState('')
+  const [loading, setLoading]   = useState<string | null>(null)
   const [showLoadingOverlay, setShowLoadingOverlay] = useState(false)
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-
-    const emailLower = email.toLowerCase().trim()
-    const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    const isComcorpeEmail = emailLower.endsWith('@comcorpe.com') || isLocalhost
-
-
-    if (!isComcorpeEmail) {
-      setError('Access is restricted to Comcorpᵉ team members.')
-      setLoading(false)
-      return
-    }
-
-    // Set auth cookie via API route
-    await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: emailLower }),
-    })
-
+  function openDashboard(role: string | undefined) {
     setShowLoadingOverlay(true)
-    
-    // Artificial delay to show the cool loading screen
     setTimeout(() => {
-      router.push('/client/dashboard')
+      router.push(dashboardPathForRole(role))
       router.refresh()
     }, 4500)
   }
 
-  if (showLoadingOverlay) {
-    return <HighTechLoading />
+  // ─── Gate: enforce @comcorpe.com domain ────────────────────────────────────
+  async function enforceComcorpeDomain(user: User) {
+    if (!user.email?.toLowerCase().endsWith(ALLOWED_DOMAIN)) {
+      await signOut(auth)
+      setError('Access is restricted to Comcorpᵉ team members only.')
+      return false
+    }
+    return true
   }
+
+  // ─── Post-auth: verify token server-side, set session cookie, redirect ──────
+  async function finishLogin(user: User) {
+    const emailLower = user.email?.toLowerCase().trim() ?? ''
+    let role = 'client'
+    let matchedDocId: string | null = null
+
+    try {
+      const usersSnap = await getDocs(collection(db, 'users'))
+      const existingDoc = usersSnap.docs.find(d => d.data().email?.toLowerCase() === emailLower)
+      if (existingDoc) {
+        role = existingDoc.data().role ?? 'client'
+        matchedDocId = existingDoc.id
+        // Link Firebase Auth UID to the pre-seeded document
+        await setDoc(doc(db, 'users', matchedDocId), { firebaseUid: user.uid }, { merge: true })
+      }
+    } catch (err) {
+      console.error('Error matching pre-seeded user:', err)
+    }
+
+    if (!matchedDocId) {
+      // Create new user profile document if not pre-seeded
+      const prefix = emailLower.split('@')[0].replace(/[\._]/g, '-')
+      const defaultName = user.displayName || prefix.split('-').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ')
+      await setDoc(doc(db, 'users', prefix), {
+        id: prefix,
+        firebaseUid: user.uid,
+        name: defaultName,
+        email: emailLower,
+        role: 'client', // default new user role
+      })
+    }
+
+    // Set session cookie
+    const idToken = await user.getIdToken()
+    await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken, role }),
+    })
+
+    openDashboard(role)
+  }
+
+  // ─── Google sign-in ─────────────────────────────────────────────────────────
+  async function handleGoogle() {
+    setError('')
+    setLoading('google')
+    try {
+      const result = await signInWithPopup(auth, googleProvider)
+      if (!(await enforceComcorpeDomain(result.user))) return
+      await finishLogin(result.user)
+    } catch (err: unknown) {
+      if ((err as { code?: string }).code !== 'auth/popup-closed-by-user') {
+        setError('Google sign-in failed. Please try again.')
+      }
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  // ─── Microsoft sign-in ──────────────────────────────────────────────────────
+  async function handleMicrosoft() {
+    setError('')
+    setLoading('microsoft')
+    try {
+      const result = await signInWithPopup(auth, microsoftProvider)
+      if (!(await enforceComcorpeDomain(result.user))) return
+      await finishLogin(result.user)
+    } catch (err: unknown) {
+      if ((err as { code?: string }).code !== 'auth/popup-closed-by-user') {
+        setError('Microsoft sign-in failed. Please try again.')
+      }
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  // ─── Email + password sign-in ───────────────────────────────────────────────
+  async function handleEmailPassword(e: React.FormEvent) {
+    e.preventDefault()
+    setError('')
+    const emailLower = email.toLowerCase().trim()
+    if (!emailLower.endsWith(ALLOWED_DOMAIN)) {
+      setError('Access is restricted to Comcorpᵉ team members only.')
+      return
+    }
+    setLoading('email')
+    try {
+      const result = await signInWithEmailAndPassword(auth, emailLower, password)
+      if (!(await enforceComcorpeDomain(result.user))) return
+      await finishLogin(result.user)
+    } catch (err: unknown) {
+      const code = (err as { code?: string }).code
+
+      if (
+        code === 'auth/wrong-password' ||
+        code === 'auth/user-not-found' ||
+        code === 'auth/invalid-credential' ||
+        code === 'auth/invalid-login-credentials'
+      ) {
+        setError('Incorrect email or password.')
+      } else if (code === 'auth/operation-not-allowed') {
+        setError('Email/password sign-in is not enabled in Firebase.')
+      } else if (code === 'auth/too-many-requests') {
+        setError('Too many login attempts. Try again later.')
+      } else if (code) {
+        setError(`Sign-in failed: ${code}`)
+      } else {
+        setError('Sign-in failed. Please try again.')
+      }
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  if (showLoadingOverlay) return <HighTechLoading />
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6">
       <div className="w-full max-w-[400px]">
+
         {/* Logo */}
         <div className="flex justify-center mb-12">
           <Image
@@ -67,11 +210,40 @@ export default function LoginPage() {
             Team access
           </h1>
           <p className="font-text text-sm text-muted-foreground">
-            Sign in with your Comcorpᵉ email address.
+            Sign in with your Comcorpᵉ account.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {/* SSO buttons */}
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={handleGoogle}
+            disabled={loading !== null}
+            className="w-full flex items-center gap-3 px-4 py-3.5 border border-input bg-card font-text text-sm text-foreground hover:bg-card/80 hover:border-foreground/30 transition-colors duration-[120ms] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <GoogleIcon />
+            <span className="flex-1 text-left">{loading === 'google' ? 'Signing in…' : 'Continue with Google'}</span>
+          </button>
+
+          <button
+            onClick={handleMicrosoft}
+            disabled={loading !== null}
+            className="w-full flex items-center gap-3 px-4 py-3.5 border border-input bg-card font-text text-sm text-foreground hover:bg-card/80 hover:border-foreground/30 transition-colors duration-[120ms] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <MicrosoftIcon />
+            <span className="flex-1 text-left">{loading === 'microsoft' ? 'Signing in…' : 'Continue with Microsoft'}</span>
+          </button>
+        </div>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3 my-6">
+          <div className="flex-1 h-px bg-input" />
+          <span className="font-mono text-[11px] text-muted-foreground/60 tracking-eyebrow uppercase">or</span>
+          <div className="flex-1 h-px bg-input" />
+        </div>
+
+        {/* Email + password */}
+        <form onSubmit={handleEmailPassword} className="flex flex-col gap-3">
           <div className="flex flex-col gap-1.5">
             <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">
               Email
@@ -82,26 +254,54 @@ export default function LoginPage() {
               onChange={e => setEmail(e.target.value)}
               placeholder="you@comcorpe.com"
               required
+              autoComplete="email"
               className="w-full px-4 py-3.5 border border-input bg-card font-text text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors duration-[120ms]"
             />
           </div>
 
-          {error && (
-            <p className="font-text text-sm text-red-600 bg-red-50 px-4 py-3 border border-red-200">
-              {error}
-            </p>
-          )}
+          <div className="flex flex-col gap-1.5">
+            <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                autoComplete="current-password"
+                className="w-full px-4 py-3.5 pr-12 border border-input bg-card font-text text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors duration-[120ms]"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(current => !current)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-pressed={showPassword}
+                className="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-muted-foreground hover:text-foreground focus:outline-none focus:text-foreground transition-colors duration-[120ms]"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+          </div>
 
           <button
             type="submit"
-            disabled={loading}
-            className="mt-2 w-full py-4 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms] disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={loading !== null}
+            className="w-full py-3.5 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-white transition-colors duration-[120ms] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Signing in…' : 'Sign in'}
+            {loading === 'email' ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
 
-        <p className="mt-8 font-mono text-[11px] text-muted-foreground/70 text-center tracking-[0.06em]">
+        {/* Error */}
+        {error && (
+          <p className="mt-4 font-text text-sm text-red-600 bg-red-50 px-4 py-3 border border-red-200">
+            {error}
+          </p>
+        )}
+
+        <p className="mt-10 font-mono text-[11px] text-muted-foreground/70 text-center tracking-[0.06em]">
           COMCORP<span className="gradient-e">E</span> · TEAM PORTAL
         </p>
       </div>

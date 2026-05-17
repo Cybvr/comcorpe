@@ -256,10 +256,9 @@ export default function AdminJobsPage() {
   const [localInvoices, setLocalInvoices] = useState<Invoice[]>(seedInvoices)
   const [localPayouts, setLocalPayouts] = useState<Payout[]>(seedPayouts)
 
-  function reload() { setJobs(getJobs()) }
+  async function reload() { setJobs(await getJobs()) }
   useEffect(() => {
-    const frame = requestAnimationFrame(reload)
-    return () => cancelAnimationFrame(frame)
+    reload()
   }, [])
 
   const filtered = jobs
@@ -269,14 +268,14 @@ export default function AdminJobsPage() {
       j.clientId.toLowerCase().includes(search.toLowerCase())
     )
 
-  function handleSave(data: Partial<Job>) {
+  async function handleSave(data: Partial<Job>) {
     if (modal === 'create') {
-      createJob(data as Omit<Job, 'id'>)
+      await createJob(data as Omit<Job, 'id'>)
     } else if (modal && typeof modal === 'object' && 'job' in modal) {
-      updateJob(modal.job.id, data)
+      await updateJob(modal.job.id, data)
     }
     setModal(null)
-    reload()
+    await reload()
   }
 
   function handleUpdateInvoice(id: number, status: InvoiceStatus) {
@@ -287,11 +286,11 @@ export default function AdminJobsPage() {
     setLocalPayouts(prev => prev.map(p => p.id === id ? { ...p, status } : p))
   }
 
-  function confirmDelete() {
+  async function confirmDelete() {
     if (deleteTarget) {
-      deleteJob(deleteTarget.id)
+      await deleteJob(deleteTarget.id)
       setDeleteTarget(null)
-      reload()
+      await reload()
     }
   }
 

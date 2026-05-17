@@ -78,10 +78,9 @@ export default function AdminClientsPage() {
   const [deleteTarget, setDeleteTarget] = useState<User | null>(null)
   const [search, setSearch] = useState('')
 
-  function reload() { setClients(getClients()) }
+  async function reload() { setClients(await getClients()) }
   useEffect(() => {
-    const frame = requestAnimationFrame(reload)
-    return () => cancelAnimationFrame(frame)
+    reload()
   }, [])
 
   const filtered = clients.filter(c =>
@@ -89,21 +88,21 @@ export default function AdminClientsPage() {
     c.id.toLowerCase().includes(search.toLowerCase())
   )
 
-  function handleSave(data: Partial<User>) {
+  async function handleSave(data: Partial<User>) {
     if (modal === 'create') {
-      createClient(data as Omit<User, 'role'>)
+      await createClient(data as Omit<User, 'role'>)
     } else if (modal && typeof modal === 'object') {
-      updateClient((modal as { client: User }).client.id, data)
+      await updateClient((modal as { client: User }).client.id, data)
     }
     setModal(null)
-    reload()
+    await reload()
   }
 
-  function confirmDelete() {
+  async function confirmDelete() {
     if (deleteTarget) {
-      deleteClient(deleteTarget.id)
+      await deleteClient(deleteTarget.id)
       setDeleteTarget(null)
-      reload()
+      await reload()
     }
   }
 
