@@ -1,11 +1,25 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import { RotateCcw, Search as SearchIcon } from 'lucide-react'
 import DashboardPostComposer from '@/components/dashboard/DashboardPostComposer'
 import PostCard from '@/components/dashboard/PostCard'
 import SpaceCard from '@/components/dashboard/SpaceCard'
-import { posts } from '@/lib/posts'
-import { spaces } from '@/lib/spaces'
+import { getPosts, getSpaces } from '@/lib/admin/store'
+import type { Post } from '@/lib/posts'
+import type { Space } from '@/lib/spaces'
 
 export default function CommunityPage() {
+  const [posts, setPosts] = useState<Post[]>([])
+  const [spaces, setSpaces] = useState<Space[]>([])
+
+  useEffect(() => {
+    Promise.all([getPosts(), getSpaces()]).then(([p, s]) => {
+      setPosts(p)
+      setSpaces(s)
+    })
+  }, [])
+
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1120px] mx-auto">
       <div className="mb-8">
@@ -17,8 +31,8 @@ export default function CommunityPage() {
         <section className="flex flex-col gap-4">
           <div className="relative">
             <SearchIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/70" />
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="Search conversations, strategies or talent..."
               className="w-full pl-12 pr-4 py-3 bg-border/40 border border-transparent rounded-xl focus:outline-none focus:border-input transition-all font-text text-[15px]"
             />

@@ -3,6 +3,7 @@ import {
   collection,
   doc,
   getDocs,
+  getDoc,
   setDoc,
   deleteDoc,
   type DocumentData,
@@ -11,6 +12,9 @@ import { db } from '@/lib/firebase'
 import { users, clientUsers, type User } from '@/lib/user'
 import { jobs, type Job } from '@/lib/jobs'
 import { pods as podsSeed, type Pod } from '@/lib/pods'
+import { clientInsights as clientInsightsSeed, growthConsultingHeadlines as headlinesSeed, type ClientInsight, type GrowthHeadline } from '@/lib/client-insights'
+import { posts as postsSeed, type Post } from '@/lib/posts'
+import { spaces as spacesSeed, type Space } from '@/lib/spaces'
 import {
   leadership as leadershipSeed,
   advisors as advisorsSeed,
@@ -120,6 +124,31 @@ export async function deleteJob(id: number): Promise<void> {
 // ─── Pods ─────────────────────────────────────────────────────────────────────
 export async function getPods(): Promise<Pod[]> {
   return readAll<Pod>('pods', podsSeed)
+}
+
+// ─── Client Insights ──────────────────────────────────────────────────────────
+export async function getClientInsights(): Promise<ClientInsight[]> {
+  return readAll<ClientInsight>('clientInsights', clientInsightsSeed)
+}
+
+export async function getGrowthHeadlines(): Promise<GrowthHeadline[]> {
+  try {
+    const snap = await getDoc(doc(db, 'meta', 'growthConsultingHeadlines'))
+    if (!snap.exists()) return headlinesSeed
+    return (snap.data().items as GrowthHeadline[]) ?? headlinesSeed
+  } catch {
+    return headlinesSeed
+  }
+}
+
+// ─── Posts ────────────────────────────────────────────────────────────────────
+export async function getPosts(): Promise<Post[]> {
+  return readAll<Post>('posts', postsSeed)
+}
+
+// ─── Spaces ───────────────────────────────────────────────────────────────────
+export async function getSpaces(): Promise<Space[]> {
+  return readAll<Space>('spaces', spacesSeed)
 }
 
 // ─── System Users ─────────────────────────────────────────────────────────────
