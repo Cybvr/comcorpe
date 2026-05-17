@@ -20,7 +20,7 @@ import GrowthCommunity from '@/components/dashboard/GrowthCommunity'
 import { getTalentProfile } from '@/lib/user'
 import { jobs, type JobStatus, getJobProgress } from '@/lib/jobs'
 import { invoices } from '@/lib/invoices'
-import { currentUser, useCurrentUser } from '@/lib/user'
+import { useCurrentUser } from '@/lib/user-client'
 import ClientDashboardLoading from './loading'
 
 export default function ClientDashboardHome() {

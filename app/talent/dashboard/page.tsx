@@ -18,7 +18,7 @@ import { jobs } from '@/lib/jobs'
 import { topOperators } from '@/lib/operators'
 import { referral } from '@/lib/referrals'
 import { spaces } from '@/lib/spaces'
-import { currentUser, useCurrentUser } from '@/lib/user'
+import { useCurrentUser } from '@/lib/user-client'
 import TalentDashboardLoading from './loading'
 
 type HomeAction = {

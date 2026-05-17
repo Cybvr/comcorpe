@@ -2,7 +2,7 @@
 
 import TalentJobsBoard from '@/components/dashboard/TalentJobsBoard'
 import { jobs } from '@/lib/jobs'
-import { currentUser, useCurrentUser } from '@/lib/user'
+import { useCurrentUser } from '@/lib/user-client'
 
 export default function WorkPage() {
   const { user: currentUser } = useCurrentUser()

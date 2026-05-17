@@ -10,7 +10,7 @@ import {
   Lightbulb, Network, Users, Target,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import { currentUser, useCurrentUser } from '@/lib/user'
+import { useCurrentUser } from '@/lib/user-client'
 
 type DropdownItem = {
   label: string

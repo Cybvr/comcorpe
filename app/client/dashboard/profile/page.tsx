@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { Briefcase, Building2, CreditCard, Mail, Pencil, X } from 'lucide-react'
-import { currentUser, useCurrentUser, updateUserProfile } from '@/lib/user'
+import { useCurrentUser, updateUserProfile } from '@/lib/user-client'
 import { jobs } from '@/lib/jobs'
 import { invoices } from '@/lib/invoices'
 import { useEffect } from 'react'

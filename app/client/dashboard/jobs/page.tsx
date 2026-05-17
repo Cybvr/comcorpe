@@ -4,7 +4,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowUpRight, Briefcase, Clock, MapPin, Plus, CalendarDays, Users, Flag, Banknote } from 'lucide-react'
 import { jobs, getJobProgress } from '@/lib/jobs'
-import { currentUser, useCurrentUser, getClientUser } from '@/lib/user'
+import { getClientUser } from '@/lib/user'
+import { useCurrentUser } from '@/lib/user-client'
 
 const statusStyles = {
   Scoping: 'bg-amber-100 text-amber-700 border-amber-200',

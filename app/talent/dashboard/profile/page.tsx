@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { MapPin, Pencil, Star, X, Zap } from 'lucide-react'
-import { currentUser, useCurrentUser, users, updateUserProfile } from '@/lib/user'
+import { useCurrentUser, updateUserProfile } from '@/lib/user-client'
 import { applications } from '@/lib/applications'
 import { useEffect } from 'react'
 

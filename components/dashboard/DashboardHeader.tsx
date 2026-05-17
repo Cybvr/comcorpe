@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Bell, ChevronDown, LogOut, Menu, Moon, Search, Settings, Shield, Sun, SwitchCamera, User, Sparkles, BrainCircuit, Share2 } from 'lucide-react'
 import Link from 'next/link'
-import { currentUser, useCurrentUser } from '@/lib/user'
+import { useCurrentUser } from '@/lib/user-client'
 import type { DashboardAudience } from './DashboardSidebar'
 
 const searchPlaceholder: Record<DashboardAudience, string> = {

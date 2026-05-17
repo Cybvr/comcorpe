@@ -1,14 +1,3 @@
-import { useEffect, useState } from 'react'
-import { auth, db } from './firebase'
-import { onAuthStateChanged } from 'firebase/auth'
-import { collection, getDocs, doc, setDoc } from 'firebase/firestore'
-
-export async function updateUserProfile(id: string, data: Partial<User>): Promise<void> {
-  const userRef = doc(db, 'users', id)
-  const cleanData = JSON.parse(JSON.stringify(data))
-  await setDoc(userRef, cleanData, { merge: true })
-}
-
 export type UserRole = 'client' | 'talent' | 'admin'
 
 export interface User {
@@ -35,7 +24,44 @@ export interface User {
 }
 
 // ─── Client company users ─────────────────────────────────────────────────────
-export const clientUsers: User[] = []
+export const clientUsers: User[] = [
+  {
+    id: 'volks-bank',
+    name: 'Volks Bank',
+    initials: 'VB',
+    role: 'client',
+    company: 'Volks Bank',
+    clientId: 'volks-bank',
+    credits: 8,
+  },
+  {
+    id: 't-finance',
+    name: 'T-Finance',
+    initials: 'TF',
+    role: 'client',
+    company: 'T-Finance',
+    clientId: 't-finance',
+    credits: 5,
+  },
+  {
+    id: 'gridwell',
+    name: 'Gridwell',
+    initials: 'GW',
+    role: 'client',
+    company: 'Gridwell',
+    clientId: 'gridwell',
+    credits: 4,
+  },
+  {
+    id: 'volta-pay',
+    name: 'Volta Pay',
+    initials: 'VP',
+    role: 'client',
+    company: 'Volta Pay',
+    clientId: 'volta-pay',
+    credits: 3,
+  },
+]
 
 const clientMap = new Map(clientUsers.map(u => [u.id, u]))
 
@@ -79,46 +105,3 @@ export function getTalentProfile(id: string): User {
 
 // Legacy alias so any code referencing talentProfiles still works
 export const talentProfiles = talentUsers
-
-// ─── Dynamic user profile hook ────────────────────────────────────────────────
-export function useCurrentUser() {
-  const [userProfile, setUserProfile] = useState<User>(currentUser)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    return onAuthStateChanged(auth, async (fbUser) => {
-      if (fbUser) {
-        try {
-          const emailLower = fbUser.email?.toLowerCase().trim() ?? ''
-          const usersSnap = await getDocs(collection(db, 'users'))
-          const matched = usersSnap.docs.find(d => d.data().email?.toLowerCase() === emailLower)
-          if (matched) {
-            const data = matched.data()
-            setUserProfile({
-              id: matched.id,
-              name: data.name || fbUser.displayName || 'User',
-              initials: data.initials || (data.name || fbUser.displayName || 'U')
-                .split(' ')
-                .map((n: string) => n.charAt(0))
-                .join('')
-                .toUpperCase()
-                .slice(0, 3),
-              role: data.role || 'client',
-              email: emailLower,
-              company: data.company,
-              clientId: data.clientId || data.id,
-              credits: data.credits ?? 3,
-              assignedJobSlugs: data.assignedJobSlugs || [],
-              image: data.image || fbUser.photoURL || undefined,
-            })
-          }
-        } catch (err) {
-          console.error('Error fetching dynamic user profile:', err)
-        }
-      }
-      setLoading(false)
-    })
-  }, [])
-
-  return { user: userProfile, loading }
-}
