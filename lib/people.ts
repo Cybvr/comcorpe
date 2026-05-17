@@ -1,4 +1,26 @@
-export const leadership = [
+import { collection, getDocs } from 'firebase/firestore'
+import { db } from './firebase'
+
+export interface LeadershipMember {
+  id?: string
+  name: string
+  title: string
+  bio: string
+  tags: string[]
+  linkedin: string
+}
+
+export interface AdvisorMember {
+  id?: string
+  name: string
+  title: string
+  bio: string
+  fullBio: string
+  geo: string
+  linkedin: string
+}
+
+export const leadership: LeadershipMember[] = [
   {
     name: 'Enyi Odigbo',
     title: 'Chairman',
@@ -22,7 +44,7 @@ export const leadership = [
   },
 ]
 
-export const advisors = [
+export const advisors: AdvisorMember[] = [
   {
     name: 'Kristjan Mar Hauksson',
     title: 'Strategic Lead',
@@ -48,3 +70,25 @@ export const advisors = [
     linkedin: '#',
   },
 ]
+
+export async function getLeadership(): Promise<LeadershipMember[]> {
+  try {
+    const snap = await getDocs(collection(db, 'leadership'))
+    if (snap.empty) return leadership
+    return snap.docs.map(d => ({ id: d.id, ...d.data() } as LeadershipMember))
+  } catch (error) {
+    console.error('Error fetching leadership from Firestore:', error)
+    return leadership
+  }
+}
+
+export async function getAdvisors(): Promise<AdvisorMember[]> {
+  try {
+    const snap = await getDocs(collection(db, 'advisors'))
+    if (snap.empty) return advisors
+    return snap.docs.map(d => ({ id: d.id, ...d.data() } as AdvisorMember))
+  } catch (error) {
+    console.error('Error fetching advisors from Firestore:', error)
+    return advisors
+  }
+}

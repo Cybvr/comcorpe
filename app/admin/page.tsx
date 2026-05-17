@@ -1,9 +1,10 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { getTalent, getClients, getJobs } from '@/lib/admin/store'
+import { getTalent, getClients, getJobs, getLeadership, getAdvisors } from '@/lib/admin/store'
 import type { Job } from '@/lib/jobs'
 import type { User } from '@/lib/user'
+import type { LeadershipMember, AdvisorMember } from '@/lib/people'
 import AdminDashboardLoading from './loading'
 
 const STATUS_COLOR: Record<string, string> = {
@@ -18,19 +19,25 @@ export default function AdminOverviewPage() {
   const [talent, setTalent] = useState<User[]>([])
   const [clients, setClients] = useState<User[]>([])
   const [jobs, setJobs] = useState<Job[]>([])
+  const [leadership, setLeadership] = useState<LeadershipMember[]>([])
+  const [advisors, setAdvisors] = useState<AdvisorMember[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     ;(async () => {
       try {
-        const [talentData, clientData, jobData] = await Promise.all([
+        const [talentData, clientData, jobData, leadershipData, advisorsData] = await Promise.all([
           getTalent(),
           getClients(),
           getJobs(),
+          getLeadership(),
+          getAdvisors(),
         ])
         setTalent(talentData)
         setClients(clientData)
         setJobs(jobData)
+        setLeadership(leadershipData)
+        setAdvisors(advisorsData)
       } catch (err) {
         console.error('Error fetching admin overview data:', err)
       } finally {
@@ -45,6 +52,7 @@ export default function AdminOverviewPage() {
 
   const activeJobs = jobs.filter(j => j.status === 'Active').length
   const scopingJobs = jobs.filter(j => j.status === 'Scoping').length
+  const totalPeopleCount = leadership.length + advisors.length
 
   return (
     <div className="space-y-10">
@@ -54,12 +62,13 @@ export default function AdminOverviewPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {[
           { label: 'Talent', value: talent.length, href: '/admin/talent' },
           { label: 'Clients', value: clients.length, href: '/admin/clients' },
           { label: 'Active Jobs', value: activeJobs, href: '/admin/jobs' },
           { label: 'Scoping Jobs', value: scopingJobs, href: '/admin/jobs' },
+          { label: 'People (Team)', value: totalPeopleCount, href: '/admin/people' },
         ].map(stat => (
           <Link
             key={stat.label}
@@ -100,11 +109,12 @@ export default function AdminOverviewPage() {
       </div>
 
       {/* Quick links */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {[
           { href: '/admin/talent/new', label: 'Add talent operator' },
           { href: '/admin/jobs/new', label: 'Post a new job' },
           { href: '/admin/clients/new', label: 'Add a client' },
+          { href: '/admin/people?new=true', label: 'Add team leader/advisor' },
         ].map(link => (
           <Link
             key={link.href}

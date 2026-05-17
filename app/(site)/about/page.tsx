@@ -1,12 +1,31 @@
-import { Metadata } from 'next'
-import { leadership, advisors } from '@/lib/people'
+'use client'
 
-export const metadata: Metadata = {
-  title: 'About Us — Comcorpᵉ',
-  description: 'The people behind Comcorpᵉ — founding leadership and advisory network.',
-}
+import { useEffect, useState } from 'react'
+import { getLeadership, getAdvisors } from '@/lib/people'
+import type { LeadershipMember, AdvisorMember } from '@/lib/people'
 
 export default function AboutPage() {
+  const [leadershipData, setLeadershipData] = useState<LeadershipMember[]>([])
+  const [advisorsData, setAdvisorsData] = useState<AdvisorMember[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const [lData, aData] = await Promise.all([
+          getLeadership(),
+          getAdvisors(),
+        ])
+        setLeadershipData(lData)
+        setAdvisorsData(aData)
+      } catch (err) {
+        console.error('Error fetching about page data:', err)
+      } finally {
+        setLoading(false)
+      }
+    })()
+  }, [])
+
   return (
     <div className="bg-background">
       <div className="px-6 md:px-24 pt-16 md:pt-24 pb-0">
@@ -39,35 +58,60 @@ export default function AboutPage() {
             <span className="font-mono text-xs text-muted-foreground/70 ml-auto">01 / 02</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 border border-foreground">
-            {leadership.map((p, i) => (
-              <div
-                key={i}
-                className={`p-8 md:p-12 flex flex-col gap-6 ${i < leadership.length - 1 ? 'border-b md:border-b-0 md:border-r border-foreground' : ''}`}
-              >
-                <div className="w-full aspect-[4/5] bg-border border border-border flex items-center justify-center group-hover:border-foreground transition-colors duration-300">
-                  <span className="font-mono text-[10px] text-muted-foreground/70 uppercase tracking-widest italic">Portrait Placeholder</span>
-                </div>
-                <div>
-                  <div className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground/70 mb-3">{p.title}</div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="font-display font-black text-[clamp(32px,3.5vw,52px)] leading-tight tracking-h3 text-foreground">{p.name}</div>
-                    {p.linkedin && (
-                      <a href={p.linkedin} target="_blank" rel="noopener noreferrer" className="font-mono text-[11px] tracking-widest uppercase text-primary hover:text-foreground transition-colors">
-                        IN ↗
-                      </a>
-                    )}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 border border-foreground divide-y md:divide-y-0 md:divide-x divide-foreground">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="p-8 md:p-12 flex flex-col gap-6 animate-pulse">
+                  <div className="w-full aspect-[4/5] bg-border border border-border flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-muted-foreground/10" />
+                  </div>
+                  <div className="space-y-3">
+                    <div className="h-3 bg-muted-foreground/10 w-1/3 rounded" />
+                    <div className="h-8 bg-muted-foreground/20 w-3/4 rounded" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="h-4 bg-muted-foreground/10 w-full rounded" />
+                    <div className="h-4 bg-muted-foreground/10 w-full rounded" />
+                    <div className="h-4 bg-muted-foreground/10 w-5/6 rounded" />
+                  </div>
+                  <div className="flex gap-2 pt-4 border-t border-border mt-auto">
+                    <div className="h-7 bg-muted-foreground/10 w-16 rounded border border-border/50" />
+                    <div className="h-7 bg-muted-foreground/10 w-20 rounded border border-border/50" />
                   </div>
                 </div>
-                <p className="font-text text-[17px] leading-relaxed text-muted-foreground m-0 max-w-[32ch]">{p.bio}</p>
-                <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-border">
-                  {p.tags.map(t => (
-                    <span key={t} className="font-mono text-[11px] tracking-[0.06em] uppercase text-foreground px-2.5 py-1.5 border border-input">{t}</span>
-                  ))}
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 border border-foreground">
+              {leadershipData.map((p, i) => (
+                <div
+                  key={i}
+                  className={`p-8 md:p-12 flex flex-col gap-6 ${i < leadershipData.length - 1 ? 'border-b md:border-b-0 md:border-r border-foreground' : ''}`}
+                >
+                  <div className="w-full aspect-[4/5] bg-border border border-border flex items-center justify-center group-hover:border-foreground transition-colors duration-300">
+                    <span className="font-mono text-[10px] text-muted-foreground/70 uppercase tracking-widest italic">Portrait Placeholder</span>
+                  </div>
+                  <div>
+                    <div className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground/70 mb-3">{p.title}</div>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="font-display font-black text-[clamp(32px,3.5vw,52px)] leading-tight tracking-h3 text-foreground">{p.name}</div>
+                      {p.linkedin && (
+                        <a href={p.linkedin} target="_blank" rel="noopener noreferrer" className="font-mono text-[11px] tracking-widest uppercase text-primary hover:text-foreground transition-colors">
+                          IN ↗
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                  <p className="font-text text-[17px] leading-relaxed text-muted-foreground m-0 max-w-[32ch]">{p.bio}</p>
+                  <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-border">
+                    {p.tags?.map(t => (
+                      <span key={t} className="font-mono text-[11px] tracking-[0.06em] uppercase text-foreground px-2.5 py-1.5 border border-input">{t}</span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Advisory Network */}
@@ -85,38 +129,61 @@ export default function AboutPage() {
             Deep technical expertise combined with strategic leadership in global markets.
           </p>
 
-          <div className="grid grid-cols-1 gap-px bg-foreground border border-foreground">
-            {advisors.map((m, i) => (
-              <div
-                key={i}
-                className="grid grid-cols-1 md:grid-cols-[200px_1fr] lg:grid-cols-[200px_1.5fr_2.5fr] gap-8 lg:gap-16 px-8 md:px-12 py-10 md:py-14 bg-background"
-              >
-                <div className="w-full aspect-square md:aspect-[4/5] bg-border border border-border flex items-center justify-center group-hover:border-foreground transition-colors duration-300">
-                  <span className="font-mono text-[10px] text-muted-foreground/70 uppercase tracking-widest italic">Portrait</span>
-                </div>
-                <div>
-                  <div className="font-mono text-[11px] tracking-eyebrow uppercase text-primary mb-4 flex items-center gap-2">
-                    <span className="w-2 h-2 bg-primary rounded-full" />
-                    {m.geo}
+          {loading ? (
+            <div className="border border-foreground divide-y divide-foreground bg-background">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="grid grid-cols-1 md:grid-cols-[200px_1fr] lg:grid-cols-[200px_1.5fr_2.5fr] gap-8 lg:gap-16 px-8 md:px-12 py-10 md:py-14 animate-pulse"
+                >
+                  <div className="w-full aspect-square md:aspect-[4/5] bg-border border border-border" />
+                  <div className="space-y-4">
+                    <div className="h-4 bg-muted-foreground/10 w-1/4 rounded" />
+                    <div className="h-10 bg-muted-foreground/20 w-3/4 rounded" />
+                    <div className="h-4 bg-muted-foreground/10 w-1/2 rounded" />
                   </div>
-                  <div className="flex items-center gap-4 mb-2">
-                    <div className="font-display font-black text-[clamp(28px,3vw,42px)] leading-tight tracking-h3 text-foreground">{m.name}</div>
-                    {m.linkedin && (
-                      <a href={m.linkedin} target="_blank" rel="noopener noreferrer" className="font-mono text-[11px] tracking-widest uppercase text-primary hover:text-foreground transition-colors mt-1">
-                        IN ↗
-                      </a>
-                    )}
+                  <div className="space-y-2">
+                    <div className="h-4 bg-muted-foreground/10 w-full rounded" />
+                    <div className="h-4 bg-muted-foreground/10 w-full rounded" />
+                    <div className="h-4 bg-muted-foreground/10 w-2/3 rounded" />
                   </div>
-                  <div className="font-mono text-[12px] tracking-widest uppercase text-muted-foreground/70">{m.title}</div>
                 </div>
-                <div className="font-text text-[16px] leading-relaxed text-muted-foreground space-y-4 max-w-[72ch]">
-                  {m.fullBio.split('\n\n').map((paragraph, pIndex) => (
-                    <p key={pIndex}>{paragraph}</p>
-                  ))}
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-px bg-foreground border border-foreground">
+              {advisorsData.map((m, i) => (
+                <div
+                  key={i}
+                  className="grid grid-cols-1 md:grid-cols-[200px_1fr] lg:grid-cols-[200px_1.5fr_2.5fr] gap-8 lg:gap-16 px-8 md:px-12 py-10 md:py-14 bg-background"
+                >
+                  <div className="w-full aspect-square md:aspect-[4/5] bg-border border border-border flex items-center justify-center group-hover:border-foreground transition-colors duration-300">
+                    <span className="font-mono text-[10px] text-muted-foreground/70 uppercase tracking-widest italic">Portrait</span>
+                  </div>
+                  <div>
+                    <div className="font-mono text-[11px] tracking-eyebrow uppercase text-primary mb-4 flex items-center gap-2">
+                      <span className="w-2 h-2 bg-primary rounded-full" />
+                      {m.geo}
+                    </div>
+                    <div className="flex items-center gap-4 mb-2">
+                      <div className="font-display font-black text-[clamp(28px,3vw,42px)] leading-tight tracking-h3 text-foreground">{m.name}</div>
+                      {m.linkedin && (
+                        <a href={m.linkedin} target="_blank" rel="noopener noreferrer" className="font-mono text-[11px] tracking-widest uppercase text-primary hover:text-foreground transition-colors mt-1">
+                          IN ↗
+                        </a>
+                      )}
+                    </div>
+                    <div className="font-mono text-[12px] tracking-widest uppercase text-muted-foreground/70">{m.title}</div>
+                  </div>
+                  <div className="font-text text-[16px] leading-relaxed text-muted-foreground space-y-4 max-w-[72ch]">
+                    {m.fullBio?.split('\n\n').map((paragraph, pIndex) => (
+                      <p key={pIndex}>{paragraph}</p>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
       </div>

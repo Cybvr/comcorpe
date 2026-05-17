@@ -10,6 +10,12 @@ import {
 import { db } from '@/lib/firebase'
 import { users, clientUsers, type User } from '@/lib/user'
 import { jobs, type Job } from '@/lib/jobs'
+import {
+  leadership as leadershipSeed,
+  advisors as advisorsSeed,
+  type LeadershipMember,
+  type AdvisorMember,
+} from '@/lib/people'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 /** Strip undefined values before writing to Firestore */
@@ -131,3 +137,48 @@ export async function updateSystemUser(id: string, data: Partial<User>): Promise
 export async function deleteSystemUser(id: string): Promise<void> {
   await remove('users', id)
 }
+
+// ─── Leadership ────────────────────────────────────────────────────────────────
+export async function getLeadership(): Promise<LeadershipMember[]> {
+  return readAll<LeadershipMember>('leadership', leadershipSeed)
+}
+
+export async function createLeadership(data: Omit<LeadershipMember, 'id'>): Promise<LeadershipMember> {
+  const id = data.name.toLowerCase().replace(/\s+/g, '-')
+  const record: LeadershipMember = { ...data, id }
+  await upsert('leadership', id, record)
+  return record
+}
+
+export async function updateLeadership(id: string, data: Partial<LeadershipMember>): Promise<void> {
+  const all = await getLeadership()
+  const existing = all.find(m => m.id === id) ?? {}
+  await upsert('leadership', id, { ...existing, ...data })
+}
+
+export async function deleteLeadership(id: string): Promise<void> {
+  await remove('leadership', id)
+}
+
+// ─── Advisors ──────────────────────────────────────────────────────────────────
+export async function getAdvisors(): Promise<AdvisorMember[]> {
+  return readAll<AdvisorMember>('advisors', advisorsSeed)
+}
+
+export async function createAdvisor(data: Omit<AdvisorMember, 'id'>): Promise<AdvisorMember> {
+  const id = data.name.toLowerCase().replace(/\s+/g, '-')
+  const record: AdvisorMember = { ...data, id }
+  await upsert('advisors', id, record)
+  return record
+}
+
+export async function updateAdvisor(id: string, data: Partial<AdvisorMember>): Promise<void> {
+  const all = await getAdvisors()
+  const existing = all.find(m => m.id === id) ?? {}
+  await upsert('advisors', id, { ...existing, ...data })
+}
+
+export async function deleteAdvisor(id: string): Promise<void> {
+  await remove('advisors', id)
+}
+
