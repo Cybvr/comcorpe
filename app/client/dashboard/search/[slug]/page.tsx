@@ -1,43 +1,49 @@
+'use client'
+
+import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { notFound } from 'next/navigation'
+import { notFound, useSearchParams } from 'next/navigation'
 import { ArrowLeft, ArrowUpRight, CheckCircle2, DollarSign, Globe2, Layers3, Users } from 'lucide-react'
-import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
-import { getTalentProfile } from '@/lib/user'
+import { getPods, getTalent } from '@/lib/admin/store'
+import { type Pod } from '@/lib/pods'
+import { type User } from '@/lib/user'
 
-export function generateStaticParams() {
-  return pods.map((pod) => ({
-    slug: pod.slug,
-  }))
-}
-
-function getBackHref(value: string | string[] | undefined) {
-  const href = Array.isArray(value) ? value[0] : value
-  if (!href || !href.startsWith('/') || href.startsWith('//')) {
+function getBackHref(value: string | null) {
+  if (!value || !value.startsWith('/') || value.startsWith('//')) {
     return '/client/dashboard/search'
   }
-
-  return href
+  return value
 }
 
-export default async function TalentPodDetailPage({
+export default function TalentPodDetailPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ slug: string }>
-  searchParams: Promise<{ returnTo?: string | string[] | undefined }>
 }) {
-  const { slug } = await params
-  const { returnTo } = await searchParams
-  const pod = getPodBySlug(slug)
+  const { slug } = use(params)
+  const searchParams = useSearchParams()
+  const backHref = getBackHref(searchParams.get('returnTo'))
 
-  if (!pod) {
-    notFound()
-  }
+  const [pod, setPod] = useState<Pod | null | undefined>(undefined)
+  const [members, setMembers] = useState<User[]>([])
+  const [lead, setLead] = useState<User | null>(null)
 
-  const members = getPodMembers(pod)
-  const lead = getTalentProfile(pod.leadId)
-  const backHref = getBackHref(returnTo)
+  useEffect(() => {
+    Promise.all([getPods(), getTalent()]).then(([pods, talent]) => {
+      const found = pods.find(p => p.slug === slug) ?? null
+      setPod(found)
+      if (found) {
+        setMembers(found.memberIds.map(id => talent.find(t => t.id === id)).filter((t): t is User => t !== undefined))
+        setLead(talent.find(t => t.id === found.leadId) ?? null)
+      }
+    })
+  }, [slug])
+
+  if (pod === undefined) return null
+  if (!pod) notFound()
+
+  const fallbackLead: User = lead ?? { id: pod.leadId, name: pod.leadId, initials: pod.leadId.slice(0, 2).toUpperCase(), role: 'talent' }
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">
@@ -50,10 +56,10 @@ export default async function TalentPodDetailPage({
           <div className="flex items-start justify-between gap-6">
             <div className="flex items-start gap-4">
               <div className="w-14 h-14 rounded-xl bg-foreground flex items-center justify-center border border-border overflow-hidden relative shrink-0">
-                {lead.image ? (
-                  <Image src={lead.image} alt={lead.name} fill className="object-cover" />
+                {fallbackLead.image ? (
+                  <Image src={fallbackLead.image} alt={fallbackLead.name} fill className="object-cover" />
                 ) : (
-                  <span className="font-display font-black text-[15px] text-background">{lead.initials}</span>
+                  <span className="font-display font-black text-[15px] text-background">{fallbackLead.initials}</span>
                 )}
               </div>
               <div>
@@ -71,7 +77,7 @@ export default async function TalentPodDetailPage({
             <div className="border border-border rounded-xl p-4">
               <Users size={16} strokeWidth={1.5} className="text-primary mb-3" />
               <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Lead</p>
-              <div className="font-display font-black text-[17px] tracking-[-0.01em] text-foreground leading-tight">{lead.name}</div>
+              <div className="font-display font-black text-[17px] tracking-[-0.01em] text-foreground leading-tight">{fallbackLead.name}</div>
             </div>
             <div className="border border-border rounded-xl p-4">
               <Layers3 size={16} strokeWidth={1.5} className="text-primary mb-3" />
@@ -95,8 +101,8 @@ export default async function TalentPodDetailPage({
               <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-foreground mb-4">Pod composition</h2>
               <div className="flex flex-col gap-2">
                 {members.map((member) => (
-                  <Link 
-                    key={member.id} 
+                  <Link
+                    key={member.id}
                     href={`/client/dashboard/search/talent/${member.id}`}
                     className="border border-border rounded-lg p-3 flex items-center gap-3 font-text text-sm text-muted-foreground bg-border/10 hover:border-input transition-colors group"
                   >

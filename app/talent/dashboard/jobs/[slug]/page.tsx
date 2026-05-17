@@ -1,15 +1,16 @@
 'use client'
 
-import { useState, use } from 'react'
+import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Briefcase, Clock, MapPin, Target, LayoutDashboard, Users2, CreditCard } from 'lucide-react'
-import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
-import { getTalentProfile, getClientUser } from '@/lib/user'
-import { jobs, getJobBySlug, getJobProgress } from '@/lib/jobs'
+import { getClientUser, type User } from '@/lib/user'
+import { getJobProgress, type Job } from '@/lib/jobs'
+import { type Pod } from '@/lib/pods'
 import { getInvoice } from '@/lib/invoices'
 import { payouts } from '@/lib/payouts'
+import { getJobs, getPods, getTalent } from '@/lib/admin/store'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -27,14 +28,25 @@ export default function TalentJobDetailPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = use(params)
-  const job = getJobBySlug(slug)
+  const [job, setJob] = useState<Job | null | undefined>(undefined)
+  const [loadedPods, setLoadedPods] = useState<Pod[]>([])
+  const [loadedTalent, setLoadedTalent] = useState<User[]>([])
 
-  if (!job) {
-    notFound()
-  }
+  useEffect(() => {
+    Promise.all([getJobs(), getPods(), getTalent()]).then(([jobs, pods, talent]) => {
+      setJob(jobs.find(j => j.slug === slug) ?? null)
+      setLoadedPods(pods)
+      setLoadedTalent(talent)
+    })
+  }, [slug])
 
-  const assignedPod = job.podSlug ? getPodBySlug(job.podSlug) : null
-  const assignedPodMembers = assignedPod ? getPodMembers(assignedPod) : []
+  if (job === undefined) return null
+  if (!job) notFound()
+
+  const assignedPod = job.podSlug ? (loadedPods.find(p => p.slug === job.podSlug) ?? null) : null
+  const assignedPodMembers = assignedPod
+    ? assignedPod.memberIds.map(id => loadedTalent.find(t => t.id === id)).filter((t): t is User => t !== undefined)
+    : []
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">
