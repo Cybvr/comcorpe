@@ -29,7 +29,7 @@ type NavItem = {
 export default function Nav() {
   const pathname = usePathname()
   const router = useRouter()
-  const { user: currentUser, isAuthenticated } = useCurrentUser()
+  const { user: currentUser, isAuthenticated, loading: authLoading } = useCurrentUser()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
@@ -193,13 +193,17 @@ export default function Nav() {
           >
             {darkMode ? <Sun size={15} strokeWidth={1.5} /> : <Moon size={15} strokeWidth={1.5} />}
           </button>
-          <Link
-            href={accountHref}
-            className="font-text text-[13px] font-semibold px-[16px] py-[9px] rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms] inline-flex items-center gap-1.5"
-          >
-            {isAuthenticated && <LayoutDashboard size={14} strokeWidth={1.6} />}
-            {accountLabel}
-          </Link>
+          {authLoading ? (
+            <span className="w-[90px] h-[36px] rounded-full bg-border/50 animate-pulse inline-block" />
+          ) : (
+            <Link
+              href={accountHref}
+              className="font-text text-[13px] font-semibold px-[16px] py-[9px] rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms] inline-flex items-center gap-1.5"
+            >
+              {isAuthenticated && <LayoutDashboard size={14} strokeWidth={1.6} />}
+              {accountLabel}
+            </Link>
+          )}
           <Link
             href="/book"
             className="font-text text-[13px] font-semibold px-[18px] py-[10px] rounded-full bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
@@ -217,13 +221,17 @@ export default function Nav() {
           >
             {darkMode ? <Sun size={15} strokeWidth={1.5} /> : <Moon size={15} strokeWidth={1.5} />}
           </button>
-          <Link
-            href={accountHref}
-            aria-label={accountLabel}
-            className={`${isAuthenticated ? 'w-8 px-0' : 'px-3'} h-8 flex items-center justify-center rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms] font-text text-[12px] font-semibold`}
-          >
-            {isAuthenticated ? <LayoutDashboard size={15} strokeWidth={1.6} /> : accountLabel}
-          </Link>
+          {authLoading ? (
+            <span className="w-8 h-8 rounded-full bg-border/50 animate-pulse inline-block" />
+          ) : (
+            <Link
+              href={accountHref}
+              aria-label={accountLabel}
+              className={`${isAuthenticated ? 'w-8 px-0' : 'px-3'} h-8 flex items-center justify-center rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms] font-text text-[12px] font-semibold`}
+            >
+              {isAuthenticated ? <LayoutDashboard size={15} strokeWidth={1.6} /> : accountLabel}
+            </Link>
+          )}
           <Link
             href="/book"
             aria-label="Book a session call"
