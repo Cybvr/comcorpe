@@ -10,6 +10,7 @@ import {
 import { db } from '@/lib/firebase'
 import { users, clientUsers, type User } from '@/lib/user'
 import { jobs, type Job } from '@/lib/jobs'
+import { pods as podsSeed, type Pod } from '@/lib/pods'
 import {
   leadership as leadershipSeed,
   advisors as advisorsSeed,
@@ -114,6 +115,11 @@ export async function deleteJob(id: number): Promise<void> {
   const existing = all.find(j => j.id === id)
   if (!existing) return
   await remove('jobs', existing.slug)
+}
+
+// ─── Pods ─────────────────────────────────────────────────────────────────────
+export async function getPods(): Promise<Pod[]> {
+  return readAll<Pod>('pods', podsSeed)
 }
 
 // ─── System Users ─────────────────────────────────────────────────────────────
