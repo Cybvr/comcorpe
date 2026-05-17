@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, use } from 'react'
+import { useState, use, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound, usePathname, useSearchParams } from 'next/navigation'
@@ -27,7 +27,8 @@ import {
 } from 'lucide-react'
 import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
 import { getTalentProfile } from '@/lib/user'
-import { jobs, getJobBySlug, getJobProgress } from '@/lib/jobs'
+import { getJobProgress } from '@/lib/jobs'
+import { useJobBySlug } from '@/lib/jobs-client'
 import { updateJob } from '@/lib/admin/store'
 import { invoices, getInvoice } from '@/lib/invoices'
 import { contractTerms } from '@/lib/contract'
@@ -56,7 +57,30 @@ export default function JobDetailPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = use(params)
-  const job = getJobBySlug(slug)
+  const { job, loading } = useJobBySlug(slug)
+
+  const [jobStatus, setJobStatus] = useState('Scoping')
+  const [confirmCancel, setConfirmCancel] = useState(false)
+  const [localMilestones, setLocalMilestones] = useState<any[]>([])
+
+  const [chatQuery, setChatQuery] = useState('')
+  const [isAsking, setIsAsking] = useState(false)
+  const [chatHistory, setChatHistory] = useState<{role: 'user' | 'assistant', content: string}[]>([])
+
+  useEffect(() => {
+    if (job) {
+      setJobStatus(job.status)
+      setLocalMilestones(job.milestones || [])
+    }
+  }, [job])
+
+  if (loading) {
+    return (
+      <div className="px-4 py-16 text-center max-w-[1040px] mx-auto">
+        <p className="font-mono text-sm text-muted-foreground animate-pulse">Loading engagement details from Firestore...</p>
+      </div>
+    )
+  }
 
   if (!job) {
     notFound()
@@ -82,9 +106,6 @@ export default function JobDetailPage({
     return query ? `${pathname}?${query}` : pathname
   }
 
-  const [jobStatus, setJobStatus] = useState(job.status)
-  const [confirmCancel, setConfirmCancel] = useState(false)
-
   const handlePause = async () => {
     await updateJob(job.id, { status: 'Paused' })
     setJobStatus('Paused')
@@ -102,14 +123,10 @@ export default function JobDetailPage({
   }
 
   // Local state for milestones
-  const [localMilestones, setLocalMilestones] = useState(job.milestones || [])
   const [isAddingMilestone, setIsAddingMilestone] = useState(false)
   const [newMilestone, setNewMilestone] = useState({ title: '', date: '', amount: '' })
 
   // Knowledge Tab States
-  const [chatQuery, setChatQuery] = useState('')
-  const [isAsking, setIsAsking] = useState(false)
-  const [chatHistory, setChatHistory] = useState<{role: 'user' | 'assistant', content: string}[]>([])
   const [uploadedFiles, setUploadedFiles] = useState([
     { name: 'Technical_Requirements_V1.pdf', size: '2.4MB', date: '2 days ago' },
     { name: 'Brand_Guidelines_2025.pdf', size: '1.8MB', date: '5 days ago' }

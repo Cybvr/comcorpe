@@ -1,12 +1,11 @@
 'use client'
 
-import { useState, useEffect, use } from 'react'
+import { use } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { ArrowUpRight, CheckCircle2, DollarSign, Globe2, Layers3, MapPin, ShieldCheck, Star } from 'lucide-react'
-import { getTalent } from '@/lib/admin/store'
-import { type User } from '@/lib/user'
+import { useUser } from '@/lib/user-client'
 import BackButton from '@/components/dashboard/BackButton'
 
 export default function ClientDashboardTalentDetailPage({
@@ -15,16 +14,19 @@ export default function ClientDashboardTalentDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
-  const [profile, setProfile] = useState<User | null | undefined>(undefined)
+  const { user: profile, loading } = useUser(id)
 
-  useEffect(() => {
-    getTalent().then(talent => {
-      setProfile(talent.find(t => t.id === id) ?? null)
-    })
-  }, [id])
+  if (loading) {
+    return (
+      <div className="px-4 py-16 text-center max-w-[1040px] mx-auto">
+        <p className="font-mono text-sm text-muted-foreground animate-pulse">Loading operator details from Firestore...</p>
+      </div>
+    )
+  }
 
-  if (profile === undefined) return null
-  if (!profile) notFound()
+  if (!profile) {
+    notFound()
+  }
 
   const talentTitle = profile.talentRole ?? profile.role
 

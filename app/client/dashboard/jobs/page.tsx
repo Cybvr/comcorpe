@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowUpRight, Briefcase, Clock, MapPin, Plus, CalendarDays, Users, Flag, Banknote } from 'lucide-react'
-import { jobs, getJobProgress } from '@/lib/jobs'
+import { getJobProgress } from '@/lib/jobs'
+import { useJobs } from '@/lib/jobs-client'
 import { getClientUser } from '@/lib/user'
 import { useCurrentUser } from '@/lib/user-client'
 
@@ -15,11 +16,12 @@ const statusStyles = {
 }
 
 export default function JobsPage() {
-  const { user: currentUser, loading } = useCurrentUser()
+  const { user: currentUser, loading: userLoading } = useCurrentUser()
+  const { jobs, loading: jobsLoading } = useJobs()
   const [filter, setFilter] = useState<'all' | 'active'>('all')
   const [view, setView] = useState<'grid' | 'list'>('grid')
 
-  if (loading || !currentUser) {
+  if (userLoading || jobsLoading || !currentUser) {
     return (
       <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1240px] mx-auto">
         <p className="font-text text-sm text-muted-foreground">Loading jobs...</p>

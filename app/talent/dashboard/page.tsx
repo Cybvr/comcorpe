@@ -14,7 +14,7 @@ import JobCard from '@/components/dashboard/JobCard'
 import OperatorCard from '@/components/dashboard/OperatorCard'
 import GrowthCommunity from '@/components/dashboard/GrowthCommunity'
 import SpaceCard from '@/components/dashboard/SpaceCard'
-import { jobs } from '@/lib/jobs'
+import { useJobs } from '@/lib/jobs-client'
 import { topOperators } from '@/lib/operators'
 import { referral } from '@/lib/referrals'
 import { spaces } from '@/lib/spaces'
@@ -50,9 +50,10 @@ const homeActions: HomeAction[] = [
 ]
 
 export default function DashboardPage() {
-  const { user: currentUser, loading } = useCurrentUser()
+  const { user: currentUser, loading: userLoading } = useCurrentUser()
+  const { jobs, loading: jobsLoading } = useJobs()
 
-  if (loading || !currentUser) {
+  if (userLoading || jobsLoading || !currentUser) {
     return <TalentDashboardLoading />
   }
 

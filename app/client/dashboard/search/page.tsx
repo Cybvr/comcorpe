@@ -4,10 +4,10 @@ import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, DollarSign, Layers3, MapPin, Plus, Search, Users, X, Sparkles, BrainCircuit } from 'lucide-react'
-import type { Pod } from '@/lib/pods'
-import type { Job } from '@/lib/jobs'
-import { getClientUser, type User } from '@/lib/user'
-import { getTalent, getJobs, getPods } from '@/lib/admin/store'
+import { pods } from '@/lib/pods'
+import { useJobs } from '@/lib/jobs-client'
+import { getTalentProfile, getClientUser } from '@/lib/user'
+import { useUsers } from '@/lib/user-client'
 
 type DiscoverTab = 'all' | 'pods' | 'build'
 
@@ -138,6 +138,9 @@ function FilterDropdown({
 }
 
 export default function DiscoverPage() {
+  const { jobs } = useJobs()
+  const { users } = useUsers()
+  const talentProfiles = users.filter(u => u.role === 'talent')
   const [activeTab, setActiveTab] = useState<DiscoverTab>('all')
   const [activePage, setActivePage] = useState(1)
   const [searchQuery, setSearchQuery] = useState('')
@@ -153,22 +156,7 @@ export default function DiscoverPage() {
     })
   }
 
-  const [loadedTalent, setLoadedTalent] = useState<User[]>([])
-  const [loadedPods, setLoadedPods] = useState<Pod[]>([])
-  const [loadedJobs, setLoadedJobs] = useState<Job[]>([])
-
-  useEffect(() => {
-    Promise.all([getTalent(), getPods(), getJobs()]).then(([talent, pods, jobs]) => {
-      setLoadedTalent(talent)
-      setLoadedPods(pods)
-      setLoadedJobs(jobs)
-    })
-  }, [])
-
-  const selectedProfiles = loadedTalent.filter(p => selectedIds.has(p.id))
-
-  const profileLookup = (id: string): User =>
-    loadedTalent.find(t => t.id === id) ?? { id, name: id, initials: id.slice(0, 2).toUpperCase(), role: 'talent' }
+  const selectedProfiles = talentProfiles.filter(p => selectedIds.has(p.id))
 
   // Filter states
   const [marketFilter, setMarketFilter] = useState('All')
@@ -178,7 +166,7 @@ export default function DiscoverPage() {
   const pageSize = pageSizes[activeTab]
   
   // Filtering logic
-  const filteredPods = loadedPods.filter(p => {
+  const filteredPods = pods.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          p.focus.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesMarket = marketFilter === 'All' || p.markets.some(m => m.includes(marketFilter))
@@ -188,7 +176,7 @@ export default function DiscoverPage() {
     return matchesSearch && matchesMarket && matchesExpertise && matchesBudget
   })
   
-  const filteredTalent = loadedTalent.filter(t => {
+  const filteredTalent = talentProfiles.filter(t => {
     const talentTitle = getTalentTitle(t)
     const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          talentTitle.toLowerCase().includes(searchQuery.toLowerCase())
@@ -311,7 +299,7 @@ export default function DiscoverPage() {
       ) : activeTab === 'pods' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {visiblePods.map((pod) => {
-            const lead = profileLookup(pod.leadId)
+            const lead = getTalentProfile(pod.leadId)
             return (
               <Link
                 key={pod.id}
@@ -327,7 +315,7 @@ export default function DiscoverPage() {
 
                 <div className="grid grid-cols-2 gap-2 mb-8">
                   {pod.memberIds.slice(0, 4).map((memberId, i) => {
-                    const profile = profileLookup(memberId)
+                    const profile = getTalentProfile(memberId)
                     return (
                       <div
                         key={memberId}
@@ -483,8 +471,7 @@ export default function DiscoverPage() {
           memberIds={[...selectedIds]}
           onRemove={(id) => toggleSelect(id)}
           onAddMore={() => selectTab('all')}
-          openBriefs={loadedJobs.filter(j => j.status !== 'Completed')}
-          profileLookup={profileLookup}
+          openBriefs={jobs.filter(j => j.status !== 'Completed')}
         />
       )}
     </div>
@@ -496,19 +483,17 @@ function BuildTab({
   onRemove,
   onAddMore,
   openBriefs,
-  profileLookup,
 }: {
   memberIds: string[]
   onRemove: (id: string) => void
   onAddMore: () => void
-  openBriefs: Job[]
-  profileLookup: (id: string) => User
+  openBriefs: import('@/lib/jobs').Job[]
 }) {
   const [podName, setPodName] = useState('')
   const [briefSlug, setBriefSlug] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
-  const members = memberIds.map(id => profileLookup(id)).filter(Boolean)
+  const members = memberIds.map(id => { try { return getTalentProfile(id) } catch { return null } }).filter(Boolean)
 
   if (submitted) {
     return (

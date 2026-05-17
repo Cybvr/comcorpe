@@ -1,16 +1,16 @@
 'use client'
 
-import { useState, useEffect, use } from 'react'
+import { useState, use } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Briefcase, Clock, MapPin, Target, LayoutDashboard, Users2, CreditCard } from 'lucide-react'
-import { getClientUser, type User } from '@/lib/user'
-import { getJobProgress, type Job } from '@/lib/jobs'
-import { type Pod } from '@/lib/pods'
+import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
+import { getTalentProfile, getClientUser } from '@/lib/user'
+import { getJobProgress } from '@/lib/jobs'
+import { useJobBySlug } from '@/lib/jobs-client'
 import { getInvoice } from '@/lib/invoices'
 import { payouts } from '@/lib/payouts'
-import { getJobs, getPods, getTalent } from '@/lib/admin/store'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -28,25 +28,18 @@ export default function TalentJobDetailPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = use(params)
-  const [job, setJob] = useState<Job | null | undefined>(undefined)
-  const [loadedPods, setLoadedPods] = useState<Pod[]>([])
-  const [loadedTalent, setLoadedTalent] = useState<User[]>([])
+  const { job, loading } = useJobBySlug(slug)
 
-  useEffect(() => {
-    Promise.all([getJobs(), getPods(), getTalent()]).then(([jobs, pods, talent]) => {
-      setJob(jobs.find(j => j.slug === slug) ?? null)
-      setLoadedPods(pods)
-      setLoadedTalent(talent)
-    })
-  }, [slug])
+  if (loading) {
+    return <div className="p-8 text-center text-sm font-mono text-muted-foreground animate-pulse">Loading job details from Firestore...</div>
+  }
 
-  if (job === undefined) return null
-  if (!job) notFound()
+  if (!job) {
+    notFound()
+  }
 
-  const assignedPod = job.podSlug ? (loadedPods.find(p => p.slug === job.podSlug) ?? null) : null
-  const assignedPodMembers = assignedPod
-    ? assignedPod.memberIds.map(id => loadedTalent.find(t => t.id === id)).filter((t): t is User => t !== undefined)
-    : []
+  const assignedPod = job.podSlug ? getPodBySlug(job.podSlug) : null
+  const assignedPodMembers = assignedPod ? getPodMembers(assignedPod) : []
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">

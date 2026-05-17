@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Search } from 'lucide-react'
 import { invoices, type InvoiceStatus } from '@/lib/invoices'
-import { jobs } from '@/lib/jobs'
+import { useJobs } from '@/lib/jobs-client'
 import { getPodBySlug } from '@/lib/pods'
 import { useCurrentUser } from '@/lib/user-client'
 
@@ -15,10 +15,11 @@ const statusStyles: Record<InvoiceStatus, string> = {
 }
 
 export default function ClientBillingPage() {
-  const { user: currentUser, loading } = useCurrentUser()
+  const { user: currentUser, loading: userLoading } = useCurrentUser()
+  const { jobs, loading: jobsLoading } = useJobs()
   const [search, setSearch] = useState('')
 
-  if (loading || !currentUser) {
+  if (userLoading || jobsLoading || !currentUser) {
     return (
       <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1100px] mx-auto">
         <p className="font-text text-sm text-muted-foreground">Loading billing...</p>

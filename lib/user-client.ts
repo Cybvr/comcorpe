@@ -87,3 +87,62 @@ export function useCurrentUser() {
 
   return { user: userProfile, loading, isAuthenticated }
 }
+
+import { onSnapshot } from 'firebase/firestore'
+
+export function useUsers() {
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(db, 'users'),
+      (snapshot) => {
+        const usersList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        }) as User)
+        setUsers(usersList)
+        setLoading(false)
+      },
+      (err) => {
+        console.error('Error fetching users:', err)
+        setLoading(false)
+      }
+    )
+
+    return () => unsubscribe()
+  }, [])
+
+  return { users, loading }
+}
+
+export function useUser(id: string) {
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!id) return
+
+    const unsubscribe = onSnapshot(
+      doc(db, 'users', id),
+      (docSnap) => {
+        if (docSnap.exists()) {
+          setUser({ id: docSnap.id, ...docSnap.data() } as User)
+        } else {
+          setUser(null)
+        }
+        setLoading(false)
+      },
+      (err) => {
+        console.error('Error fetching user:', err)
+        setUser(null)
+        setLoading(false)
+      }
+    )
+
+    return () => unsubscribe()
+  }, [id])
+
+  return { user, loading }
+}

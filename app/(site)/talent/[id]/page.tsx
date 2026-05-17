@@ -1,22 +1,13 @@
+'use client'
+
+import { use } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { talentProfiles, getTalentProfile } from '@/lib/user'
+import { useUsers } from '@/lib/user-client'
 import { ArrowLeft, MapPin, ExternalLink } from 'lucide-react'
 
-export function generateStaticParams() {
-  return talentProfiles.map(p => ({ id: p.id }))
-}
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
-  try {
-    const p = getTalentProfile(id)
-    return { title: `${p.name} — Comcorpᵉ Talent`, description: p.desc }
-  } catch {
-    return {}
-  }
-}
 
 const archetypeMap: Record<string, { label: string; skills: string[]; markets: string[] }> = {
   'tunde-a':     { label: 'The Architect',  skills: ['Go-to-Market Strategy', 'Unit Economics', 'Commercial Design', 'Pan-Africa Expansion'], markets: ['Nigeria', 'Ghana', 'Kenya', 'UK'] },
@@ -31,17 +22,30 @@ const archetypeMap: Record<string, { label: string; skills: string[]; markets: s
 
 const bgColors = ['bg-primary', 'bg-accent', 'bg-foreground']
 
-export default async function TalentProfilePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
-  let profile
-  try { profile = getTalentProfile(id) } catch { notFound() }
+export default function TalentProfilePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
+  const { users, loading } = useUsers()
+  const profile = users.find(u => u.id === id)
+  const talentProfiles = users.filter(u => u.role === 'talent')
+
+  if (loading) {
+    return (
+      <div className="bg-background min-h-screen flex items-center justify-center">
+        <p className="font-mono text-sm text-muted-foreground animate-pulse">Loading operator profile from Firestore...</p>
+      </div>
+    )
+  }
+
+  if (!profile) {
+    notFound()
+  }
 
   const extra = archetypeMap[id] ?? {
     label: 'Specialist Operator',
     skills: ['Commercial Strategy', 'Market Expansion', 'Growth Systems'],
     markets: ['Pan-Africa'],
   }
-  const bgColor = profile.color ?? bgColors[talentProfiles.findIndex(p => p.id === id) % bgColors.length]
+  const bgColor = profile.color ?? bgColors[0]
   const talentTitle = profile.talentRole ?? profile.role
 
   return (

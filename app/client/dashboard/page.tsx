@@ -16,15 +16,17 @@ import Image from 'next/image'
 import { pods } from '@/lib/pods'
 import GrowthCommunity from '@/components/dashboard/GrowthCommunity'
 import { getTalentProfile } from '@/lib/user'
-import { jobs, type JobStatus, getJobProgress } from '@/lib/jobs'
+import { type JobStatus, getJobProgress } from '@/lib/jobs'
+import { useJobs } from '@/lib/jobs-client'
 import { invoices } from '@/lib/invoices'
 import { useCurrentUser } from '@/lib/user-client'
 import ClientDashboardLoading from './loading'
 
 export default function ClientDashboardHome() {
-  const { user: currentUser, loading } = useCurrentUser()
+  const { user: currentUser, loading: userLoading } = useCurrentUser()
+  const { jobs, loading: jobsLoading } = useJobs()
   
-  if (loading || !currentUser) {
+  if (userLoading || jobsLoading || !currentUser) {
     return <ClientDashboardLoading />
   }
 

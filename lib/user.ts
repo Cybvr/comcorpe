@@ -67,7 +67,16 @@ export const clientUsers: User[] = [
 const clientMap = new Map(clientUsers.map(u => [u.id, u]))
 
 export function getClientUser(id: string): User {
-  return clientMap.get(id) ?? { id, name: id, initials: id.slice(0, 2).toUpperCase(), role: 'client' }
+  const user = clientMap.get(id)
+  if (!user) {
+    return {
+      id,
+      name: id.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+      initials: id.split('-').map(w => w.charAt(0).toUpperCase()).join(''),
+      role: 'client'
+    }
+  }
+  return user
 }
 
 // ─── All platform users (talent operators) ────────────────────────────────────
@@ -82,7 +91,14 @@ const userMap = new Map(users.map(u => [u.id, u]))
 
 export function getTalentProfile(id: string): User {
   const user = userMap.get(id)
-  if (!user) throw new Error(`Unknown user: ${id}`)
+  if (!user) {
+    return {
+      id,
+      name: id.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+      initials: id.split('-').map(w => w.charAt(0).toUpperCase()).join(''),
+      role: 'talent'
+    }
+  }
   return user
 }
 

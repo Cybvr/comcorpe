@@ -1,7 +1,8 @@
-import { Metadata } from 'next'
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
-import { talentRoster } from '@/lib/user'
+import { useUsers } from '@/lib/user-client'
 
 const talentSpotlightCards = [
   {
@@ -65,12 +66,17 @@ const talentTrainingModules = [
   },
 ]
 
-export const metadata: Metadata = {
-  title: 'Specialist Talent — Comcorpᵉ',
-  description: 'Deploy curated, world-class strategic operators and commercial architects directly into your enterprise.',
-}
-
 export default function TalentPage() {
+  const { users, loading } = useUsers()
+  const talentRoster = users.filter(u => u.role === 'talent' && u.featured)
+
+  if (loading) {
+    return (
+      <div className="bg-background min-h-screen flex items-center justify-center">
+        <p className="font-mono text-sm text-muted-foreground animate-pulse">Loading talent roster from Firestore...</p>
+      </div>
+    )
+  }
   return (
     <div className="bg-background min-h-screen">
       

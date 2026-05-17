@@ -85,12 +85,12 @@ export default function TalentProfilePage() {
   }
 
   return (
-    <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[860px] mx-auto">
-      <div className="flex items-center justify-between mb-8">
+    <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1024px] mx-auto">
+      <div className="flex items-center justify-between mb-8 border-b border-border pb-5">
         <div>
-          <p className="font-mono text-xs uppercase tracking-eyebrow text-primary mb-1">Profile</p>
+          <p className="font-mono text-xs uppercase tracking-eyebrow text-primary mb-1">Settings</p>
           <h1 className="font-display font-black text-[28px] tracking-[-0.03em] text-foreground leading-tight">
-            My profile
+            Account Settings
           </h1>
         </div>
         <button
@@ -102,66 +102,92 @@ export default function TalentProfilePage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 items-start">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-20 h-20 bg-foreground shrink-0 overflow-hidden relative">
-            {profile && profile.image ? (
-              <Image src={profile.image} alt={profile.name} fill className="object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center font-display font-black text-[24px] text-background">
-                {profile ? profile.initials : 'U'}
-              </div>
-            )}
-          </div>
-          {profile && profile.featured && (
-            <div className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-eyebrow text-primary border border-primary/20 px-2 py-0.5 bg-primary/5">
-              <Star size={10} strokeWidth={2} />
-              Featured
-            </div>
-          )}
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-10 items-start">
+        {/* Left Side Settings Nav */}
+        <nav className="flex flex-col gap-1 border-r border-border pr-6 min-h-[250px]">
+          {[
+            { label: 'General', active: true },
+            { label: 'Security', active: false },
+            { label: 'Billing & Invoices', active: false },
+            { label: 'Notifications', active: false },
+          ].map(item => (
+            <button
+              key={item.label}
+              disabled={!item.active}
+              className={`text-left px-3 py-2 font-text text-sm font-semibold transition-all duration-100 ${
+                item.active
+                  ? 'bg-foreground text-background border-l-2 border-primary pl-4'
+                  : 'text-muted-foreground/50 hover:text-foreground cursor-not-allowed'
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
 
-        <div className="space-y-5">
-          {editing ? (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1.5">
-                  <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Name</label>
-                  <input className={I} value={name} onChange={e => setName(e.target.value)} />
+        {/* Right Main Content */}
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 items-start">
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-20 h-20 bg-foreground shrink-0 overflow-hidden relative">
+                {profile && profile.image ? (
+                  <Image src={profile.image} alt={profile.name} fill className="object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center font-display font-black text-[24px] text-background">
+                    {profile ? profile.initials : 'U'}
+                  </div>
+                )}
+              </div>
+              {profile && profile.featured && (
+                <div className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-eyebrow text-primary border border-primary/20 px-2 py-0.5 bg-primary/5">
+                  <Star size={10} strokeWidth={2} />
+                  Featured
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Rate</label>
-                  <input className={I} value={rate} onChange={e => setRate(e.target.value)} placeholder="$120 - $180/hr" />
-                </div>
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Role / Title</label>
-                <input className={I} value={role} onChange={e => setRole(e.target.value)} />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Background</label>
-                <input className={I} value={bg} onChange={e => setBg(e.target.value)} placeholder="Formerly at..." />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Bio</label>
-                <textarea className={`${I} resize-none`} rows={3} value={desc} onChange={e => setDesc(e.target.value)} />
-              </div>
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="px-6 py-2.5 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100 disabled:opacity-50"
-              >
-                {saving ? 'Saving...' : 'Save changes'}
-              </button>
-              <p className="font-mono text-[10px] text-muted-foreground/70">Changes are saved directly in Firebase Firestore.</p>
+              )}
             </div>
-          ) : (
-            <>
-              <div>
-                <h2 className="font-display font-black text-[22px] tracking-[-0.02em] text-foreground">{profile.name}</h2>
-                <p className="font-text text-sm text-primary font-semibold mt-0.5">{profile.talentRole}</p>
-                <p className="font-text text-sm text-muted-foreground mt-0.5">{profile.bg}</p>
-              </div>
+
+            <div className="space-y-5">
+              {editing ? (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Name</label>
+                      <input className={I} value={name} onChange={e => setName(e.target.value)} />
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Rate</label>
+                      <input className={I} value={rate} onChange={e => setRate(e.target.value)} placeholder="$120 - $180/hr" />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Role / Title</label>
+                    <input className={I} value={role} onChange={e => setRole(e.target.value)} />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Background</label>
+                    <input className={I} value={bg} onChange={e => setBg(e.target.value)} placeholder="Formerly at..." />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Bio</label>
+                    <textarea className={`${I} resize-none`} rows={3} value={desc} onChange={e => setDesc(e.target.value)} />
+                  </div>
+                  <button
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="px-6 py-2.5 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100 disabled:opacity-50"
+                  >
+                    {saving ? 'Saving...' : 'Save changes'}
+                  </button>
+                  <p className="font-mono text-[10px] text-muted-foreground/70">Changes are saved directly in Firebase Firestore.</p>
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <h2 className="font-display font-black text-[22px] tracking-[-0.02em] text-foreground">{profile.name}</h2>
+                    <p className="font-text text-sm text-primary font-semibold mt-0.5">{profile.talentRole}</p>
+                    <p className="font-text text-sm text-muted-foreground mt-0.5">{profile.bg}</p>
+                    <p className="font-mono text-xs text-primary mt-1.5">{currentUser.email}</p>
+                  </div>
               {profile.desc && (
                 <p className="font-text text-sm text-muted-foreground leading-relaxed max-w-[48ch]">{profile.desc}</p>
               )}
@@ -211,6 +237,8 @@ export default function TalentProfilePage() {
           ))}
         </div>
       </div>
+        </div> {/* closes right main content <div className="space-y-6"> */}
+      </div> {/* closes grid <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] ..."> */}
     </div>
   )
 }

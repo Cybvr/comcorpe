@@ -70,8 +70,8 @@ export default function DashboardHeader({
   }
 
   const profileHref = audience === 'talent'
-    ? '/talent/dashboard/profile'
-    : '/client/dashboard/profile'
+    ? '/talent/dashboard/settings'
+    : '/client/dashboard/settings'
 
   const dashboardLinks = [
     { audience: 'client' as const, label: 'Client dashboard', href: '/client/dashboard', Icon: SwitchCamera },
@@ -169,8 +169,8 @@ export default function DashboardHeader({
                   onClick={() => setUserMenuOpen(false)}
                   className="flex items-center gap-3 px-4 py-2.5 font-text text-sm text-muted-foreground hover:bg-border hover:text-foreground transition-colors"
                 >
-                  <User size={14} strokeWidth={1.5} className="shrink-0" />
-                  My profile
+                  <Settings size={14} strokeWidth={1.5} className="shrink-0" />
+                  Settings
                 </Link>
                 {dashboardLinks.map(({ href, label, Icon }) => (
                   <Link
@@ -194,15 +194,6 @@ export default function DashboardHeader({
                     : <Moon size={14} strokeWidth={1.5} className="text-primary shrink-0" />}
                   {darkMode ? 'Light mode' : 'Dark mode'}
                 </button>
-                <Link
-                  href="#settings"
-                  role="menuitem"
-                  onClick={() => setUserMenuOpen(false)}
-                  className="flex items-center gap-3 px-4 py-2.5 font-text text-sm text-muted-foreground hover:bg-border hover:text-foreground transition-colors"
-                >
-                  <Settings size={14} strokeWidth={1.5} className="shrink-0" />
-                  Settings
-                </Link>
               </div>
 
               <div className="border-t border-border py-1.5">

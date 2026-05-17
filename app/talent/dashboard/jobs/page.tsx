@@ -1,16 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import TalentJobsBoard from '@/components/dashboard/TalentJobsBoard'
-import { getJobs } from '@/lib/admin/store'
-import type { Job } from '@/lib/jobs'
+import { useJobs } from '@/lib/jobs-client'
+import TalentDashboardLoading from '../loading'
 
 export default function TalentJobsPage() {
-  const [jobs, setJobs] = useState<Job[]>([])
+  const { jobs, loading } = useJobs()
 
-  useEffect(() => {
-    getJobs().then(setJobs)
-  }, [])
+  if (loading) {
+    return <TalentDashboardLoading />
+  }
 
   return (
     <TalentJobsBoard

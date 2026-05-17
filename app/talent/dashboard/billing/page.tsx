@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Search } from 'lucide-react'
 import { payouts, ccreditsBalance, type PayoutStatus } from '@/lib/payouts'
-import { jobs } from '@/lib/jobs'
+import { useJobs } from '@/lib/jobs-client'
 import { getPodBySlug } from '@/lib/pods'
 import { getClientUser } from '@/lib/user'
 
@@ -15,6 +15,7 @@ const statusStyles: Record<PayoutStatus, string> = {
 }
 
 export default function TalentBillingPage() {
+  const { jobs } = useJobs()
   const [search, setSearch] = useState('')
 
   const pendingTotal = payouts
