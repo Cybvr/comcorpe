@@ -67,9 +67,7 @@ export const clientUsers: User[] = [
 const clientMap = new Map(clientUsers.map(u => [u.id, u]))
 
 export function getClientUser(id: string): User {
-  const user = clientMap.get(id)
-  if (!user) throw new Error(`Unknown client: ${id}`)
-  return user
+  return clientMap.get(id) ?? { id, name: id, initials: id.slice(0, 2).toUpperCase(), role: 'client' }
 }
 
 // ─── All platform users (talent operators) ────────────────────────────────────
