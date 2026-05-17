@@ -1,28 +1,32 @@
+'use client'
+
+import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { ArrowUpRight, CheckCircle2, DollarSign, Globe2, Layers3, MapPin, ShieldCheck, Star } from 'lucide-react'
-import { getTalentProfile, talentProfiles } from '@/lib/user'
+import { getTalent } from '@/lib/admin/store'
+import { type User } from '@/lib/user'
 import BackButton from '@/components/dashboard/BackButton'
 
-export function generateStaticParams() {
-  return talentProfiles.map((profile) => ({
-    id: profile.id,
-  }))
-}
-
-export default async function ClientDashboardTalentDetailPage({
+export default function ClientDashboardTalentDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
-  const { id } = await params
-  const profile = getTalentProfile(id)
-  const talentTitle = profile.talentRole ?? profile.role
+  const { id } = use(params)
+  const [profile, setProfile] = useState<User | null | undefined>(undefined)
 
-  if (!profile) {
-    notFound()
-  }
+  useEffect(() => {
+    getTalent().then(talent => {
+      setProfile(talent.find(t => t.id === id) ?? null)
+    })
+  }, [id])
+
+  if (profile === undefined) return null
+  if (!profile) notFound()
+
+  const talentTitle = profile.talentRole ?? profile.role
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">
