@@ -1,4 +1,3 @@
-import Hero from '@/components/Hero'
 import Closing from '@/components/Closing'
 import Link from 'next/link'
 
@@ -9,10 +8,43 @@ export default function Home() {
     { label: 'Arenas', title: 'Concentration over coverage', href: '/arenas', description: 'Focusing on high-impact sectors across Pan-Africa: Fintech, Infrastructure, and Consumer Ecosystems.' },
   ]
 
+  const tickerWords = [
+    'ARCHITECT', 'ASSEMBLE', 'OPERATE',
+    'TECHNOLOGY & FINTECH', 'PUBLIC INFRASTRUCTURE', 'CONSUMER & BRAND',
+    'GROWTH PLAYS', 'SPECIALIST PODS', 'INTERNATIONAL BOARD',
+  ]
+
   return (
     <>
-      <Hero />
-      
+      <section
+        id="top"
+        className="flex flex-col md:h-[calc(100vh-4rem)] md:[height:calc(100dvh-4rem)] border-b border-foreground overflow-hidden"
+      >
+        <div className="px-6 md:px-24 pt-12 pb-14 md:my-auto">
+          <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-foreground inline-flex items-center gap-2.5 mb-8">
+            <span className="w-6 h-px bg-foreground inline-block" />
+            A Growth Systems Company
+          </span>
+          <h1 className="font-display font-black text-[clamp(36px,6.5vw,96px)] leading-[0.92] tracking-[-0.04em] text-foreground m-0 mb-6">
+            The Operating Layer for High-Velocity Growth<span className="text-primary">.</span>
+          </h1>
+          <p className="font-text text-[17px] md:text-[20px] leading-lede text-muted-foreground m-0 max-w-[34ch]">
+            Comcorpᵉ orchestrates data, creativity, technology and strategy into unified growth systems —
+            built to perform in complex markets.
+          </p>
+        </div>
+
+        <div className="mt-auto border-t border-foreground overflow-hidden py-3.5 whitespace-nowrap">
+          <div className="inline-block animate-ticker font-display font-black text-[32px] tracking-[-0.03em] text-foreground">
+            {[...tickerWords, ...tickerWords].map((w, i) => (
+              <span key={i} className="inline-block px-8">
+                {w}<span className="text-primary inline-block px-2">●</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* High-level navigation section */}
       <section className="py-24 md:py-40 px-6 md:px-24 bg-background">
         <div className="flex items-baseline gap-6 mb-20">
@@ -24,8 +56,8 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-foreground border border-foreground overflow-hidden rounded-sm">
           {sections.map((s) => (
-            <Link 
-              key={s.label} 
+            <Link
+              key={s.label}
               href={s.href}
               className="group p-8 md:p-12 bg-background hover:bg-primary/[0.03] transition-all duration-300 flex flex-col min-h-[320px]"
             >
