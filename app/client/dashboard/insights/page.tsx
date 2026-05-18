@@ -29,7 +29,7 @@ export default function ClientInsightsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {insights.map((insight) => (
               <article
-                key={insight.id}
+                key={insight.slug}
                 className="group relative flex flex-col border border-border rounded-2xl bg-card hover:border-primary/50 hover:shadow-lg transition-all duration-300 overflow-hidden h-full"
               >
                 <Link href={`/client/dashboard/insights/${insight.slug}`} className="absolute inset-0 z-10">

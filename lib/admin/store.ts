@@ -12,7 +12,7 @@ import { db } from '@/lib/firebase'
 import { users, clientUsers, type User } from '@/lib/user'
 import { jobs, type Job } from '@/lib/jobs'
 import { pods as podsSeed, type Pod } from '@/lib/pods'
-import { growthConsultingHeadlines as headlinesSeed, type GrowthHeadline } from '@/lib/insights'
+import { type GrowthHeadline } from '@/lib/insights'
 import { posts as postsSeed, type Post } from '@/lib/posts'
 import { spaces as spacesSeed, type Space } from '@/lib/spaces'
 import {
@@ -129,10 +129,10 @@ export async function getPods(): Promise<Pod[]> {
 export async function getGrowthHeadlines(): Promise<GrowthHeadline[]> {
   try {
     const snap = await getDoc(doc(db, 'meta', 'growthConsultingHeadlines'))
-    if (!snap.exists()) return headlinesSeed
-    return (snap.data().items as GrowthHeadline[]) ?? headlinesSeed
+    if (!snap.exists()) return []
+    return (snap.data().items as GrowthHeadline[]) ?? []
   } catch {
-    return headlinesSeed
+    return []
   }
 }
 
