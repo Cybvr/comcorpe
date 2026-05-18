@@ -1,21 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Search as SearchIcon } from 'lucide-react'
-import { getClientInsights, getGrowthHeadlines } from '@/lib/admin/store'
-import type { ClientInsight, GrowthHeadline } from '@/lib/client-insights'
+import { useInsights, useGrowthHeadlines } from '@/lib/insights'
 
 export default function ClientInsightsPage() {
-  const [insights, setInsights] = useState<ClientInsight[]>([])
-  const [headlines, setHeadlines] = useState<GrowthHeadline[]>([])
-
-  useEffect(() => {
-    Promise.all([getClientInsights(), getGrowthHeadlines()]).then(([i, h]) => {
-      setInsights(i)
-      setHeadlines(h)
-    })
-  }, [])
+  const { insights } = useInsights()
+  const { headlines } = useGrowthHeadlines()
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1200px] mx-auto">

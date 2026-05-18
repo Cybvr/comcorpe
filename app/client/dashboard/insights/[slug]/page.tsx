@@ -1,13 +1,12 @@
 'use client'
 
-import { useState, useEffect, use } from 'react'
+import { use } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Bookmark, MessageCircle, Share2, TrendingUp } from 'lucide-react'
 import PostCard from '@/components/dashboard/PostCard'
-import { getClientInsights, getTalent } from '@/lib/admin/store'
-import type { ClientInsight } from '@/lib/client-insights'
-import type { User } from '@/lib/user'
+import { useInsights, useInsightBySlug } from '@/lib/insights'
+import { useUser } from '@/lib/user-client'
 
 export default function ClientInsightPage({
   params,
@@ -15,26 +14,16 @@ export default function ClientInsightPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = use(params)
-  const [insight, setInsight] = useState<ClientInsight | null | undefined>(undefined)
-  const [otherInsights, setOtherInsights] = useState<ClientInsight[]>([])
-  const [author, setAuthor] = useState<User | null>(null)
-
-  useEffect(() => {
-    Promise.all([getClientInsights(), getTalent()]).then(([all, talent]) => {
-      const found = all.find(i => i.slug === slug) ?? null
-      setInsight(found)
-      setOtherInsights(all.filter(i => i.slug !== slug))
-      if (found) {
-        setAuthor(talent.find(t => t.id === found.authorId) ?? null)
-      }
-    })
-  }, [slug])
+  const { insight } = useInsightBySlug(slug)
+  const { insights } = useInsights()
+  const { user: author } = useUser(insight?.authorId ?? '')
 
   if (insight === undefined) return null
   if (!insight) notFound()
 
+  const otherInsights = insights.filter(i => i.slug !== slug)
   const authorTitle = author?.talentRole ?? insight.role
-  const authorInitials = author?.initials ?? insight.author.split(' ').map(n => n[0]).join('')
+  const authorInitials = author?.initials ?? insight.author?.split(' ').map(n => n[0]).join('')
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">
@@ -53,22 +42,22 @@ export default function ClientInsightPage({
               <div className="font-text text-xs text-muted-foreground/70 mt-1">{insight.role}</div>
             </div>
             <span className="ml-auto font-mono text-[10px] px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded-sm uppercase tracking-eyebrow">
-              {insight.badge}
+              {insight.badge ?? insight.meta}
             </span>
           </div>
 
           <h1 className="font-display font-black text-[34px] tracking-[-0.03em] text-foreground leading-tight max-w-[18ch]">
             {insight.title}
           </h1>
-          <p className="font-text text-[16px] leading-relaxed text-muted-foreground mt-6">{insight.body}</p>
-          <p className="font-text text-[16px] leading-relaxed text-muted-foreground mt-5">{insight.detail}</p>
+          <p className="font-text text-[16px] leading-relaxed text-muted-foreground mt-6">{insight.body ?? insight.description}</p>
+          {insight.detail && <p className="font-text text-[16px] leading-relaxed text-muted-foreground mt-5">{insight.detail}</p>}
 
           <div className="mt-8 pt-5 border-t border-border flex items-center gap-4">
             <button className="flex items-center gap-1.5 font-text text-xs text-muted-foreground/70 hover:text-foreground transition-colors">
-              <TrendingUp size={12} /> {insight.likes}
+              <TrendingUp size={12} /> {insight.likes ?? 0}
             </button>
             <button className="flex items-center gap-1.5 font-text text-xs text-muted-foreground/70 hover:text-foreground transition-colors">
-              <MessageCircle size={12} /> {insight.replies}
+              <MessageCircle size={12} /> {insight.replies ?? 0}
             </button>
             <button className="flex items-center gap-1.5 font-text text-xs text-muted-foreground/70 hover:text-foreground transition-colors" aria-label="Share post">
               <Share2 size={12} />
@@ -101,7 +90,7 @@ export default function ClientInsightPage({
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {otherInsights.map((i) => (
-              <PostCard key={i.id} post={i as any} baseHref="/client/dashboard/insights" />
+              <PostCard key={i.slug} post={i as any} baseHref="/client/dashboard/insights" />
             ))}
           </div>
         </section>
