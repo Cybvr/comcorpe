@@ -1,13 +1,6 @@
 import React from 'react'
-import Nav from '@/components/Nav'
-import Footer from '@/components/Footer'
+import SiteChrome from '@/components/SiteChrome'
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <Nav />
-      {children}
-      <Footer />
-    </>
-  )
+  return <SiteChrome>{children}</SiteChrome>
 }

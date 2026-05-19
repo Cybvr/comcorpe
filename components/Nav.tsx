@@ -26,10 +26,16 @@ type NavItem = {
   dropdown?: DropdownItem[]
 }
 
-export default function Nav() {
+type NavAuthState = ReturnType<typeof useCurrentUser>
+
+interface NavProps {
+  authState: NavAuthState
+}
+
+export default function Nav({ authState }: NavProps) {
   const pathname = usePathname()
   const router = useRouter()
-  const { user: currentUser, isAuthenticated, loading: authLoading } = useCurrentUser()
+  const { user: currentUser, isAuthenticated, loading: authLoading } = authState
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
@@ -124,6 +130,7 @@ export default function Nav() {
       : '/client/dashboard'
   const accountHref = isAuthenticated ? dashboardHref : '/login'
   const accountLabel = isAuthenticated ? 'Dashboard' : 'Login'
+  const showFullMarketingNav = isAuthenticated
 
   return (
     <>
@@ -133,56 +140,58 @@ export default function Nav() {
         </Link>
 
         {/* Desktop links */}
-        <div className="hidden lg:flex gap-6 xl:gap-9 items-center justify-self-center">
-          {items.map((item) => (
-            <div key={item.label} className="relative group">
-              {item.dropdown ? (
-                <div className="py-5 cursor-default">
-                  <span className="font-text text-sm font-medium tracking-body text-foreground pb-0.5 border-b border-transparent group-hover:border-primary group-hover:text-primary transition-colors duration-[120ms] inline-flex items-center gap-1.5">
-                    {item.label}
-                    <svg width="10" height="10" viewBox="0 0 10 10" className="opacity-40 group-hover:opacity-100 transition-opacity mt-px" fill="none">
-                      <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </span>
+        {showFullMarketingNav && (
+          <div className="hidden lg:flex gap-6 xl:gap-9 items-center justify-self-center">
+            {items.map((item) => (
+              <div key={item.label} className="relative group">
+                {item.dropdown ? (
+                  <div className="py-5 cursor-default">
+                    <span className="font-text text-sm font-medium tracking-body text-foreground pb-0.5 border-b border-transparent group-hover:border-primary group-hover:text-primary transition-colors duration-[120ms] inline-flex items-center gap-1.5">
+                      {item.label}
+                      <svg width="10" height="10" viewBox="0 0 10 10" className="opacity-40 group-hover:opacity-100 transition-opacity mt-px" fill="none">
+                        <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </span>
 
-                  {/* Dropdown panel */}
-                  <div className={`absolute top-full mt-0 bg-background border border-border shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 p-3 gap-1
-                    ${item.dropdown.length === 3
-                      ? 'left-1/2 -translate-x-1/2 w-[600px] grid grid-cols-3'
-                      : 'left-1/2 -translate-x-1/2 w-[640px] grid grid-cols-2'
-                    }`}
-                  >
-                    {item.dropdown.map(subItem => {
-                      const Icon = subItem.icon
-                      return (
-                        <button
-                          key={subItem.label}
-                          onClick={() => handleNav(subItem)}
-                          className="text-left p-4 hover:bg-foreground/[0.04] transition-colors duration-150 border-0 bg-transparent cursor-pointer flex flex-col gap-3 rounded-sm group/sub"
-                        >
-                          <div className="w-10 h-10 shrink-0 bg-border border border-border flex items-center justify-center text-muted-foreground group-hover/sub:bg-primary/10 group-hover/sub:border-primary/20 group-hover/sub:text-primary transition-colors duration-150">
-                            <Icon size={18} strokeWidth={1.5} />
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            <span className="font-display font-black text-[16px] tracking-[-0.01em] text-foreground group-hover/sub:text-primary transition-colors duration-150 leading-tight">{subItem.label}</span>
-                            <span className="font-text text-[12px] leading-relaxed text-muted-foreground">{subItem.desc}</span>
-                          </div>
-                        </button>
-                      )
-                    })}
+                    {/* Dropdown panel */}
+                    <div className={`absolute top-full mt-0 bg-background border border-border shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 p-3 gap-1
+                      ${item.dropdown.length === 3
+                        ? 'left-1/2 -translate-x-1/2 w-[600px] grid grid-cols-3'
+                        : 'left-1/2 -translate-x-1/2 w-[640px] grid grid-cols-2'
+                      }`}
+                    >
+                      {item.dropdown.map(subItem => {
+                        const Icon = subItem.icon
+                        return (
+                          <button
+                            key={subItem.label}
+                            onClick={() => handleNav(subItem)}
+                            className="text-left p-4 hover:bg-foreground/[0.04] transition-colors duration-150 border-0 bg-transparent cursor-pointer flex flex-col gap-3 rounded-sm group/sub"
+                          >
+                            <div className="w-10 h-10 shrink-0 bg-border border border-border flex items-center justify-center text-muted-foreground group-hover/sub:bg-primary/10 group-hover/sub:border-primary/20 group-hover/sub:text-primary transition-colors duration-150">
+                              <Icon size={18} strokeWidth={1.5} />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                              <span className="font-display font-black text-[16px] tracking-[-0.01em] text-foreground group-hover/sub:text-primary transition-colors duration-150 leading-tight">{subItem.label}</span>
+                              <span className="font-text text-[12px] leading-relaxed text-muted-foreground">{subItem.desc}</span>
+                            </div>
+                          </button>
+                        )
+                      })}
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <button
-                  onClick={() => handleNav(item)}
-                  className="font-text text-sm font-medium tracking-body text-foreground cursor-pointer pb-0.5 border-b border-transparent hover:border-primary hover:text-primary transition-colors duration-[120ms] bg-transparent border-0"
-                >
-                  {item.label}
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
+                ) : (
+                  <button
+                    onClick={() => handleNav(item)}
+                    className="font-text text-sm font-medium tracking-body text-foreground cursor-pointer pb-0.5 border-b border-transparent hover:border-primary hover:text-primary transition-colors duration-[120ms] bg-transparent border-0"
+                  >
+                    {item.label}
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Desktop actions */}
         <div className="hidden lg:flex items-center gap-4 justify-self-end">
@@ -204,12 +213,14 @@ export default function Nav() {
               {accountLabel}
             </Link>
           )}
-          <Link
-            href="/book"
-            className="font-text text-[13px] font-semibold px-[18px] py-[10px] rounded-full bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
-          >
-            Book a session call
-          </Link>
+          {showFullMarketingNav && (
+            <Link
+              href="/book"
+              className="font-text text-[13px] font-semibold px-[18px] py-[10px] rounded-full bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
+            >
+              Book a session call
+            </Link>
+          )}
         </div>
 
         {/* Mobile: dark toggle + CTA + hamburger */}
@@ -232,74 +243,80 @@ export default function Nav() {
               {isAuthenticated ? <LayoutDashboard size={15} strokeWidth={1.6} /> : accountLabel}
             </Link>
           )}
-          <Link
-            href="/book"
-            aria-label="Book a session call"
-            className="sm:hidden w-8 h-8 flex items-center justify-center rounded-full bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
-          >
-            <CalendarDays size={15} strokeWidth={1.6} />
-          </Link>
-          <Link
-            href="/book"
-            className="hidden sm:inline-flex font-text text-[12px] font-semibold px-4 py-2.5 rounded-full bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
-          >
-            Book a session call
-          </Link>
-          <button
-            onClick={() => setMenuOpen(o => !o)}
-            className="w-9 h-9 flex flex-col justify-center items-center gap-1.5 bg-transparent border-0 cursor-pointer"
-            aria-label="Toggle menu"
-          >
-            <span className={`block w-5 h-px bg-foreground transition-all duration-[240ms] ${menuOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
-            <span className={`block w-5 h-px bg-foreground transition-all duration-[240ms] ${menuOpen ? 'opacity-0' : ''}`} />
-            <span className={`block w-5 h-px bg-foreground transition-all duration-[240ms] ${menuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
-          </button>
+          {showFullMarketingNav && (
+            <>
+              <Link
+                href="/book"
+                aria-label="Book a session call"
+                className="sm:hidden w-8 h-8 flex items-center justify-center rounded-full bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
+              >
+                <CalendarDays size={15} strokeWidth={1.6} />
+              </Link>
+              <Link
+                href="/book"
+                className="hidden sm:inline-flex font-text text-[12px] font-semibold px-4 py-2.5 rounded-full bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
+              >
+                Book a session call
+              </Link>
+              <button
+                onClick={() => setMenuOpen(o => !o)}
+                className="w-9 h-9 flex flex-col justify-center items-center gap-1.5 bg-transparent border-0 cursor-pointer"
+                aria-label="Toggle menu"
+              >
+                <span className={`block w-5 h-px bg-foreground transition-all duration-[240ms] ${menuOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
+                <span className={`block w-5 h-px bg-foreground transition-all duration-[240ms] ${menuOpen ? 'opacity-0' : ''}`} />
+                <span className={`block w-5 h-px bg-foreground transition-all duration-[240ms] ${menuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
+              </button>
+            </>
+          )}
         </div>
       </nav>
 
       {/* Mobile menu drawer */}
-      <div className={`fixed inset-0 top-16 z-40 bg-background flex flex-col lg:hidden transition-all duration-[300ms] ${menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} overflow-y-auto pb-12`}>
-        <div className="flex flex-col px-6 py-8 gap-1">
-          {items.map((item) => (
-            <div key={item.label}>
-              {item.dropdown ? (
-                <div className="py-4 border-b border-border">
-                  <div className="font-display font-black text-[28px] tracking-hero text-foreground text-left w-full mb-5 opacity-40">
+      {showFullMarketingNav && (
+        <div className={`fixed inset-0 top-16 z-40 bg-background flex flex-col lg:hidden transition-all duration-[300ms] ${menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} overflow-y-auto pb-12`}>
+          <div className="flex flex-col px-6 py-8 gap-1">
+            {items.map((item) => (
+              <div key={item.label}>
+                {item.dropdown ? (
+                  <div className="py-4 border-b border-border">
+                    <div className="font-display font-black text-[28px] tracking-hero text-foreground text-left w-full mb-5 opacity-40">
+                      {item.label}
+                    </div>
+                    <div className="flex flex-col gap-4 pl-1">
+                      {item.dropdown.map(subItem => {
+                        const Icon = subItem.icon
+                        return (
+                          <button
+                            key={subItem.label}
+                            onClick={() => handleNav(subItem)}
+                            className="text-left bg-transparent border-0 cursor-pointer flex gap-4 items-center group/mob w-full"
+                          >
+                            <div className="w-11 h-11 shrink-0 bg-border border border-border flex items-center justify-center text-muted-foreground group-hover/mob:border-primary group-hover/mob:text-primary group-hover/mob:bg-primary/10 transition-colors duration-200">
+                              <Icon size={18} strokeWidth={1.5} />
+                            </div>
+                            <div className="flex flex-col gap-0.5">
+                              <span className="font-display font-black text-[19px] tracking-[-0.01em] text-foreground group-hover/mob:text-primary transition-colors duration-200 leading-tight">{subItem.label}</span>
+                              <span className="font-text text-[12px] leading-relaxed text-muted-foreground">{subItem.desc}</span>
+                            </div>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => handleNav(item)}
+                    className="font-display font-black text-[32px] tracking-hero text-foreground text-left py-4 border-b border-border bg-transparent border-x-0 border-t-0 cursor-pointer hover:text-primary transition-colors duration-[120ms] w-full"
+                  >
                     {item.label}
-                  </div>
-                  <div className="flex flex-col gap-4 pl-1">
-                    {item.dropdown.map(subItem => {
-                      const Icon = subItem.icon
-                      return (
-                        <button
-                          key={subItem.label}
-                          onClick={() => handleNav(subItem)}
-                          className="text-left bg-transparent border-0 cursor-pointer flex gap-4 items-center group/mob w-full"
-                        >
-                          <div className="w-11 h-11 shrink-0 bg-border border border-border flex items-center justify-center text-muted-foreground group-hover/mob:border-primary group-hover/mob:text-primary group-hover/mob:bg-primary/10 transition-colors duration-200">
-                            <Icon size={18} strokeWidth={1.5} />
-                          </div>
-                          <div className="flex flex-col gap-0.5">
-                            <span className="font-display font-black text-[19px] tracking-[-0.01em] text-foreground group-hover/mob:text-primary transition-colors duration-200 leading-tight">{subItem.label}</span>
-                            <span className="font-text text-[12px] leading-relaxed text-muted-foreground">{subItem.desc}</span>
-                          </div>
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-              ) : (
-                <button
-                  onClick={() => handleNav(item)}
-                  className="font-display font-black text-[32px] tracking-hero text-foreground text-left py-4 border-b border-border bg-transparent border-x-0 border-t-0 cursor-pointer hover:text-primary transition-colors duration-[120ms] w-full"
-                >
-                  {item.label}
-                </button>
-              )}
-            </div>
-          ))}
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </>
   )
 }

@@ -1,4 +1,4 @@
-const CACHE = 'comcorpe-v1'
+const CACHE = 'comcorpe-v2'
 
 const PRECACHE = [
   '/',
@@ -18,6 +18,14 @@ const SKIP_HOSTS = [
   'accounts.google.com',
   'login.microsoftonline.com',
 ]
+
+const STATIC_ASSET_RE = /\.(png|jpg|jpeg|gif|webp|svg|ico|json|txt|js|css|map)$/i
+
+function isCacheablePublicRequest(url, request) {
+  if (url.origin !== self.location.origin) return false
+  if (request.mode === 'navigate') return url.pathname === '/'
+  return PRECACHE.includes(url.pathname) || STATIC_ASSET_RE.test(url.pathname)
+}
 
 self.addEventListener('install', e => {
   e.waitUntil(
@@ -43,7 +51,8 @@ self.addEventListener('fetch', e => {
   // Skip Firebase, Google auth, and internal API routes
   if (
     SKIP_HOSTS.some(h => url.hostname.endsWith(h)) ||
-    url.pathname.startsWith('/api/')
+    url.pathname.startsWith('/api/') ||
+    !isCacheablePublicRequest(url, e.request)
   ) return
 
   e.respondWith(
