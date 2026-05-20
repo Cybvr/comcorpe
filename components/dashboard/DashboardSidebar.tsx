@@ -13,15 +13,12 @@ import {
   LayoutDashboard,
   MessageCircle,
   Search,
+  Settings,
   Shield,
   Sparkles,
   Users,
-  Activity,
-  CheckCircle2,
-  PenTool,
-  Share2,
-  BrainCircuit,
   BookOpen,
+  CalendarDays,
   X,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -66,13 +63,9 @@ const dashboardConfig: Record<DashboardAudience, {
       { icon: Search, label: 'Search', href: '/client/dashboard/search', badge: 3 },
       { icon: Sparkles, label: 'Analytics', href: '/client/dashboard/analytics' },
       { icon: BookOpen, label: 'Insights', href: '/client/dashboard/insights' },
-      { icon: CreditCard, label: 'Billing', href: '/client/dashboard/billing' },
-      { icon: Gift, label: 'Refer & grow', href: '/client/dashboard/referrals' },
-    ],
-    intelligenceItems: [
-      { icon: Activity, label: 'Quality & Safety', href: '/client/dashboard/quality' },
     ],
     supportItems: [
+      { icon: Settings, label: 'Settings', href: '/client/dashboard/settings' },
       { icon: HelpCircle, label: 'Help centre', href: '/client/dashboard/help' },
     ],
   },
@@ -199,6 +192,16 @@ export default function DashboardSidebar({
 
       {config.supportItems.length > 0 && (
         <div className="p-3 border-t border-border">
+          {audience === 'client' && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="mb-2 flex w-full items-center gap-3 rounded-lg bg-foreground px-3 py-2.5 font-text text-sm font-semibold text-background transition-colors duration-150 hover:bg-primary hover:text-primary-foreground"
+            >
+              <CalendarDays size={16} strokeWidth={1.8} />
+              <span className="flex-1 text-left">Book call</span>
+            </button>
+          )}
           {config.supportItems.map((item) => (
             <div key={item.href} onClick={onClose}>
               <SidebarLink item={item} />

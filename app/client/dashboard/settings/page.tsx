@@ -1,11 +1,12 @@
 'use client'
+
 import { useState } from 'react'
-import { Briefcase, Building2, CreditCard, Mail, Pencil, X } from 'lucide-react'
+import { Building2, Mail, Pencil, X } from 'lucide-react'
 import { useCurrentUser, updateUserProfile } from '@/lib/user-client'
 import { useJobs } from '@/lib/jobs-client'
 import { invoices } from '@/lib/invoices'
 
-export default function ClientProfilePage() {
+export default function ClientSettingsGeneralPage() {
   const { user: currentUser } = useCurrentUser()
   const { jobs } = useJobs()
   const [editing, setEditing] = useState(false)
@@ -42,15 +43,10 @@ export default function ClientProfilePage() {
   }
 
   if (!currentUser) {
-    return (
-      <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[860px] mx-auto">
-        <p className="font-text text-sm text-muted-foreground">Loading profile...</p>
-      </div>
-    )
+    return <p className="font-text text-sm text-muted-foreground">Loading profile...</p>
   }
 
   const handleEditToggle = () => {
-    if (!currentUser) return
     if (editing) {
       setEditing(false)
       return
@@ -61,135 +57,110 @@ export default function ClientProfilePage() {
   }
 
   const clientJobs = jobs.filter(j => j.clientId === currentUser.clientId)
-  const activeJobs = clientJobs.filter(j => j.status === 'Active')
   const clientInvoices = invoices.filter(i => i.clientId === currentUser.clientId)
   const totalSpend = clientInvoices
     .filter(i => i.status === 'Paid')
     .reduce((sum, i) => sum + i.amountRaw, 0)
 
-  const I = 'w-full px-4 py-3 border border-input bg-white font-text text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors duration-100'
+  const inputClass = 'w-full px-4 py-3 border border-input bg-background font-text text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors duration-100'
   const displayName = profileOverride.name ?? currentUser.name
   const displayCompany = profileOverride.company ?? currentUser.company ?? ''
   const displayInitials = profileOverride.initials ?? currentUser.initials
 
   return (
-    <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1024px] mx-auto">
-      <div className="flex items-center justify-between mb-8 border-b border-border pb-5">
-        <div>
-          <p className="font-mono text-xs uppercase tracking-eyebrow text-primary mb-1">Settings</p>
-          <h1 className="font-display font-black text-[28px] tracking-[-0.03em] text-foreground leading-tight">
-            Account Settings
-          </h1>
-        </div>
-        <button
-          onClick={handleEditToggle}
-          className="flex items-center gap-2 px-4 py-2 border border-input font-text text-sm text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-colors duration-100"
-        >
-          {editing ? <X size={14} strokeWidth={1.5} /> : <Pencil size={14} strokeWidth={1.5} />}
-          {editing ? 'Cancel' : 'Edit profile'}
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-10 items-start">
-        {/* Left Side Settings Nav */}
-        <nav className="flex flex-col gap-1 border-r border-border pr-6 min-h-[250px]">
-          {[
-            { label: 'General', active: true },
-            { label: 'Security', active: false },
-            { label: 'Billing & Invoices', active: false },
-            { label: 'Notifications', active: false },
-          ].map(item => (
-            <button
-              key={item.label}
-              disabled={!item.active}
-              className={`text-left px-3 py-2 font-text text-sm font-semibold transition-all duration-100 ${
-                item.active
-                  ? 'bg-foreground text-background border-l-2 border-primary pl-4'
-                  : 'text-muted-foreground/50 hover:text-foreground cursor-not-allowed'
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </nav>
-
-        {/* Right Main Content */}
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 items-start">
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-20 h-20 bg-foreground flex items-center justify-center font-display font-black text-[24px] text-background">
-                {displayInitials}
-              </div>
-              <span className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 border border-input px-2 py-0.5">
-                {currentUser.role}
-              </span>
+    <div className="space-y-8">
+      <section className="border border-border rounded-2xl p-6 bg-background">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-5">
+          <div className="grid grid-cols-[auto_1fr] gap-5 items-start">
+            <div className="w-20 h-20 rounded-2xl bg-foreground flex items-center justify-center font-display font-black text-[24px] text-background">
+              {displayInitials}
             </div>
 
-            <div className="space-y-6">
+            <div className="min-w-0">
+              <p className="font-mono text-[10px] uppercase tracking-eyebrow text-primary mb-2">General</p>
               {editing ? (
-                <div className="space-y-4">
+                <div className="space-y-4 max-w-xl">
                   <div className="flex flex-col gap-1.5">
                     <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Contact name</label>
-                    <input className={I} value={name} onChange={e => setName(e.target.value)} />
+                    <input className={inputClass} value={name} onChange={e => setName(e.target.value)} />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Company</label>
-                    <input className={I} value={company} onChange={e => setCompany(e.target.value)} />
+                    <input className={inputClass} value={company} onChange={e => setCompany(e.target.value)} />
                   </div>
                   <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="px-6 py-2.5 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100 disabled:opacity-50"
+                    className="px-6 py-2.5 bg-foreground text-background rounded-lg font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100 disabled:opacity-50"
                   >
                     {saving ? 'Saving...' : 'Save changes'}
                   </button>
                   <p className="font-mono text-[10px] text-muted-foreground/70">Changes are saved directly in Firebase Firestore.</p>
                 </div>
               ) : (
-                <div className="space-y-1">
-                  <h2 className="font-display font-black text-[22px] tracking-[-0.02em] text-foreground">{displayName}</h2>
-                  <p className="font-text text-sm text-muted-foreground">{displayCompany}</p>
-                  <p className="font-mono text-xs text-primary mt-1.5">{currentUser.email}</p>
+                <div>
+                  <h2 className="font-display font-black text-[24px] tracking-[-0.02em] text-foreground leading-tight">{displayName}</h2>
+                  <div className="mt-3 flex flex-col gap-2">
+                    <span className="flex items-center gap-2 font-text text-sm text-muted-foreground">
+                      <Building2 size={14} strokeWidth={1.5} /> {displayCompany || 'Company not set'}
+                    </span>
+                    <span className="flex items-center gap-2 font-text text-sm text-primary">
+                      <Mail size={14} strokeWidth={1.5} /> {currentUser.email}
+                    </span>
+                  </div>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="mt-10 grid grid-cols-3 border border-border">
-            {[
-              { label: 'Total jobs', value: clientJobs.length },
-              { label: 'Completed', value: clientJobs.filter(j => j.status === 'Completed').length },
-              { label: 'Total spend (paid)', value: `$${(totalSpend / 1000).toFixed(0)}k` },
-            ].map((stat, i) => (
-              <div key={stat.label} className={`px-6 py-5 ${i > 0 ? 'border-l border-border' : ''}`}>
-                <p className="font-display font-black text-[28px] text-foreground leading-none">{stat.value}</p>
-                <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mt-2">{stat.label}</p>
-              </div>
-            ))}
-          </div>
+          <button
+            onClick={handleEditToggle}
+            className="shrink-0 flex items-center justify-center gap-2 px-4 py-2 border border-input rounded-lg font-text text-sm text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-colors duration-100"
+          >
+            {editing ? <X size={14} strokeWidth={1.5} /> : <Pencil size={14} strokeWidth={1.5} />}
+            {editing ? 'Cancel' : 'Edit profile'}
+          </button>
+        </div>
+      </section>
 
-          <div className="mt-10">
-            <h3 className="font-display font-black text-[18px] tracking-[-0.02em] text-foreground mb-4">Engagement history</h3>
-            <div className="border border-border divide-y divide-border">
-              {clientJobs.map(job => (
-                <div key={job.id} className="px-5 py-4 flex items-center justify-between gap-4">
-                  <div className="min-w-0">
-                    <p className="font-text text-sm font-semibold text-foreground truncate">{job.title}</p>
-                    <p className="font-mono text-[10px] text-muted-foreground/70 mt-0.5">{job.type} · {job.rate}</p>
-                  </div>
-                  <span className={`shrink-0 font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 ${
-                    job.status === 'Active' ? 'bg-green-100 text-green-700'
-                    : job.status === 'Completed' ? 'bg-border text-muted-foreground'
-                    : 'bg-primary/10 text-primary'
-                  }`}>
-                    {job.status}
-                  </span>
-                </div>
-              ))}
-            </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 border border-border rounded-2xl overflow-hidden bg-background">
+        {[
+          { label: 'Total jobs', value: clientJobs.length },
+          { label: 'Completed', value: clientJobs.filter(j => j.status === 'Completed').length },
+          { label: 'Total spend paid', value: `$${(totalSpend / 1000).toFixed(0)}k` },
+        ].map((stat, index) => (
+          <div key={stat.label} className={`px-6 py-5 ${index > 0 ? 'sm:border-l border-border border-t sm:border-t-0' : ''}`}>
+            <p className="font-display font-black text-[28px] text-foreground leading-none">{stat.value}</p>
+            <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mt-2">{stat.label}</p>
           </div>
-        </div> {/* closes right main content <div className="space-y-6"> */}
-      </div> {/* closes grid <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] ..."> */}
+        ))}
+      </div>
+
+      <section>
+        <h3 className="font-display font-black text-[18px] tracking-[-0.02em] text-foreground mb-4">Engagement history</h3>
+        <div className="border border-border rounded-2xl divide-y divide-border overflow-hidden bg-background">
+          {clientJobs.map(job => (
+            <div key={job.id} className="px-5 py-4 flex items-center justify-between gap-4">
+              <div className="min-w-0">
+                <p className="font-text text-sm font-semibold text-foreground truncate">{job.title}</p>
+                <p className="font-mono text-[10px] text-muted-foreground/70 mt-0.5">{job.type} · {job.rate}</p>
+              </div>
+              <span className={`shrink-0 font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 rounded-full ${
+                job.status === 'Active' ? 'bg-green-100 text-green-700'
+                : job.status === 'Completed' ? 'bg-border text-muted-foreground'
+                : 'bg-primary/10 text-primary'
+              }`}>
+                {job.status}
+              </span>
+            </div>
+          ))}
+          {clientJobs.length === 0 && (
+            <div className="px-5 py-10 text-center font-text text-sm text-muted-foreground/70">
+              No engagement history yet.
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   )
 }

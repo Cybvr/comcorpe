@@ -4,9 +4,9 @@ import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, DollarSign, Layers3, MapPin, Plus, Search, Users, X, Sparkles, BrainCircuit } from 'lucide-react'
-import { pods } from '@/lib/pods'
+import { usePods } from '@/lib/pods'
 import { useJobs } from '@/lib/jobs-client'
-import { getTalentProfile, getClientUser } from '@/lib/user'
+import { getTalentProfile, getClientUser, type User } from '@/lib/user'
 import { useUsers } from '@/lib/user-client'
 
 type DiscoverTab = 'all' | 'pods' | 'build'
@@ -24,6 +24,14 @@ function getTalentTitle(profile: { talentRole?: string; role: string }) {
 function getStartingRate(rate?: string) {
   const match = rate?.match(/\$?([\d,]+)/)
   return match ? Number(match[1].replace(/,/g, '')) : 0
+}
+
+function includesText(value: string | undefined, query: string) {
+  return (value ?? '').toLowerCase().includes(query)
+}
+
+function getProfile(id: string, talentProfiles: User[]) {
+  return talentProfiles.find(profile => profile.id === id) ?? getTalentProfile(id)
 }
 
 function Pagination({
@@ -140,6 +148,7 @@ function FilterDropdown({
 export default function DiscoverPage() {
   const { jobs } = useJobs()
   const { users } = useUsers()
+  const { pods } = usePods()
   const talentProfiles = users.filter(u => u.role === 'talent')
   const [activeTab, setActiveTab] = useState<DiscoverTab>('all')
   const [activePage, setActivePage] = useState(1)
@@ -164,13 +173,23 @@ export default function DiscoverPage() {
   const [budgetFilter, setBudgetFilter] = useState('All')
 
   const pageSize = pageSizes[activeTab]
+  const normalizedSearch = searchQuery.trim().toLowerCase()
+  const normalizedMarket = marketFilter.toLowerCase()
+  const normalizedExpertise = expertiseFilter.toLowerCase()
   
   // Filtering logic
   const filteredPods = pods.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         p.focus.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesMarket = marketFilter === 'All' || p.markets.some(m => m.includes(marketFilter))
-    const matchesExpertise = expertiseFilter === 'All' || p.focus.includes(expertiseFilter)
+    const matchesSearch = !normalizedSearch ||
+      includesText(p.name, normalizedSearch) ||
+      includesText(p.focus, normalizedSearch) ||
+      includesText(p.summary, normalizedSearch) ||
+      p.markets.some(market => includesText(market, normalizedSearch)) ||
+      p.evidence.some(item => includesText(item, normalizedSearch))
+    const matchesMarket = marketFilter === 'All' || p.markets.some(m => m.toLowerCase().includes(normalizedMarket))
+    const matchesExpertise = expertiseFilter === 'All' ||
+      includesText(p.focus, normalizedExpertise) ||
+      includesText(p.summary, normalizedExpertise) ||
+      p.evidence.some(item => includesText(item, normalizedExpertise))
     const startingRate = getStartingRate(p.rate)
     const matchesBudget = budgetFilter === 'All' || (budgetFilter === '<$600/hr' && startingRate < 600) || (budgetFilter === '>$600/hr' && startingRate >= 600)
     return matchesSearch && matchesMarket && matchesExpertise && matchesBudget
@@ -299,7 +318,7 @@ export default function DiscoverPage() {
       ) : activeTab === 'pods' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {visiblePods.map((pod) => {
-            const lead = getTalentProfile(pod.leadId)
+            const lead = getProfile(pod.leadId, talentProfiles)
             return (
               <Link
                 key={pod.id}
@@ -315,7 +334,7 @@ export default function DiscoverPage() {
 
                 <div className="grid grid-cols-2 gap-2 mb-8">
                   {pod.memberIds.slice(0, 4).map((memberId, i) => {
-                    const profile = getTalentProfile(memberId)
+                    const profile = getProfile(memberId, talentProfiles)
                     return (
                       <div
                         key={memberId}
