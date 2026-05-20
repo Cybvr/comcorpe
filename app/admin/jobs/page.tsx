@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { getJobs, createJob, updateJob, deleteJob } from '@/lib/admin/store'
+import { getJobs, createJob, updateJob, deleteJob, getSystemUsers } from '@/lib/admin/store'
+import type { User } from '@/lib/user'
 import type { Job, JobStatus, JobType } from '@/lib/jobs'
 import { invoices as seedInvoices, type Invoice, type InvoiceStatus } from '@/lib/invoices'
 import { payouts as seedPayouts, type Payout, type PayoutStatus } from '@/lib/payouts'
@@ -47,6 +48,11 @@ function JobForm({
   const [tagsStr, setTagsStr] = useState((initial.tags ?? []).join(', '))
   const [scopeStr, setScopeStr] = useState((initial.scope ?? []).join('\n'))
   const [reqStr, setReqStr] = useState((initial.requirements ?? []).join('\n'))
+  const [clients, setClients] = useState<User[]>([])
+
+  useEffect(() => {
+    getSystemUsers().then(all => setClients(all.filter(u => u.role === 'client' || u.role === 'admin')))
+  }, [])
 
   function set<K extends keyof Job>(field: K, value: Job[K]) {
     setForm(f => ({ ...f, [field]: value }))
@@ -82,7 +88,14 @@ function JobForm({
         </div>
         <div className={F}>
           <label className={L}>Client ID *</label>
-          <input className={I} value={form.clientId} onChange={e => set('clientId', e.target.value)} required placeholder="volta-pay" />
+          <select className={S} value={form.clientId} onChange={e => set('clientId', e.target.value)} required>
+            <option value="">Select a client…</option>
+            {clients.map(c => (
+              <option key={c.id} value={c.id}>
+                {c.name}{c.company ? ` — ${c.company}` : ''}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
