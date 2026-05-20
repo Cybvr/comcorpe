@@ -35,7 +35,7 @@ interface NavProps {
 export default function Nav({ authState }: NavProps) {
   const pathname = usePathname()
   const router = useRouter()
-  const { user: currentUser, isAuthenticated, loading: authLoading } = authState
+  const { user: currentUser, isAuthenticated } = authState
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
@@ -44,10 +44,7 @@ export default function Nav({ authState }: NavProps) {
     const saved = localStorage.getItem('theme')
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
     const isDark = saved === 'dark' || (!saved && prefersDark)
-    if (isDark) {
-      document.documentElement.classList.add('dark')
-    }
-
+    if (isDark) document.documentElement.classList.add('dark')
     const frame = requestAnimationFrame(() => setDarkMode(isDark))
     return () => cancelAnimationFrame(frame)
   }, [])
@@ -128,19 +125,18 @@ export default function Nav({ authState }: NavProps) {
     : currentUser?.role === 'talent'
       ? '/talent/dashboard'
       : '/client/dashboard'
-  const accountHref = isAuthenticated ? dashboardHref : '/login'
-  const accountLabel = isAuthenticated ? 'Dashboard' : 'Login'
-  const showFullMarketingNav = isAuthenticated
 
   return (
     <>
       <nav className={`sticky top-0 z-50 h-16 grid grid-cols-[auto_1fr_auto] items-center px-6 md:px-24 border-b transition-all duration-[240ms] ${scrolled || menuOpen ? 'bg-background/95 backdrop-blur-md border-border' : 'border-transparent bg-transparent'}`}>
+
+        {/* Logo */}
         <Link href="/" className="block justify-self-start">
           <img src="/images/comcorpe.png" alt="Comcorpe" className="h-6 md:h-7 w-auto object-contain dark:invert" />
         </Link>
 
-        {/* Desktop links */}
-        {showFullMarketingNav && (
+        {/* Desktop center nav */}
+        {isAuthenticated ? (
           <div className="hidden lg:flex gap-6 xl:gap-9 items-center justify-self-center">
             {items.map((item) => (
               <div key={item.label} className="relative group">
@@ -153,7 +149,6 @@ export default function Nav({ authState }: NavProps) {
                       </svg>
                     </span>
 
-                    {/* Dropdown panel */}
                     <div className={`absolute top-full mt-0 bg-background border border-border shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 p-3 gap-1
                       ${item.dropdown.length === 3
                         ? 'left-1/2 -translate-x-1/2 w-[600px] grid grid-cols-3'
@@ -191,6 +186,8 @@ export default function Nav({ authState }: NavProps) {
               </div>
             ))}
           </div>
+        ) : (
+          <div />
         )}
 
         {/* Desktop actions */}
@@ -202,28 +199,34 @@ export default function Nav({ authState }: NavProps) {
           >
             {darkMode ? <Sun size={15} strokeWidth={1.5} /> : <Moon size={15} strokeWidth={1.5} />}
           </button>
-          {authLoading ? (
-            <span className="w-[90px] h-[36px] rounded-full bg-border/50 animate-pulse inline-block" />
+
+          {isAuthenticated ? (
+            <>
+              <Link
+                href={dashboardHref}
+                className="font-text text-[13px] font-semibold px-[16px] py-[9px] rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms] inline-flex items-center gap-1.5"
+              >
+                <LayoutDashboard size={14} strokeWidth={1.6} />
+                Dashboard
+              </Link>
+              <Link
+                href="/book"
+                className="font-text text-[13px] font-semibold px-[18px] py-[10px] rounded-full bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
+              >
+                Book a session call
+              </Link>
+            </>
           ) : (
             <Link
-              href={accountHref}
-              className="font-text text-[13px] font-semibold px-[16px] py-[9px] rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms] inline-flex items-center gap-1.5"
+              href="/login"
+              className="font-text text-[13px] font-semibold px-[16px] py-[9px] rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms]"
             >
-              {isAuthenticated && <LayoutDashboard size={14} strokeWidth={1.6} />}
-              {accountLabel}
-            </Link>
-          )}
-          {showFullMarketingNav && (
-            <Link
-              href="/book"
-              className="font-text text-[13px] font-semibold px-[18px] py-[10px] rounded-full bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
-            >
-              Book a session call
+              Login
             </Link>
           )}
         </div>
 
-        {/* Mobile: dark toggle + CTA + hamburger */}
+        {/* Mobile actions */}
         <div className="flex lg:hidden items-center gap-2 justify-self-end">
           <button
             onClick={toggleDark}
@@ -232,19 +235,16 @@ export default function Nav({ authState }: NavProps) {
           >
             {darkMode ? <Sun size={15} strokeWidth={1.5} /> : <Moon size={15} strokeWidth={1.5} />}
           </button>
-          {authLoading ? (
-            <span className="w-8 h-8 rounded-full bg-border/50 animate-pulse inline-block" />
-          ) : (
-            <Link
-              href={accountHref}
-              aria-label={accountLabel}
-              className={`${isAuthenticated ? 'w-8 px-0' : 'px-3'} h-8 flex items-center justify-center rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms] font-text text-[12px] font-semibold`}
-            >
-              {isAuthenticated ? <LayoutDashboard size={15} strokeWidth={1.6} /> : accountLabel}
-            </Link>
-          )}
-          {showFullMarketingNav && (
+
+          {isAuthenticated ? (
             <>
+              <Link
+                href={dashboardHref}
+                aria-label="Dashboard"
+                className="w-8 h-8 flex items-center justify-center rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms]"
+              >
+                <LayoutDashboard size={15} strokeWidth={1.6} />
+              </Link>
               <Link
                 href="/book"
                 aria-label="Book a session call"
@@ -268,12 +268,19 @@ export default function Nav({ authState }: NavProps) {
                 <span className={`block w-5 h-px bg-foreground transition-all duration-[240ms] ${menuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
               </button>
             </>
+          ) : (
+            <Link
+              href="/login"
+              className="px-3 h-8 flex items-center justify-center rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms] font-text text-[12px] font-semibold"
+            >
+              Login
+            </Link>
           )}
         </div>
       </nav>
 
-      {/* Mobile menu drawer */}
-      {showFullMarketingNav && (
+      {/* Mobile menu drawer — only rendered when authenticated */}
+      {isAuthenticated && (
         <div className={`fixed inset-0 top-16 z-40 bg-background flex flex-col lg:hidden transition-all duration-[300ms] ${menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} overflow-y-auto pb-12`}>
           <div className="flex flex-col px-6 py-8 gap-1">
             {items.map((item) => (
