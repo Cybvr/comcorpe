@@ -27,9 +27,10 @@
     "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "firebase-admin": "^13.10.0",
     "firebase-tools": "^15.18.0",
     "tailwindcss": "^4",
-    "tsx": "^4.22.0",
+    "tsx": "^4.22.3",
     "typescript": "^6.0.3"
   }
 }
