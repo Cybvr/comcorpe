@@ -66,6 +66,14 @@ export default function JobDetailPage({
   const [chatQuery, setChatQuery] = useState('')
   const [isAsking, setIsAsking] = useState(false)
   const [chatHistory, setChatHistory] = useState<{role: 'user' | 'assistant', content: string}[]>([])
+  const [isAddingMilestone, setIsAddingMilestone] = useState(false)
+  const [newMilestone, setNewMilestone] = useState({ title: '', date: '', amount: '' })
+  const [uploadedFiles, setUploadedFiles] = useState([
+    { name: 'Technical_Requirements_V1.pdf', size: '2.4MB', date: '2 days ago' },
+    { name: 'Brand_Guidelines_2025.pdf', size: '1.8MB', date: '5 days ago' }
+  ])
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     if (job) {
@@ -89,8 +97,6 @@ export default function JobDetailPage({
   const assignedPod = job.podSlug ? getPodBySlug(job.podSlug) : null
   const assignedPodMembers = assignedPod ? getPodMembers(assignedPod) : []
   const primaryPods = pods.slice(0, 2)
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
   const requestedTab = searchParams.get('tab')
   const activeTab = isJobTab(requestedTab) ? requestedTab : 'brief'
 
@@ -121,16 +127,6 @@ export default function JobDetailPage({
     setJobStatus('Cancelled')
     setConfirmCancel(false)
   }
-
-  // Local state for milestones
-  const [isAddingMilestone, setIsAddingMilestone] = useState(false)
-  const [newMilestone, setNewMilestone] = useState({ title: '', date: '', amount: '' })
-
-  // Knowledge Tab States
-  const [uploadedFiles, setUploadedFiles] = useState([
-    { name: 'Technical_Requirements_V1.pdf', size: '2.4MB', date: '2 days ago' },
-    { name: 'Brand_Guidelines_2025.pdf', size: '1.8MB', date: '5 days ago' }
-  ])
 
   const handleAddMilestone = () => {
     if (!newMilestone.title || !newMilestone.date) return
