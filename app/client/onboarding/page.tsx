@@ -7,10 +7,10 @@ import { Check, ArrowRight, ArrowLeft } from 'lucide-react'
 import { useCurrentUser, updateUserProfile } from '@/lib/user'
 
 const INDUSTRIES = ['Fintech', 'Banking', 'FMCG', 'Retail', 'Healthcare', 'Energy', 'Media', 'Other']
-const COMPANY_SIZES = ['1â€“10', '11â€“50', '51â€“200', '201â€“1000', '1000+']
+const COMPANY_SIZES = ['1-10', '11-50', '51-200', '201-1000', '1000+']
 const CHALLENGE_TYPES = ['Growth & Revenue', 'Brand & Marketing', 'Product & Innovation', 'Operations & Scaling', 'Market Entry', 'Customer Retention']
-const BUDGETS = ['Under $20k', '$20k â€“ $50k', '$50k â€“ $100k', '$100k â€“ $250k', '$250k+']
-const TIMELINES = ['Under 4 weeks', '4â€“8 weeks', '8â€“12 weeks', '3â€“6 months', '6+ months (retained)']
+const BUDGETS = ['Under $20k', '$20k - $50k', '$50k - $100k', '$100k - $250k', '$250k+']
+const TIMELINES = ['Under 4 weeks', '4-8 weeks', '8-12 weeks', '3-6 months', '6+ months (retained)']
 const SOURCES = ['Referral from colleague', 'LinkedIn', 'Google search', 'Comcorpe event', 'Press / media', 'Other']
 
 const TOTAL_STEPS = 3
