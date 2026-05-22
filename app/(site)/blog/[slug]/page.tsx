@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { use } from 'react'
 import { useBlogPostBySlug, useBlogPosts, getBlogHref } from '@/lib/blog'
 import { notFound } from 'next/navigation'
@@ -74,6 +75,19 @@ export default function BlogDetailPage({
             )}
           </div>
 
+          {/* Cover image */}
+          {post.coverImage && (
+            <div className="relative w-full h-64 md:h-[480px] mb-12 overflow-hidden border border-foreground">
+              <Image
+                src={post.coverImage}
+                alt={post.title}
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+          )}
+
           {/* Body + Sidebar */}
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] gap-16 items-start">
 
@@ -100,19 +114,28 @@ export default function BlogDetailPage({
                       <Link
                         key={p.id}
                         href={getBlogHref(p.slug)}
-                        className="group block bg-background hover:bg-primary/[0.03] px-5 py-4 transition-colors"
+                        className="group flex items-center gap-3 bg-background hover:bg-primary/[0.03] px-4 py-4 transition-colors"
                       >
-                        {p.category && (
-                          <span className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/60 block mb-1">
-                            {p.category}
-                          </span>
-                        )}
-                        <p className="font-display font-black text-[15px] leading-snug text-foreground group-hover:text-primary transition-colors">
-                          {p.title}
-                        </p>
-                        {p.publishedAt && (
-                          <p className="font-mono text-[9px] text-muted-foreground/50 mt-1">{p.publishedAt}</p>
-                        )}
+                        <div className="relative w-14 h-14 shrink-0 bg-muted overflow-hidden">
+                          {p.coverImage ? (
+                            <Image src={p.coverImage} alt={p.title} fill className="object-cover" />
+                          ) : (
+                            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/5 to-background" />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          {p.category && (
+                            <span className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/60 block mb-0.5">
+                              {p.category}
+                            </span>
+                          )}
+                          <p className="font-display font-black text-[14px] leading-snug text-foreground group-hover:text-primary transition-colors truncate">
+                            {p.title}
+                          </p>
+                          {p.publishedAt && (
+                            <p className="font-mono text-[9px] text-muted-foreground/50 mt-0.5">{p.publishedAt}</p>
+                          )}
+                        </div>
                       </Link>
                     ))}
                   </div>
@@ -132,21 +155,30 @@ export default function BlogDetailPage({
                   <Link
                     key={p.id}
                     href={getBlogHref(p.slug)}
-                    className="group bg-background p-8 hover:bg-primary/[0.03] transition-colors flex flex-col"
+                    className="group bg-background hover:bg-primary/[0.03] transition-colors flex flex-col"
                   >
-                    {p.category && (
-                      <span className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/60 mb-4">
-                        {p.category}
-                      </span>
-                    )}
-                    <h3 className="font-display font-black text-[22px] leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors mb-3">
-                      {p.title}
-                    </h3>
-                    <p className="font-text text-[14px] leading-relaxed text-muted-foreground line-clamp-3 mb-auto">
-                      {p.excerpt}
-                    </p>
-                    <div className="mt-8 font-mono text-xs uppercase tracking-eyebrow text-primary flex items-center gap-2 group-hover:gap-4 transition-all">
-                      Read <span>&rarr;</span>
+                    <div className="relative w-full h-44 bg-muted overflow-hidden">
+                      {p.coverImage ? (
+                        <Image src={p.coverImage} alt={p.title} fill className="object-cover group-hover:scale-[1.02] transition-transform duration-500" />
+                      ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/5 to-background" />
+                      )}
+                    </div>
+                    <div className="p-8 flex flex-col flex-1">
+                      {p.category && (
+                        <span className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/60 mb-4">
+                          {p.category}
+                        </span>
+                      )}
+                      <h3 className="font-display font-black text-[22px] leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors mb-3">
+                        {p.title}
+                      </h3>
+                      <p className="font-text text-[14px] leading-relaxed text-muted-foreground line-clamp-3 mb-auto">
+                        {p.excerpt}
+                      </p>
+                      <div className="mt-8 font-mono text-xs uppercase tracking-eyebrow text-primary flex items-center gap-2 group-hover:gap-4 transition-all">
+                        Read <span>&rarr;</span>
+                      </div>
                     </div>
                   </Link>
                 ))}
