@@ -112,10 +112,11 @@ export default function LoginPage() {
     }
 
     // Set session cookie
+    const idToken = await user.getIdToken()
     await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ uid: user.uid, role }),
+      body: JSON.stringify({ idToken, role }),
     })
 
     openDashboard(role)
