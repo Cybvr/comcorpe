@@ -627,19 +627,19 @@ function BuildTab({
             onChange={e => setPodName(e.target.value)}
             className="w-full px-4 py-3 border border-border rounded-xl font-text text-[15px] focus:outline-none focus:border-primary/40 transition-colors"
           />
-          <p className=”font-text text-[11px] text-muted-foreground/70 mt-2”>For your reference only — not shared with operators.</p>
+          <p className=”font-text text-[11px] text-muted-foreground/70 mt-2”>For your reference only &mdash; not shared with operators.</p>
         </section>
 
         {/* Attach to brief */}
         <section className="bg-background border border-border rounded-2xl p-6">
           <h2 className="font-display font-black text-[18px] tracking-[-0.02em] text-foreground mb-1">Attach to a brief</h2>
-          <p className=”font-text text-[12px] text-muted-foreground/70 mb-4”>Optional — you can attach later from the brief page.</p>
+          <p className=”font-text text-[12px] text-muted-foreground/70 mb-4”>Optional &mdash; you can attach later from the brief page.</p>
           <div className="space-y-2">
             <button
               onClick={() => setBriefSlug('')}
               className={`w-full text-left px-4 py-3 border rounded-xl font-text text-sm transition-colors ${briefSlug === '' ? 'border-primary bg-primary/5 text-primary font-semibold' : 'border-border text-muted-foreground hover:border-input'}`}
             >
-              No brief yet — submit for review only
+              No brief yet &mdash; submit for review only
             </button>
             {openBriefs.map(job => (
               <button
