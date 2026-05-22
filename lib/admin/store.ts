@@ -197,6 +197,38 @@ export async function deletePost(id: number): Promise<void> {
   await remove('posts', String(id))
 }
 
+// ─── Blog ─────────────────────────────────────────────────────────────────────
+import type { BlogPost } from '@/lib/blog'
+
+export async function getBlogPosts(): Promise<BlogPost[]> {
+  return readAll<BlogPost>('blog', [])
+}
+
+export async function createBlogPost(data: Omit<BlogPost, 'id'>): Promise<BlogPost> {
+  const id = Date.now().toString()
+  const record: BlogPost = {
+    id,
+    slug: data.slug || data.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+    title: data.title,
+    excerpt: data.excerpt,
+    body: data.body,
+    category: data.category,
+    publishedAt: data.publishedAt || new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+    author: data.author,
+    ...(data.coverImage ? { coverImage: data.coverImage } : {}),
+  }
+  await upsert('blog', id, record)
+  return record
+}
+
+export async function updateBlogPost(id: string, data: Partial<BlogPost>): Promise<void> {
+  await upsert('blog', id, data)
+}
+
+export async function deleteBlogPost(id: string): Promise<void> {
+  await remove('blog', id)
+}
+
 // ─── Spaces ───────────────────────────────────────────────────────────────────
 export async function getSpaces(): Promise<Space[]> {
   return readAll<Space>('spaces', spacesSeed)

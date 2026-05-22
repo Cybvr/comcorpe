@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import DashboardEventBanner from '@/components/dashboard/DashboardEventBanner'
 import {
   BookOpen,
+  Newspaper,
   Briefcase,
   CalendarDays,
   ChevronLeft,
@@ -86,6 +87,7 @@ const dashboardConfig: Record<
       { icon: Users, label: 'People', href: '/admin/people' },
       { icon: Users2, label: 'Pods', href: '/admin/pods' },
       { icon: BookOpen, label: 'Articles', href: '/admin/posts' },
+      { icon: Newspaper, label: 'Blog', href: '/admin/blog' },
     ],
     supportItems: [],
   },
