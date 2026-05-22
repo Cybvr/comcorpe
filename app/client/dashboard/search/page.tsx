@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, DollarSign, Layers3, MapPin, Plus, Search, Users, X, Sparkles, BrainCircuit } from 'lucide-react'
+import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, DollarSign, Layers3, MapPin, Plus, Search, Users, X, Sparkles, BrainCircuit, ShieldCheck } from 'lucide-react'
 import { usePods } from '@/lib/pods'
 import { useJobs } from '@/lib/jobs'
 import { getTalentProfile, getClientUser, type User } from '@/lib/user'
@@ -416,6 +416,13 @@ export default function DiscoverPage() {
                     </h3>
                     <p className="font-mono text-[9px] uppercase tracking-eyebrow text-primary/60 mt-1">{getTalentTitle(profile)}</p>
                   </div>
+
+                  {(profile.networkAffiliations ?? []).length > 0 && (
+                    <div className="mt-3 flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 rounded-md w-fit">
+                      <ShieldCheck size={10} className="text-green-600 shrink-0" strokeWidth={2.5} />
+                      <span className="font-mono text-[9px] uppercase tracking-eyebrow text-green-700 font-bold">Verified Network</span>
+                    </div>
+                  )}
 
                   <div className="mt-4 pt-4 border-t border-muted flex items-center justify-between gap-2 text-muted-foreground font-text text-[11px]">
                     <div className="flex items-center gap-2 truncate">

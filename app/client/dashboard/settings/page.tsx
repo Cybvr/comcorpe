@@ -12,7 +12,6 @@ export default function ClientSettingsGeneralPage() {
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState('')
   const [company, setCompany] = useState('')
-  const [profileOverride, setProfileOverride] = useState<{ name?: string; company?: string; initials?: string }>({})
   const [saving, setSaving] = useState(false)
 
   const handleSave = async () => {
@@ -33,7 +32,6 @@ export default function ClientSettingsGeneralPage() {
         initials: computedInitials,
       })
 
-      setProfileOverride({ name, company, initials: computedInitials })
       setEditing(false)
     } catch (err) {
       console.error('Error saving profile changes:', err)
@@ -51,8 +49,8 @@ export default function ClientSettingsGeneralPage() {
       setEditing(false)
       return
     }
-    setName(profileOverride.name ?? currentUser.name)
-    setCompany(profileOverride.company ?? currentUser.company ?? '')
+    setName(currentUser.name)
+    setCompany(currentUser.company ?? '')
     setEditing(true)
   }
 
@@ -63,9 +61,6 @@ export default function ClientSettingsGeneralPage() {
     .reduce((sum, i) => sum + i.amountRaw, 0)
 
   const inputClass = 'w-full px-4 py-3 border border-input bg-background font-text text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors duration-100'
-  const displayName = profileOverride.name ?? currentUser.name
-  const displayCompany = profileOverride.company ?? currentUser.company ?? ''
-  const displayInitials = profileOverride.initials ?? currentUser.initials
 
   return (
     <div className="space-y-8">
@@ -73,7 +68,7 @@ export default function ClientSettingsGeneralPage() {
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-5">
           <div className="grid grid-cols-[auto_1fr] gap-5 items-start">
             <div className="w-20 h-20 rounded-2xl bg-foreground flex items-center justify-center font-display font-black text-[24px] text-background">
-              {displayInitials}
+              {currentUser.initials}
             </div>
 
             <div className="min-w-0">
@@ -95,14 +90,13 @@ export default function ClientSettingsGeneralPage() {
                   >
                     {saving ? 'Saving...' : 'Save changes'}
                   </button>
-                  <p className="font-mono text-[10px] text-muted-foreground/70">Changes are saved directly in Firebase Firestore.</p>
                 </div>
               ) : (
                 <div>
-                  <h2 className="font-display font-black text-[24px] tracking-[-0.02em] text-foreground leading-tight">{displayName}</h2>
+                  <h2 className="font-display font-black text-[24px] tracking-[-0.02em] text-foreground leading-tight">{currentUser.name}</h2>
                   <div className="mt-3 flex flex-col gap-2">
                     <span className="flex items-center gap-2 font-text text-sm text-muted-foreground">
-                      <Building2 size={14} strokeWidth={1.5} /> {displayCompany || 'Company not set'}
+                      <Building2 size={14} strokeWidth={1.5} /> {currentUser.company || 'Company not set'}
                     </span>
                     <span className="flex items-center gap-2 font-text text-sm text-primary">
                       <Mail size={14} strokeWidth={1.5} /> {currentUser.email}
@@ -145,11 +139,10 @@ export default function ClientSettingsGeneralPage() {
                 <p className="font-text text-sm font-semibold text-foreground truncate">{job.title}</p>
                 <p className="font-mono text-[10px] text-muted-foreground/70 mt-0.5">{job.type} Â· {job.rate}</p>
               </div>
-              <span className={`shrink-0 font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 rounded-full ${
-                job.status === 'Active' ? 'bg-green-100 text-green-700'
-                : job.status === 'Completed' ? 'bg-border text-muted-foreground'
-                : 'bg-primary/10 text-primary'
-              }`}>
+              <span className={`shrink-0 font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 rounded-full ${job.status === 'Active' ? 'bg-green-100 text-green-700'
+                  : job.status === 'Completed' ? 'bg-border text-muted-foreground'
+                    : 'bg-primary/10 text-primary'
+                }`}>
                 {job.status}
               </span>
             </div>

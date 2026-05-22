@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { getTalent, createTalent, updateTalent, deleteTalent } from '@/lib/admin/store'
-import type { User } from '@/lib/user'
+import { User, OMNICOM_AGENCIES } from '@/lib/user'
 import Modal from '@/components/admin/Modal'
 
 const EMPTY = {
@@ -14,6 +14,7 @@ const EMPTY = {
   rateMax: '',
   featured: false,
   image: '',
+  networkAffiliations: [] as string[],
 }
 
 type TalentFormState = typeof EMPTY
@@ -67,10 +68,11 @@ function TalentForm({
       desc: initial.desc ?? '',
       featured: initial.featured ?? false,
       image: initial.image ?? '',
+      networkAffiliations: initial.networkAffiliations ?? [],
     }
   })
 
-  function set(field: keyof TalentFormState, value: string | boolean) {
+  function set(field: keyof TalentFormState, value: any) {
     setForm(f => ({ ...f, [field]: value }))
   }
 
@@ -97,6 +99,7 @@ function TalentForm({
       rate,
       featured: form.featured,
       image: form.image,
+      networkAffiliations: form.networkAffiliations,
     })
   }
 
@@ -106,6 +109,35 @@ function TalentForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <div className={F}>
+        <label className={L}>Profile picture</label>
+        <div className="w-full border-2 border-dashed border-input rounded-xl p-6 flex flex-col items-center justify-center gap-2 hover:border-primary/50 transition-colors bg-background/50 cursor-pointer text-center relative">
+          <input 
+            type="file" 
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                 set('image', URL.createObjectURL(e.target.files[0]))
+              }
+            }} 
+          />
+          {form.image ? (
+            <div className="flex flex-col items-center gap-2 pointer-events-none">
+              <img src={form.image} alt="Profile" className="w-12 h-12 rounded-full object-cover shadow-sm border border-border" />
+              <p className="font-text text-xs text-foreground font-medium">Image selected</p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-1 pointer-events-none">
+              <div className="w-10 h-10 rounded-full bg-border/50 flex items-center justify-center text-muted-foreground/70 mb-1">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              </div>
+              <p className="font-text text-sm text-foreground">Click or drag image to upload</p>
+              <p className="font-text text-[11px] text-muted-foreground">PNG, JPG up to 5MB</p>
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div className={F}>
           <label className={L}>First name *</label>
@@ -150,8 +182,17 @@ function TalentForm({
       </div>
 
       <div className={F}>
-        <label className={L}>Image path</label>
-        <input className={I} value={form.image ?? ''} onChange={e => set('image', e.target.value)} placeholder="/images/talent/Name.png" />
+        <label className={L}>Omnicom Network Affiliate</label>
+        <select
+          className={I}
+          value={form.networkAffiliations?.[0] ?? ''}
+          onChange={e => set('networkAffiliations', e.target.value ? [e.target.value] : [])}
+        >
+          <option value="">None</option>
+          {OMNICOM_AGENCIES.map(agency => (
+            <option key={agency} value={agency}>{agency}</option>
+          ))}
+        </select>
       </div>
 
       <div className="flex items-center gap-3">
@@ -254,7 +295,7 @@ export default function AdminTalentPage() {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               {user.featured && (
-                <span className="font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 bg-primary/10 text-primary">
+               <span className="font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 bg-primary/10 text-primary">
                   Featured
                 </span>
               )}

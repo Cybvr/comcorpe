@@ -165,6 +165,38 @@ export async function getPosts(): Promise<Post[]> {
   return readAll<Post>('posts', postsSeed)
 }
 
+export async function createPost(data: Omit<Post, 'id'> & { id?: number }): Promise<Post> {
+  const all = await getPosts()
+  const nextId = all.length > 0 ? Math.max(...all.map(p => p.id)) + 1 : 1
+  const idStr = String(nextId)
+  const record: Post = {
+    id: nextId,
+    slug: data.slug || data.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+    authorId: data.authorId || '',
+    author: data.author || '',
+    role: data.role || 'Contributor',
+    badge: data.badge || 'Strategy',
+    title: data.title || '',
+    body: data.body || '',
+    likes: data.likes || 0,
+    replies: data.replies || 0,
+    category: data.category || 'Strategy',
+  }
+  await upsert('posts', idStr, record)
+  return record
+}
+
+export async function updatePost(id: number, data: Partial<Post>): Promise<void> {
+  const all = await getPosts()
+  const existing = all.find(p => p.id === id)
+  if (!existing) return
+  await upsert('posts', String(id), { ...existing, ...data })
+}
+
+export async function deletePost(id: number): Promise<void> {
+  await remove('posts', String(id))
+}
+
 // ─── Spaces ───────────────────────────────────────────────────────────────────
 export async function getSpaces(): Promise<Space[]> {
   return readAll<Space>('spaces', spacesSeed)

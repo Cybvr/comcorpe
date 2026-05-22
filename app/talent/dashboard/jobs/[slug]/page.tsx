@@ -4,7 +4,7 @@ import { use, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { ArrowLeft, Clock, MapPin, Target, LayoutDashboard, Users2, CreditCard, Share2, Check } from 'lucide-react'
+import { ArrowLeft, Clock, Download, FileText, MapPin, Target, LayoutDashboard, Users2, CreditCard, Share2, Check } from 'lucide-react'
 import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
 import { getTalentProfile, getClientUser } from '@/lib/user'
 import { getJobProgress, useJobBySlug } from '@/lib/jobs'
@@ -42,7 +42,7 @@ export default function TalentJobDetailPage({
 
   if (loading) {
     return (
-      <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto animate-pulse">
+      <div className="w-full max-w-[1040px] mx-auto px-4 py-6 sm:px-6 lg:px-8 lg:py-8 animate-pulse">
         <div className="h-4 w-24 bg-muted rounded mb-8" />
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
           <div className="space-y-3">
@@ -75,34 +75,25 @@ export default function TalentJobDetailPage({
 
   const assignedPod = job.podSlug ? getPodBySlug(job.podSlug) : null
   const assignedPodMembers = assignedPod ? getPodMembers(assignedPod) : []
+  const jobMilestones = job.milestones ?? []
+  const jobDocuments = job.documents ?? []
 
   return (
-    <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">
+    <div className="w-full max-w-[1040px] mx-auto px-4 py-6 sm:px-6 lg:px-8 lg:py-8 overflow-x-hidden">
       <Link href="/talent/dashboard/jobs" className="font-text text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2 mb-8">
         <ArrowLeft size={14} /> Back to jobs
       </Link>
 
-      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
-        <div>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div className="min-w-0">
           <div className="flex items-center gap-3 mb-2">
             <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-0.5 rounded-sm border ${statusStyles[job.status as keyof typeof statusStyles]}`}>
               {job.status}
             </span>
-            <span className="font-display font-black text-[10px] text-muted-foreground/70 uppercase tracking-widest">{getClientUser(job.clientId).name}</span>
           </div>
           <h1 className="font-display font-black text-[28px] tracking-[-0.03em] text-foreground leading-tight">{job.title}</h1>
-          <div className="flex items-center gap-4 mt-3 font-text text-[13px] text-muted-foreground">
-            <div className="flex items-center gap-1.5">
-              <MapPin size={14} strokeWidth={1.5} className="text-muted-foreground/70" />
-              {job.location}
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Clock size={14} strokeWidth={1.5} className="text-muted-foreground/70" />
-              {job.updatedAt}
-            </div>
-          </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={handleShare}
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-background border border-border rounded-full font-text text-sm font-semibold hover:border-input transition-colors"
@@ -116,27 +107,30 @@ export default function TalentJobDetailPage({
         </div>
       </div>
 
-      <Tabs defaultValue="job" className="w-full">
+      <Tabs defaultValue="job" className="w-full min-w-0">
         <div className="mb-8 w-full overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <TabsList className="w-max">
-            <TabsTrigger value="job" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="job" className="flex min-w-0 items-center justify-center gap-2">
               <Target size={14} /> Job
             </TabsTrigger>
-            <TabsTrigger value="milestones" className="flex items-center gap-2">
+            <TabsTrigger value="milestones" className="flex min-w-0 items-center justify-center gap-2">
               <LayoutDashboard size={14} /> Milestones
             </TabsTrigger>
-            <TabsTrigger value="pod" className="flex items-center gap-2">
+            <TabsTrigger value="pod" className="flex min-w-0 items-center justify-center gap-2">
               <Users2 size={14} /> Team
             </TabsTrigger>
-            <TabsTrigger value="payments" className="flex items-center gap-2">
+            <TabsTrigger value="knowledge" className="flex min-w-0 items-center justify-center gap-2">
+              <FileText size={14} /> Knowledge
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="flex min-w-0 items-center justify-center gap-2">
               <CreditCard size={14} /> Payments
             </TabsTrigger>
           </TabsList>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_300px] gap-8 items-start">
-          <div className="space-y-8 min-w-0">
-            <TabsContent value="job" className="mt-0">
+        <div className="grid min-w-0 grid-cols-1 xl:grid-cols-[minmax(0,1fr)_300px] gap-8 items-start">
+          <div className="min-w-0 max-w-full min-h-[calc(100vh-220px)] space-y-8">
+            <TabsContent value="job" className="mt-0 min-w-0 max-w-full overflow-hidden">
               <section className="py-2 border-t border-border">
                 <h2 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-6 mt-4">Job summary</h2>
                 <p className="font-text text-[16px] leading-relaxed text-muted-foreground mb-8 max-w-[70ch]">
@@ -167,13 +161,76 @@ export default function TalentJobDetailPage({
               </section>
             </TabsContent>
 
-            <TabsContent value="milestones" className="mt-0">
-              <div className="py-12 text-center border border-dashed border-border rounded-xl">
-                <p className="font-text text-muted-foreground/70 text-sm">Milestones coming soon</p>
-              </div>
+            <TabsContent value="milestones" className="mt-0 min-w-0 max-w-full space-y-8 overflow-hidden">
+              <section className="border-t border-border">
+                <div className="flex items-center justify-between py-4">
+                  <h2 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Milestones</h2>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                    <span className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70">{getJobProgress(job)}% Velocity</span>
+                  </div>
+                </div>
+
+                {jobMilestones.length > 0 ? (
+                  <div className="max-w-full overflow-x-auto border border-border">
+                    <table className="w-full table-fixed text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-border bg-muted/50">
+                          <th className="w-[112px] px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 font-semibold">Status</th>
+                          <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 font-semibold">Milestone</th>
+                          <th className="w-[104px] px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 font-semibold">Due</th>
+                          <th className="w-[104px] px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 font-semibold text-right">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border">
+                        {jobMilestones.map(ms => (
+                          <tr key={ms.id} className="hover:bg-muted/30 transition-colors">
+                            <td className="px-4 py-3 whitespace-nowrap">
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider ${
+                                ms.status === 'completed' ? 'bg-primary/10 text-primary border-primary/20' :
+                                ms.status === 'in-progress' ? 'bg-accent/5 text-accent border-accent/20' :
+                                'bg-border text-muted-foreground/70 border-input'
+                              }`}>
+                                {ms.status}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3">
+                              <p className="font-text text-sm font-bold text-foreground truncate">{ms.title}</p>
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap">
+                              <p className="font-text text-[10px] text-muted-foreground/70 uppercase tracking-tight">{ms.date}</p>
+                            </td>
+                            <td className="px-4 py-3 text-right">
+                              <span className="font-mono text-[11px] font-bold text-foreground">{ms.amount ?? '-'}</span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="py-12 text-center border border-dashed border-border rounded-xl">
+                    <p className="font-text text-muted-foreground/70 text-sm">No milestones yet.</p>
+                  </div>
+                )}
+              </section>
+
+              {job.updates && job.updates.length > 0 && (
+                <section className="border-t border-border">
+                  <h3 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-4 mt-4">Pulse updates</h3>
+                  <ul className="space-y-3">
+                    {job.updates.map((update, i) => (
+                      <li key={i} className="flex items-start gap-3 font-text text-sm text-muted-foreground leading-relaxed">
+                        <div className="w-1 h-1 bg-primary/30 rounded-full mt-2 shrink-0" />
+                        {update}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
             </TabsContent>
 
-            <TabsContent value="pod" className="mt-0">
+            <TabsContent value="pod" className="mt-0 min-w-0 max-w-full overflow-hidden">
               <section className="border-t border-border">
                 <div className="flex items-center justify-between py-4">
                   <h3 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Project Team</h3>
@@ -208,7 +265,38 @@ export default function TalentJobDetailPage({
               </section>
             </TabsContent>
 
-            <TabsContent value="payments" className="mt-0">
+            <TabsContent value="knowledge" className="mt-0 min-w-0 max-w-full overflow-hidden">
+              <section className="py-2 border-t border-border">
+                <div className="mt-4 space-y-3">
+                  <h3 className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70">Engagement documents</h3>
+
+                  {jobDocuments.length > 0 ? (
+                    <div className="space-y-2">
+                      {jobDocuments.map((file, i) => (
+                        <div key={i} className="flex items-center justify-between p-3 bg-muted/50 border border-border rounded-lg group">
+                          <a href={file.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 min-w-0 flex-1 hover:opacity-80 transition-opacity">
+                            <FileText size={16} className="text-primary/70 shrink-0" />
+                            <div className="min-w-0">
+                              <p className="font-text text-xs font-bold text-foreground truncate">{file.name}</p>
+                              <p className="font-text text-[9px] text-muted-foreground/70">{file.size} · {file.uploadedAt}</p>
+                            </div>
+                          </a>
+                          <a href={file.url} download={file.name} className="p-1.5 text-muted-foreground/50 hover:text-foreground rounded-sm transition-all shrink-0 ml-2" aria-label={`Download ${file.name}`}>
+                            <Download size={13} />
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="py-12 text-center border border-dashed border-border rounded-xl">
+                      <p className="font-text text-muted-foreground/70 text-sm">No documents have been shared yet.</p>
+                    </div>
+                  )}
+                </div>
+              </section>
+            </TabsContent>
+
+            <TabsContent value="payments" className="mt-0 min-w-0 max-w-full overflow-hidden">
               {(() => {
                 const jobPayouts = payouts.filter(p => p.jobSlug === job.slug)
                 const cleared = jobPayouts.filter(p => p.status === 'Cleared').reduce((a, p) => a + p.amountRaw, 0)
@@ -222,7 +310,7 @@ export default function TalentJobDetailPage({
                 return (
                   <section className="border-t border-border">
                     <h2 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-6 mt-4">Your earnings</h2>
-                    <div className="grid grid-cols-3 gap-4 mb-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
                       <div className="bg-foreground text-background rounded-2xl p-5">
                         <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-2">Cleared</p>
                         <p className="font-display font-black text-[28px] tracking-[-0.03em] leading-none">${cleared.toLocaleString()}</p>
@@ -240,14 +328,14 @@ export default function TalentJobDetailPage({
                         )}
                       </div>
                     </div>
-                    <div className="border border-border overflow-hidden">
-                      <table className="w-full text-left border-collapse">
+                    <div className="max-w-full overflow-x-auto border border-border">
+                      <table className="w-full table-fixed text-left border-collapse">
                         <thead>
                           <tr className="border-b border-border bg-muted/50">
-                            <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70">Status</th>
+                            <th className="w-[104px] px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70">Status</th>
                             <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70">Milestone</th>
-                            <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 text-right">Amount</th>
-                            <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70">Date</th>
+                            <th className="w-[104px] px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 text-right">Amount</th>
+                            <th className="w-[104px] px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70">Date</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-border">
@@ -259,8 +347,8 @@ export default function TalentJobDetailPage({
                                 </span>
                               </td>
                               <td className="px-4 py-3">
-                                <p className="font-text text-sm font-semibold text-foreground">{p.label}</p>
-                                <p className="font-text text-[10px] text-muted-foreground/60 mt-0.5">{p.meta}</p>
+                                <p className="font-text text-sm font-semibold text-foreground truncate">{p.label}</p>
+                                <p className="font-text text-[10px] text-muted-foreground/60 mt-0.5 truncate">{p.meta}</p>
                               </td>
                               <td className="px-4 py-3 text-right">
                                 <span className="font-mono text-[11px] font-bold text-foreground">{p.amount}</span>
@@ -284,25 +372,43 @@ export default function TalentJobDetailPage({
           </div>
 
           <aside className="space-y-6">
-            <div className="p-6 bg-foreground text-background rounded-lg shadow-sm">
+            <div className="p-6 text-foreground border border-border rounded-lg">
               <div className="space-y-4">
                 <div>
-                  <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-1">Commercial structure</p>
+                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Client</p>
+                  <p className="font-display font-black text-lg">{getClientUser(job.clientId).name}</p>
+                </div>
+                <div>
+                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Commercial structure</p>
                   <p className="font-display font-black text-lg">{job.rate}</p>
                 </div>
                 <div>
-                  <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-1">Expected duration</p>
+                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Expected duration</p>
                   <p className="font-display font-black text-lg">{job.time}</p>
+                </div>
+                <div>
+                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Location</p>
+                  <p className="font-display font-black text-lg flex items-center gap-2">
+                    <MapPin size={15} strokeWidth={1.5} className="text-muted-foreground/70" />
+                    {job.location}
+                  </p>
+                </div>
+                <div>
+                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Updated</p>
+                  <p className="font-display font-black text-lg flex items-center gap-2">
+                    <Clock size={15} strokeWidth={1.5} className="text-muted-foreground/70" />
+                    {job.updatedAt}
+                  </p>
                 </div>
                 {job.startDate && (
                   <div>
-                    <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-1">Engagement dates</p>
+                    <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Engagement dates</p>
                     <p className="font-display font-black text-lg tracking-tight">{job.startDate}{' — '}{job.endDate || 'Present'}</p>
                   </div>
                 )}
                 {job.lead && (
                   <div>
-                    <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-1">Strategic pod lead</p>
+                    <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Strategic pod lead</p>
                     <p className="font-display font-black text-lg">{job.lead}</p>
                   </div>
                 )}

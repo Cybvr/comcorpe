@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
@@ -10,13 +10,13 @@ export default function DashboardPostComposer() {
 
   return (
     <div className="border border-border rounded-xl p-4 bg-background">
-      <div className="flex items-center gap-3 mb-3">
+      <div className="flex items-center gap-3">
         <div className="w-8 h-8 rounded-full bg-foreground flex items-center justify-center font-display font-black text-[11px] text-background shrink-0">
           {currentUser?.initials ?? ''}
         </div>
         <input
           className="flex-1 bg-border/60 rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none border border-transparent focus:border-input transition-colors"
-          placeholder="Ask the community for help"
+          placeholder=""
           value={postText}
           onChange={(event) => setPostText(event.target.value)}
         />

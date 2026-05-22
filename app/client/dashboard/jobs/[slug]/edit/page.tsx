@@ -139,7 +139,7 @@ export default function EditBriefPage({
   }
 
   return (
-    <div className="w-full max-w-[760px] md:w-[760px] mx-auto py-12 px-4">
+    <div className="w-full max-w-[760px] mx-auto py-12 px-4">
       <Link
         href={`/client/dashboard/jobs/${slug}`}
         className="inline-flex items-center gap-2 text-muted-foreground/70 hover:text-foreground text-xs font-bold uppercase tracking-wider mb-10 transition-colors"

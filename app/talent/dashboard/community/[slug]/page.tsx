@@ -39,7 +39,7 @@ export default function CommunityPostPage({
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">
       <Link href="/talent/dashboard/community" className="font-text text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2 mb-8">
-        <ArrowLeft size={14} /> Back to community
+        <ArrowLeft size={14} /> Back to articles
       </Link>
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-8 items-start">
@@ -96,9 +96,9 @@ export default function CommunityPostPage({
       {otherPosts.length > 0 && (
         <section className="mt-10">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-foreground">More from the community</h2>
+            <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-foreground">More articles</h2>
             <Link href="/talent/dashboard/community" className="font-text text-xs text-primary hover:underline">
-              View all posts
+              View all articles
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

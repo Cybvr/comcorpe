@@ -7,6 +7,14 @@ import { db } from './firebase'
 export type JobType = 'RETAINED' | 'PROJECT' | 'EQUITY'
 export type JobStatus = 'Scoping' | 'Pod review' | 'Active' | 'Paused' | 'Completed' | 'Cancelled'
 
+export interface JobDocument {
+  name: string
+  size: string
+  url: string
+  storagePath: string
+  uploadedAt: string
+}
+
 export interface Milestone {
   id: string
   title: string
@@ -42,6 +50,7 @@ export interface Job {
   scope: string[]
   requirements: string[]
   milestones?: Milestone[]
+  documents?: JobDocument[]
 }
 
 export const jobs: Job[] = []

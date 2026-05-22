@@ -25,17 +25,18 @@ import {
   Pause,
   Play,
   Share2,
-  Mail,
   Link2,
-  ExternalLink,
 } from 'lucide-react'
 import { usePods, getPodMembers } from '@/lib/pods'
 import { getTalentProfile, useUsers } from '@/lib/user'
-import { getJobProgress } from '@/lib/jobs'
+import { getJobProgress, type JobDocument } from '@/lib/jobs'
 import { useJobBySlug } from '@/lib/jobs'
 import { updateJob, createPod } from '@/lib/admin/store'
 import { invoices, getInvoice } from '@/lib/invoices'
 import { contractTerms } from '@/lib/contract'
+import { storage, db } from '@/lib/firebase'
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
+import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -67,8 +68,11 @@ export default function JobDetailPage({
   const [jobStatus, setJobStatus] = useState('Scoping')
   const [localMilestones, setLocalMilestones] = useState<any[]>([])
   const [copied, setCopied] = useState(false)
-  const [showSharePopup, setShowSharePopup] = useState(false)
-  const sharePopupRef = useRef<HTMLDivElement>(null)
+  const [showShareModal, setShowShareModal] = useState(false)
+  const [shareEmails, setShareEmails] = useState('')
+  const [shareDescription, setShareDescription] = useState('')
+  const [sharePermission, setSharePermission] = useState<'view' | 'edit'>('view')
+  const [shareSent, setShareSent] = useState(false)
   const [showCreatePod, setShowCreatePod] = useState(false)
   const [podName, setPodName] = useState('')
   const [podMemberSearch, setPodMemberSearch] = useState('')
@@ -78,10 +82,9 @@ export default function JobDetailPage({
 
   const [isAddingMilestone, setIsAddingMilestone] = useState(false)
   const [newMilestone, setNewMilestone] = useState({ title: '', date: '', amount: '' })
-  const [uploadedFiles, setUploadedFiles] = useState([
-    { name: 'Technical_Requirements_V1.pdf', size: '2.4MB', date: '2 days ago' },
-    { name: 'Brand_Guidelines_2025.pdf', size: '1.8MB', date: '5 days ago' }
-  ])
+  const [uploadingFiles, setUploadingFiles] = useState<{ name: string; progress: number }[]>([])
+  const [deletingDoc, setDeletingDoc] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
@@ -92,19 +95,9 @@ export default function JobDetailPage({
     }
   }, [job])
 
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (sharePopupRef.current && !sharePopupRef.current.contains(e.target as Node)) {
-        setShowSharePopup(false)
-      }
-    }
-    if (showSharePopup) document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [showSharePopup])
-
   if (loading) {
     return (
-      <div className="w-full max-w-[1040px] xl:w-[1040px] mx-auto px-4 py-6 sm:px-6 lg:px-8 lg:py-8 animate-pulse">
+      <div className="w-full max-w-[1040px] mx-auto px-4 py-6 sm:px-6 lg:px-8 lg:py-8 animate-pulse">
         <div className="h-4 w-24 bg-muted rounded mb-8" />
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
           <div className="space-y-3">
@@ -167,7 +160,18 @@ export default function JobDetailPage({
   const handleCopyLink = async () => {
     await navigator.clipboard.writeText(window.location.href)
     setCopied(true)
-    setTimeout(() => { setCopied(false); setShowSharePopup(false) }, 1800)
+    setTimeout(() => setCopied(false), 1800)
+  }
+
+  const handleSendInvite = () => {
+    setShareSent(true)
+    setTimeout(() => {
+      setShareSent(false)
+      setShowShareModal(false)
+      setShareEmails('')
+      setShareDescription('')
+      setSharePermission('view')
+    }, 1400)
   }
 
   const handleCreatePod = async () => {
@@ -230,60 +234,85 @@ export default function JobDetailPage({
     setLocalMilestones(prev => prev.filter(m => m.id !== id))
   }
 
+  const handleFilesSelected = (files: FileList | null) => {
+    if (!files) return
+    Array.from(files).forEach(file => {
+      const storagePath = `jobs/${slug}/documents/${Date.now()}-${file.name}`
+      const storageRef = ref(storage, storagePath)
+      const task = uploadBytesResumable(storageRef, file)
+
+      setUploadingFiles(prev => [...prev, { name: file.name, progress: 0 }])
+
+      task.on(
+        'state_changed',
+        snap => {
+          const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100)
+          setUploadingFiles(prev => prev.map(f => f.name === file.name ? { ...f, progress: pct } : f))
+        },
+        err => {
+          console.error('Upload failed:', err)
+          setUploadingFiles(prev => prev.filter(f => f.name !== file.name))
+        },
+        async () => {
+          const url = await getDownloadURL(task.snapshot.ref)
+          const sizeKb = file.size / 1024
+          const sizeStr = sizeKb >= 1024
+            ? `${(sizeKb / 1024).toFixed(1)}MB`
+            : `${Math.round(sizeKb)}KB`
+          const newDoc: JobDocument = {
+            name: file.name,
+            size: sizeStr,
+            url,
+            storagePath,
+            uploadedAt: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+          }
+          await updateDoc(doc(db, 'jobs', slug), { documents: arrayUnion(newDoc) })
+          setUploadingFiles(prev => prev.filter(f => f.name !== file.name))
+        }
+      )
+    })
+  }
+
+  const handleDeleteDoc = async (document: JobDocument) => {
+    setDeletingDoc(document.storagePath)
+    try {
+      await deleteObject(ref(storage, document.storagePath))
+    } catch {
+      // File may already be gone from storage; still remove from Firestore
+    }
+    await updateDoc(doc(db, 'jobs', slug), { documents: arrayRemove(document) })
+    setDeletingDoc(null)
+  }
+
   const jobUrl = typeof window !== 'undefined' ? window.location.href : ''
 
   return (
-    <div className="w-full max-w-[1040px] xl:w-[1040px] mx-auto px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-      <Link href="/client/dashboard/jobs" className="font-text text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2 mb-8">
-        <ArrowLeft size={14} /> Back to briefs
-      </Link>
-
-      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
-        <div>
+    <div className="w-full max-w-[1040px] mx-auto px-4 py-6 sm:px-6 lg:px-8 lg:py-8 overflow-x-hidden">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div className="min-w-0">
           <div className="flex items-center gap-3 mb-2">
+            <Link
+              href="/client/dashboard/jobs"
+              aria-label="Back to briefs"
+              title="Back to briefs"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted-foreground hover:border-input hover:text-foreground transition-colors"
+            >
+              <ArrowLeft size={14} />
+            </Link>
             <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-0.5 rounded-sm border ${statusStyles[jobStatus as keyof typeof statusStyles]}`}>
               {jobStatus}
             </span>
           </div>
           <h1 className="font-display font-black text-[28px] tracking-[-0.03em] text-foreground leading-tight">{job.title}</h1>
-          <div className="flex items-center gap-4 mt-3 font-text text-[13px] text-muted-foreground">
-            <div className="flex items-center gap-1.5">
-              <MapPin size={14} strokeWidth={1.5} className="text-muted-foreground/70" />
-              {job.location}
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Clock size={14} strokeWidth={1.5} className="text-muted-foreground/70" />
-              {job.updatedAt}
-            </div>
-          </div>
         </div>
         {jobStatus !== 'Completed' && jobStatus !== 'Cancelled' && (
-          <div className="flex items-center gap-3">
-            <div className="relative" ref={sharePopupRef}>
-              <button
-                onClick={() => setShowSharePopup(v => !v)}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-background border border-border rounded-full font-text text-sm font-semibold hover:border-input transition-colors"
-              >
-                <Share2 size={14} /> Share
-              </button>
-              {showSharePopup && (
-                <div className="absolute right-0 top-full mt-2 w-52 bg-background border border-border rounded-xl shadow-lg overflow-hidden z-50">
-                  <button onClick={handleCopyLink} className="flex items-center gap-3 w-full px-4 py-3 font-text text-sm text-foreground hover:bg-muted transition-colors">
-                    {copied ? <Check size={15} className="text-green-500" /> : <Link2 size={15} />}
-                    {copied ? 'Copied!' : 'Copy link'}
-                  </button>
-                  <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(jobUrl)}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-4 py-3 font-text text-sm text-foreground hover:bg-muted transition-colors">
-                    <ExternalLink size={15} /> LinkedIn
-                  </a>
-                  <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(jobUrl)}&text=${encodeURIComponent(job.title)}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-4 py-3 font-text text-sm text-foreground hover:bg-muted transition-colors">
-                    <ExternalLink size={15} /> X / Twitter
-                  </a>
-                  <a href={`mailto:?subject=${encodeURIComponent(job.title)}&body=${encodeURIComponent(jobUrl)}`} className="flex items-center gap-3 px-4 py-3 font-text text-sm text-foreground hover:bg-muted transition-colors">
-                    <Mail size={15} /> Email
-                  </a>
-                </div>
-              )}
-            </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              onClick={() => setShowShareModal(true)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-background border border-border rounded-full font-text text-sm font-semibold hover:border-input transition-colors"
+            >
+              <Share2 size={14} /> Share
+            </button>
             <Link href={`/client/dashboard/jobs/${job.slug}/edit`} className="inline-flex items-center gap-2 px-5 py-2.5 bg-background border border-border rounded-full font-text text-sm font-semibold hover:border-input transition-colors">
               <Pencil size={14} />
               Edit
@@ -312,9 +341,110 @@ export default function JobDetailPage({
         )}
       </div>
 
+      {showShareModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
+          <div className="w-full max-w-[520px] rounded-2xl border border-border bg-background shadow-2xl">
+            <div className="flex items-center justify-between border-b border-border px-6 py-4">
+              <div>
+                <h2 className="font-display text-lg font-black tracking-tight text-foreground">Share job</h2>
+                <p className="font-text text-xs text-muted-foreground mt-0.5">{job.title}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowShareModal(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                aria-label="Close share modal"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="space-y-5 px-6 py-5">
+              <div>
+                <label className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 block mb-2">People</label>
+                <textarea
+                  value={shareEmails}
+                  onChange={e => setShareEmails(e.target.value)}
+                  rows={2}
+                  placeholder="Add emails separated by commas"
+                  className="w-full resize-none rounded-xl border border-border bg-muted/40 px-4 py-3 font-text text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-muted-foreground/50"
+                />
+              </div>
+
+              <div>
+                <label className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 block mb-2">Description</label>
+                <textarea
+                  value={shareDescription}
+                  onChange={e => setShareDescription(e.target.value)}
+                  rows={4}
+                  placeholder="Add context for the people you are inviting..."
+                  className="w-full resize-none rounded-xl border border-border bg-muted/40 px-4 py-3 font-text text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-muted-foreground/50"
+                />
+              </div>
+
+              <div>
+                <label className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 block mb-2">Access</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSharePermission('view')}
+                    className={`rounded-xl border px-4 py-3 text-left transition-colors ${
+                      sharePermission === 'view' ? 'border-foreground bg-foreground text-background' : 'border-border bg-background text-foreground hover:border-input'
+                    }`}
+                  >
+                    <span className="block font-text text-sm font-semibold">Can view</span>
+                    <span className="block font-text text-[11px] opacity-70 mt-0.5">Read-only access</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSharePermission('edit')}
+                    className={`rounded-xl border px-4 py-3 text-left transition-colors ${
+                      sharePermission === 'edit' ? 'border-foreground bg-foreground text-background' : 'border-border bg-background text-foreground hover:border-input'
+                    }`}
+                  >
+                    <span className="block font-text text-sm font-semibold">Can edit</span>
+                    <span className="block font-text text-[11px] opacity-70 mt-0.5">Update the brief</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 rounded-xl border border-border bg-muted/30 px-3 py-2">
+                <input readOnly value={jobUrl} className="min-w-0 flex-1 bg-transparent font-text text-xs text-muted-foreground focus:outline-none" />
+                <button
+                  type="button"
+                  onClick={handleCopyLink}
+                  className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-text text-xs font-semibold text-foreground hover:bg-background transition-colors"
+                >
+                  {copied ? <Check size={13} className="text-green-500" /> : <Link2 size={13} />}
+                  {copied ? 'Copied' : 'Copy'}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 border-t border-border px-6 py-4">
+              <button
+                type="button"
+                onClick={() => setShowShareModal(false)}
+                className="px-5 py-2.5 font-text text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSendInvite}
+                disabled={!shareEmails.trim()}
+                className="inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-2.5 font-text text-sm font-semibold text-background hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-40"
+              >
+                {shareSent ? <><Check size={14} /> Invited</> : <><Share2 size={14} /> Send invite</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Tabs value={activeTab} className="w-full min-w-0">
         <div className="mb-8 w-full overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <TabsList className="grid w-full min-w-[760px] grid-cols-6">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="brief" className="flex min-w-0 items-center justify-center gap-2" asChild>
               <Link href={tabHref('brief')} scroll={false}>
                 <Target size={14} /> Brief
@@ -715,28 +845,68 @@ export default function JobDetailPage({
 
             <TabsContent value="knowledge" className="mt-0">
               <section className="py-2 border-t border-border">
-                <div className="mt-4 space-y-6">
-                  <div>
-                    <h3 className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-4">Engagement Context</h3>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  className="hidden"
+                  onChange={e => handleFilesSelected(e.target.files)}
+                />
+                <div className="mt-4 space-y-3">
+                  <h3 className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70">Engagement Documents</h3>
+
+                  {/* File list */}
+                  {(job.documents ?? []).length > 0 && (
                     <div className="space-y-2">
-                      {uploadedFiles.map((file, i) => (
+                      {(job.documents ?? []).map((file, i) => (
                         <div key={i} className="flex items-center justify-between p-3 bg-muted/50 border border-border rounded-lg group">
-                          <div className="flex items-center gap-3 min-w-0">
+                          <a href={file.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 min-w-0 flex-1 hover:opacity-80 transition-opacity">
                             <FileText size={16} className="text-primary/70 shrink-0" />
                             <div className="min-w-0">
                               <p className="font-text text-xs font-bold text-foreground truncate">{file.name}</p>
-                              <p className="font-text text-[9px] text-muted-foreground/70">{file.size} · {file.date}</p>
+                              <p className="font-text text-[9px] text-muted-foreground/70">{file.size} · {file.uploadedAt}</p>
                             </div>
+                          </a>
+                          <div className="flex items-center gap-1 shrink-0 ml-2">
+                            <a href={file.url} download={file.name} className="opacity-0 group-hover:opacity-100 p-1.5 text-muted-foreground/50 hover:text-foreground rounded-sm transition-all">
+                              <Download size={13} />
+                            </a>
+                            <button
+                              onClick={() => handleDeleteDoc(file)}
+                              disabled={deletingDoc === file.storagePath}
+                              className="opacity-0 group-hover:opacity-100 p-1.5 text-muted-foreground/50 hover:text-red-500 rounded-sm transition-all disabled:opacity-30"
+                            >
+                              <X size={13} />
+                            </button>
                           </div>
                         </div>
                       ))}
                     </div>
-                  </div>
-                  <div className="p-6 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center text-center group hover:border-primary/30 transition-all cursor-pointer">
-                    <Upload size={24} className="text-muted-foreground/40 mb-2 group-hover:text-primary/60" />
-                    <p className="font-text text-[11px] font-bold text-foreground">Upload context</p>
-                    <p className="font-text text-[9px] text-muted-foreground/70 mt-1 uppercase tracking-wider">PDF, CSV, JSON</p>
-                  </div>
+                  )}
+
+                  {/* Uploading progress items */}
+                  {uploadingFiles.map(f => (
+                    <div key={f.name} className="flex items-center gap-3 p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                      <FileText size={16} className="text-primary/50 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-text text-xs font-bold text-foreground truncate">{f.name}</p>
+                        <div className="mt-1.5 h-1 bg-muted rounded-full overflow-hidden">
+                          <div className="h-full bg-primary rounded-full transition-all duration-300" style={{ width: `${f.progress}%` }} />
+                        </div>
+                      </div>
+                      <span className="font-mono text-[9px] text-primary shrink-0">{f.progress}%</span>
+                    </div>
+                  ))}
+
+                  {/* Upload dropzone */}
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full p-6 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center text-center group hover:border-primary/40 hover:bg-primary/5 transition-all"
+                  >
+                    <Upload size={24} className="text-muted-foreground/40 mb-2 group-hover:text-primary/60 transition-colors" />
+                    <p className="font-text text-[11px] font-bold text-foreground">Click to upload</p>
+                    <p className="font-text text-[9px] text-muted-foreground/70 mt-1 uppercase tracking-wider">PDF, CSV, JSON, DOCX, XLSX</p>
+                  </button>
                 </div>
               </section>
             </TabsContent>
@@ -891,25 +1061,39 @@ export default function JobDetailPage({
           </div>
 
           <aside className="space-y-6">
-            <div className="p-6 bg-foreground text-background rounded-lg shadow-sm">
+            <div className="p-6 bg-background text-foreground border border-border rounded-lg shadow-sm">
               <div className="space-y-4">
                 <div>
-                  <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-1">Commercial structure</p>
+                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Commercial structure</p>
                   <p className="font-display font-black text-lg">{job.rate}</p>
                 </div>
                 <div>
-                  <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-1">Expected duration</p>
+                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Expected duration</p>
                   <p className="font-display font-black text-lg">{job.time}</p>
+                </div>
+                <div>
+                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Location</p>
+                  <p className="font-display font-black text-lg flex items-center gap-2">
+                    <MapPin size={15} strokeWidth={1.5} className="text-muted-foreground/70" />
+                    {job.location}
+                  </p>
+                </div>
+                <div>
+                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Updated</p>
+                  <p className="font-display font-black text-lg flex items-center gap-2">
+                    <Clock size={15} strokeWidth={1.5} className="text-muted-foreground/70" />
+                    {job.updatedAt}
+                  </p>
                 </div>
                 {job.startDate && (
                   <div>
-                    <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-1">Engagement dates</p>
+                    <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Engagement dates</p>
                     <p className="font-display font-black text-lg tracking-tight">{job.startDate}{' — '}{job.endDate || 'Present'}</p>
                   </div>
                 )}
                 {job.lead && (
                   <div>
-                    <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-1">Strategic pod lead</p>
+                    <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Strategic pod lead</p>
                     <p className="font-display font-black text-lg">{job.lead}</p>
                   </div>
                 )}
