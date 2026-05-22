@@ -83,13 +83,6 @@ export async function POST(request: Request) {
   }
 
   const email: string = firebaseUser.email ?? ''
-  const allowed =
-    email.endsWith('@comcorpe.com') ||
-    process.env.NODE_ENV !== 'production'
-
-  if (!allowed) {
-    return NextResponse.json({ error: 'Unauthorised email domain' }, { status: 403 })
-  }
 
   const role =
     body && typeof body === 'object' && 'role' in body && typeof (body as any).role === 'string'

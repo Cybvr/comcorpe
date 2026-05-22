@@ -13,8 +13,6 @@ import {
 import { doc, setDoc, collection, getDocs } from 'firebase/firestore'
 import { auth, db, googleProvider } from '@/lib/firebase'
 
-const ALLOWED_DOMAIN = '@comcorpe.com'
-
 function dashboardPathForRole(role: string | undefined) {
   if (role === 'admin') return '/admin'
   if (role === 'talent') return '/talent/dashboard'
@@ -157,11 +155,6 @@ export default function LoginPage() {
   async function handleEmailPassword(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    const emailLower = email.toLowerCase().trim()
-    if (!emailLower.endsWith(ALLOWED_DOMAIN)) {
-      setError('Access is restricted to Comcorpᵉ team members only.')
-      return
-    }
     setLoading('email')
     try {
       const result = await signInWithEmailAndPassword(auth, email.toLowerCase().trim(), password)
