@@ -1,16 +1,16 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Eye, EyeOff } from 'lucide-react'
 import {
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signInWithEmailAndPassword,
-  signOut,
   type User,
 } from 'firebase/auth'
 import { doc, setDoc, collection, getDocs } from 'firebase/firestore'
-import { auth, db, googleProvider, microsoftProvider } from '@/lib/firebase'
+import { auth, db, googleProvider } from '@/lib/firebase'
 import HighTechLoading from '@/components/HighTechLoading'
 
 const ALLOWED_DOMAIN = '@comcorpe.com'
@@ -62,7 +62,20 @@ export default function LoginPage() {
     }, 4500)
   }
 
-
+  // ─── Handle Google redirect result on mount ─────────────────────────────────
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then(result => {
+        if (result?.user) {
+          setLoading('google')
+          finishLogin(result.user)
+        }
+      })
+      .catch(() => {
+        setError('Google sign-in failed. Please try again.')
+      })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // ─── Post-auth: verify token server-side, set session cookie, redirect ──────
   async function finishLogin(user: User) {
@@ -114,13 +127,10 @@ export default function LoginPage() {
     setError('')
     setLoading('google')
     try {
-      const result = await signInWithPopup(auth, googleProvider)
-      await finishLogin(result.user)
-    } catch (err: unknown) {
-      if ((err as { code?: string }).code !== 'auth/popup-closed-by-user') {
-        setError('Google sign-in failed. Please try again.')
-      }
-    } finally {
+      await signInWithRedirect(auth, googleProvider)
+      // Page will redirect — result handled in useEffect via getRedirectResult
+    } catch {
+      setError('Google sign-in failed. Please try again.')
       setLoading(null)
     }
   }
