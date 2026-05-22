@@ -1,10 +1,26 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { getBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost } from '@/lib/admin/store'
+import Image from 'next/image'
+import { getBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost, getSystemUsers } from '@/lib/admin/store'
 import type { BlogPost } from '@/lib/blog'
+import type { User } from '@/lib/user'
 import Modal from '@/components/admin/Modal'
-import { Plus, Search, Trash2, Edit2, Check, AlertCircle, FileText } from 'lucide-react'
+import { Plus, Search, Trash2, Edit2, Check, AlertCircle, FileText, ChevronDown } from 'lucide-react'
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const CATEGORIES = [
+  'Insights',
+  'Events',
+  'Announcements',
+  'Strategy',
+  'Operations',
+  'Growth',
+  'Technology',
+  'Community',
+  'Other',
+]
 
 // ─── Form ──────────────────────────────────────────────────────────────────────
 
@@ -13,8 +29,9 @@ const EMPTY_FORM = {
   slug: '',
   excerpt: '',
   body: '',
-  category: '',
+  category: 'Insights',
   author: '',
+  authorId: '',
   publishedAt: '',
   coverImage: '',
 }
@@ -24,29 +41,40 @@ type BlogFormData = typeof EMPTY_FORM
 const L = 'font-mono text-[10px] uppercase tracking-wider text-muted-foreground block mb-1'
 const I = 'w-full px-4 py-3 border border-input bg-background font-text text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-foreground transition-colors duration-100'
 const T = `${I} resize-none`
+const S = `${I} cursor-pointer appearance-none`
 
 function BlogForm({
   initial,
   onSave,
   onCancel,
   saving,
+  users,
 }: {
   initial: BlogFormData
   onSave: (data: BlogFormData) => void
   onCancel: () => void
   saving: boolean
+  users: User[]
 }) {
   const [form, setForm] = useState<BlogFormData>({ ...EMPTY_FORM, ...initial })
 
   function set(field: keyof BlogFormData, value: string) {
     setForm(f => {
       const next = { ...f, [field]: value }
-      // Auto-generate slug from title if slug hasn't been manually edited
       if (field === 'title' && !f.slug) {
         next.slug = value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
       }
       return next
     })
+  }
+
+  function handleAuthorSelect(userId: string) {
+    const user = users.find(u => u.id === userId)
+    setForm(f => ({
+      ...f,
+      authorId: userId,
+      author: user?.name ?? '',
+    }))
   }
 
   return (
@@ -61,9 +89,12 @@ function BlogForm({
           <label className={L}>Slug *</label>
           <input className={I} value={form.slug} onChange={e => set('slug', e.target.value)} required placeholder="my-post-slug" />
         </div>
-        <div>
+        <div className="relative">
           <label className={L}>Category</label>
-          <input className={I} value={form.category} onChange={e => set('category', e.target.value)} placeholder="e.g. Insights" />
+          <select className={S} value={form.category} onChange={e => set('category', e.target.value)}>
+            {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <ChevronDown size={14} className="pointer-events-none absolute right-3 top-[calc(100%-22px)] -translate-y-1/2 text-muted-foreground/60" />
         </div>
       </div>
 
@@ -78,10 +109,23 @@ function BlogForm({
         <p className="font-mono text-[10px] text-muted-foreground/60 mt-1">Blank line = new paragraph on the site.</p>
       </div>
 
+      {/* Author */}
       <div className="grid grid-cols-2 gap-3">
-        <div>
+        <div className="relative">
           <label className={L}>Author</label>
-          <input className={I} value={form.author} onChange={e => set('author', e.target.value)} placeholder="e.g. Jide Pinheiro" />
+          <select
+            className={S}
+            value={form.authorId}
+            onChange={e => handleAuthorSelect(e.target.value)}
+          >
+            <option value="">— Select user —</option>
+            {users.map(u => (
+              <option key={u.id} value={u.id}>
+                {u.name}{u.role ? ` (${u.role})` : ''}
+              </option>
+            ))}
+          </select>
+          <ChevronDown size={14} className="pointer-events-none absolute right-3 top-[calc(100%-22px)] -translate-y-1/2 text-muted-foreground/60" />
         </div>
         <div>
           <label className={L}>Published date</label>
@@ -89,9 +133,31 @@ function BlogForm({
         </div>
       </div>
 
+      {/* Author preview */}
+      {form.authorId && (() => {
+        const u = users.find(u => u.id === form.authorId)
+        if (!u) return null
+        return (
+          <div className="flex items-center gap-3 p-3 bg-muted/40 border border-border">
+            <div className={`w-8 h-8 rounded-sm shrink-0 flex items-center justify-center font-display font-black text-[10px] text-background overflow-hidden relative ${u.color || 'bg-foreground'}`}>
+              {u.image ? <Image src={u.image} alt={u.name} fill className="object-cover" /> : u.initials}
+            </div>
+            <div>
+              <p className="font-text text-sm font-semibold text-foreground leading-none">{u.name}</p>
+              {u.talentRole && <p className="font-mono text-[10px] text-muted-foreground/70 mt-0.5">{u.talentRole}</p>}
+            </div>
+          </div>
+        )
+      })()}
+
       <div>
         <label className={L}>Cover image URL (optional)</label>
         <input className={I} type="url" value={form.coverImage} onChange={e => set('coverImage', e.target.value)} placeholder="https://..." />
+        {form.coverImage && (
+          <div className="relative mt-2 h-32 w-full overflow-hidden border border-border bg-muted">
+            <Image src={form.coverImage} alt="Cover preview" fill className="object-cover" />
+          </div>
+        )}
       </div>
 
       <div className="flex gap-3 pt-2 border-t border-border">
@@ -110,6 +176,7 @@ function BlogForm({
 
 export default function AdminBlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([])
+  const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [search, setSearch] = useState('')
@@ -120,9 +187,11 @@ export default function AdminBlogPage() {
   const reload = useCallback(async () => {
     setLoading(true)
     try {
-      setPosts(await getBlogPosts())
+      const [postsData, usersData] = await Promise.all([getBlogPosts(), getSystemUsers()])
+      setPosts(postsData)
+      setUsers(usersData)
     } catch {
-      showMsg('Failed to load posts.', 'error')
+      showMsg('Failed to load data.', 'error')
     } finally {
       setLoading(false)
     }
@@ -143,6 +212,7 @@ export default function AdminBlogPage() {
       body: post.body,
       category: post.category,
       author: post.author,
+      authorId: (post as any).authorId ?? '',
       publishedAt: post.publishedAt,
       coverImage: post.coverImage ?? '',
     }
@@ -192,7 +262,9 @@ export default function AdminBlogPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
           <h1 className="font-display text-[32px] tracking-hero text-foreground leading-tight">Blog</h1>
-          <p className="text-sm text-muted-foreground mt-1">Create and manage blog posts. Stored in the Firestore <code className="font-mono text-xs bg-muted px-1">blog</code> collection.</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Create and manage blog posts. Stored in the Firestore <code className="font-mono text-xs bg-muted px-1">blog</code> collection.
+          </p>
         </div>
         <button
           onClick={() => setModal('create')}
@@ -233,31 +305,52 @@ export default function AdminBlogPage() {
         </div>
       ) : (
         <div className="border border-border divide-y divide-border">
-          {filtered.map(post => (
-            <div key={post.id} className="px-6 py-5 flex flex-col sm:flex-row sm:items-start justify-between gap-4 hover:bg-muted/5 transition-colors group">
-              <div className="flex-1 min-w-0 space-y-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  {post.category && (
-                    <span className="font-mono text-[9px] font-bold px-2 py-0.5 tracking-widest uppercase border bg-primary/10 border-primary/20 text-primary">
-                      {post.category}
-                    </span>
-                  )}
-                  <span className="font-mono text-[9px] text-muted-foreground/60 uppercase tracking-widest">{post.publishedAt}</span>
+          {filtered.map(post => {
+            const authorUser = users.find(u => u.id === (post as any).authorId)
+            return (
+              <div key={post.id} className="px-6 py-5 flex flex-col sm:flex-row sm:items-start justify-between gap-4 hover:bg-muted/5 transition-colors group">
+                <div className="flex items-start gap-4 flex-1 min-w-0">
+                  {/* Thumbnail */}
+                  <div className="relative w-16 h-16 shrink-0 bg-muted overflow-hidden hidden sm:block">
+                    {post.coverImage ? (
+                      <Image src={post.coverImage} alt={post.title} fill className="object-cover" />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/5 to-background" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {post.category && (
+                        <span className="font-mono text-[9px] font-bold px-2 py-0.5 tracking-widest uppercase border bg-primary/10 border-primary/20 text-primary">
+                          {post.category}
+                        </span>
+                      )}
+                      <span className="font-mono text-[9px] text-muted-foreground/60 uppercase tracking-widest">{post.publishedAt}</span>
+                    </div>
+                    <h3 className="font-display text-base font-black text-foreground leading-snug truncate pr-4">{post.title}</h3>
+                    <p className="font-text text-xs text-muted-foreground line-clamp-1 max-w-[65ch]">{post.excerpt}</p>
+                    <div className="flex items-center gap-2 pt-0.5">
+                      {authorUser?.image && (
+                        <div className={`relative w-5 h-5 rounded-sm overflow-hidden ${authorUser.color || 'bg-foreground'}`}>
+                          <Image src={authorUser.image} alt={authorUser.name} fill className="object-cover" />
+                        </div>
+                      )}
+                      <span className="font-mono text-[10px] text-muted-foreground/60">{post.author}</span>
+                      <span className="font-mono text-[10px] text-muted-foreground/40">/{post.slug}</span>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="font-display text-base font-black text-foreground leading-snug truncate pr-4">{post.title}</h3>
-                <p className="font-text text-xs text-muted-foreground line-clamp-2 max-w-[65ch]">{post.excerpt}</p>
-                <p className="font-mono text-[10px] text-muted-foreground/50">/{post.slug}</p>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button onClick={() => setModal(post)} className="p-2 border border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors" title="Edit">
+                    <Edit2 size={13} />
+                  </button>
+                  <button onClick={() => setDeleteTarget(post)} className="p-2 border border-border text-muted-foreground hover:text-red-500 hover:border-red-500 transition-colors" title="Delete">
+                    <Trash2 size={13} />
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <button onClick={() => setModal(post)} className="p-2 border border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors" title="Edit">
-                  <Edit2 size={13} />
-                </button>
-                <button onClick={() => setDeleteTarget(post)} className="p-2 border border-border text-muted-foreground hover:text-red-500 hover:border-red-500 transition-colors" title="Delete">
-                  <Trash2 size={13} />
-                </button>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
 
@@ -277,6 +370,7 @@ export default function AdminBlogPage() {
             onSave={handleSave}
             onCancel={() => setModal(null)}
             saving={saving}
+            users={users}
           />
         </Modal>
       )}
