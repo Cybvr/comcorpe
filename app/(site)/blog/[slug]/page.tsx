@@ -1,147 +1,79 @@
+'use client'
+
 import Link from 'next/link'
+import { use } from 'react'
+import { useBlogPostBySlug } from '@/lib/blog'
 import { notFound } from 'next/navigation'
-import { featuredBlogPost } from '@/lib/blog'
 
-type BlogPageProps = {
-  params: Promise<{
-    slug: string
-  }>
-}
+export default function BlogDetailPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = use(params)
+  const { post, loading } = useBlogPostBySlug(slug)
 
-export async function generateMetadata({ params }: BlogPageProps) {
-  const { slug } = await params
-
-  if (slug !== featuredBlogPost.slug) {
-    return {
-      title: 'Post Not Found | Comcorpe',
-    }
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background px-6 pt-16 pb-24 md:px-24 md:pt-24 md:pb-40">
+        <div className="mx-auto max-w-3xl animate-pulse space-y-6">
+          <div className="h-3 w-16 bg-muted rounded" />
+          <div className="h-10 w-2/3 bg-muted rounded" />
+          <div className="h-4 w-full bg-muted rounded" />
+          <div className="h-4 w-5/6 bg-muted rounded" />
+          <div className="h-4 w-4/6 bg-muted rounded" />
+        </div>
+      </div>
+    )
   }
 
-  return {
-    title: `${featuredBlogPost.title} | Comcorpe`,
-    description: featuredBlogPost.summary,
-  }
-}
-
-export default async function BlogDetailPage({ params }: BlogPageProps) {
-  const { slug } = await params
-
-  if (slug !== featuredBlogPost.slug) {
+  if (!post) {
     notFound()
   }
+
+  const paragraphs = post.body.split(/\n\n+/).filter(Boolean)
 
   return (
     <div className="min-h-screen bg-background">
       <div className="px-6 pt-16 pb-24 md:px-24 md:pt-24 md:pb-40">
-        <div className="mx-auto max-w-5xl">
+        <div className="mx-auto max-w-3xl">
           <Link
             href="/blog"
-            className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground transition-colors hover:text-primary"
+            className="font-mono text-xs uppercase tracking-eyebrow text-muted-foreground hover:text-primary transition-colors"
           >
-            <span aria-hidden="true">&larr;</span> Back to blog
+            <span aria-hidden="true">&larr;</span> Blog
           </Link>
 
-          <div className="mt-8 border-b border-foreground pb-12 md:pb-16">
-            <div className="mb-6 flex flex-wrap items-center gap-3">
-              <span className="border border-primary px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-primary">
-                {featuredBlogPost.category}
+          <div className="mt-10 mb-12 border-b border-foreground pb-10">
+            <div className="flex items-center gap-3 mb-6">
+              <span className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">
+                {post.category}
               </span>
-              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                {featuredBlogPost.eyebrow}
+              <span className="w-1 h-1 rounded-full bg-border" />
+              <span className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">
+                {post.publishedAt}
               </span>
             </div>
-
-            <div className="grid gap-12 md:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)] md:items-end">
-              <div>
-                <h1 className="font-display text-[clamp(44px,6vw,88px)] leading-[0.92] tracking-hero text-foreground">
-                  {featuredBlogPost.title}
-                </h1>
-                <p className="mt-6 max-w-[42ch] font-text text-[18px] leading-lede text-muted-foreground">
-                  {featuredBlogPost.lede}
-                </p>
-              </div>
-
-              <div className="rounded-3xl border border-border bg-card p-6">
-                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary">
-                  Post snapshot
-                </p>
-                <dl className="mt-5 space-y-4">
-                  <div>
-                    <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                      Category
-                    </dt>
-                    <dd className="mt-1 font-text text-sm text-foreground">{featuredBlogPost.category}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                      Status
-                    </dt>
-                    <dd className="mt-1 font-text text-sm text-foreground">{featuredBlogPost.publishedLabel}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                      Meeting format
-                    </dt>
-                    <dd className="mt-1 font-text text-sm text-foreground">{featuredBlogPost.venueLabel}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                      Host
-                    </dt>
-                    <dd className="mt-1 font-text text-sm text-foreground">{featuredBlogPost.hostLabel}</dd>
-                  </div>
-                </dl>
-                <Link
-                  href={featuredBlogPost.ctaHref}
-                  className="mt-6 inline-flex rounded-full bg-foreground px-4 py-2.5 font-text text-sm font-semibold text-background transition-colors hover:bg-primary hover:text-primary-foreground"
-                >
-                  {featuredBlogPost.ctaLabel}
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-14 grid gap-10 md:grid-cols-[minmax(0,1fr)_20rem]">
-            <article className="space-y-8">
-              <section>
-                <p className="font-text text-[17px] leading-relaxed text-muted-foreground">
-                  This post announces our first Comcorpe town hall as a simple Zoom gathering for the
-                  community. It is a chance to hear what we are building, understand the shape of the
-                  network, and join an early conversation about the work, opportunities, and
-                  collaborations ahead.
-                </p>
-              </section>
-
-              <section>
-                <h2 className="font-display text-[28px] leading-tight tracking-[-0.03em] text-foreground">
-                  What the town hall will cover
-                </h2>
-                <div className="mt-5 grid gap-px overflow-hidden rounded-sm border border-foreground bg-foreground">
-                  {featuredBlogPost.agenda.map((item, index) => (
-                    <div key={item} className="bg-background px-5 py-4">
-                      <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-primary">
-                        0{index + 1}
-                      </span>
-                      <p className="mt-2 font-text text-[16px] leading-relaxed text-foreground">{item}</p>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            </article>
-
-            <aside className="h-fit rounded-3xl border border-border bg-primary/6 p-6">
-              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary">
-                Notes
+            <h1 className="font-display font-black text-[clamp(36px,5.5vw,72px)] leading-[0.92] tracking-tight text-foreground mb-6">
+              {post.title}
+            </h1>
+            <p className="font-text text-[18px] leading-lede text-muted-foreground max-w-[48ch]">
+              {post.excerpt}
+            </p>
+            {post.author && (
+              <p className="mt-6 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">
+                By {post.author}
               </p>
-              <div className="mt-5 space-y-4">
-                {featuredBlogPost.notes.map((note) => (
-                  <p key={note} className="font-text text-sm leading-relaxed text-muted-foreground">
-                    {note}
-                  </p>
-                ))}
-              </div>
-            </aside>
+            )}
           </div>
+
+          <article className="space-y-5">
+            {paragraphs.map((para, i) => (
+              <p key={i} className="font-text text-[17px] leading-relaxed text-muted-foreground">
+                {para}
+              </p>
+            ))}
+          </article>
         </div>
       </div>
     </div>

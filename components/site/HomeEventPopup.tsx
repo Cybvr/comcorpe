@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
-import { featuredBlogPost, getBlogHref } from '@/lib/blog'
 
 const DISMISS_KEY = 'comcorpe-home-event-popup-dismissed-v1'
 
@@ -49,11 +48,7 @@ export default function HomeEventBanner() {
           What&apos;s Happening
         </span>
 
-        <Link
-          href={getBlogHref(featuredBlogPost.slug)}
-          onClick={dismiss}
-          className="block group"
-        >
+        <Link href="/blog" onClick={dismiss} className="block group">
           <h2 className="font-display font-black text-[28px] leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors">
             Comcorpe Signals
           </h2>

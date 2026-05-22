@@ -1,45 +1,66 @@
-export type BlogPost = {
+'use client'
+
+import { useEffect, useState } from 'react'
+import { collection, onSnapshot, query, where, orderBy } from 'firebase/firestore'
+import { db } from './firebase'
+
+export interface BlogPost {
+  id: string
   slug: string
-  category: 'Events'
-  eyebrow: string
   title: string
-  summary: string
-  lede: string
-  publishedLabel: string
-  venueLabel: string
-  formatLabel: string
-  hostLabel: string
-  ctaHref: string
-  ctaLabel: string
-  agenda: string[]
-  notes: string[]
+  excerpt: string
+  body: string
+  category: string
+  publishedAt: string
+  author: string
+  coverImage?: string
 }
 
-export const featuredBlogPost: BlogPost = {
-  slug: 'comcorpe-first-townhall',
-  category: 'Events',
-  eyebrow: 'Blog Announcement',
-  title: 'Comcorpe First Town Hall',
-  summary:
-    'We are opening our first Comcorpe town hall as a Zoom gathering for the community, with an update on where we are headed and room for live questions.',
-  lede:
-    'This first blog note invites the Comcorpe community into our opening town hall: a short Zoom session where we share what we are building, what comes next, and how people can plug into the journey early.',
-  publishedLabel: 'Now on the Comcorpe blog',
-  venueLabel: 'Zoom meeting',
-  formatLabel: 'Live online session',
-  hostLabel: 'Hosted by the Comcorpe team',
-  ctaHref: 'mailto:hello@comcorpe.com?subject=Comcorpe%20Town%20Hall%20RSVP',
-  ctaLabel: 'Request the Zoom invite',
-  agenda: [
-    'A quick welcome and opening note',
-    'What Comcorpe is building in this next chapter',
-    'How collaborators, operators, and community members can plug in',
-    'Live questions and an open conversation',
-  ],
-  notes: [
-    'The final Zoom link and timing will be shared directly with confirmed attendees.',
-    'This is the first town hall, so the session is intentionally simple, welcoming, and conversation-led.',
-  ],
+export function useBlogPosts() {
+  const [posts, setPosts] = useState<BlogPost[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const q = query(collection(db, 'blog'), orderBy('publishedAt', 'desc'))
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        setPosts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost)))
+        setLoading(false)
+      },
+      (err) => {
+        console.error('Error fetching blog posts:', err)
+        setLoading(false)
+      }
+    )
+    return () => unsubscribe()
+  }, [])
+
+  return { posts, loading }
+}
+
+export function useBlogPostBySlug(slug: string) {
+  const [post, setPost] = useState<BlogPost | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!slug) return
+    const q = query(collection(db, 'blog'), where('slug', '==', slug))
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        setPost(snapshot.empty ? null : { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as BlogPost)
+        setLoading(false)
+      },
+      (err) => {
+        console.error('Error fetching blog post:', err)
+        setLoading(false)
+      }
+    )
+    return () => unsubscribe()
+  }, [slug])
+
+  return { post, loading }
 }
 
 export function getBlogHref(slug: string) {
