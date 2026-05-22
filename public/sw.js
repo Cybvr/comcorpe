@@ -60,7 +60,8 @@ self.addEventListener('fetch', e => {
       const fresh = fetch(e.request).then(res => {
         // Only cache valid, non-opaque, non-streaming responses
         if (res.ok && res.type === 'basic') {
-          caches.open(CACHE).then(c => c.put(e.request, res.clone()))
+          const clone = res.clone()
+          caches.open(CACHE).then(c => c.put(e.request, clone))
         }
         return res
       })

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Eye, EyeOff } from 'lucide-react'
 import {
+  signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
   signInWithEmailAndPassword,
@@ -11,7 +12,6 @@ import {
 } from 'firebase/auth'
 import { doc, setDoc, collection, getDocs } from 'firebase/firestore'
 import { auth, db, googleProvider } from '@/lib/firebase'
-import HighTechLoading from '@/components/HighTechLoading'
 
 const ALLOWED_DOMAIN = '@comcorpe.com'
 
@@ -52,14 +52,9 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError]       = useState('')
   const [loading, setLoading]   = useState<string | null>(null)
-  const [showLoadingOverlay, setShowLoadingOverlay] = useState(false)
 
   function openDashboard(role: string | undefined) {
-    setShowLoadingOverlay(true)
-    setTimeout(() => {
-      router.push(dashboardPathForRole(role))
-      router.refresh()
-    }, 4500)
+    router.push(dashboardPathForRole(role))
   }
 
   // ─── Handle Google redirect result on mount ─────────────────────────────────
@@ -127,11 +122,18 @@ export default function LoginPage() {
     setError('')
     setLoading('google')
     try {
-      await signInWithRedirect(auth, googleProvider)
-      // Page will redirect — result handled in useEffect via getRedirectResult
-    } catch {
-      setError('Google sign-in failed. Please try again.')
-      setLoading(null)
+      const result = await signInWithPopup(auth, googleProvider)
+      await finishLogin(result.user)
+    } catch (err: any) {
+      if (err?.code === 'auth/popup-blocked') {
+        // Popup blocked (common on mobile) — fall back to redirect
+        await signInWithRedirect(auth, googleProvider)
+      } else if (err?.code !== 'auth/popup-closed-by-user') {
+        setError('Google sign-in failed. Please try again.')
+        setLoading(null)
+      } else {
+        setLoading(null)
+      }
     }
   }
 
@@ -146,7 +148,7 @@ export default function LoginPage() {
     }
     setLoading('email')
     try {
-      const result = await signInWithEmailAndPassword(auth, emailLower, password)
+      const result = await signInWithEmailAndPassword(auth, email.toLowerCase().trim(), password)
       await finishLogin(result.user)
     } catch (err: unknown) {
       const code = (err as { code?: string }).code
@@ -171,8 +173,6 @@ export default function LoginPage() {
       setLoading(null)
     }
   }
-
-  if (showLoadingOverlay) return <HighTechLoading />
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6">
