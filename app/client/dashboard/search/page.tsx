@@ -487,7 +487,7 @@ export default function DiscoverPage() {
               onClick={() => selectTab('build')}
               className="font-text text-sm font-semibold px-5 py-2 bg-primary hover:bg-foreground text-primary-foreground rounded-full transition-colors duration-[120ms]"
             >
-              Build pod â†’
+              Build pod
             </button>
           </div>
         </div>
@@ -592,7 +592,7 @@ function BuildTab({
           {members.length === 0 ? (
             <div className="py-10 text-center border border-dashed border-border rounded-xl">
               <p className="font-text text-sm text-muted-foreground/70 mb-3">No operators selected yet.</p>
-              <button onClick={onAddMore} className="font-text text-xs text-primary hover:underline">Browse talent â†’</button>
+              <button onClick={onAddMore} className="font-text text-xs text-primary hover:underline">Browse talent</button>
             </div>
           ) : (
             <div className="space-y-2">
@@ -627,19 +627,19 @@ function BuildTab({
             onChange={e => setPodName(e.target.value)}
             className="w-full px-4 py-3 border border-border rounded-xl font-text text-[15px] focus:outline-none focus:border-primary/40 transition-colors"
           />
-          <p className="font-text text-[11px] text-muted-foreground/70 mt-2">For your reference only â€” not shared with operators.</p>
+          <p className=”font-text text-[11px] text-muted-foreground/70 mt-2”>For your reference only — not shared with operators.</p>
         </section>
 
         {/* Attach to brief */}
         <section className="bg-background border border-border rounded-2xl p-6">
           <h2 className="font-display font-black text-[18px] tracking-[-0.02em] text-foreground mb-1">Attach to a brief</h2>
-          <p className="font-text text-[12px] text-muted-foreground/70 mb-4">Optional â€” you can attach later from the brief page.</p>
+          <p className=”font-text text-[12px] text-muted-foreground/70 mb-4”>Optional — you can attach later from the brief page.</p>
           <div className="space-y-2">
             <button
               onClick={() => setBriefSlug('')}
               className={`w-full text-left px-4 py-3 border rounded-xl font-text text-sm transition-colors ${briefSlug === '' ? 'border-primary bg-primary/5 text-primary font-semibold' : 'border-border text-muted-foreground hover:border-input'}`}
             >
-              No brief yet â€” submit for review only
+              No brief yet — submit for review only
             </button>
             {openBriefs.map(job => (
               <button
@@ -648,7 +648,7 @@ function BuildTab({
                 className={`w-full text-left px-4 py-3 border rounded-xl transition-colors ${briefSlug === job.slug ? 'border-primary bg-primary/5' : 'border-border hover:border-input'}`}
               >
                 <p className={`font-text text-sm font-semibold ${briefSlug === job.slug ? 'text-primary' : 'text-foreground'}`}>{job.title}</p>
-                <p className="font-text text-[11px] text-muted-foreground/70 mt-0.5">{getClientUser(job.clientId).name} Â· {job.status}</p>
+                <p className="font-text text-[11px] text-muted-foreground/70 mt-0.5">{getClientUser(job.clientId).name} · {job.status}</p>
               </button>
             ))}
           </div>
