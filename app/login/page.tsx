@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Eye, EyeOff } from 'lucide-react'
 import {
+  signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
   signInWithEmailAndPassword,
@@ -112,7 +113,20 @@ export default function LoginPage() {
   async function handleGoogle() {
     setError('')
     setLoading('google')
-    await signInWithRedirect(auth, googleProvider)
+    try {
+      const result = await signInWithPopup(auth, googleProvider)
+      await finishLogin(result.user)
+    } catch (err: any) {
+      if (err?.code === 'auth/popup-blocked') {
+        // Popup blocked (common on mobile) — fall back to redirect
+        await signInWithRedirect(auth, googleProvider)
+      } else if (err?.code !== 'auth/popup-closed-by-user') {
+        setError('Google sign-in failed. Please try again.')
+        setLoading(null)
+      } else {
+        setLoading(null)
+      }
+    }
   }
 
   // ─── Email + password sign-in ───────────────────────────────────────────────
