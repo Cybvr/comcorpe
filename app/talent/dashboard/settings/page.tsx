@@ -8,7 +8,8 @@ import {
   MapPin, Pencil, Star, X, Zap,
   Search, ShieldCheck, Check, CreditCard,
 } from 'lucide-react'
-import { useCurrentUser, updateUserProfile, getClientUser, OMICON_AGENCIES } from '@/lib/user'
+import { useCurrentUser, updateUserProfile, getClientUser, OMNICOM_AGENCIES } from '@/lib/user'
+import NetworkAffiliateBadge from '@/components/dashboard/NetworkAffiliateBadge'
 import { applications } from '@/lib/applications'
 import { payouts, ccreditsBalance, type PayoutStatus } from '@/lib/payouts'
 import { useJobs } from '@/lib/jobs'
@@ -46,6 +47,9 @@ export default function TalentSettingsPage() {
   const [bg, setBg]         = useState('')
   const [desc, setDesc]     = useState('')
   const [rate, setRate]     = useState('')
+  const [linkedinUrl, setLinkedinUrl] = useState('')
+  const [portfolioUrl, setPortfolioUrl] = useState('')
+  const [disciplines, setDisciplines] = useState('')
   const [saving, setSaving] = useState(false)
 
   // ── Payments ───────────────────────────────────────────────
@@ -79,6 +83,9 @@ export default function TalentSettingsPage() {
     setBg(currentUser.bg ?? '')
     setDesc(currentUser.desc ?? '')
     setRate(currentUser.rate ?? '')
+    setLinkedinUrl(currentUser.linkedinUrl ?? '')
+    setPortfolioUrl(currentUser.portfolioUrl ?? '')
+    setDisciplines(currentUser.disciplines?.join(', ') ?? '')
     setEditing(true)
   }
 
@@ -89,6 +96,8 @@ export default function TalentSettingsPage() {
         .map(n => n.charAt(0)).join('').toUpperCase().slice(0, 3)
       await updateUserProfile(currentUser.id, {
         name, talentRole: role, bg, desc, rate, initials: computedInitials,
+        linkedinUrl, portfolioUrl,
+        disciplines: disciplines.split(',').map(d => d.trim()).filter(Boolean),
       })
       setEditing(false)
     } catch (err) { console.error(err) }
@@ -188,9 +197,7 @@ export default function TalentSettingsPage() {
                     </div>
                   )}
                   {isVerified && (
-                    <div className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-eyebrow text-green-700 border border-green-200 px-2 py-0.5 bg-green-50">
-                      <ShieldCheck size={10} strokeWidth={2} /> Network
-                    </div>
+                    <NetworkAffiliateBadge affiliations={currentUser.networkAffiliations!} size={14} />
                   )}
                 </div>
 
@@ -214,6 +221,20 @@ export default function TalentSettingsPage() {
                       <div className="flex flex-col gap-1.5">
                         <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Background</label>
                         <input className={I} value={bg} onChange={e => setBg(e.target.value)} placeholder="Formerly at..." />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-1.5">
+                          <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">LinkedIn URL</label>
+                          <input className={I} value={linkedinUrl} onChange={e => setLinkedinUrl(e.target.value)} placeholder="https://linkedin.com/in/..." />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Portfolio / Website</label>
+                          <input className={I} value={portfolioUrl} onChange={e => setPortfolioUrl(e.target.value)} placeholder="https://..." />
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Core Competencies (comma separated)</label>
+                        <input className={I} value={disciplines} onChange={e => setDisciplines(e.target.value)} placeholder="Strategic GTM Planning, Revenue Operations" />
                       </div>
                       <div className="flex flex-col gap-1.5">
                         <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Bio</label>
@@ -244,6 +265,16 @@ export default function TalentSettingsPage() {
                         <div className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground border border-input px-3 py-1.5">
                           <MapPin size={11} strokeWidth={1.5} className="text-primary" /> Remote / Africa
                         </div>
+                        {currentUser.linkedinUrl && (
+                          <a href={currentUser.linkedinUrl} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground border border-input px-3 py-1.5 hover:bg-muted transition-colors">
+                             LinkedIn
+                          </a>
+                        )}
+                        {currentUser.portfolioUrl && (
+                          <a href={currentUser.portfolioUrl} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground border border-input px-3 py-1.5 hover:bg-muted transition-colors">
+                             Portfolio
+                          </a>
+                        )}
                       </div>
                     </>
                   )}
@@ -413,7 +444,7 @@ export default function TalentSettingsPage() {
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-3">Omicon Agencies</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {OMICON_AGENCIES.map(agency => {
+                  {OMNICOM_AGENCIES.map(agency => {
                     const checked = affiliations.includes(agency)
                     return (
                       <button

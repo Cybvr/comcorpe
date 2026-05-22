@@ -3,18 +3,12 @@
 import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { notFound, useSearchParams } from 'next/navigation'
-import { ArrowLeft, ArrowUpRight, CheckCircle2, DollarSign, Globe2, Layers3, Users } from 'lucide-react'
+import { notFound, useRouter } from 'next/navigation'
+import { ArrowLeft, ArrowUpRight, CheckCircle2, DollarSign, Globe2, Layers3, ShieldCheck, Users } from 'lucide-react'
 import { getPods, getTalent } from '@/lib/admin/store'
 import { type Pod } from '@/lib/pods'
 import { type User } from '@/lib/user'
-
-function getBackHref(value: string | null) {
-  if (!value || !value.startsWith('/') || value.startsWith('//')) {
-    return '/client/dashboard/search'
-  }
-  return value
-}
+import NetworkAffiliateBadge from '@/components/dashboard/NetworkAffiliateBadge'
 
 export default function TalentPodDetailPage({
   params,
@@ -22,8 +16,7 @@ export default function TalentPodDetailPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = use(params)
-  const searchParams = useSearchParams()
-  const backHref = getBackHref(searchParams.get('returnTo'))
+  const router = useRouter()
 
   const [pod, setPod] = useState<Pod | null | undefined>(undefined)
   const [members, setMembers] = useState<User[]>([])
@@ -47,9 +40,9 @@ export default function TalentPodDetailPage({
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">
-      <Link href={backHref} className="font-text text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2 mb-8">
+      <button onClick={() => router.back()} className="font-text text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2 mb-8">
         <ArrowLeft size={14} /> Back
-      </Link>
+      </button>
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-8 items-start">
         <article className="border border-border rounded-xl p-8 bg-background">
@@ -116,6 +109,12 @@ export default function TalentPodDetailPage({
                     <div className="flex-1">
                       <p className="font-bold text-foreground group-hover:text-primary transition-colors">{member.name}</p>
                       <p className="text-[11px] opacity-70">{member.talentRole ?? member.role}</p>
+                      <div className="mt-1 flex items-center gap-1.5">
+                        <ShieldCheck size={11} className="text-primary shrink-0" strokeWidth={2.5} />
+                        {(member.networkAffiliations ?? []).length > 0 && (
+                          <NetworkAffiliateBadge affiliations={member.networkAffiliations!} size={11} />
+                        )}
+                      </div>
                     </div>
                     <ArrowUpRight size={14} className="text-input group-hover:text-primary transition-all" />
                   </Link>

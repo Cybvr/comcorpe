@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, DollarSign, Layers3, MapPin, Plus, Search, Users, X, Sparkles, BrainCircuit, ShieldCheck } from 'lucide-react'
+import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, DollarSign, Layers3, MapPin, Plus, Search, ShieldCheck, Users, X, Sparkles, BrainCircuit } from 'lucide-react'
+import NetworkAffiliateBadge from '@/components/dashboard/NetworkAffiliateBadge'
 import { usePods } from '@/lib/pods'
 import { useJobs } from '@/lib/jobs'
 import { getTalentProfile, getClientUser, type User } from '@/lib/user'
@@ -326,7 +327,7 @@ export default function DiscoverPage() {
                 className="border border-border rounded-xl p-6 bg-background flex flex-col"
               >
                 <div className="mb-6">
-                  <p className="font-mono text-[10px] uppercase tracking-eyebrow text-primary mb-1">{pod.focus}</p>
+                  <p className="font-mono text-[10px] uppercase tracking-eyebrow text-primary mb-1 truncate">{pod.focus}</p>
                   <h2 className="font-display font-black text-[22px] tracking-[-0.02em] text-foreground leading-tight">
                     {pod.name}
                   </h2>
@@ -417,12 +418,12 @@ export default function DiscoverPage() {
                     <p className="font-mono text-[9px] uppercase tracking-eyebrow text-primary/60 mt-1">{getTalentTitle(profile)}</p>
                   </div>
 
-                  {(profile.networkAffiliations ?? []).length > 0 && (
-                    <div className="mt-3 flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 rounded-md w-fit">
-                      <ShieldCheck size={10} className="text-green-600 shrink-0" strokeWidth={2.5} />
-                      <span className="font-mono text-[9px] uppercase tracking-eyebrow text-green-700 font-bold">Verified Network</span>
-                    </div>
-                  )}
+                  <div className="mt-3 flex items-center gap-1.5">
+                    <ShieldCheck size={12} className="text-primary shrink-0" strokeWidth={2.5} />
+                    {(profile.networkAffiliations ?? []).length > 0 && (
+                      <NetworkAffiliateBadge affiliations={profile.networkAffiliations!} size={12} />
+                    )}
+                  </div>
 
                   <div className="mt-4 pt-4 border-t border-muted flex items-center justify-between gap-2 text-muted-foreground font-text text-[11px]">
                     <div className="flex items-center gap-2 truncate">

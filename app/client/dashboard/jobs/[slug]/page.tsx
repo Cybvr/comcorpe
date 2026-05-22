@@ -28,6 +28,7 @@ import {
   Link2,
 } from 'lucide-react'
 import { usePods, getPodMembers } from '@/lib/pods'
+import NetworkAffiliateBadge from '@/components/dashboard/NetworkAffiliateBadge'
 import { getTalentProfile, useUsers } from '@/lib/user'
 import { getJobProgress, type JobDocument } from '@/lib/jobs'
 import { useJobBySlug } from '@/lib/jobs'
@@ -697,6 +698,12 @@ export default function JobDetailPage({
                         <div>
                           <p className="font-text text-sm font-bold text-foreground group-hover:text-primary transition-colors leading-tight">{member.name}</p>
                           <p className="font-text text-[11px] text-muted-foreground/70 leading-tight mt-0.5">{member.talentRole ?? member.role}</p>
+                          <div className="mt-1.5 flex items-center gap-1.5">
+                            <ShieldCheck size={11} className="text-primary shrink-0" strokeWidth={2.5} />
+                            {(member.networkAffiliations ?? []).length > 0 && (
+                              <NetworkAffiliateBadge affiliations={member.networkAffiliations!} size={11} />
+                            )}
+                          </div>
                         </div>
                       </Link>
                     ))}
