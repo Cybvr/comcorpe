@@ -9,6 +9,7 @@ import { usePods } from '@/lib/pods'
 import { useJobs } from '@/lib/jobs'
 import { getTalentProfile, getClientUser, type User } from '@/lib/user'
 import { useUsers } from '@/lib/user'
+import { createPod, updateJob } from '@/lib/admin/store'
 
 type DiscoverTab = 'all' | 'pods' | 'build'
 
@@ -284,7 +285,7 @@ export default function DiscoverPage() {
           Smart Search
         </button>
         
-        <div className="flex items-center gap-2 px-2 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-2 px-2">
           <FilterDropdown 
             label="All markets" 
             options={['Nigeria', 'Kenya', 'South Africa', 'Ghana', 'UK']} 
@@ -496,6 +497,7 @@ export default function DiscoverPage() {
       {activeTab === 'build' && (
         <BuildTab
           memberIds={[...selectedIds]}
+          talentProfiles={talentProfiles}
           onRemove={(id) => toggleSelect(id)}
           onAddMore={() => selectTab('all')}
           openBriefs={jobs.filter(j => j.status !== 'Completed')}
@@ -507,20 +509,56 @@ export default function DiscoverPage() {
 
 function BuildTab({
   memberIds,
+  talentProfiles,
   onRemove,
   onAddMore,
   openBriefs,
 }: {
   memberIds: string[]
+  talentProfiles: User[]
   onRemove: (id: string) => void
   onAddMore: () => void
   openBriefs: import('@/lib/jobs').Job[]
 }) {
   const [podName, setPodName] = useState('')
   const [briefSlug, setBriefSlug] = useState('')
+  const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [createdPodName, setCreatedPodName] = useState('')
 
-  const members = memberIds.map(id => { try { return getTalentProfile(id) } catch { return null } }).filter(Boolean)
+  const members = memberIds
+    .map(id => talentProfiles.find(p => p.id === id) ?? (() => { try { return getTalentProfile(id) } catch { return null } })())
+    .filter((p): p is User => p !== null && p !== undefined)
+
+  const handleSubmit = async () => {
+    if (!podName.trim() || members.length === 0) return
+    setSubmitting(true)
+    try {
+      const podSlug = podName.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now()
+      const newPod = await createPod({
+        slug: podSlug,
+        name: podName.trim(),
+        focus: '',
+        summary: '',
+        leadId: members[0].id,
+        memberIds,
+        markets: [],
+        evidence: [],
+        availability: 'Within 7 days',
+        rate: '',
+      })
+      if (briefSlug) {
+        const job = openBriefs.find(j => j.slug === briefSlug)
+        if (job) await updateJob(job.id, { podSlug: newPod.slug })
+      }
+      setCreatedPodName(podName.trim())
+      setSubmitted(true)
+    } catch (err) {
+      console.error('Failed to create pod:', err)
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   if (submitted) {
     return (
@@ -530,12 +568,12 @@ function BuildTab({
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
           </div>
         </div>
-        <h2 className="font-display font-black text-[28px] tracking-[-0.03em] text-foreground mb-3">Pod submitted</h2>
+        <h2 className="font-display font-black text-[28px] tracking-[-0.03em] text-foreground mb-3">Pod created</h2>
         <p className="font-text text-muted-foreground mb-8">
-          <strong className="text-foreground">{podName}</strong> has been submitted for review. Your account lead will confirm fit and schedule intro calls within 48 hours.
+          <strong className="text-foreground">{createdPodName}</strong> has been saved. Your account lead will confirm fit and schedule intro calls within 48 hours.
         </p>
-        <Link href="/client/dashboard" className="font-text text-sm font-semibold px-6 py-3 bg-foreground text-background rounded-full hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]">
-          Back to dashboard
+        <Link href="/client/dashboard/search" className="font-text text-sm font-semibold px-6 py-3 bg-foreground text-background rounded-full hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]">
+          View pods
         </Link>
       </div>
     )
@@ -559,16 +597,16 @@ function BuildTab({
           ) : (
             <div className="space-y-2">
               {members.map(profile => (
-                <div key={profile!.id} className="flex items-center gap-3 p-3 border border-border rounded-xl group hover:border-input transition-colors">
-                  <div className={`w-10 h-10 rounded-lg shrink-0 flex items-center justify-center font-display font-black text-[12px] text-background overflow-hidden relative ${profile!.color || 'bg-foreground'}`}>
-                    {profile!.image ? <Image src={profile!.image} alt={profile!.name} fill className="object-cover" /> : profile!.initials}
+                <div key={profile.id} className="flex items-center gap-3 p-3 border border-border rounded-xl group hover:border-input transition-colors">
+                  <div className={`w-10 h-10 rounded-lg shrink-0 flex items-center justify-center font-display font-black text-[12px] text-background overflow-hidden relative ${profile.color || 'bg-foreground'}`}>
+                    {profile.image ? <Image src={profile.image} alt={profile.name} fill className="object-cover" /> : profile.initials}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-display font-black text-[14px] text-foreground leading-tight">{profile!.name}</p>
-                    <p className="font-text text-[11px] text-muted-foreground truncate">{getTalentTitle(profile!)}</p>
+                    <p className="font-display font-black text-[14px] text-foreground leading-tight">{profile.name}</p>
+                    <p className="font-text text-[11px] text-muted-foreground truncate">{getTalentTitle(profile)}</p>
                   </div>
                   <button
-                    onClick={() => onRemove(profile!.id)}
+                    onClick={() => onRemove(profile.id)}
                     className="w-6 h-6 rounded-full bg-muted hover:bg-red-50 hover:text-red-500 flex items-center justify-center text-muted-foreground/70 transition-colors opacity-0 group-hover:opacity-100"
                   >
                     <X size={11} />
@@ -623,8 +661,8 @@ function BuildTab({
           <p className="font-mono text-[10px] uppercase tracking-eyebrow text-background/40 mb-4">Pod summary</p>
           <div className="flex -space-x-2 mb-4">
             {members.slice(0, 5).map(p => (
-              <div key={p!.id} className={`w-10 h-10 rounded-full border-2 border-foreground shrink-0 flex items-center justify-center font-display font-black text-[11px] text-background overflow-hidden relative ${p!.color || 'bg-primary'}`}>
-                {p!.image ? <Image src={p!.image} alt={p!.name} fill className="object-cover" /> : p!.initials}
+              <div key={p.id} className={`w-10 h-10 rounded-full border-2 border-foreground shrink-0 flex items-center justify-center font-display font-black text-[11px] text-background overflow-hidden relative ${p.color || 'bg-primary'}`}>
+                {p.image ? <Image src={p.image} alt={p.name} fill className="object-cover" /> : p.initials}
               </div>
             ))}
           </div>
@@ -633,15 +671,15 @@ function BuildTab({
           </p>
           <p className="font-text text-[12px] text-background/50">
             {members.length} operator{members.length !== 1 ? 's' : ''}
-            {briefSlug ? ` Â· ${openBriefs.find(j => j.slug === briefSlug)?.clientId}` : ''}
+            {briefSlug ? ` · ${openBriefs.find(j => j.slug === briefSlug)?.title}` : ''}
           </p>
         </div>
         <button
-          onClick={() => { if (podName && members.length > 0) setSubmitted(true) }}
-          disabled={!podName || members.length === 0}
+          onClick={handleSubmit}
+          disabled={submitting || !podName.trim() || members.length === 0}
           className="w-full py-3.5 bg-primary text-primary-foreground rounded-full font-text text-sm font-semibold hover:bg-foreground transition-colors duration-[120ms] disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          Submit pod for review
+          {submitting ? 'Creating pod…' : 'Submit pod for review'}
         </button>
         <p className="font-text text-[11px] text-muted-foreground/70 text-center">Your account lead reviews fit within 48 hours.</p>
       </aside>
