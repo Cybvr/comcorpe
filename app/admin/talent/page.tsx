@@ -4,15 +4,46 @@ import { getTalent, createTalent, updateTalent, deleteTalent } from '@/lib/admin
 import type { User } from '@/lib/user'
 import Modal from '@/components/admin/Modal'
 
-const EMPTY: Omit<User, 'id' | 'role'> = {
-  name: '',
-  initials: '',
+const EMPTY = {
+  firstName: '',
+  surname: '',
   talentRole: '',
   bg: '',
   desc: '',
-  rate: '',
+  rateMin: '',
+  rateMax: '',
   featured: false,
   image: '',
+}
+
+type TalentFormState = typeof EMPTY
+
+function splitName(name = '') {
+  const parts = name.trim().split(/\s+/).filter(Boolean)
+  return {
+    firstName: parts[0] ?? '',
+    surname: parts.slice(1).join(' '),
+  }
+}
+
+function slugify(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+function initialsFor(firstName: string, surname: string) {
+  return `${firstName[0] ?? ''}${surname[0] ?? ''}`.toUpperCase()
+}
+
+function splitRate(rate = '') {
+  const amounts = rate.match(/\d+/g) ?? []
+  return {
+    rateMin: amounts[0] ?? '',
+    rateMax: amounts[1] ?? '',
+  }
 }
 
 function TalentForm({
@@ -24,15 +55,49 @@ function TalentForm({
   onSave: (data: Partial<User>) => void
   onCancel: () => void
 }) {
-  const [form, setForm] = useState({ ...EMPTY, ...initial })
+  const [form, setForm] = useState<TalentFormState>(() => {
+    const name = splitName(initial.name)
+    const rate = splitRate(initial.rate)
+    return {
+      ...EMPTY,
+      ...name,
+      ...rate,
+      talentRole: initial.talentRole ?? '',
+      bg: initial.bg ?? '',
+      desc: initial.desc ?? '',
+      featured: initial.featured ?? false,
+      image: initial.image ?? '',
+    }
+  })
 
-  function set(field: string, value: string | boolean) {
+  function set(field: keyof TalentFormState, value: string | boolean) {
     setForm(f => ({ ...f, [field]: value }))
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    onSave(form)
+    const firstName = form.firstName.trim()
+    const surname = form.surname.trim()
+    const name = [firstName, surname].filter(Boolean).join(' ')
+    const rateMin = form.rateMin.trim()
+    const rateMax = form.rateMax.trim()
+    const rate = rateMin && rateMax
+      ? `$${rateMin} - $${rateMax}/hr`
+      : rateMin || rateMax
+        ? `$${rateMin || rateMax}/hr`
+        : ''
+
+    onSave({
+      id: initial.id ?? slugify(name),
+      name,
+      initials: initialsFor(firstName, surname),
+      talentRole: form.talentRole,
+      bg: form.bg,
+      desc: form.desc,
+      rate,
+      featured: form.featured,
+      image: form.image,
+    })
   }
 
   const F = 'flex flex-col gap-1.5'
@@ -43,23 +108,23 @@ function TalentForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className={F}>
-          <label className={L}>Name *</label>
-          <input className={I} value={form.name} onChange={e => set('name', e.target.value)} required placeholder="Tunde A." />
+          <label className={L}>First name *</label>
+          <input className={I} value={form.firstName} onChange={e => set('firstName', e.target.value)} required placeholder="Tunde" />
         </div>
         <div className={F}>
-          <label className={L}>Initials *</label>
-          <input className={I} value={form.initials} onChange={e => set('initials', e.target.value)} required placeholder="TA" maxLength={3} />
+          <label className={L}>Surname *</label>
+          <input className={I} value={form.surname} onChange={e => set('surname', e.target.value)} required placeholder="Adebayo" />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className={F}>
-          <label className={L}>ID / Slug *</label>
-          <input className={I} value={(form as User).id ?? ''} onChange={e => set('id', e.target.value)} required placeholder="tunde-a" />
+          <label className={L}>Min hourly rate</label>
+          <input type="number" min="0" step="1" inputMode="numeric" className={I} value={form.rateMin} onChange={e => set('rateMin', e.target.value)} placeholder="120" />
         </div>
         <div className={F}>
-          <label className={L}>Rate</label>
-          <input className={I} value={form.rate ?? ''} onChange={e => set('rate', e.target.value)} placeholder="$120 - $180/hr" />
+          <label className={L}>Max hourly rate</label>
+          <input type="number" min="0" step="1" inputMode="numeric" className={I} value={form.rateMax} onChange={e => set('rateMax', e.target.value)} placeholder="180" />
         </div>
       </div>
 
@@ -154,13 +219,13 @@ export default function AdminTalentPage() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-[28px] tracking-hero text-foreground">Talent</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">{talent.length} operators</p>
+          <p className="text-sm text-muted-foreground mt-0.5">{talent.length} talent</p>
         </div>
         <button
           onClick={() => setModal('create')}
           className="px-5 py-2.5 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100"
         >
-          + Add operator
+          + Add talent
         </button>
       </div>
 
@@ -174,7 +239,7 @@ export default function AdminTalentPage() {
 
       <div className="border border-border divide-y divide-border">
         {filtered.length === 0 && (
-          <p className="px-5 py-8 text-sm text-muted-foreground/70 text-center">No operators found.</p>
+          <p className="px-5 py-8 text-sm text-muted-foreground/70 text-center">No talent found.</p>
         )}
         {filtered.map(user => (
           <div key={user.id} className="px-5 py-4 flex items-center justify-between gap-4">
@@ -214,7 +279,7 @@ export default function AdminTalentPage() {
       {/* Create / Edit modal */}
       {modal !== null && (
         <Modal
-          title={modal === 'create' ? 'Add operator' : `Edit ${(modal as { user: User }).user.name}`}
+          title={modal === 'create' ? 'Add talent' : `Edit ${(modal as { user: User }).user.name}`}
           onClose={() => setModal(null)}
         >
           <TalentForm
@@ -227,7 +292,7 @@ export default function AdminTalentPage() {
 
       {/* Delete confirm */}
       {deleteTarget && (
-        <Modal title="Delete operator" onClose={() => setDeleteTarget(null)}>
+        <Modal title="Delete talent" onClose={() => setDeleteTarget(null)}>
           <p className="font-text text-sm text-muted-foreground mb-6">
             Remove <strong className="text-foreground">{deleteTarget.name}</strong> from the platform? This cannot be undone.
           </p>

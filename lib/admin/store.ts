@@ -123,7 +123,31 @@ export async function deleteJob(id: number): Promise<void> {
 
 // ─── Pods ─────────────────────────────────────────────────────────────────────
 export async function getPods(): Promise<Pod[]> {
-  return readAll<Pod>('pods', podsSeed)
+  try {
+    const snap = await getDocs(collection(db, 'pods'))
+    if (snap.empty) return podsSeed
+    // Use the Firestore document ID as canonical — overrides any stale `id` field in stored data
+    return snap.docs.map(d => ({ ...d.data() as Partial<Pod>, id: d.id } as Pod))
+  } catch {
+    return podsSeed
+  }
+}
+
+export async function createPod(data: Omit<Pod, 'id'>): Promise<Pod> {
+  const id = data.slug || data.name.toLowerCase().replace(/\s+/g, '-')
+  const record: Pod = { ...data, id }
+  await upsert('pods', id, record)
+  return record
+}
+
+export async function updatePod(id: string, data: Partial<Pod>): Promise<void> {
+  const all = await getPods()
+  const existing = all.find(p => p.id === id) ?? {}
+  await upsert('pods', id, { ...existing, ...data })
+}
+
+export async function deletePod(id: string): Promise<void> {
+  await remove('pods', id)
 }
 
 export async function getGrowthHeadlines(): Promise<GrowthHeadline[]> {

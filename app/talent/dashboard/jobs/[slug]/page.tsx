@@ -41,7 +41,32 @@ export default function TalentJobDetailPage({
   }
 
   if (loading) {
-    return <div className="p-8 text-center text-sm font-mono text-muted-foreground animate-pulse">Loading job details from Firestore...</div>
+    return (
+      <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto animate-pulse">
+        <div className="h-4 w-24 bg-muted rounded mb-8" />
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
+          <div className="space-y-3">
+            <div className="h-3 w-16 bg-muted rounded" />
+            <div className="h-8 w-72 bg-muted rounded" />
+            <div className="h-3 w-48 bg-muted rounded" />
+          </div>
+          <div className="flex gap-3">
+            <div className="h-10 w-24 bg-muted rounded-full" />
+            <div className="h-10 w-32 bg-muted rounded-full" />
+          </div>
+        </div>
+        <div className="h-10 w-full bg-muted rounded mb-8" />
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_300px] gap-8">
+          <div className="space-y-4">
+            <div className="h-4 w-32 bg-muted rounded" />
+            <div className="h-4 w-full bg-muted rounded" />
+            <div className="h-4 w-5/6 bg-muted rounded" />
+            <div className="h-4 w-4/6 bg-muted rounded" />
+          </div>
+          <div className="h-48 bg-muted rounded-lg" />
+        </div>
+      </div>
+    )
   }
 
   if (!job) {

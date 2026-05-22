@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, use, useEffect } from 'react'
+import { useState, use, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound, usePathname, useSearchParams } from 'next/navigation'
-import { 
+import {
   ArrowLeft,
   Briefcase,
   Clock,
@@ -14,11 +14,8 @@ import {
   Users2,
   FileText,
   Upload,
-  Send,
-  Sparkles,
-  BrainCircuit,
-  Search,
   Plus,
+  Search,
   X,
   Check,
   CreditCard,
@@ -28,12 +25,15 @@ import {
   Pause,
   Play,
   Share2,
+  Mail,
+  Link2,
+  ExternalLink,
 } from 'lucide-react'
 import { usePods, getPodMembers } from '@/lib/pods'
-import { getTalentProfile } from '@/lib/user'
+import { getTalentProfile, useUsers } from '@/lib/user'
 import { getJobProgress } from '@/lib/jobs'
 import { useJobBySlug } from '@/lib/jobs'
-import { updateJob } from '@/lib/admin/store'
+import { updateJob, createPod } from '@/lib/admin/store'
 import { invoices, getInvoice } from '@/lib/invoices'
 import { contractTerms } from '@/lib/contract'
 
@@ -67,10 +67,15 @@ export default function JobDetailPage({
   const [jobStatus, setJobStatus] = useState('Scoping')
   const [localMilestones, setLocalMilestones] = useState<any[]>([])
   const [copied, setCopied] = useState(false)
+  const [showSharePopup, setShowSharePopup] = useState(false)
+  const sharePopupRef = useRef<HTMLDivElement>(null)
+  const [showCreatePod, setShowCreatePod] = useState(false)
+  const [podName, setPodName] = useState('')
+  const [podMemberSearch, setPodMemberSearch] = useState('')
+  const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([])
+  const [creatingPod, setCreatingPod] = useState(false)
+  const { users: allUsers } = useUsers()
 
-  const [chatQuery, setChatQuery] = useState('')
-  const [isAsking, setIsAsking] = useState(false)
-  const [chatHistory, setChatHistory] = useState<{role: 'user' | 'assistant', content: string}[]>([])
   const [isAddingMilestone, setIsAddingMilestone] = useState(false)
   const [newMilestone, setNewMilestone] = useState({ title: '', date: '', amount: '' })
   const [uploadedFiles, setUploadedFiles] = useState([
@@ -87,10 +92,42 @@ export default function JobDetailPage({
     }
   }, [job])
 
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (sharePopupRef.current && !sharePopupRef.current.contains(e.target as Node)) {
+        setShowSharePopup(false)
+      }
+    }
+    if (showSharePopup) document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showSharePopup])
+
   if (loading) {
     return (
-      <div className="px-4 py-16 text-center max-w-[1040px] mx-auto">
-        <p className="font-mono text-sm text-muted-foreground animate-pulse">Loading engagement details from Firestore...</p>
+      <div className="w-full max-w-[1040px] xl:w-[1040px] mx-auto px-4 py-6 sm:px-6 lg:px-8 lg:py-8 animate-pulse">
+        <div className="h-4 w-24 bg-muted rounded mb-8" />
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
+          <div className="space-y-3">
+            <div className="h-3 w-16 bg-muted rounded" />
+            <div className="h-8 w-72 bg-muted rounded" />
+            <div className="h-3 w-48 bg-muted rounded" />
+          </div>
+          <div className="flex gap-3">
+            <div className="h-10 w-24 bg-muted rounded-full" />
+            <div className="h-10 w-24 bg-muted rounded-full" />
+            <div className="h-10 w-10 bg-muted rounded-full" />
+          </div>
+        </div>
+        <div className="h-10 w-full bg-muted rounded mb-8" />
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_300px] gap-8">
+          <div className="space-y-4">
+            <div className="h-4 w-32 bg-muted rounded" />
+            <div className="h-4 w-full bg-muted rounded" />
+            <div className="h-4 w-5/6 bg-muted rounded" />
+            <div className="h-4 w-4/6 bg-muted rounded" />
+          </div>
+          <div className="h-48 bg-muted rounded-lg" />
+        </div>
       </div>
     )
   }
@@ -104,6 +141,16 @@ export default function JobDetailPage({
   const primaryPods = livePods.slice(0, 2)
   const requestedTab = searchParams.get('tab')
   const activeTab = isJobTab(requestedTab) ? requestedTab : 'brief'
+  const podMemberQuery = podMemberSearch.trim().toLowerCase()
+  const talentUsers = allUsers.filter(user => user.role === 'talent')
+  const filteredTalentUsers = podMemberQuery
+    ? talentUsers.filter(user =>
+        user.name.toLowerCase().includes(podMemberQuery) ||
+        (user.talentRole ?? '').toLowerCase().includes(podMemberQuery) ||
+        (user.bg ?? '').toLowerCase().includes(podMemberQuery) ||
+        (user.location ?? '').toLowerCase().includes(podMemberQuery)
+      )
+    : talentUsers
 
   function tabHref(tab: JobTab) {
     const params = new URLSearchParams(searchParams.toString())
@@ -117,15 +164,34 @@ export default function JobDetailPage({
     return query ? `${pathname}?${query}` : pathname
   }
 
-  const handleShare = async () => {
-    const url = window.location.href
-    if (navigator.share) {
-      await navigator.share({ title: job.title, url })
-    } else {
-      await navigator.clipboard.writeText(url)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    }
+  const handleCopyLink = async () => {
+    await navigator.clipboard.writeText(window.location.href)
+    setCopied(true)
+    setTimeout(() => { setCopied(false); setShowSharePopup(false) }, 1800)
+  }
+
+  const handleCreatePod = async () => {
+    if (!podName.trim() || selectedMemberIds.length === 0) return
+    setCreatingPod(true)
+    const slug = podName.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now()
+    const newPod = await createPod({
+      slug,
+      name: podName.trim(),
+      focus: '',
+      summary: '',
+      leadId: selectedMemberIds[0],
+      memberIds: selectedMemberIds,
+      markets: [],
+      evidence: [],
+      availability: '',
+      rate: '',
+    })
+    await updateJob(job.id, { podSlug: newPod.slug })
+    setCreatingPod(false)
+    setShowCreatePod(false)
+    setPodName('')
+    setPodMemberSearch('')
+    setSelectedMemberIds([])
   }
 
   const handlePause = async () => {
@@ -164,22 +230,7 @@ export default function JobDetailPage({
     setLocalMilestones(prev => prev.filter(m => m.id !== id))
   }
 
-  const handleAsk = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!chatQuery) return
-    const newHistory = [...chatHistory, { role: 'user' as const, content: chatQuery }]
-    setChatHistory(newHistory)
-    setChatQuery('')
-    setIsAsking(true)
-
-    setTimeout(() => {
-      setChatHistory([...newHistory, { 
-        role: 'assistant', 
-        content: `Based on your technical requirements and the recent brand updates, I recommend focusing on the Merchant API authentication flow first. It appears to be the primary blocker for the 'Loyalty Dashboard' milestone scheduled for next month.` 
-      }])
-      setIsAsking(false)
-    }, 1500)
-  }
+  const jobUrl = typeof window !== 'undefined' ? window.location.href : ''
 
   return (
     <div className="w-full max-w-[1040px] xl:w-[1040px] mx-auto px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
@@ -208,13 +259,31 @@ export default function JobDetailPage({
         </div>
         {jobStatus !== 'Completed' && jobStatus !== 'Cancelled' && (
           <div className="flex items-center gap-3">
-            <button
-              onClick={handleShare}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-background border border-border rounded-full font-text text-sm font-semibold hover:border-input transition-colors"
-            >
-              {copied ? <Check size={14} className="text-green-500" /> : <Share2 size={14} />}
-              {copied ? 'Copied!' : 'Share'}
-            </button>
+            <div className="relative" ref={sharePopupRef}>
+              <button
+                onClick={() => setShowSharePopup(v => !v)}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-background border border-border rounded-full font-text text-sm font-semibold hover:border-input transition-colors"
+              >
+                <Share2 size={14} /> Share
+              </button>
+              {showSharePopup && (
+                <div className="absolute right-0 top-full mt-2 w-52 bg-background border border-border rounded-xl shadow-lg overflow-hidden z-50">
+                  <button onClick={handleCopyLink} className="flex items-center gap-3 w-full px-4 py-3 font-text text-sm text-foreground hover:bg-muted transition-colors">
+                    {copied ? <Check size={15} className="text-green-500" /> : <Link2 size={15} />}
+                    {copied ? 'Copied!' : 'Copy link'}
+                  </button>
+                  <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(jobUrl)}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-4 py-3 font-text text-sm text-foreground hover:bg-muted transition-colors">
+                    <ExternalLink size={15} /> LinkedIn
+                  </a>
+                  <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(jobUrl)}&text=${encodeURIComponent(job.title)}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-4 py-3 font-text text-sm text-foreground hover:bg-muted transition-colors">
+                    <ExternalLink size={15} /> X / Twitter
+                  </a>
+                  <a href={`mailto:?subject=${encodeURIComponent(job.title)}&body=${encodeURIComponent(jobUrl)}`} className="flex items-center gap-3 px-4 py-3 font-text text-sm text-foreground hover:bg-muted transition-colors">
+                    <Mail size={15} /> Email
+                  </a>
+                </div>
+              )}
+            </div>
             <Link href={`/client/dashboard/jobs/${job.slug}/edit`} className="inline-flex items-center gap-2 px-5 py-2.5 bg-background border border-border rounded-full font-text text-sm font-semibold hover:border-input transition-colors">
               <Pencil size={14} />
               Edit
@@ -465,13 +534,18 @@ export default function JobDetailPage({
             </TabsContent>
 
             <TabsContent value="pod" className="mt-0">
-              {assignedPod ? (
+              {assignedPod && !showCreatePod ? (
                 <section className="border-t border-border">
                   <div className="flex items-center justify-between py-4">
                     <h3 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Assigned pod</h3>
-                    <Link href={`/client/dashboard/search/${assignedPod.slug}?returnTo=${encodeURIComponent(tabHref('pod'))}`} className="font-mono text-[9px] uppercase tracking-eyebrow text-primary hover:underline">
-                      View profile
-                    </Link>
+                    <div className="flex items-center gap-4">
+                      <button onClick={() => setShowCreatePod(true)} className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/50 hover:text-foreground transition-colors">
+                        Change
+                      </button>
+                      <Link href={`/client/dashboard/search/${assignedPod.slug}?returnTo=${encodeURIComponent(tabHref('pod'))}`} className="font-mono text-[9px] uppercase tracking-eyebrow text-primary hover:underline">
+                        View profile
+                      </Link>
+                    </div>
                   </div>
                   
                   <p className="font-display font-black text-[22px] tracking-[-0.02em] text-foreground mb-2">{assignedPod.name}</p>
@@ -499,125 +573,169 @@ export default function JobDetailPage({
                   </div>
                 </section>
               ) : (
-                <section className="border-t border-border">
-                  <h2 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-4 mt-4">Recommended pods</h2>
-                  <div className="grid grid-cols-1 gap-px bg-border border border-border overflow-hidden">
-                    {primaryPods.map((pod) => {
-                      const lead = getTalentProfile(pod.leadId)
-                      return (
-                        <Link key={pod.id} href={`/client/dashboard/search/${pod.slug}?returnTo=${encodeURIComponent(tabHref('pod'))}`} className="p-4 bg-background flex items-center gap-4 hover:bg-muted transition-all group">
-                          <div className="w-10 h-10 rounded-sm bg-foreground flex items-center justify-center font-display font-black text-[11px] text-background shrink-0 border border-border overflow-hidden relative">
-                            {lead.image ? (
-                              <Image src={lead.image} alt={lead.name} fill className="object-cover" />
-                            ) : (
-                              lead.initials
-                            )}
-                          </div>
-                          <div>
-                            <h3 className="font-display font-black text-[15px] text-foreground group-hover:text-primary transition-colors leading-tight">{pod.name}</h3>
-                            <div className="flex items-center gap-3 mt-1">
-                              <span className="font-text text-[12px] text-muted-foreground">{pod.focus}</span>
-                              <span className="w-1 h-1 bg-border rounded-full" />
-                              <span className="font-text text-[12px] text-primary font-semibold">{pod.fitScore}%</span>
-                              <span className="w-1 h-1 bg-border rounded-full" />
-                              <span className="font-text text-[12px] text-foreground font-semibold">{pod.rate}</span>
+                <section className="border-t border-border space-y-6">
+                  <div>
+                    <h2 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-4 mt-4">Recommended pods</h2>
+                    <div className="grid grid-cols-1 gap-px bg-border border border-border overflow-hidden">
+                      {primaryPods.map((pod) => {
+                        const lead = getTalentProfile(pod.leadId)
+                        return (
+                          <Link key={pod.id} href={`/client/dashboard/search/${pod.slug}?returnTo=${encodeURIComponent(tabHref('pod'))}`} className="p-4 bg-background flex items-center gap-4 hover:bg-muted transition-all group">
+                            <div className="w-10 h-10 rounded-sm bg-foreground flex items-center justify-center font-display font-black text-[11px] text-background shrink-0 border border-border overflow-hidden relative">
+                              {lead.image ? (
+                                <Image src={lead.image} alt={lead.name} fill className="object-cover" />
+                              ) : (
+                                lead.initials
+                              )}
                             </div>
-                          </div>
-                        </Link>
-                      )
-                    })}
+                            <div>
+                              <h3 className="font-display font-black text-[15px] text-foreground group-hover:text-primary transition-colors leading-tight">{pod.name}</h3>
+                              <div className="flex items-center gap-3 mt-1">
+                                <span className="font-text text-[12px] text-muted-foreground">{pod.focus}</span>
+                                <span className="w-1 h-1 bg-border rounded-full" />
+                                <span className="font-text text-[12px] text-primary font-semibold">{pod.fitScore}%</span>
+                                <span className="w-1 h-1 bg-border rounded-full" />
+                                <span className="font-text text-[12px] text-foreground font-semibold">{pod.rate}</span>
+                              </div>
+                            </div>
+                          </Link>
+                        )
+                      })}
+                    </div>
                   </div>
+
+                  {/* Divider */}
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1 h-px bg-border" />
+                    <span className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground/50">or</span>
+                    <div className="flex-1 h-px bg-border" />
+                  </div>
+
+                  {/* Build your own pod */}
+                  {!showCreatePod ? (
+                    <button
+                      onClick={() => setShowCreatePod(true)}
+                      className="w-full flex items-center justify-center gap-2 py-4 border-2 border-dashed border-border rounded-xl text-muted-foreground/60 hover:border-primary/40 hover:text-primary transition-all group"
+                    >
+                      <Plus size={16} className="group-hover:scale-110 transition-transform" />
+                      <span className="font-text text-sm font-semibold">Build your own pod</span>
+                    </button>
+                  ) : (
+                    <div className="border border-border rounded-xl p-6 space-y-5">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Build your pod</h3>
+                        <button onClick={() => { setShowCreatePod(false); setSelectedMemberIds([]); setPodMemberSearch('') }} className="text-muted-foreground/50 hover:text-foreground transition-colors">
+                          <X size={14} />
+                        </button>
+                      </div>
+
+                      <div>
+                        <label className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 block mb-2">Pod name *</label>
+                        <input
+                          type="text"
+                          value={podName}
+                          onChange={e => setPodName(e.target.value)}
+                          placeholder="e.g. Growth Collective"
+                          className="w-full p-3 bg-muted border border-border rounded-xl font-text text-sm text-foreground focus:outline-none focus:border-muted-foreground/50 transition-all"
+                        />
+                      </div>
+
+                      <div>
+                        <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-3">
+                          Select people *
+                          {selectedMemberIds.length > 0 && (
+                            <span className="ml-2 text-primary normal-case tracking-normal font-text font-semibold">{selectedMemberIds.length} selected</span>
+                          )}
+                        </p>
+                        <div className="relative mb-3">
+                          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+                          <input
+                            type="search"
+                            value={podMemberSearch}
+                            onChange={e => setPodMemberSearch(e.target.value)}
+                            placeholder="Search talent by name, role, background, or location..."
+                            className="w-full pl-9 pr-3 py-2.5 bg-muted border border-border rounded-xl font-text text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-muted-foreground/50 transition-all"
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[320px] overflow-y-auto pr-1">
+                          {filteredTalentUsers.map(person => {
+                            const selected = selectedMemberIds.includes(person.id)
+                            return (
+                              <button
+                                key={person.id}
+                                type="button"
+                                onClick={() => setSelectedMemberIds(prev =>
+                                  selected ? prev.filter(id => id !== person.id) : [...prev, person.id]
+                                )}
+                                className={`flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
+                                  selected
+                                    ? 'border-primary bg-primary/5'
+                                    : 'border-border bg-muted/30 hover:border-input'
+                                }`}
+                              >
+                                <div className={`w-9 h-9 rounded-sm shrink-0 flex items-center justify-center font-display font-black text-[10px] text-background overflow-hidden relative ${(person as any).color || 'bg-foreground'}`}>
+                                  {(person as any).image ? (
+                                    <Image src={(person as any).image} alt={person.name} fill className="object-cover" />
+                                  ) : (person as any).initials ?? person.name.slice(0, 2).toUpperCase()}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <p className={`font-text text-sm font-semibold leading-tight truncate ${selected ? 'text-primary' : 'text-foreground'}`}>{person.name}</p>
+                                  <p className="font-text text-[11px] text-muted-foreground/60 leading-tight mt-0.5 truncate">{(person as any).talentRole ?? person.role}</p>
+                                </div>
+                                {selected && <Check size={13} className="text-primary shrink-0" />}
+                              </button>
+                            )
+                          })}
+                          {filteredTalentUsers.length === 0 && (
+                            <p className="sm:col-span-2 px-3 py-8 text-center font-text text-sm text-muted-foreground/60">No talent matches that search.</p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-end gap-3 pt-1">
+                        <button
+                          onClick={() => { setShowCreatePod(false); setSelectedMemberIds([]); setPodMemberSearch('') }}
+                          className="font-text text-sm font-semibold text-muted-foreground/70 hover:text-foreground transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleCreatePod}
+                          disabled={creatingPod || !podName.trim() || selectedMemberIds.length === 0}
+                          className="inline-flex items-center gap-2 px-6 py-2.5 bg-foreground text-background rounded-full font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-all disabled:opacity-40"
+                        >
+                          {creatingPod ? 'Creating…' : <><Check size={13} /> Create pod</>}
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </section>
               )}
             </TabsContent>
 
             <TabsContent value="knowledge" className="mt-0">
               <section className="py-2 border-t border-border">
-                <div className="flex flex-col md:flex-row gap-8 mt-4">
-                  {/* File List / Upload Area */}
-                  <div className="md:w-[280px] shrink-0 space-y-6">
-                    <div>
-                      <h3 className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-4">Engagement Context</h3>
-                      <div className="space-y-2">
-                        {uploadedFiles.map((file, i) => (
-                          <div key={i} className="flex items-center justify-between p-3 bg-muted/50 border border-border rounded-lg group">
-                            <div className="flex items-center gap-3 min-w-0">
-                              <FileText size={16} className="text-primary/70 shrink-0" />
-                              <div className="min-w-0">
-                                <p className="font-text text-xs font-bold text-foreground truncate">{file.name}</p>
-                                <p className="font-text text-[9px] text-muted-foreground/70">{file.size} Â· {file.date}</p>
-                              </div>
+                <div className="mt-4 space-y-6">
+                  <div>
+                    <h3 className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-4">Engagement Context</h3>
+                    <div className="space-y-2">
+                      {uploadedFiles.map((file, i) => (
+                        <div key={i} className="flex items-center justify-between p-3 bg-muted/50 border border-border rounded-lg group">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <FileText size={16} className="text-primary/70 shrink-0" />
+                            <div className="min-w-0">
+                              <p className="font-text text-xs font-bold text-foreground truncate">{file.name}</p>
+                              <p className="font-text text-[9px] text-muted-foreground/70">{file.size} · {file.date}</p>
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="p-6 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center text-center group hover:border-primary/30 transition-all cursor-pointer">
-                      <Upload size={24} className="text-muted-foreground/40 mb-2 group-hover:text-primary/60" />
-                      <p className="font-text text-[11px] font-bold text-foreground">Upload context</p>
-                      <p className="font-text text-[9px] text-muted-foreground/70 mt-1 uppercase tracking-wider">PDF, CSV, JSON</p>
+                        </div>
+                      ))}
                     </div>
                   </div>
-
-                  {/* Chat Interface */}
-                  <div className="flex-1 flex flex-col bg-muted/30 rounded-2xl border border-border overflow-hidden h-[500px]">
-                    <div className="p-4 border-b border-border bg-background/50 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Sparkles size={14} className="text-primary" />
-                        <span className="font-mono text-[10px] uppercase tracking-widest font-black text-foreground">Ask the Documents</span>
-                      </div>
-                      <span className="font-mono text-[8px] text-muted-foreground uppercase">Claude 3.5 Active</span>
-                    </div>
-
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                      {chatHistory.length === 0 ? (
-                        <div className="h-full flex flex-col items-center justify-center text-center px-8">
-                          <BrainCircuit size={32} className="text-muted-foreground/20 mb-4" />
-                          <p className="font-text text-sm text-muted-foreground font-medium">Ask Claude anything about this engagement&apos;s files.</p>
-                          <p className="font-text text-[11px] text-muted-foreground/60 mt-2 max-w-[240px]">&quot;What are the main blockers mentioned in the technical reqs?&quot;</p>
-                        </div>
-                      ) : (
-                        chatHistory.map((msg, i) => (
-                          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                            <div className={`max-w-[85%] p-4 rounded-2xl font-text text-[13px] leading-relaxed ${
-                              msg.role === 'user' 
-                                ? 'bg-foreground text-background' 
-                                : 'bg-background border border-border text-foreground shadow-sm'
-                            }`}>
-                              {msg.content}
-                            </div>
-                          </div>
-                        ))
-                      )}
-                      {isAsking && (
-                        <div className="flex justify-start">
-                          <div className="bg-background border border-border p-4 rounded-2xl flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse delay-75" />
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse delay-150" />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <form onSubmit={handleAsk} className="p-3 bg-background border-t border-border">
-                      <div className="relative">
-                        <input 
-                          type="text"
-                          value={chatQuery}
-                          onChange={e => setChatQuery(e.target.value)}
-                          placeholder="Ask a question..."
-                          className="w-full pl-4 pr-12 py-3 bg-muted/50 border border-border rounded-xl font-text text-[13px] focus:outline-none focus:border-primary/30 transition-all"
-                        />
-                        <button 
-                          type="submit"
-                          disabled={isAsking || !chatQuery}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-foreground text-background rounded-lg hover:bg-primary transition-all disabled:opacity-20"
-                        >
-                          <Send size={14} />
-                        </button>
-                      </div>
-                    </form>
+                  <div className="p-6 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center text-center group hover:border-primary/30 transition-all cursor-pointer">
+                    <Upload size={24} className="text-muted-foreground/40 mb-2 group-hover:text-primary/60" />
+                    <p className="font-text text-[11px] font-bold text-foreground">Upload context</p>
+                    <p className="font-text text-[9px] text-muted-foreground/70 mt-1 uppercase tracking-wider">PDF, CSV, JSON</p>
                   </div>
                 </div>
               </section>
