@@ -1,9 +1,9 @@
-﻿'use client'
+'use client'
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, DollarSign, Layers3, MapPin, Plus, Search, ShieldCheck, Users, X, Sparkles, BrainCircuit } from 'lucide-react'
+import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, DollarSign, Layers3, MapPin, Plus, Search, ShieldCheck, Users, X, Sparkles } from 'lucide-react'
 import NetworkAffiliateBadge from '@/components/dashboard/NetworkAffiliateBadge'
 import { usePods } from '@/lib/pods'
 import { useJobs } from '@/lib/jobs'
@@ -155,8 +155,6 @@ export default function DiscoverPage() {
   const [activeTab, setActiveTab] = useState<DiscoverTab>('all')
   const [activePage, setActivePage] = useState(1)
   const [searchQuery, setSearchQuery] = useState('')
-  const [isSmartSearch, setIsSmartSearch] = useState(false)
-  const [isAILoading, setIsAILoading] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   function toggleSelect(id: string) {
@@ -258,33 +256,8 @@ export default function DiscoverPage() {
             onChange={(e) => { setSearchQuery(e.target.value); setActivePage(1); }}
             className="w-full pl-12 pr-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:border-primary/30 transition-all font-text text-[15px]"
           />
-          {isAILoading && (
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-              <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
-              <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]" />
-              <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
-            </div>
-          )}
         </div>
-        
-        <button
-          onClick={() => {
-            setIsSmartSearch(!isSmartSearch)
-            if (!isSmartSearch && searchQuery) {
-              setIsAILoading(true)
-              setTimeout(() => setIsAILoading(false), 800)
-            }
-          }}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-text text-sm transition-all whitespace-nowrap ${
-            isSmartSearch 
-              ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20' 
-              : 'bg-background border-border text-muted-foreground hover:border-input'
-          }`}
-        >
-          <BrainCircuit size={16} className={isSmartSearch ? 'animate-pulse' : ''} />
-          Smart Search
-        </button>
-        
+
         <div className="flex items-center gap-2 px-2">
           <FilterDropdown 
             label="All markets" 

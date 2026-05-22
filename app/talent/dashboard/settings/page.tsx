@@ -8,7 +8,7 @@ import {
   MapPin, Pencil, Star, X, Zap,
   Search, ShieldCheck, Check, CreditCard,
 } from 'lucide-react'
-import { useCurrentUser, updateUserProfile, getClientUser, OMNICOM_AGENCIES } from '@/lib/user'
+import { useCurrentUser, updateUserProfile, getClientUser, OMNICOM_AFFILIATES } from '@/lib/user'
 import NetworkAffiliateBadge from '@/components/dashboard/NetworkAffiliateBadge'
 import { applications } from '@/lib/applications'
 import { payouts, ccreditsBalance, type PayoutStatus } from '@/lib/payouts'
@@ -427,7 +427,7 @@ export default function TalentSettingsPage() {
               <div className="space-y-2">
                 <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-foreground">Network Affiliations</h2>
                 <p className="font-text text-sm text-muted-foreground max-w-[52ch]">
-                  Select any Omicon agencies you're affiliated with. This is optional — not a requirement. Affiliations show a verified badge on your profile visible to clients.
+                  Select any Omnicom agencies you are affiliated with. This is optional — not a requirement. Affiliations show a verified badge on your profile visible to clients.
                 </p>
               </div>
 
@@ -442,15 +442,15 @@ export default function TalentSettingsPage() {
 
               {/* Agency grid */}
               <div>
-                <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-3">Omicon Agencies</p>
+                <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-3">Omnicom Agencies</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {OMNICOM_AGENCIES.map(agency => {
-                    const checked = affiliations.includes(agency)
+                  {OMNICOM_AFFILIATES.map((agency) => {
+                    const checked = affiliations.includes(agency.label)
                     return (
                       <button
-                        key={agency}
+                        key={agency.slug}
                         type="button"
-                        onClick={() => toggleAffiliation(agency)}
+                        onClick={() => toggleAffiliation(agency.label)}
                         className={`flex items-center gap-3 px-4 py-3 border text-left rounded-lg transition-all ${
                           checked
                             ? 'border-green-300 bg-green-50 text-green-800'
@@ -462,7 +462,20 @@ export default function TalentSettingsPage() {
                         }`}>
                           {checked && <Check size={10} className="text-white" strokeWidth={3} />}
                         </div>
-                        <span className="font-text text-sm font-semibold">{agency}</span>
+                        <div className="min-w-0">
+                          <span className="block font-text text-sm font-semibold">{agency.label}</span>
+                          {agency.logo && (
+                            <span className="mt-1 block">
+                              <Image
+                                src={agency.logo}
+                                alt={agency.label}
+                                width={64}
+                                height={18}
+                                className="h-3.5 w-auto object-contain"
+                              />
+                            </span>
+                          )}
+                        </div>
                       </button>
                     )
                   })}

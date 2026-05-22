@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { getTalent, createTalent, updateTalent, deleteTalent } from '@/lib/admin/store'
-import { User, OMNICOM_AGENCIES } from '@/lib/user'
+import { User, OMNICOM_AFFILIATES } from '@/lib/user'
 import Modal from '@/components/admin/Modal'
 
 const EMPTY = {
@@ -189,8 +189,8 @@ function TalentForm({
           onChange={e => set('networkAffiliations', e.target.value ? [e.target.value] : [])}
         >
           <option value="">None</option>
-          {OMNICOM_AGENCIES.map(agency => (
-            <option key={agency} value={agency}>{agency}</option>
+          {OMNICOM_AFFILIATES.map((agency) => (
+            <option key={agency.slug} value={agency.label}>{agency.label}</option>
           ))}
         </select>
       </div>

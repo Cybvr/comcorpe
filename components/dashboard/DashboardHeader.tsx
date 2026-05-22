@@ -1,17 +1,12 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Bell, ChevronDown, LogOut, Menu, Moon, Search, Settings, Shield, Sun, SwitchCamera, User, Sparkles, BrainCircuit, Share2 } from 'lucide-react'
+import { Bell, ChevronDown, LogOut, Menu, Moon, Search, Settings, Shield, Sun, SwitchCamera } from 'lucide-react'
 import Link from 'next/link'
-import { useCurrentUser } from '@/lib/user'
+import { useJobs } from '@/lib/jobs'
+import { getClientUser, useCurrentUser } from '@/lib/user'
 import type { DashboardAudience } from './DashboardSidebar'
-
-const searchPlaceholder: Record<DashboardAudience, string> = {
-  talent: 'Search jobs, cases and resources',
-  client: 'Search briefs, projects, talent and invoices',
-  admin: 'Search talent, jobs and clients',
-}
 
 export default function DashboardHeader({
   audience = 'talent',
@@ -22,11 +17,29 @@ export default function DashboardHeader({
 }) {
   const router = useRouter()
   const { user: currentUser } = useCurrentUser()
+  const { jobs } = useJobs()
   const [darkMode, setDarkMode] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
-  const [isMCPSearch, setIsMCPSearch] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const userMenuRef = useRef<HTMLDivElement>(null)
+  const searchRef = useRef<HTMLDivElement>(null)
+
+  const searchableJobs = jobs.filter((job) => {
+    if (audience === 'client') return job.clientId === currentUser?.clientId
+    return true
+  })
+
+  const normalizedSearch = searchQuery.trim().toLowerCase()
+  const matchingJobs = normalizedSearch
+    ? searchableJobs
+      .filter((job) =>
+        [job.title, job.clientId, job.summary, job.location, ...job.tags]
+          .join(' ')
+          .toLowerCase()
+          .includes(normalizedSearch)
+      )
+      .slice(0, 6)
+    : []
 
   const handleSignOut = async () => {
     try {
@@ -51,11 +64,13 @@ export default function DashboardHeader({
     return () => cancelAnimationFrame(frame)
   }, [])
 
-  // Close user menu on outside click
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
         setUserMenuOpen(false)
+      }
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchQuery('')
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -79,42 +94,69 @@ export default function DashboardHeader({
     { audience: 'admin' as const, label: 'Admin', href: '/admin', Icon: Shield },
   ].filter((item) => item.audience !== audience)
 
+  const getJobHref = (slug: string) => {
+    if (audience === 'client') return `/client/dashboard/jobs/${slug}`
+    if (audience === 'talent') return `/talent/dashboard/jobs/${slug}`
+    return '/admin/jobs'
+  }
+
+  const handleJobSelect = (slug: string) => {
+    setSearchQuery('')
+    router.push(getJobHref(slug))
+  }
+
   return (
     <header className="h-13 shrink-0 border-b border-border flex items-center gap-3 px-4 lg:px-6 bg-background">
-      {/* Mobile Menu Toggle */}
-      <button 
+      <button
         onClick={onMenuClick}
         className="lg:hidden p-1.5 -ml-1 text-muted-foreground hover:text-foreground hover:bg-border rounded-md transition-colors"
       >
         <Menu size={20} />
       </button>
 
-      <div className={`flex-1 relative max-w-md transition-all duration-300 ${isMCPSearch ? 'max-w-lg' : 'max-w-md'}`}>
+      <div className="relative flex-1 max-w-md" ref={searchRef}>
         <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-          {isMCPSearch ? <Sparkles size={14} className="text-primary animate-pulse" /> : <Search size={14} strokeWidth={1.8} className="text-muted-foreground/70" />}
+          <Search size={14} strokeWidth={1.8} className="text-muted-foreground/70" />
         </div>
         <input
-          type="text"
+          type="search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder={isMCPSearch ? 'Ask Claude about your company files (MCP)...' : searchPlaceholder[audience]}
-          className={`w-full pl-9 pr-24 py-2 text-sm bg-border/60 border rounded-lg text-foreground placeholder:text-muted-foreground/70 focus:outline-none transition-all ${
-            isMCPSearch ? 'border-primary/50 ring-2 ring-primary/10 bg-primary/[0.02]' : 'border-transparent focus:border-input'
-          }`}
+          placeholder="Search jobs..."
+          className="w-full pl-9 pr-4 py-2 text-sm bg-border/60 border border-transparent rounded-lg text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-input transition-all"
         />
-        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1">
-          <button
-            onClick={() => setIsMCPSearch(!isMCPSearch)}
-            className={`px-2 py-1 rounded-md font-mono text-[9px] font-bold uppercase tracking-wider transition-all flex items-center gap-1 ${
-              isMCPSearch 
-                ? 'bg-primary text-primary-foreground shadow-sm' 
-                : 'bg-background text-muted-foreground/70 hover:text-primary hover:bg-primary/5'
-            }`}
-          >
-            <Share2 size={10} />
-            MCP
-          </button>
-        </div>
+        {normalizedSearch && (
+          <div className="absolute left-0 right-0 top-full z-40 mt-2 overflow-hidden rounded-xl border border-border bg-background shadow-xl">
+            {matchingJobs.length > 0 ? (
+              matchingJobs.map((job) => {
+                const clientName = getClientUser(job.clientId).name
+
+                return (
+                  <button
+                    key={job.slug}
+                    type="button"
+                    onClick={() => handleJobSelect(job.slug)}
+                    className="flex w-full items-start justify-between gap-3 border-b border-border px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-muted"
+                  >
+                    <span className="min-w-0">
+                      <span className="block truncate font-text text-sm font-semibold text-foreground">{job.title}</span>
+                      <span className="block truncate font-text text-xs text-muted-foreground">
+                        {clientName} - {job.status}
+                      </span>
+                    </span>
+                    <span className="shrink-0 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">
+                      Job
+                    </span>
+                  </button>
+                )
+              })
+            ) : (
+              <div className="px-4 py-3 font-text text-sm text-muted-foreground">
+                No jobs found.
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-2 ml-auto">
@@ -126,7 +168,7 @@ export default function DashboardHeader({
           <Bell size={14} strokeWidth={1.5} />
           <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-primary rounded-full" />
         </button>
-        {/* User avatar + dropdown */}
+
         <div className="relative ml-1" ref={userMenuRef}>
           <button
             id="user-menu-button"
@@ -153,7 +195,6 @@ export default function DashboardHeader({
               aria-labelledby="user-menu-button"
               className="absolute right-0 top-full mt-2 w-56 bg-background border border-border rounded-xl shadow-xl z-50 overflow-hidden"
             >
-              {/* User info */}
               <div className="px-4 py-3 border-b border-border flex flex-col gap-0.5">
                 <p className="font-display font-black text-[14px] tracking-[-0.01em] text-foreground leading-tight">{currentUser?.name ?? 'Loading profile'}</p>
                 {currentUser?.email && (
@@ -162,11 +203,10 @@ export default function DashboardHeader({
                   </p>
                 )}
                 <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mt-1 capitalize">
-                  {currentUser ? `${currentUser.role} Â· ${currentUser.company ?? 'Comcorpe'}` : 'Firebase'}
+                  {currentUser ? `${currentUser.role} - ${currentUser.company ?? 'Comcorpe'}` : 'Firebase'}
                 </p>
               </div>
 
-              {/* Menu items */}
               <div className="py-1.5">
                 <Link
                   href={profileHref}

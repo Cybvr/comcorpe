@@ -43,21 +43,37 @@ export interface User {
   networkAffiliations?: string[]
 }
 
-export const OMNICOM_AGENCIES = [
-  'BBDO',
-  'DDB',
-  'TBWA',
-  'OMD',
-  'PHD',
-  'Hearts & Science',
-  'Interbrand',
-  'Rapp',
-  'Critical Mass',
-  'FleishmanHillard',
-  'Ketchum',
-  'Porter Novelli',
-  'Other',
+export interface OmnicomAffiliate {
+  label: string
+  slug: string
+  logo?: string
+}
+
+export const OMNICOM_AFFILIATES: OmnicomAffiliate[] = [
+  { label: 'BBDO', slug: 'bbdo', logo: '/images/network/bbdo.jpg' },
+  { label: 'DDB', slug: 'ddb' },
+  { label: 'TBWA', slug: 'tbwa', logo: '/images/network/tbwa.jpeg' },
+  { label: 'OMD', slug: 'omd', logo: '/images/network/omd.svg' },
+  { label: 'PHD', slug: 'phd', logo: '/images/network/phd.png' },
+  { label: 'Hearts & Science', slug: 'hearts-science' },
+  { label: 'Interbrand', slug: 'interbrand' },
+  { label: 'Rapp', slug: 'rapp', logo: '/images/network/rapp.svg' },
+  { label: 'Critical Mass', slug: 'critical-mass', logo: '/images/network/critical-mass.webp' },
+  { label: 'FleishmanHillard', slug: 'fleishmanhillard', logo: '/images/network/fleishmanhillard.png' },
+  { label: 'Ketchum', slug: 'ketchum', logo: '/images/network/ketchum.png' },
+  { label: 'Porter Novelli', slug: 'porter-novelli', logo: '/images/network/porter-novelli.svg' },
+  { label: 'Other', slug: 'other' },
 ]
+
+export const OMNICOM_AGENCIES = OMNICOM_AFFILIATES.map((affiliate) => affiliate.label)
+
+const omnicomAffiliateMap = new Map(
+  OMNICOM_AFFILIATES.map((affiliate) => [affiliate.label.toLowerCase(), affiliate])
+)
+
+export function getOmnicomAffiliate(label: string): OmnicomAffiliate | undefined {
+  return omnicomAffiliateMap.get(label.toLowerCase())
+}
 
 export const clientUsers: User[] = [
   {

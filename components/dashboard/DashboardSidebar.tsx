@@ -1,25 +1,26 @@
 'use client'
 
-import Link from 'next/link'
 import Image from 'next/image'
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import DashboardEventBanner from '@/components/dashboard/DashboardEventBanner'
 import {
+  BookOpen,
   Briefcase,
-  CreditCard,
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
   FolderOpen,
   Gift,
   HelpCircle,
   Home,
   LayoutDashboard,
-  MessageCircle,
   Search,
   Settings,
   Shield,
   Sparkles,
   Users,
   Users2,
-  BookOpen,
-  CalendarDays,
   X,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -33,13 +34,16 @@ type SidebarItem = {
   badge?: number
 }
 
-const dashboardConfig: Record<DashboardAudience, {
-  label: string
-  root: string
-  primaryItems: SidebarItem[]
-  intelligenceItems?: SidebarItem[]
-  supportItems: SidebarItem[]
-}> = {
+const dashboardConfig: Record<
+  DashboardAudience,
+  {
+    label: string
+    root: string
+    primaryItems: SidebarItem[]
+    intelligenceItems?: SidebarItem[]
+    supportItems: SidebarItem[]
+  }
+> = {
   talent: {
     label: 'Talent',
     root: '/talent/dashboard',
@@ -95,7 +99,13 @@ function isActivePath(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`)
 }
 
-function SidebarLink({ item }: { item: SidebarItem }) {
+function SidebarLink({
+  item,
+  collapsed = false,
+}: {
+  item: SidebarItem
+  collapsed?: boolean
+}) {
   const pathname = usePathname()
   const active = isActivePath(pathname, item.href)
   const Icon = item.icon
@@ -104,15 +114,19 @@ function SidebarLink({ item }: { item: SidebarItem }) {
     <Link
       href={item.href}
       aria-current={active ? 'page' : undefined}
-      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-text text-sm transition-colors duration-150 ${active
+      title={collapsed ? item.label : undefined}
+      className={`flex items-center rounded-lg px-2.5 py-2 font-text text-sm transition-[color,background-color,padding] duration-150 ${
+        collapsed ? 'justify-center' : 'gap-3'
+      } ${
+        active
           ? 'bg-primary/10 text-primary font-semibold'
           : 'text-muted-foreground hover:bg-border hover:text-foreground'
-        }`}
+      }`}
     >
       <Icon size={16} strokeWidth={1.8} />
-      <span className="flex-1">{item.label}</span>
-      {item.badge && (
-        <span className="font-mono text-[10px] font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+      {!collapsed && <span className="flex-1">{item.label}</span>}
+      {!collapsed && item.badge && (
+        <span className="min-w-[18px] rounded-full bg-primary px-1.5 py-0.5 text-center font-mono text-[10px] font-bold text-primary-foreground">
           {item.badge}
         </span>
       )}
@@ -120,9 +134,19 @@ function SidebarLink({ item }: { item: SidebarItem }) {
   )
 }
 
-function DashboardSwitch({ audience }: { audience: DashboardAudience }) {
+function DashboardSwitch({
+  audience,
+  collapsed = false,
+}: {
+  audience: DashboardAudience
+  collapsed?: boolean
+}) {
+  if (collapsed) {
+    return null
+  }
+
   return (
-    <div className="grid grid-cols-2 gap-1 rounded-lg bg-border p-1 mt-4">
+    <div className="mt-4 grid grid-cols-2 gap-1 rounded-lg bg-border p-1">
       {(['talent', 'client'] as DashboardAudience[]).map((option) => {
         const config = dashboardConfig[option]
         const active = option === audience
@@ -131,8 +155,9 @@ function DashboardSwitch({ audience }: { audience: DashboardAudience }) {
           <Link
             key={option}
             href={config.root}
-            className={`text-center rounded-md px-2 py-1.5 font-text text-xs font-semibold transition-colors ${active ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground hover:text-foreground'
-              }`}
+            className={`rounded-md px-2 py-1.5 text-center font-text text-xs font-semibold transition-colors ${
+              active ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground hover:text-foreground'
+            }`}
           >
             {config.label}
           </Link>
@@ -145,48 +170,109 @@ function DashboardSwitch({ audience }: { audience: DashboardAudience }) {
 export default function DashboardSidebar({
   audience,
   onClose,
+  collapsed = false,
+  onToggleCollapse,
 }: {
   audience: DashboardAudience
   onClose?: () => void
+  collapsed?: boolean
+  onToggleCollapse?: () => void
 }) {
   const config = dashboardConfig[audience]
 
   return (
-    <aside className="w-64 lg:w-56 shrink-0 border-r border-border flex flex-col h-full overflow-y-auto bg-background shadow-2xl lg:shadow-none">
-      <div className="px-4 pt-5 pb-4 border-b border-border relative">
-        <Link href={config.root} className="flex items-center gap-2.5" onClick={onClose}>
-          <Image src="/images/comcorpe.png" alt="Comcorpe" width={118} height={24} className="h-6 w-auto object-contain dark:invert" priority />
-          <span className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 border-l border-input pl-2">
-            {config.label}
-          </span>
-        </Link>
+    <aside
+      className={`flex h-full shrink-0 flex-col overflow-y-auto border-r border-border bg-background shadow-2xl transition-[width] duration-300 lg:shadow-none ${
+        collapsed ? 'w-64 lg:w-20' : 'w-64 lg:w-56'
+      }`}
+    >
+      <div className={`relative border-b border-border pt-4 pb-3 ${collapsed ? 'px-2.5' : 'px-3'}`}>
+        <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-2.5'}`}>
+          <Link
+            href={config.root}
+            className={`flex min-w-0 items-center ${collapsed ? 'justify-center' : 'gap-2.5'}`}
+            onClick={onClose}
+          >
+            {collapsed ? (
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-foreground font-display text-sm font-black text-background">
+                C
+              </span>
+            ) : (
+              <>
+                <Image
+                  src="/images/comcorpe.png"
+                  alt="Comcorpe"
+                  width={118}
+                  height={24}
+                  className="h-6 w-auto object-contain dark:invert"
+                  priority
+                />
+                <span className="border-l border-input pl-2 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">
+                  {config.label}
+                </span>
+              </>
+            )}
+          </Link>
 
-        {/* Mobile Close Button */}
+          {onToggleCollapse && (
+            <button
+              type="button"
+              onClick={onToggleCollapse}
+              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              className={`hidden h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition-colors hover:bg-border hover:text-foreground lg:flex ${
+                collapsed ? 'absolute top-4 right-3' : 'ml-auto'
+              }`}
+            >
+              {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+            </button>
+          )}
+        </div>
+
         <button
           onClick={onClose}
-          className="lg:hidden absolute right-3 top-5 p-1 text-muted-foreground/70 hover:text-foreground transition-colors"
+          className="absolute top-5 right-3 p-1 text-muted-foreground/70 transition-colors hover:text-foreground lg:hidden"
         >
           <X size={18} />
         </button>
 
-        <DashboardSwitch audience={audience} />
+        {collapsed ? (
+          <div className="mt-4 hidden justify-center lg:flex">
+            <span className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">
+              {config.label}
+            </span>
+          </div>
+        ) : (
+          <DashboardSwitch audience={audience} />
+        )}
       </div>
 
-      <nav className="flex flex-col gap-0.5 p-3 flex-1" aria-label="Dashboard">
+      <nav className="flex flex-1 flex-col gap-0.5 p-2" aria-label="Dashboard">
         {config.primaryItems.map((item) => (
           <div key={item.href} onClick={onClose}>
-            <SidebarLink item={item} />
+            <SidebarLink item={item} collapsed={collapsed} />
           </div>
         ))}
       </nav>
 
+      <div className="px-2 pb-2">
+        <DashboardEventBanner
+          audience={audience}
+          collapsed={collapsed}
+          onNavigate={onClose}
+        />
+      </div>
+
       {config.intelligenceItems && config.intelligenceItems.length > 0 && (
-        <div className="px-3 py-2">
-          <p className="px-3 mb-2 font-mono text-[9px] uppercase tracking-[0.2em] text-primary font-black">Intelligence Suite</p>
+        <div className="px-2 py-1.5">
+          {!collapsed && (
+            <p className="mb-1.5 px-2.5 font-mono text-[9px] font-black uppercase tracking-[0.2em] text-primary">
+              Intelligence Suite
+            </p>
+          )}
           <div className="flex flex-col gap-0.5">
             {config.intelligenceItems.map((item) => (
               <div key={item.href} onClick={onClose}>
-                <SidebarLink item={item} />
+                <SidebarLink item={item} collapsed={collapsed} />
               </div>
             ))}
           </div>
@@ -194,20 +280,23 @@ export default function DashboardSidebar({
       )}
 
       {config.supportItems.length > 0 && (
-        <div className="p-3 border-t border-border">
+        <div className="border-t border-border p-2">
           {audience === 'client' && (
             <button
               type="button"
               onClick={onClose}
-              className="mb-2 flex w-full items-center gap-3 rounded-lg bg-foreground px-3 py-2.5 font-text text-sm font-semibold text-background transition-colors duration-150 hover:bg-primary hover:text-primary-foreground"
+              title={collapsed ? 'Book call' : undefined}
+              className={`mb-1.5 flex w-full items-center rounded-lg bg-foreground px-2.5 py-2 font-text text-sm font-semibold text-background transition-colors duration-150 hover:bg-primary hover:text-primary-foreground ${
+                collapsed ? 'justify-center' : 'gap-3'
+              }`}
             >
               <CalendarDays size={16} strokeWidth={1.8} />
-              <span className="flex-1 text-left">Book call</span>
+              {!collapsed && <span className="flex-1 text-left">Book call</span>}
             </button>
           )}
           {config.supportItems.map((item) => (
             <div key={item.href} onClick={onClose}>
-              <SidebarLink item={item} />
+              <SidebarLink item={item} collapsed={collapsed} />
             </div>
           ))}
         </div>

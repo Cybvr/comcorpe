@@ -8,6 +8,7 @@ import DashboardSidebar from '@/components/dashboard/DashboardSidebar'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const { user, loading } = useCurrentUser()
   const router = useRouter()
 
@@ -43,7 +44,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
-        <DashboardSidebar audience="client" onClose={() => setSidebarOpen(false)} />
+        <DashboardSidebar
+          audience="client"
+          collapsed={sidebarCollapsed}
+          onClose={() => setSidebarOpen(false)}
+          onToggleCollapse={() => setSidebarCollapsed((current) => !current)}
+        />
       </div>
 
       <div className="flex-1 flex flex-col overflow-hidden w-full">

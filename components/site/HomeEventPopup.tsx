@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { ArrowRight, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { featuredBlogPost, getBlogHref } from '@/lib/blog'
 
 const DISMISS_KEY = 'comcorpe-home-event-popup-dismissed-v1'
@@ -28,27 +28,37 @@ export default function HomeEventBanner() {
   if (!ready || !open) return null
 
   return (
-    <div className="w-full bg-primary text-primary-foreground px-4 py-2.5 flex items-center justify-center gap-4 text-sm">
-      <span className="font-mono text-[10px] uppercase tracking-eyebrow opacity-70 shrink-0">
-        {featuredBlogPost.category}
-      </span>
-      <p className="font-text font-semibold truncate">
-        {featuredBlogPost.title}
-      </p>
-      <Link
-        href={getBlogHref(featuredBlogPost.slug)}
-        className="inline-flex items-center gap-1.5 shrink-0 font-text text-xs font-semibold underline underline-offset-2 hover:opacity-80 transition-opacity"
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onClick={dismiss}
+    >
+      <div
+        className="relative bg-background border border-foreground/20 max-w-sm w-full mx-4 p-8"
+        onClick={(e) => e.stopPropagation()}
       >
-        Read more <ArrowRight size={12} />
-      </Link>
-      <button
-        type="button"
-        onClick={dismiss}
-        aria-label="Dismiss"
-        className="shrink-0 opacity-70 hover:opacity-100 transition-opacity"
-      >
-        <X size={14} />
-      </button>
+        <button
+          type="button"
+          onClick={dismiss}
+          aria-label="Dismiss"
+          className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <X size={16} />
+        </button>
+
+        <span className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground block mb-4">
+          What&apos;s Happening
+        </span>
+
+        <Link
+          href={getBlogHref(featuredBlogPost.slug)}
+          onClick={dismiss}
+          className="block group"
+        >
+          <h2 className="font-display font-black text-[28px] leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors">
+            Comcorpe Signals
+          </h2>
+        </Link>
+      </div>
     </div>
   )
 }

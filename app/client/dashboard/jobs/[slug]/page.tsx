@@ -40,6 +40,7 @@ import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebas
 import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
 
 const statusStyles: Record<string, string> = {
   'Active': 'bg-green-50 text-green-700 border-green-100',
@@ -289,57 +290,66 @@ export default function JobDetailPage({
 
   return (
     <div className="w-full max-w-[1040px] mx-auto px-4 py-6 sm:px-6 lg:px-8 lg:py-8 overflow-x-hidden">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-        <div className="min-w-0">
-          <div className="flex items-center gap-3 mb-2">
-            <Link
-              href="/client/dashboard/jobs"
-              aria-label="Back to briefs"
-              title="Back to briefs"
-              className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted-foreground hover:border-input hover:text-foreground transition-colors"
-            >
-              <ArrowLeft size={14} />
-            </Link>
-            <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-0.5 rounded-sm border ${statusStyles[jobStatus as keyof typeof statusStyles]}`}>
-              {jobStatus}
-            </span>
-          </div>
-          <h1 className="font-display font-black text-[28px] tracking-[-0.03em] text-foreground leading-tight">{job.title}</h1>
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-3">
+          <Link
+            href="/client/dashboard/jobs"
+            aria-label="Back to briefs"
+            title="Back to briefs"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted-foreground hover:border-input hover:text-foreground transition-colors"
+          >
+            <ArrowLeft size={14} />
+          </Link>
+          <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-0.5 rounded-sm border ${statusStyles[jobStatus as keyof typeof statusStyles]}`}>
+            {jobStatus}
+          </span>
         </div>
-        {jobStatus !== 'Completed' && jobStatus !== 'Cancelled' && (
-          <div className="flex items-center gap-3 shrink-0">
-            <button
-              onClick={() => setShowShareModal(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-background border border-border rounded-full font-text text-sm font-semibold hover:border-input transition-colors"
-            >
-              <Share2 size={14} /> Share
-            </button>
-            <Link href={`/client/dashboard/jobs/${job.slug}/edit`} className="inline-flex items-center gap-2 px-5 py-2.5 bg-background border border-border rounded-full font-text text-sm font-semibold hover:border-input transition-colors">
-              <Pencil size={14} />
-              Edit
-            </Link>
-            {jobStatus !== 'Paused' && (
-              <button
-                onClick={handlePause}
-                aria-label="Pause engagement"
-                title="Pause engagement"
-                className="inline-flex h-10 w-10 items-center justify-center bg-foreground text-background rounded-full hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
+
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <h1 className="min-w-0 font-display font-black text-xl tracking-[-0.02em] text-foreground leading-tight md:text-[22px]">{job.title}</h1>
+          {jobStatus !== 'Completed' && jobStatus !== 'Cancelled' && (
+            <div className="flex items-center gap-2 shrink-0">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowShareModal(true)}
               >
-                <Pause size={16} />
-              </button>
-            )}
-            {jobStatus === 'Paused' && (
-              <button
-                onClick={handleResume}
-                aria-label="Resume engagement"
-                title="Resume engagement"
-                className="inline-flex h-10 w-10 items-center justify-center bg-orange-500 text-white rounded-full hover:bg-orange-600 transition-colors duration-[120ms]"
-              >
-                <Play size={16} />
-              </button>
-            )}
-          </div>
-        )}
+                <Share2 size={13} /> Share
+              </Button>
+              <Button variant="outline" size="sm" asChild>
+                <Link href={`/client/dashboard/jobs/${job.slug}/edit`}>
+                  <Pencil size={13} />
+                  Edit
+                </Link>
+              </Button>
+              {jobStatus !== 'Paused' && (
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={handlePause}
+                  aria-label="Pause engagement"
+                  title="Pause engagement"
+                  className="h-8 w-8 px-0"
+                >
+                  <Pause size={14} />
+                </Button>
+              )}
+              {jobStatus === 'Paused' && (
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={handleResume}
+                  aria-label="Resume engagement"
+                  title="Resume engagement"
+                  className="h-8 w-8 bg-orange-500 px-0 text-white hover:bg-orange-600 hover:text-white"
+                >
+                  <Play size={14} />
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {showShareModal && (
@@ -1072,22 +1082,22 @@ export default function JobDetailPage({
               <div className="space-y-4">
                 <div>
                   <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Commercial structure</p>
-                  <p className="font-display font-black text-lg">{job.rate}</p>
+                  <p className="font-text text-sm text-foreground">{job.rate}</p>
                 </div>
                 <div>
                   <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Expected duration</p>
-                  <p className="font-display font-black text-lg">{job.time}</p>
+                  <p className="font-text text-sm text-foreground">{job.time}</p>
                 </div>
                 <div>
                   <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Location</p>
-                  <p className="font-display font-black text-lg flex items-center gap-2">
+                  <p className="font-text text-sm text-foreground flex items-center gap-2">
                     <MapPin size={15} strokeWidth={1.5} className="text-muted-foreground/70" />
                     {job.location}
                   </p>
                 </div>
                 <div>
                   <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Updated</p>
-                  <p className="font-display font-black text-lg flex items-center gap-2">
+                  <p className="font-text text-sm text-foreground flex items-center gap-2">
                     <Clock size={15} strokeWidth={1.5} className="text-muted-foreground/70" />
                     {job.updatedAt}
                   </p>
@@ -1095,13 +1105,13 @@ export default function JobDetailPage({
                 {job.startDate && (
                   <div>
                     <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Engagement dates</p>
-                    <p className="font-display font-black text-lg tracking-tight">{job.startDate}{' — '}{job.endDate || 'Present'}</p>
+                    <p className="font-text text-sm text-foreground">{job.startDate}{' — '}{job.endDate || 'Present'}</p>
                   </div>
                 )}
                 {job.lead && (
                   <div>
                     <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Strategic pod lead</p>
-                    <p className="font-display font-black text-lg">{job.lead}</p>
+                    <p className="font-text text-sm text-foreground">{job.lead}</p>
                   </div>
                 )}
               </div>
