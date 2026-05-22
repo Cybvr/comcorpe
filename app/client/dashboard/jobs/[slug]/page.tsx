@@ -455,7 +455,7 @@ export default function JobDetailPage({
 
       <Tabs value={activeTab} className="w-full min-w-0">
         <div className="mb-8 w-full overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="flex w-max min-w-full">
             <TabsTrigger value="brief" className="flex min-w-0 items-center justify-center gap-2" asChild>
               <Link href={tabHref('brief')} scroll={false}>
                 <Target size={14} /> Brief
