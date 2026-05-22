@@ -1,8 +1,8 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
-import { useCurrentUser } from '@/lib/user-client'
+import { useCurrentUser } from '@/lib/user'
 
 export default function DashboardPostComposer() {
   const { user: currentUser } = useCurrentUser()

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -10,7 +10,7 @@ import {
   Lightbulb, Network, Users, Target,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import { useCurrentUser } from '@/lib/user-client'
+import { useCurrentUser } from '@/lib/user'
 
 type DropdownItem = {
   label: string
@@ -111,7 +111,7 @@ export default function Nav({ authState }: NavProps) {
       dropdown: [
         { label: 'The Provocation', href: '/provocation', desc: 'Why emerging markets demand a new approach to growth.', icon: Lightbulb },
         { label: 'Our Model', href: '/model', desc: 'How we architect, assemble, and operate growth systems.', icon: Network },
-        { label: 'Team & Advisory', href: '/about', desc: 'The people and the global network behind Comcorpᵉ.', icon: Users },
+        { label: 'Team & Advisory', href: '/about', desc: 'The people and the global network behind Comcorpáµ‰.', icon: Users },
         { label: 'Why Comcorpe', href: '/why', desc: 'Designed for complexity. Built for structural advantage.', icon: Target },
       ],
     },
@@ -279,7 +279,7 @@ export default function Nav({ authState }: NavProps) {
         </div>
       </nav>
 
-      {/* Mobile menu drawer — only rendered when authenticated */}
+      {/* Mobile menu drawer â€” only rendered when authenticated */}
       {isAuthenticated && (
         <div className={`fixed inset-0 top-16 z-40 bg-background flex flex-col lg:hidden transition-all duration-[300ms] ${menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} overflow-y-auto pb-12`}>
           <div className="flex flex-col px-6 py-8 gap-1">

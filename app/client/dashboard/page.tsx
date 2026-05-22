@@ -1,17 +1,17 @@
-'use client'
+﻿'use client'
 
-import { 
-  ArrowUpRight, 
-  Briefcase, 
+import {
+  ArrowUpRight,
+  Briefcase,
   CalendarDays,
-  ChevronRight, 
-  Clock, 
+  ChevronRight,
+  Clock,
   MapPin,
 } from 'lucide-react'
 import Link from 'next/link'
 import { type JobStatus, getJobProgress } from '@/lib/jobs'
-import { useJobs } from '@/lib/jobs-client'
-import { useCurrentUser } from '@/lib/user-client'
+import { useJobs } from '@/lib/jobs'
+import { useCurrentUser } from '@/lib/user'
 import ClientDashboardLoading from './loading'
 
 const statusStyles: Record<JobStatus, string> = {
@@ -26,7 +26,7 @@ const statusStyles: Record<JobStatus, string> = {
 export default function ClientDashboardHome() {
   const { user: currentUser, loading: userLoading } = useCurrentUser()
   const { jobs, loading: jobsLoading } = useJobs()
-  
+
   if (userLoading || jobsLoading || !currentUser) {
     return <ClientDashboardLoading />
   }
@@ -45,9 +45,8 @@ export default function ClientDashboardHome() {
             <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-foreground leading-tight">
               Good morning, {currentUser.name.split(' ')[0]}
             </h1>
-            <p className="font-text text-muted-foreground mt-1">You have {activeJobs.length} active projects and {companyJobs.length} briefs in motion.</p>
           </div>
-          <Link 
+          <Link
             href="/client/dashboard/jobs/new"
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-foreground text-background rounded-full font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms] group"
           >
@@ -138,7 +137,7 @@ export default function ClientDashboardHome() {
                 <p className="font-text text-sm text-muted-foreground mt-2 max-w-md mx-auto">
                   Create your first brief to start matching with the right operators and pods.
                 </p>
-                <Link 
+                <Link
                   href="/client/dashboard/jobs/new"
                   className="mt-5 inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-foreground text-background rounded-full font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors"
                 >

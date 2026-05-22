@@ -1,10 +1,10 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Bell, ChevronDown, LogOut, Menu, Moon, Search, Settings, Shield, Sun, SwitchCamera, User, Sparkles, BrainCircuit, Share2 } from 'lucide-react'
 import Link from 'next/link'
-import { useCurrentUser } from '@/lib/user-client'
+import { useCurrentUser } from '@/lib/user'
 import type { DashboardAudience } from './DashboardSidebar'
 
 const searchPlaceholder: Record<DashboardAudience, string> = {
@@ -162,7 +162,7 @@ export default function DashboardHeader({
                   </p>
                 )}
                 <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mt-1 capitalize">
-                  {currentUser ? `${currentUser.role} · ${currentUser.company ?? 'Comcorpe'}` : 'Firebase'}
+                  {currentUser ? `${currentUser.role} Â· ${currentUser.company ?? 'Comcorpe'}` : 'Firebase'}
                 </p>
               </div>
 

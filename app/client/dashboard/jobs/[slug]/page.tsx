@@ -24,11 +24,15 @@ import {
   CreditCard,
   ShieldCheck,
   Download,
+  Pencil,
+  Pause,
+  Play,
+  Share2,
 } from 'lucide-react'
-import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
+import { usePods, getPodMembers } from '@/lib/pods'
 import { getTalentProfile } from '@/lib/user'
 import { getJobProgress } from '@/lib/jobs'
-import { useJobBySlug } from '@/lib/jobs-client'
+import { useJobBySlug } from '@/lib/jobs'
 import { updateJob } from '@/lib/admin/store'
 import { invoices, getInvoice } from '@/lib/invoices'
 import { contractTerms } from '@/lib/contract'
@@ -58,10 +62,11 @@ export default function JobDetailPage({
 }) {
   const { slug } = use(params)
   const { job, loading } = useJobBySlug(slug)
+  const { pods: livePods } = usePods()
 
   const [jobStatus, setJobStatus] = useState('Scoping')
-  const [confirmCancel, setConfirmCancel] = useState(false)
   const [localMilestones, setLocalMilestones] = useState<any[]>([])
+  const [copied, setCopied] = useState(false)
 
   const [chatQuery, setChatQuery] = useState('')
   const [isAsking, setIsAsking] = useState(false)
@@ -94,9 +99,9 @@ export default function JobDetailPage({
     notFound()
   }
 
-  const assignedPod = job.podSlug ? getPodBySlug(job.podSlug) : null
+  const assignedPod = job.podSlug ? (livePods.find(p => p.slug === job.podSlug) ?? null) : null
   const assignedPodMembers = assignedPod ? getPodMembers(assignedPod) : []
-  const primaryPods = pods.slice(0, 2)
+  const primaryPods = livePods.slice(0, 2)
   const requestedTab = searchParams.get('tab')
   const activeTab = isJobTab(requestedTab) ? requestedTab : 'brief'
 
@@ -112,6 +117,17 @@ export default function JobDetailPage({
     return query ? `${pathname}?${query}` : pathname
   }
 
+  const handleShare = async () => {
+    const url = window.location.href
+    if (navigator.share) {
+      await navigator.share({ title: job.title, url })
+    } else {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
   const handlePause = async () => {
     await updateJob(job.id, { status: 'Paused' })
     setJobStatus('Paused')
@@ -120,12 +136,6 @@ export default function JobDetailPage({
   const handleResume = async () => {
     await updateJob(job.id, { status: 'Active' })
     setJobStatus('Active')
-  }
-
-  const handleCancel = async () => {
-    await updateJob(job.id, { status: 'Cancelled' })
-    setJobStatus('Cancelled')
-    setConfirmCancel(false)
   }
 
   const handleAddMilestone = () => {
@@ -172,7 +182,7 @@ export default function JobDetailPage({
   }
 
   return (
-    <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">
+    <div className="w-full max-w-[1040px] xl:w-[1040px] mx-auto px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
       <Link href="/client/dashboard/jobs" className="font-text text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2 mb-8">
         <ArrowLeft size={14} /> Back to briefs
       </Link>
@@ -198,83 +208,70 @@ export default function JobDetailPage({
         </div>
         {jobStatus !== 'Completed' && jobStatus !== 'Cancelled' && (
           <div className="flex items-center gap-3">
-            <button className="px-5 py-2.5 bg-background border border-border rounded-full font-text text-sm font-semibold hover:border-input transition-colors">
-              Edit brief
+            <button
+              onClick={handleShare}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-background border border-border rounded-full font-text text-sm font-semibold hover:border-input transition-colors"
+            >
+              {copied ? <Check size={14} className="text-green-500" /> : <Share2 size={14} />}
+              {copied ? 'Copied!' : 'Share'}
             </button>
-            {jobStatus === 'Active' && (
+            <Link href={`/client/dashboard/jobs/${job.slug}/edit`} className="inline-flex items-center gap-2 px-5 py-2.5 bg-background border border-border rounded-full font-text text-sm font-semibold hover:border-input transition-colors">
+              <Pencil size={14} />
+              Edit
+            </Link>
+            {jobStatus !== 'Paused' && (
               <button
                 onClick={handlePause}
-                className="px-5 py-2.5 bg-foreground text-background rounded-full font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
+                aria-label="Pause engagement"
+                title="Pause engagement"
+                className="inline-flex h-10 w-10 items-center justify-center bg-foreground text-background rounded-full hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
               >
-                Pause engagement
+                <Pause size={16} />
               </button>
             )}
             {jobStatus === 'Paused' && (
               <button
                 onClick={handleResume}
-                className="px-5 py-2.5 bg-orange-500 text-white rounded-full font-text text-sm font-semibold hover:bg-orange-600 transition-colors duration-[120ms]"
+                aria-label="Resume engagement"
+                title="Resume engagement"
+                className="inline-flex h-10 w-10 items-center justify-center bg-orange-500 text-white rounded-full hover:bg-orange-600 transition-colors duration-[120ms]"
               >
-                Resume engagement
+                <Play size={16} />
               </button>
-            )}
-            {(jobStatus === 'Active' || jobStatus === 'Paused') && !confirmCancel && (
-              <button
-                onClick={() => setConfirmCancel(true)}
-                className="px-5 py-2.5 bg-background border border-red-200 text-red-500 rounded-full font-text text-sm font-semibold hover:bg-red-50 transition-colors duration-[120ms]"
-              >
-                Cancel
-              </button>
-            )}
-            {confirmCancel && (
-              <div className="flex items-center gap-2">
-                <span className="font-text text-sm text-muted-foreground">Are you sure?</span>
-                <button
-                  onClick={handleCancel}
-                  className="px-4 py-2 bg-red-600 text-white rounded-full font-text text-sm font-semibold hover:bg-red-700 transition-colors"
-                >
-                  Yes, cancel
-                </button>
-                <button
-                  onClick={() => setConfirmCancel(false)}
-                  className="px-4 py-2 border border-border rounded-full font-text text-sm font-semibold hover:bg-muted transition-colors"
-                >
-                  Keep it
-                </button>
-              </div>
             )}
           </div>
         )}
       </div>
 
-      <Tabs value={activeTab} className="w-full">
+      <Tabs value={activeTab} className="w-full min-w-0">
         <div className="mb-8 w-full overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <TabsList className="w-max">
-            <TabsTrigger value="brief" className="flex items-center gap-2" asChild>
+          <TabsList className="grid w-full min-w-[760px] grid-cols-6">
+            <TabsTrigger value="brief" className="flex min-w-0 items-center justify-center gap-2" asChild>
               <Link href={tabHref('brief')} scroll={false}>
                 <Target size={14} /> Brief
               </Link>
             </TabsTrigger>
-            <TabsTrigger value="milestones" className="flex items-center gap-2" asChild>
+            <TabsTrigger value="milestones" className="flex min-w-0 items-center justify-center gap-2" asChild>
               <Link href={tabHref('milestones')} scroll={false}>
                 <LayoutDashboard size={14} /> Milestones
               </Link>
             </TabsTrigger>
-            <TabsTrigger value="pod" className="flex items-center gap-2" asChild>
+            <TabsTrigger value="pod" className="flex min-w-0 items-center justify-center gap-2" asChild>
               <Link href={tabHref('pod')} scroll={false}>
                 <Users2 size={14} /> Pod
               </Link>
             </TabsTrigger>
-            <TabsTrigger value="knowledge" className="flex items-center gap-2" asChild>
+            <TabsTrigger value="knowledge" className="flex min-w-0 items-center justify-center gap-2" asChild>
               <Link href={tabHref('knowledge')} scroll={false}>
                 <FileText size={14} /> Knowledge
               </Link>
             </TabsTrigger>
-            <TabsTrigger value="payments" className="flex items-center gap-2" asChild>
+            <TabsTrigger value="payments" className="flex min-w-0 items-center justify-center gap-2" asChild>
               <Link href={tabHref('payments')} scroll={false}>
                 <CreditCard size={14} /> Payments
               </Link>
             </TabsTrigger>
-            <TabsTrigger value="contract" className="flex items-center gap-2" asChild>
+            <TabsTrigger value="contract" className="flex min-w-0 items-center justify-center gap-2" asChild>
               <Link href={tabHref('contract')} scroll={false}>
                 <ShieldCheck size={14} /> Contract
               </Link>
@@ -282,8 +279,8 @@ export default function JobDetailPage({
           </TabsList>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-8 items-start">
-          <div className="space-y-8">
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_300px] gap-8 items-start">
+          <div className="min-w-0 space-y-8">
             <TabsContent value="brief" className="mt-0">
               <section className="py-2 border-t border-border">
                 <h2 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-6 mt-4">Brief summary</h2>
@@ -432,7 +429,7 @@ export default function JobDetailPage({
                             </td>
                             <td className="px-4 py-3 text-right">
                               <span className="font-mono text-[11px] font-bold text-foreground">
-                                {inv?.amount ?? (ms.id.startsWith('m_custom_') ? (ms as any).amount : '—')}
+                                {inv?.amount ?? ms.amount ?? '—'}
                               </span>
                             </td>
                             <td className="pr-3 py-3 text-right">
@@ -548,7 +545,7 @@ export default function JobDetailPage({
                               <FileText size={16} className="text-primary/70 shrink-0" />
                               <div className="min-w-0">
                                 <p className="font-text text-xs font-bold text-foreground truncate">{file.name}</p>
-                                <p className="font-text text-[9px] text-muted-foreground/70">{file.size} · {file.date}</p>
+                                <p className="font-text text-[9px] text-muted-foreground/70">{file.size} Â· {file.date}</p>
                               </div>
                             </div>
                           </div>
@@ -711,7 +708,7 @@ export default function JobDetailPage({
                     <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-200">
                       <div>
                         <p className="font-display font-black text-xl tracking-tighter">COMCORPE</p>
-                        <p className="font-mono text-[8px] uppercase tracking-[0.2em] text-slate-400 leading-none">London · Lagos · Nairobi</p>
+                        <p className="font-mono text-[8px] uppercase tracking-[0.2em] text-slate-400 leading-none">London Â· Lagos Â· Nairobi</p>
                       </div>
                       <div className="text-right">
                         <p className="font-mono text-[9px] text-slate-400 uppercase tracking-wider leading-none mb-1">
@@ -789,7 +786,7 @@ export default function JobDetailPage({
                 {job.startDate && (
                   <div>
                     <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-1">Engagement dates</p>
-                    <p className="font-display font-black text-lg tracking-tight">{job.startDate} — {job.endDate || 'Present'}</p>
+                    <p className="font-display font-black text-lg tracking-tight">{job.startDate}{' — '}{job.endDate || 'Present'}</p>
                   </div>
                 )}
                 {job.lead && (

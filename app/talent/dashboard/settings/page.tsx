@@ -1,8 +1,8 @@
-'use client'
+﻿'use client'
 import { useState } from 'react'
 import Image from 'next/image'
 import { MapPin, Pencil, Star, X, Zap } from 'lucide-react'
-import { useCurrentUser, updateUserProfile } from '@/lib/user-client'
+import { useCurrentUser, updateUserProfile } from '@/lib/user'
 import { applications } from '@/lib/applications'
 
 export default function TalentProfilePage() {
@@ -228,7 +228,7 @@ export default function TalentProfilePage() {
             <div key={app.id} className="px-5 py-4 flex items-center justify-between gap-4">
               <div className="min-w-0">
                 <p className="font-text text-sm font-semibold text-foreground truncate">{app.role}</p>
-                <p className="font-mono text-[10px] text-muted-foreground/70 mt-0.5">{app.client} · {app.date}</p>
+                <p className="font-mono text-[10px] text-muted-foreground/70 mt-0.5">{app.client} Â· {app.date}</p>
               </div>
               <span className="shrink-0 font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 bg-border text-muted-foreground">
                 {app.status}

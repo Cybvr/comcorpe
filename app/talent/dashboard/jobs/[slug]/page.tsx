@@ -1,15 +1,13 @@
-'use client'
+﻿'use client'
 
-import { useState, use } from 'react'
+import { use, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { ArrowLeft, Briefcase, Clock, MapPin, Target, LayoutDashboard, Users2, CreditCard } from 'lucide-react'
+import { ArrowLeft, Clock, MapPin, Target, LayoutDashboard, Users2, CreditCard, Share2, Check } from 'lucide-react'
 import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
 import { getTalentProfile, getClientUser } from '@/lib/user'
-import { getJobProgress } from '@/lib/jobs'
-import { useJobBySlug } from '@/lib/jobs-client'
-import { getInvoice } from '@/lib/invoices'
+import { getJobProgress, useJobBySlug } from '@/lib/jobs'
 import { payouts } from '@/lib/payouts'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -29,6 +27,18 @@ export default function TalentJobDetailPage({
 }) {
   const { slug } = use(params)
   const { job, loading } = useJobBySlug(slug)
+  const [copied, setCopied] = useState(false)
+
+  const handleShare = async () => {
+    const url = window.location.href
+    if (navigator.share) {
+      await navigator.share({ title: job!.title, url })
+    } else {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
 
   if (loading) {
     return <div className="p-8 text-center text-sm font-mono text-muted-foreground animate-pulse">Loading job details from Firestore...</div>
@@ -68,6 +78,13 @@ export default function TalentJobDetailPage({
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={handleShare}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-background border border-border rounded-full font-text text-sm font-semibold hover:border-input transition-colors"
+          >
+            {copied ? <Check size={14} className="text-green-500" /> : <Share2 size={14} />}
+            {copied ? 'Copied!' : 'Share'}
+          </button>
           <button className="px-5 py-2.5 bg-foreground text-background rounded-full font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]">
             Submit interest
           </button>
@@ -92,8 +109,8 @@ export default function TalentJobDetailPage({
           </TabsList>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-8 items-start">
-          <div className="space-y-8">
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_300px] gap-8 items-start">
+          <div className="space-y-8 min-w-0">
             <TabsContent value="job" className="mt-0">
               <section className="py-2 border-t border-border">
                 <h2 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-6 mt-4">Job summary</h2>
@@ -125,75 +142,10 @@ export default function TalentJobDetailPage({
               </section>
             </TabsContent>
 
-            <TabsContent value="milestones" className="mt-0 space-y-8">
-              <section className="border-t border-border">
-                <div className="flex items-center justify-between py-4">
-                  <h2 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Project Milestones</h2>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    <span className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70">{getJobProgress(job)}% Velocity</span>
-                  </div>
-                </div>
-                
-                <div className="border border-border overflow-hidden">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="border-b border-border bg-muted/50">
-                        <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 font-semibold">Status</th>
-                        <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 font-semibold">Milestone</th>
-                        <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 font-semibold">Due</th>
-                        <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 font-semibold text-right">Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border">
-                      {job.milestones?.map((ms) => {
-                        const inv = getInvoice(job.slug, ms.id)
-                        return (
-                          <tr key={ms.id} className="group hover:bg-muted/30 transition-colors">
-                            <td className="px-4 py-3 whitespace-nowrap">
-                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider ${
-                                ms.status === 'completed'   ? 'bg-primary/10 text-primary border-primary/20' :
-                                ms.status === 'in-progress' ? 'bg-accent/5 text-accent border-accent/20' :
-                                'bg-border text-muted-foreground/70 border-input'
-                              }`}>
-                                {ms.status}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3">
-                              <p className="font-text text-sm font-bold text-foreground group-hover:text-primary transition-colors">
-                                {ms.title}
-                              </p>
-                            </td>
-                            <td className="px-4 py-3 whitespace-nowrap">
-                              <p className="font-text text-[10px] text-muted-foreground/70 uppercase tracking-tight">{ms.date}</p>
-                            </td>
-                            <td className="px-4 py-3 text-right">
-                              <span className="font-mono text-[11px] font-bold text-foreground">
-                                {inv?.amount ?? '—'}
-                              </span>
-                            </td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-
-              {/* Recent updates */}
-              {job.updates && job.updates.length > 0 && (
-                <section className="border-t border-border">
-                  <h3 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-4 mt-4">Pulse updates</h3>
-                  <ul className="space-y-3">
-                    {job.updates.map((update, i) => (
-                      <li key={i} className="flex items-start gap-3 font-text text-sm text-muted-foreground leading-relaxed">
-                        <div className="w-1 h-1 bg-primary/30 rounded-full mt-2 shrink-0" />
-                        {update}
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )}
+            <TabsContent value="milestones" className="mt-0">
+              <div className="py-12 text-center border border-dashed border-border rounded-xl">
+                <p className="font-text text-muted-foreground/70 text-sm">Milestones coming soon</p>
+              </div>
             </TabsContent>
 
             <TabsContent value="pod" className="mt-0">
@@ -320,7 +272,7 @@ export default function TalentJobDetailPage({
                 {job.startDate && (
                   <div>
                     <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-1">Engagement dates</p>
-                    <p className="font-display font-black text-lg tracking-tight">{job.startDate} — {job.endDate || 'Present'}</p>
+                    <p className="font-display font-black text-lg tracking-tight">{job.startDate}{' — '}{job.endDate || 'Present'}</p>
                   </div>
                 )}
                 {job.lead && (

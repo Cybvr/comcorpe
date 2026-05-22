@@ -1,8 +1,8 @@
-'use client'
+﻿'use client'
 
 import TalentJobsBoard from '@/components/dashboard/TalentJobsBoard'
-import { useJobs } from '@/lib/jobs-client'
-import { useCurrentUser } from '@/lib/user-client'
+import { useJobs } from '@/lib/jobs'
+import { useCurrentUser } from '@/lib/user'
 import TalentDashboardLoading from '../loading'
 
 export default function WorkPage() {

@@ -1,16 +1,16 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Check, ArrowRight, ArrowLeft } from 'lucide-react'
-import { useCurrentUser, updateUserProfile } from '@/lib/user-client'
+import { useCurrentUser, updateUserProfile } from '@/lib/user'
 
 const DISCIPLINES = ['Growth Strategy', 'Brand & Marketing', 'Product Management', 'Operations', 'Finance & Revenue', 'Data & Analytics', 'Tech & Engineering', 'Customer Experience', 'Market Entry', 'Fundraising']
 const LOCATIONS = ['Lagos', 'London', 'Nairobi', 'Accra', 'Cape Town', 'New York', 'Remote only', 'Other']
-const AVAILABILITY = ['Full-time (5 days/wk)', 'Part-time (2–3 days/wk)', 'Project-based only', 'Advisory (a few hrs/mo)']
-const RATES = ['Under $500/day', '$500 – $1,000/day', '$1,000 – $2,000/day', '$2,000+/day', 'Equity / outcome-based']
-const EXPERIENCE = ['2–4 years', '5–8 years', '9–14 years', '15+ years']
+const AVAILABILITY = ['Full-time (5 days/wk)', 'Part-time (2â€“3 days/wk)', 'Project-based only', 'Advisory (a few hrs/mo)']
+const RATES = ['Under $500/day', '$500 â€“ $1,000/day', '$1,000 â€“ $2,000/day', '$2,000+/day', 'Equity / outcome-based']
+const EXPERIENCE = ['2â€“4 years', '5â€“8 years', '9â€“14 years', '15+ years']
 const SOURCES = ['Referral', 'LinkedIn', 'Comcorpe event', 'Press / media', 'Other']
 
 const TOTAL_STEPS = 4
@@ -126,7 +126,7 @@ export default function TalentOnboardingPage() {
     <div className="min-h-screen bg-background flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-[520px]">
         <div className="flex justify-center mb-12">
-          <Image src="/images/comcorpe.png" alt="Comcorpᵉ" width={140} height={36} className="h-8 w-auto object-contain" priority />
+          <Image src="/images/comcorpe.png" alt="Comcorpáµ‰" width={140} height={36} className="h-8 w-auto object-contain" priority />
         </div>
 
         <StepIndicator current={step} total={TOTAL_STEPS} />
@@ -236,7 +236,7 @@ export default function TalentOnboardingPage() {
                 onChange={e => set('bio', e.target.value)}
                 autoFocus
               />
-              <p className="font-mono text-[9px] text-muted-foreground/50 mt-1.5 uppercase tracking-eyebrow">{form.bio.length} chars — aim for 200–400</p>
+              <p className="font-mono text-[9px] text-muted-foreground/50 mt-1.5 uppercase tracking-eyebrow">{form.bio.length} chars â€” aim for 200â€“400</p>
             </div>
             <div>
               <label className={L}>How did you find Comcorpe?</label>

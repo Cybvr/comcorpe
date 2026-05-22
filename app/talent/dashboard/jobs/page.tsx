@@ -1,7 +1,7 @@
-'use client'
+﻿'use client'
 
 import TalentJobsBoard from '@/components/dashboard/TalentJobsBoard'
-import { useJobs } from '@/lib/jobs-client'
+import { useJobs } from '@/lib/jobs'
 import TalentDashboardLoading from '../loading'
 
 export default function TalentJobsPage() {

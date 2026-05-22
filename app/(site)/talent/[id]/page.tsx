@@ -1,10 +1,10 @@
-'use client'
+﻿'use client'
 
 import { use } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useUsers } from '@/lib/user-client'
+import { useUsers } from '@/lib/user'
 import { ArrowLeft, MapPin, ExternalLink } from 'lucide-react'
 
 
@@ -81,7 +81,7 @@ export default function TalentProfilePage({ params }: { params: Promise<{ id: st
               <p className="font-text text-[18px] text-muted-foreground mb-4">{talentTitle}</p>
               <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground/70">
                 <MapPin size={11} strokeWidth={1.5} />
-                {extra.markets[0]} · {profile.bg}
+                {extra.markets[0]} Â· {profile.bg}
               </div>
 
               <div className="mt-8 flex flex-wrap gap-3">
@@ -231,7 +231,7 @@ export default function TalentProfilePage({ params }: { params: Promise<{ id: st
                   </Link>
                 ))}
               <Link href="/talent" className="font-mono text-xs text-primary hover:underline mt-1 inline-flex items-center gap-1">
-                View all talent →
+                View all talent â†’
               </Link>
             </div>
           </div>

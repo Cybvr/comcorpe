@@ -1,3 +1,9 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { collection, onSnapshot, query, where } from 'firebase/firestore'
+import { db } from './firebase'
+
 export type JobType = 'RETAINED' | 'PROJECT' | 'EQUITY'
 export type JobStatus = 'Scoping' | 'Pod review' | 'Active' | 'Paused' | 'Completed' | 'Cancelled'
 
@@ -6,6 +12,7 @@ export interface Milestone {
   title: string
   date: string
   status: 'pending' | 'in-progress' | 'completed'
+  amount?: string
 }
 
 export interface Job {
@@ -16,15 +23,14 @@ export interface Job {
   type: JobType
   status: JobStatus
   summary: string
-  rate: string // Budget
+  rate: string
   location: string
-  time: string // Timeline
+  time: string
   tags: string[]
   updatedAt: string
   arena?: string
   owner?: string
   updates?: string[]
-  // Meta data for the dashboard (mostly for Active projects)
   progress?: number
   phase?: string
   nextMilestone?: string
@@ -40,12 +46,63 @@ export interface Job {
 
 export const jobs: Job[] = []
 
-export function getJobBySlug(slug: string) {
-  return jobs.find((job) => job.slug === slug) ?? null
-}
-
 export function getJobProgress(job: Job) {
   if (!job.milestones || job.milestones.length === 0) return 0
   const completed = job.milestones.filter(m => m.status === 'completed').length
   return Math.round((completed / job.milestones.length) * 100)
+}
+
+export function useJobs() {
+  const [jobs, setJobs] = useState<Job[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(db, 'jobs'),
+      (snapshot) => {
+        const jobsList = snapshot.docs.map((doc) => doc.data() as Job)
+        jobsList.sort((a, b) => (b.id || 0) - (a.id || 0))
+        setJobs(jobsList)
+        setLoading(false)
+      },
+      (err) => {
+        console.error('Error fetching jobs:', err)
+        setLoading(false)
+      }
+    )
+
+    return () => unsubscribe()
+  }, [])
+
+  return { jobs, loading }
+}
+
+export function useJobBySlug(slug: string) {
+  const [job, setJob] = useState<Job | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!slug) return
+
+    const q = query(collection(db, 'jobs'), where('slug', '==', slug))
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        if (!snapshot.empty) {
+          setJob(snapshot.docs[0].data() as Job)
+        } else {
+          setJob(null)
+        }
+        setLoading(false)
+      },
+      (err) => {
+        console.error('Error fetching job by slug:', err)
+        setLoading(false)
+      }
+    )
+
+    return () => unsubscribe()
+  }, [slug])
+
+  return { job, loading }
 }

@@ -1,10 +1,10 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
 import { Search } from 'lucide-react'
 import { payouts, ccreditsBalance, type PayoutStatus } from '@/lib/payouts'
-import { useJobs } from '@/lib/jobs-client'
+import { useJobs } from '@/lib/jobs'
 import { getPodBySlug } from '@/lib/pods'
 import { getClientUser } from '@/lib/user'
 
@@ -75,7 +75,7 @@ export default function TalentBillingPage() {
           {nextPayout ? (
             <>
               <p className="font-display font-black text-[36px] tracking-[-0.03em] text-foreground leading-none">{nextPayout.amount}</p>
-              <p className="font-text text-sm text-amber-600 mt-4">{nextPayout.date} · {getClientUser(nextPayout.clientId).name}</p>
+              <p className="font-text text-sm text-amber-600 mt-4">{nextPayout.date} Â· {getClientUser(nextPayout.clientId).name}</p>
             </>
           ) : (
             <p className="font-display font-black text-[28px] tracking-[-0.03em] text-muted-foreground/70 leading-none">Nothing due</p>
@@ -140,7 +140,7 @@ export default function TalentBillingPage() {
                         <Link href={`/talent/dashboard/search/${pod.slug}`} className="font-text text-sm text-primary hover:underline">
                           {pod.name}
                         </Link>
-                      ) : <span className="font-text text-sm text-muted-foreground/70">—</span>}
+                      ) : <span className="font-text text-sm text-muted-foreground/70">â€”</span>}
                     </td>
                     <td className="px-5 py-4 text-right">
                       <span className="font-mono text-sm font-bold text-foreground">{payout.amount}</span>

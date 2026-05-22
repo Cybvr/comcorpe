@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { use } from 'react'
 import Link from 'next/link'
@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation'
 import { ArrowLeft, Bookmark, MessageCircle, Share2, TrendingUp } from 'lucide-react'
 import PostCard from '@/components/dashboard/PostCard'
 import { useInsights, useInsightBySlug } from '@/lib/insights'
-import { useUser } from '@/lib/user-client'
+import { useUser } from '@/lib/user'
 
 export default function ClientInsightPage({
   params,

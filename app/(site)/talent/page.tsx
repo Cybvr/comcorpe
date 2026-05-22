@@ -1,8 +1,8 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useUsers } from '@/lib/user-client'
+import { useUsers } from '@/lib/user'
 
 const talentSpotlightCards = [
   {
@@ -84,7 +84,7 @@ export default function TalentPage() {
       <section className="px-6 md:px-24 pt-16 md:pt-24 pb-20 border-b border-foreground">
         <div className="font-mono text-xs text-muted-foreground uppercase tracking-eyebrow mb-12 flex items-center gap-3">
           <span className="w-2 h-2 bg-primary rounded-full" />
-          Comcorpᵉ / Talent
+          Comcorpáµ‰ / Talent
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-[6fr_5fr] gap-12 lg:gap-24 items-start">

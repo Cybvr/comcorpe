@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import {
@@ -14,11 +14,11 @@ import JobCard from '@/components/dashboard/JobCard'
 import OperatorCard from '@/components/dashboard/OperatorCard'
 import GrowthCommunity from '@/components/dashboard/GrowthCommunity'
 import SpaceCard from '@/components/dashboard/SpaceCard'
-import { useJobs } from '@/lib/jobs-client'
+import { useJobs } from '@/lib/jobs'
 import { topOperators } from '@/lib/operators'
 import { referral } from '@/lib/referrals'
 import { spaces } from '@/lib/spaces'
-import { useCurrentUser } from '@/lib/user-client'
+import { useCurrentUser } from '@/lib/user'
 import TalentDashboardLoading from './loading'
 
 type HomeAction = {

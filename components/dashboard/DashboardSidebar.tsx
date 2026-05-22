@@ -119,8 +119,8 @@ function SidebarLink({ item }: { item: SidebarItem }) {
 
 function DashboardSwitch({ audience }: { audience: DashboardAudience }) {
   return (
-    <div className="grid grid-cols-3 gap-1 rounded-lg bg-border p-1 mt-4">
-      {(['talent', 'client', 'admin'] as DashboardAudience[]).map((option) => {
+    <div className="grid grid-cols-2 gap-1 rounded-lg bg-border p-1 mt-4">
+      {(['talent', 'client'] as DashboardAudience[]).map((option) => {
         const config = dashboardConfig[option]
         const active = option === audience
 

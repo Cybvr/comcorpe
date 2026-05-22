@@ -1,12 +1,12 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
 import { Search } from 'lucide-react'
 import { invoices, type InvoiceStatus } from '@/lib/invoices'
-import { useJobs } from '@/lib/jobs-client'
+import { useJobs } from '@/lib/jobs'
 import { getPodBySlug } from '@/lib/pods'
-import { useCurrentUser } from '@/lib/user-client'
+import { useCurrentUser } from '@/lib/user'
 
 const statusStyles: Record<InvoiceStatus, string> = {
   Paid:       'bg-green-50 text-green-700 border-green-200',
@@ -132,14 +132,14 @@ export default function ClientBillingPage() {
                         <Link href={`/client/dashboard/jobs/${job.slug}`} className="font-text text-sm text-primary hover:underline">
                           {job.title}
                         </Link>
-                      ) : <span className="text-muted-foreground/70">—</span>}
+                      ) : <span className="text-muted-foreground/70">â€”</span>}
                     </td>
                     <td className="px-5 py-4">
                       {pod ? (
                         <Link href={`/client/dashboard/search/${pod.slug}`} className="font-text text-sm text-primary hover:underline">
                           {pod.name}
                         </Link>
-                      ) : <span className="font-text text-sm text-muted-foreground/70">—</span>}
+                      ) : <span className="font-text text-sm text-muted-foreground/70">â€”</span>}
                     </td>
                     <td className="px-5 py-4 text-right">
                       <span className="font-mono text-sm font-bold text-foreground">{invoice.amount}</span>

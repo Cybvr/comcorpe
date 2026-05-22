@@ -1,9 +1,9 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Building2, Mail, Pencil, X } from 'lucide-react'
-import { useCurrentUser, updateUserProfile } from '@/lib/user-client'
-import { useJobs } from '@/lib/jobs-client'
+import { useCurrentUser, updateUserProfile } from '@/lib/user'
+import { useJobs } from '@/lib/jobs'
 import { invoices } from '@/lib/invoices'
 
 export default function ClientSettingsGeneralPage() {
@@ -143,7 +143,7 @@ export default function ClientSettingsGeneralPage() {
             <div key={job.id} className="px-5 py-4 flex items-center justify-between gap-4">
               <div className="min-w-0">
                 <p className="font-text text-sm font-semibold text-foreground truncate">{job.title}</p>
-                <p className="font-mono text-[10px] text-muted-foreground/70 mt-0.5">{job.type} · {job.rate}</p>
+                <p className="font-mono text-[10px] text-muted-foreground/70 mt-0.5">{job.type} Â· {job.rate}</p>
               </div>
               <span className={`shrink-0 font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 rounded-full ${
                 job.status === 'Active' ? 'bg-green-100 text-green-700'
