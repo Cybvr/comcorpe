@@ -132,7 +132,9 @@ export default function JobDetailPage({
   }
 
   const assignedPod = job.podSlug ? (livePods.find(p => p.slug === job.podSlug) ?? null) : null
-  const assignedPodMembers = assignedPod ? getPodMembers(assignedPod) : []
+  const assignedPodMembers = assignedPod
+    ? assignedPod.memberIds.map(id => allUsers.find(u => u.id === id) ?? getTalentProfile(id))
+    : []
   const primaryPods = livePods.slice(0, 2)
   const requestedTab = searchParams.get('tab')
   const activeTab = isJobTab(requestedTab) ? requestedTab : 'brief'
