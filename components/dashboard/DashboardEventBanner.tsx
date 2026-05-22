@@ -2,9 +2,9 @@
 
 import Link from 'next/link'
 import type { DashboardAudience } from '@/components/dashboard/DashboardSidebar'
-import { featuredBlogPost, getBlogHref } from '@/lib/blog'
 
 const EVENT_NAME = 'Comcorpe Signal'
+const EVENT_HREF = '/blog'
 const EVENT_LABELS: Record<DashboardAudience, string> = {
   talent: 'Talent event',
   client: 'Whats Happening',
@@ -23,7 +23,7 @@ export default function DashboardEventBanner({
   if (collapsed) {
     return (
       <Link
-        href={getBlogHref(featuredBlogPost.slug)}
+        href={EVENT_HREF}
         onClick={onNavigate}
         title={EVENT_NAME}
         className="flex h-11 w-full items-center justify-center rounded-xl border border-primary/20 bg-primary/8 px-2 text-center font-mono text-[9px] uppercase tracking-[0.16em] text-primary transition-colors hover:bg-primary/12"
@@ -35,7 +35,7 @@ export default function DashboardEventBanner({
 
   return (
     <Link
-      href={getBlogHref(featuredBlogPost.slug)}
+      href={EVENT_HREF}
       onClick={onNavigate}
       className="group block rounded-2xl border border-primary/20 bg-linear-to-br from-primary/10 via-background to-background px-4 py-4 transition-colors hover:border-primary/35"
     >
