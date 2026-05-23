@@ -2,23 +2,21 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { CreditCard, Gift, Settings, ShieldCheck, User } from 'lucide-react'
+import { CreditCard, Settings, User } from 'lucide-react'
 import type React from 'react'
 
 const settingsItems = [
-  { label: 'General', href: '/client/dashboard/settings', icon: User },
-  { label: 'Profile', href: '/client/dashboard/settings/profile', icon: User },
-  { label: 'Billing', href: '/client/dashboard/settings/billing', icon: CreditCard },
-  { label: 'Refer & grow', href: '/client/dashboard/settings/referrals', icon: Gift },
-  { label: 'Quality', href: '/client/dashboard/settings/quality', icon: ShieldCheck },
+  { label: 'General', href: '/talent/dashboard/settings', icon: Settings },
+  { label: 'Profile', href: '/talent/dashboard/settings/profile', icon: User },
+  { label: 'Payments', href: '/talent/dashboard/settings/payments', icon: CreditCard },
 ]
 
 function isActive(pathname: string, href: string) {
-  if (href === '/client/dashboard/settings') return pathname === href
+  if (href === '/talent/dashboard/settings') return pathname === href
   return pathname === href || pathname.startsWith(`${href}/`)
 }
 
-export default function ClientSettingsLayout({ children }: { children: React.ReactNode }) {
+export default function TalentSettingsLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   return (
@@ -29,16 +27,15 @@ export default function ClientSettingsLayout({ children }: { children: React.Rea
           <p className="font-mono text-xs uppercase tracking-eyebrow font-black">Settings</p>
         </div>
         <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-foreground leading-tight">
-          Client settings
+          Talent settings
         </h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-8 items-start">
-        <nav className="lg:sticky lg:top-6 flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0" aria-label="Client settings">
+        <nav className="lg:sticky lg:top-6 flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0" aria-label="Talent settings">
           {settingsItems.map((item) => {
             const Icon = item.icon
             const active = isActive(pathname, item.href)
-
             return (
               <Link
                 key={item.href}

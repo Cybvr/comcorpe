@@ -9,6 +9,7 @@ import {
   MapPin,
 } from 'lucide-react'
 import Link from 'next/link'
+import ClientAvatar from '@/components/dashboard/ClientAvatar'
 import { type JobStatus, getJobProgress } from '@/lib/jobs'
 import { useJobs } from '@/lib/jobs'
 import { useCurrentUser } from '@/lib/user'
@@ -80,9 +81,7 @@ export default function ClientDashboardHome() {
                       className="group border border-border rounded-2xl p-5 bg-background hover:border-input hover:shadow-md transition-all"
                     >
                       <div className="flex items-start justify-between gap-3 mb-5">
-                        <div className="w-11 h-11 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center text-primary shrink-0">
-                          <Briefcase size={19} strokeWidth={1.5} />
-                        </div>
+                        <ClientAvatar client={currentUser} sizeClass="w-11 h-11" iconSize={19} />
                         <div className="flex flex-wrap items-center justify-end gap-1.5">
                           <span className="font-mono text-[9px] uppercase tracking-eyebrow px-2 py-0.5 border border-border rounded-sm text-muted-foreground">
                             {job.type}

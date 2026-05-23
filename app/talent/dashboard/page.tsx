@@ -15,7 +15,7 @@ import JobCard from '@/components/dashboard/JobCard'
 import GrowthCommunity from '@/components/dashboard/GrowthCommunity'
 import { useJobs } from '@/lib/jobs'
 import { referral } from '@/lib/referrals'
-import { useCurrentUser } from '@/lib/user'
+import { resolveClientUser, useCurrentUser, useUsers } from '@/lib/user'
 import TalentDashboardLoading from './loading'
 
 type HomeAction = {
@@ -48,9 +48,10 @@ const homeActions: HomeAction[] = [
 
 export default function DashboardPage() {
   const { user: currentUser, loading: userLoading } = useCurrentUser()
+  const { users } = useUsers()
   const { jobs, loading: jobsLoading } = useJobs()
   const [currentPage, setCurrentPage] = useState(1)
-  
+
   const itemsPerPage = 8
   const totalPages = Math.ceil(jobs.length / itemsPerPage)
   const paginatedJobs = jobs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
@@ -116,12 +117,12 @@ export default function DashboardPage() {
             </div>
             <div className="flex flex-col gap-3">
               {paginatedJobs.map((job) => (
-                <JobCard key={job.id} job={job} />
+                <JobCard key={job.id} job={job} client={resolveClientUser(job.clientId, users)} />
               ))}
             </div>
             {totalPages > 1 && (
               <div className="flex justify-center items-center gap-2 mt-6">
-                <button 
+                <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
                   className="px-3 py-1 text-xs font-semibold rounded-md border border-border disabled:opacity-50 hover:bg-muted transition-colors"
@@ -131,7 +132,7 @@ export default function DashboardPage() {
                 <span className="text-xs font-mono text-muted-foreground">
                   Page {currentPage} of {totalPages}
                 </span>
-                <button 
+                <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
                   className="px-3 py-1 text-xs font-semibold rounded-md border border-border disabled:opacity-50 hover:bg-muted transition-colors"

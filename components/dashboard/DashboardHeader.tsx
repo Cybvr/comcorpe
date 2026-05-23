@@ -2,8 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { signOut } from 'firebase/auth'
 import { Bell, ChevronDown, LogOut, Menu, Moon, Search, Settings, Shield, Sun, SwitchCamera } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
+import { auth } from '@/lib/firebase'
 import { useJobs } from '@/lib/jobs'
 import { getClientUser, useCurrentUser } from '@/lib/user'
 import type { DashboardAudience } from './DashboardSidebar'
@@ -43,7 +46,7 @@ export default function DashboardHeader({
 
   const handleSignOut = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' })
+      await signOut(auth)
       router.push('/login')
       router.refresh()
     } catch (error) {
@@ -85,8 +88,8 @@ export default function DashboardHeader({
   }
 
   const profileHref = audience === 'talent'
-    ? '/talent/dashboard/settings'
-    : '/client/dashboard/settings'
+    ? '/talent/dashboard/settings/profile'
+    : '/client/dashboard/settings/profile'
 
   const dashboardLinks = [
     { audience: 'client' as const, label: 'Client dashboard', href: '/client/dashboard', Icon: SwitchCamera },
@@ -179,8 +182,12 @@ export default function DashboardHeader({
             onClick={() => setUserMenuOpen((o) => !o)}
             className="flex items-center gap-2 rounded-full pl-1 pr-2 py-1 hover:bg-border transition-colors cursor-pointer group"
           >
-            <div className="w-7 h-7 rounded-full bg-foreground flex items-center justify-center font-display font-black text-[10px] text-background shrink-0">
-              {currentUser?.initials ?? ''}
+            <div className="w-7 h-7 rounded-full bg-foreground shrink-0 overflow-hidden relative flex items-center justify-center">
+              {currentUser?.image ? (
+                <Image src={currentUser.image} alt={currentUser.name ?? ''} fill className="object-cover" />
+              ) : (
+                <span className="font-display font-black text-[10px] text-background">{currentUser?.initials ?? ''}</span>
+              )}
             </div>
             <ChevronDown
               size={12}

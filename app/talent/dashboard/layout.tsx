@@ -13,6 +13,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter()
 
   useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login')
+      return
+    }
+
+    if (!loading && user && user.role === 'client') {
+      router.push('/client/dashboard')
+      return
+    }
+
     if (!loading && user && user.isOnboarded === false) {
       router.push('/talent/onboarding')
     }
@@ -27,6 +37,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </div>
     )
+  }
+
+  if (!user || user.role === 'client') {
+    return null
   }
 
   return (

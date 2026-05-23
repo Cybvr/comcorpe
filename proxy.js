@@ -34,9 +34,6 @@ function isPublicPath(pathname) {
 export function proxy(request) {
   const { pathname } = request.nextUrl
   const isDashboardAlias = matchesPath(pathname, '/dashboard')
-  const isAdminArea = matchesPath(pathname, '/admin') && pathname !== '/admin/login'
-  const isTalentDashboard = matchesPath(pathname, '/talent/dashboard')
-  const isClientDashboard = matchesPath(pathname, '/client/dashboard')
 
   if (isPublicPath(pathname)) {
     return nextResponse()
@@ -46,35 +43,6 @@ export function proxy(request) {
     const dashboardUrl = request.nextUrl.clone()
     dashboardUrl.pathname = pathname.replace('/dashboard', '/client/dashboard')
     return NextResponse.redirect(dashboardUrl)
-  }
-
-  const auth = request.cookies.get('cc_auth')?.value
-  const role = request.cookies.get('cc_role')?.value ?? 'client'
-
-  if (!auth) {
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
-
-  // 1. Admin area protection: only admins can access /admin
-  if (isAdminArea) {
-    if (role !== 'admin' && !isDev) {
-      const fallbackUrl = new URL(role === 'talent' ? '/talent/dashboard' : '/client/dashboard', request.url)
-      return NextResponse.redirect(fallbackUrl)
-    }
-  }
-
-  // 2. Talent area protection: only talent and admins can access /talent/dashboard
-  if (isTalentDashboard) {
-    if (role !== 'talent' && role !== 'admin' && !isDev) {
-      return NextResponse.redirect(new URL('/client/dashboard', request.url))
-    }
-  }
-
-  // 3. Client area protection: only clients and admins can access /client/dashboard
-  if (isClientDashboard) {
-    if (role !== 'client' && role !== 'admin' && !isDev) {
-      return NextResponse.redirect(new URL('/talent/dashboard', request.url))
-    }
   }
 
   return nextResponse()

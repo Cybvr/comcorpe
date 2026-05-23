@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Briefcase, Plus, CalendarDays, Users, Flag, Banknote } from 'lucide-react'
+import { Plus, CalendarDays, Users, Flag, Banknote } from 'lucide-react'
+import ClientAvatar from '@/components/dashboard/ClientAvatar'
 import { getJobProgress } from '@/lib/jobs'
 import { useJobs } from '@/lib/jobs'
-import { getClientUser } from '@/lib/user'
 import { useCurrentUser } from '@/lib/user'
 
 const statusStyles = {
@@ -80,7 +80,6 @@ export default function JobsPage() {
 
       <div className="flex flex-col gap-6 max-w-[1040px]">
         {displayJobs.map((job) => {
-          const client = getClientUser(job.clientId)
           return (
           <Link
             key={job.id}
@@ -89,13 +88,7 @@ export default function JobsPage() {
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-muted border border-border flex items-center justify-center text-input group-hover:text-primary transition-colors shrink-0 overflow-hidden">
-                  {client.image ? (
-                    <img src={client.image} alt={client.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <Briefcase size={20} strokeWidth={1.5} />
-                  )}
-                </div>
+                <ClientAvatar client={currentUser} sizeClass="w-12 h-12" iconSize={20} />
                 <div>
                   <div className="flex items-center gap-2 mb-1.5">
                     <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${statusStyles[job.status as keyof typeof statusStyles]}`}>

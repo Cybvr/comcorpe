@@ -375,41 +375,41 @@ export default function TalentJobDetailPage({
             <div className="p-6 text-foreground border border-border rounded-lg">
               <div className="space-y-4">
                 <div>
-                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Client</p>
-                  <p className="font-display font-black text-lg">{getClientUser(job.clientId).name}</p>
+                  <p className="font-text text-sm text-muted-foreground mb-1">Client</p>
+                  <p className="font-text text-sm font-semibold text-foreground">{getClientUser(job.clientId).name}</p>
                 </div>
                 <div>
-                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Commercial structure</p>
-                  <p className="font-display font-black text-lg">{job.rate}</p>
+                  <p className="font-text text-sm text-muted-foreground mb-1">Commercial structure</p>
+                  <p className="font-text text-sm font-semibold text-foreground">{job.rate}</p>
                 </div>
                 <div>
-                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Expected duration</p>
-                  <p className="font-display font-black text-lg">{job.time}</p>
+                  <p className="font-text text-sm text-muted-foreground mb-1">Expected duration</p>
+                  <p className="font-text text-sm font-semibold text-foreground">{job.time}</p>
                 </div>
                 <div>
-                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Location</p>
-                  <p className="font-display font-black text-lg flex items-center gap-2">
+                  <p className="font-text text-sm text-muted-foreground mb-1">Location</p>
+                  <p className="font-text text-sm font-semibold text-foreground flex items-center gap-2">
                     <MapPin size={15} strokeWidth={1.5} className="text-muted-foreground/70" />
                     {job.location}
                   </p>
                 </div>
                 <div>
-                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Updated</p>
-                  <p className="font-display font-black text-lg flex items-center gap-2">
+                  <p className="font-text text-sm text-muted-foreground mb-1">Updated</p>
+                  <p className="font-text text-sm font-semibold text-foreground flex items-center gap-2">
                     <Clock size={15} strokeWidth={1.5} className="text-muted-foreground/70" />
                     {job.updatedAt}
                   </p>
                 </div>
                 {job.startDate && (
                   <div>
-                    <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Engagement dates</p>
-                    <p className="font-display font-black text-lg tracking-tight">{job.startDate}{' — '}{job.endDate || 'Present'}</p>
+                    <p className="font-text text-sm text-muted-foreground mb-1">Engagement dates</p>
+                    <p className="font-text text-sm font-semibold text-foreground">{job.startDate}{' — '}{job.endDate || 'Present'}</p>
                   </div>
                 )}
                 {job.lead && (
                   <div>
-                    <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Strategic pod lead</p>
-                    <p className="font-display font-black text-lg">{job.lead}</p>
+                    <p className="font-text text-sm text-muted-foreground mb-1">Strategic pod lead</p>
+                    <p className="font-text text-sm font-semibold text-foreground">{job.lead}</p>
                   </div>
                 )}
               </div>

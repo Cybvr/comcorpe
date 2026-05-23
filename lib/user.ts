@@ -116,17 +116,57 @@ export const clientUsers: User[] = [
 
 const clientMap = new Map(clientUsers.map(u => [u.id, u]))
 
+function computeInitials(name: string) {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .map((part) => part.charAt(0))
+    .join('')
+    .toUpperCase()
+    .slice(0, 3)
+}
+
+function buildFallbackUser(id: string, role: UserRole): User {
+  const name = id
+    .split('-')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ')
+
+  return {
+    id,
+    name,
+    initials: computeInitials(name),
+    role,
+  }
+}
+
 export function getClientUser(id: string): User {
   const user = clientMap.get(id)
   if (!user) {
-    return {
-      id,
-      name: id.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-      initials: id.split('-').map(w => w.charAt(0).toUpperCase()).join(''),
-      role: 'client'
-    }
+    return buildFallbackUser(id, 'client')
   }
   return user
+}
+
+export function resolveClientUser(id: string, users: User[] = []): User {
+  const seededUser = clientMap.get(id)
+  const liveUser = users.find((user) => user.clientId === id || user.id === id)
+
+  const fallbackUser = buildFallbackUser(id, 'client')
+  const mergedName = liveUser?.company || liveUser?.name || seededUser?.company || seededUser?.name || fallbackUser.name
+
+  return {
+    ...fallbackUser,
+    ...seededUser,
+    ...liveUser,
+    id: liveUser?.id || seededUser?.id || fallbackUser.id,
+    role: 'client',
+    clientId: liveUser?.clientId || seededUser?.clientId || id,
+    name: mergedName,
+    company: liveUser?.company || seededUser?.company || mergedName,
+    initials: liveUser?.initials || seededUser?.initials || computeInitials(mergedName),
+    image: liveUser?.image || seededUser?.image,
+  }
 }
 
 export const users: User[] = []
@@ -139,12 +179,7 @@ const userMap = new Map(users.map(u => [u.id, u]))
 export function getTalentProfile(id: string): User {
   const user = userMap.get(id)
   if (!user) {
-    return {
-      id,
-      name: id.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-      initials: id.split('-').map(w => w.charAt(0).toUpperCase()).join(''),
-      role: 'talent'
-    }
+    return buildFallbackUser(id, 'talent')
   }
   return user
 }
@@ -163,12 +198,7 @@ function buildProfile(docId: string, data: Record<string, any>, fbUser: { uid: s
   return {
     id: docId,
     name: rawName,
-    initials: data.initials || rawName
-      .split(' ')
-      .map((n: string) => n.charAt(0))
-      .join('')
-      .toUpperCase()
-      .slice(0, 3),
+    initials: data.initials || computeInitials(rawName),
     role: (data.role || 'client') as UserRole,
     email: emailLower,
     company: data.company,
@@ -245,12 +275,7 @@ export function useCurrentUser() {
           setUserProfile({
             id: fbUser.uid,
             name: fallbackName,
-            initials: fallbackName
-              .split(' ')
-              .map((n: string) => n.charAt(0))
-              .join('')
-              .toUpperCase()
-              .slice(0, 3),
+            initials: computeInitials(fallbackName),
             role: 'client',
             email: emailLower,
             credits: 0,

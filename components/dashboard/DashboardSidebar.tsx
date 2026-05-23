@@ -9,13 +9,13 @@ import {
   Newspaper,
   Briefcase,
   CalendarDays,
-  ChevronLeft,
-  ChevronRight,
   FolderOpen,
   Gift,
   HelpCircle,
   Home,
   LayoutDashboard,
+  PanelLeftClose,
+  PanelLeftOpen,
   Search,
   Settings,
   Shield,
@@ -117,13 +117,11 @@ function SidebarLink({
       href={item.href}
       aria-current={active ? 'page' : undefined}
       title={collapsed ? item.label : undefined}
-      className={`flex items-center rounded-lg px-2.5 py-2 font-text text-sm transition-[color,background-color,padding] duration-150 ${
-        collapsed ? 'justify-center' : 'gap-3'
-      } ${
-        active
+      className={`flex items-center rounded-lg px-2.5 py-2 font-text text-sm transition-[color,background-color,padding] duration-150 ${collapsed ? 'justify-center' : 'gap-3'
+        } ${active
           ? 'bg-primary/10 text-primary font-semibold'
           : 'text-muted-foreground hover:bg-border hover:text-foreground'
-      }`}
+        }`}
     >
       <Icon size={16} strokeWidth={1.8} />
       {!collapsed && <span className="flex-1">{item.label}</span>}
@@ -157,9 +155,8 @@ function DashboardSwitch({
           <Link
             key={option}
             href={config.root}
-            className={`rounded-md px-2 py-1.5 text-center font-text text-xs font-semibold transition-colors ${
-              active ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground hover:text-foreground'
-            }`}
+            className={`rounded-md px-2 py-1.5 text-center font-text text-xs font-semibold transition-colors ${active ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground hover:text-foreground'
+              }`}
           >
             {config.label}
           </Link>
@@ -184,11 +181,10 @@ export default function DashboardSidebar({
 
   return (
     <aside
-      className={`flex h-full shrink-0 flex-col overflow-y-auto border-r border-border bg-background shadow-2xl transition-[width] duration-300 lg:shadow-none ${
-        collapsed ? 'w-64 lg:w-20' : 'w-64 lg:w-56'
-      }`}
+      className={`flex h-full shrink-0 flex-col overflow-y-auto border-r border-border bg-card shadow-2xl transition-[width] duration-300 lg:shadow-none ${collapsed ? 'w-64 lg:w-20' : 'w-64 lg:w-56'
+        }`}
     >
-      <div className={`relative border-b border-border pt-4 pb-3 ${collapsed ? 'px-2.5' : 'px-3'}`}>
+      <div className={`relative  pt-4 pb-3 ${collapsed ? 'px-2.5' : 'px-3'}`}>
         <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-2.5'}`}>
           <Link
             href={config.root}
@@ -200,19 +196,14 @@ export default function DashboardSidebar({
                 C
               </span>
             ) : (
-              <>
-                <Image
-                  src="/images/comcorpe.png"
-                  alt="Comcorpe"
-                  width={118}
-                  height={24}
-                  className="h-6 w-auto object-contain dark:invert"
-                  priority
-                />
-                <span className="border-l border-input pl-2 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">
-                  {config.label}
-                </span>
-              </>
+              <Image
+                src="/images/comcorpe.png"
+                alt="Comcorpe"
+                width={118}
+                height={24}
+                className="h-6 w-auto object-contain dark:invert"
+                priority
+              />
             )}
           </Link>
 
@@ -221,11 +212,10 @@ export default function DashboardSidebar({
               type="button"
               onClick={onToggleCollapse}
               aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              className={`hidden h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition-colors hover:bg-border hover:text-foreground lg:flex ${
-                collapsed ? 'absolute top-4 right-3' : 'ml-auto'
-              }`}
+              className={`hidden h-8 w-8 items-center justify-center rounded-lg  bg-background text-muted-foreground transition-colors hover:bg-border hover:text-foreground lg:flex ${collapsed ? 'absolute top-4 right-3' : 'ml-auto'
+                }`}
             >
-              {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+              {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
             </button>
           )}
         </div>
@@ -237,15 +227,9 @@ export default function DashboardSidebar({
           <X size={18} />
         </button>
 
-        {collapsed ? (
-          <div className="mt-4 hidden justify-center lg:flex">
-            <span className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">
-              {config.label}
-            </span>
-          </div>
-        ) : (
+        {!collapsed && audience === 'admin' ? (
           <DashboardSwitch audience={audience} />
-        )}
+        ) : null}
       </div>
 
       <nav className="flex flex-1 flex-col gap-0.5 p-2" aria-label="Dashboard">
@@ -282,15 +266,14 @@ export default function DashboardSidebar({
       )}
 
       {config.supportItems.length > 0 && (
-        <div className="border-t border-border p-2">
+        <div className="">
           {audience === 'client' && (
             <button
               type="button"
               onClick={onClose}
               title={collapsed ? 'Book call' : undefined}
-              className={`mb-1.5 flex w-full items-center rounded-lg bg-foreground px-2.5 py-2 font-text text-sm font-semibold text-background transition-colors duration-150 hover:bg-primary hover:text-primary-foreground ${
-                collapsed ? 'justify-center' : 'gap-3'
-              }`}
+              className={`mb-1.5 flex w-full items-center rounded-lg bg-foreground px-2.5 py-2 font-text text-sm font-semibold text-background transition-colors duration-150 hover:bg-primary hover:text-primary-foreground ${collapsed ? 'justify-center' : 'gap-3'
+                }`}
             >
               <CalendarDays size={16} strokeWidth={1.8} />
               {!collapsed && <span className="flex-1 text-left">Book call</span>}

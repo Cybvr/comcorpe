@@ -105,29 +105,6 @@ export default function LoginPage() {
     }
 
     // ─── Establish server-side session cookies ───────────────────────────────
-    try {
-      const idToken = await user.getIdToken()
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ idToken, role }),
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        setError(data.error || 'Failed to establish session.')
-        setLoading(null)
-        return
-      }
-    } catch (err) {
-      console.error('Session establishment error:', err)
-      setError('Failed to establish session. Please try again.')
-      setLoading(null)
-      return
-    }
-
     openDashboard(role)
   }
 

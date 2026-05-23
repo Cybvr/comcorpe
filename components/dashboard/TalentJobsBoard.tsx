@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { ArrowUpRight, ChevronDown, Clock, MapPin, Search } from 'lucide-react'
+import ClientAvatar from '@/components/dashboard/ClientAvatar'
 import type { Job, JobStatus, JobType } from '@/lib/jobs'
-import { getClientUser } from '@/lib/user'
+import { resolveClientUser, useUsers } from '@/lib/user'
 
 type JobsBoardVariant = 'discover' | 'assigned'
 type FilterKey = 'all' | 'open' | 'active'
@@ -29,9 +30,8 @@ function filterJobs(jobs: Job[], filter: FilterKey) {
   return jobs
 }
 
-function matchesSearch(job: Job, search: string) {
+function matchesSearch(job: Job, search: string, clientName: string) {
   if (!search) return true
-  const clientName = getClientUser(job.clientId).name
   const haystack = [job.title, job.summary, job.type, job.status, job.location, clientName, ...job.tags]
     .join(' ').toLowerCase()
   return haystack.includes(search.toLowerCase())
@@ -110,6 +110,7 @@ export default function TalentJobsBoard({
   searchPlaceholder?: string
   emptyLabel?: string
 }) {
+  const { users } = useUsers()
   const [filter, setFilter] = useState<FilterKey>('all')
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('All')
@@ -122,12 +123,17 @@ export default function TalentJobsBoard({
   // Derive filter options from actual job data
   const locationOptions = Array.from(new Set(jobs.map(j => j.location).filter(Boolean))).sort()
   const tagOptions = Array.from(new Set(jobs.flatMap(j => j.tags))).sort()
+  const jobsWithClients = jobs.map((job) => ({
+    job,
+    client: resolveClientUser(job.clientId, users),
+  }))
 
-  const filteredJobs = filterJobs(jobs, filter)
-    .filter((job) => matchesSearch(job, search.trim()))
-    .filter((job) => typeFilter === 'All' || job.type === typeFilter)
-    .filter((job) => locationFilter === 'All' || job.location === locationFilter)
-    .filter((job) => tagFilter === 'All' || job.tags.includes(tagFilter))
+  const filteredJobs = jobsWithClients
+    .filter(({ job }) => filterJobs([job], filter).length > 0)
+    .filter(({ job, client }) => matchesSearch(job, search.trim(), client.name))
+    .filter(({ job }) => typeFilter === 'All' || job.type === typeFilter)
+    .filter(({ job }) => locationFilter === 'All' || job.location === locationFilter)
+    .filter(({ job }) => tagFilter === 'All' || job.tags.includes(tagFilter))
 
   const hasActiveFilters = search || typeFilter !== 'All' || locationFilter !== 'All' || tagFilter !== 'All'
 
@@ -211,8 +217,7 @@ export default function TalentJobsBoard({
         </div>
       ) : (
         <div className="flex flex-col gap-4 max-w-[1040px]">
-          {filteredJobs.map((job) => {
-            const client = getClientUser(job.clientId)
+          {filteredJobs.map(({ job, client }) => {
             const dateLabel = job.updatedAt.replace(/^Updated\s*/i, '')
 
             return (
@@ -221,22 +226,25 @@ export default function TalentJobsBoard({
                 href={`${baseHref}/${job.slug}`}
                 className="group border border-border rounded-2xl p-6 bg-background hover:border-input hover:shadow-xl transition-all flex items-center gap-6"
               >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${statusStyles[job.status]}`}>
-                      {job.status}
-                    </span>
-                    <span className="font-display font-black text-[10px] text-muted-foreground/70 uppercase tracking-widest">{client.name}</span>
-                  </div>
-                  <h2 className="font-display font-black text-[18px] tracking-[-0.02em] text-foreground group-hover:text-primary transition-colors leading-tight truncate">
-                    {job.title}
-                  </h2>
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {job.tags.slice(0, 3).map((tag) => (
-                      <span key={tag} className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 px-2 py-0.5 border border-muted rounded-sm bg-muted/30">
-                        {tag}
+                <div className="flex flex-1 min-w-0 items-start gap-4">
+                  <ClientAvatar client={client} sizeClass="w-12 h-12" iconSize={20} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${statusStyles[job.status]}`}>
+                        {job.status}
                       </span>
-                    ))}
+                      <span className="font-display font-black text-[10px] text-muted-foreground/70 uppercase tracking-widest truncate">{client.name}</span>
+                    </div>
+                    <h2 className="font-display font-black text-[18px] tracking-[-0.02em] text-foreground group-hover:text-primary transition-colors leading-tight truncate">
+                      {job.title}
+                    </h2>
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {job.tags.slice(0, 3).map((tag) => (
+                        <span key={tag} className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 px-2 py-0.5 border border-muted rounded-sm bg-muted/30">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
