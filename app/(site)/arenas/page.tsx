@@ -46,7 +46,7 @@ export default function ArenasPage() {
           <div className="flex flex-col gap-px bg-foreground border border-foreground overflow-hidden">
             {services.map((a, i) => (
               <div
-                key={a.i}
+                key={a.id}
                 className="group p-8 md:p-12 bg-background hover:bg-foreground transition-colors duration-[240ms] cursor-default"
               >
                 <div className="flex items-baseline gap-3 mb-5">
