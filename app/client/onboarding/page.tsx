@@ -117,7 +117,7 @@ export default function ClientOnboardingPage() {
         baselinePerceptionScore: form.perceptionScore ? parseFloat(form.perceptionScore) : undefined,
         baselineChurnRate: form.churnRate ? parseFloat(form.churnRate) : undefined,
         baselineArpu: form.arpu ? parseFloat(form.arpu) : undefined,
-        baselineMonthlyCustomers: form.monthlyCustomers ? parseInt(form.monthlyCustomers) : undefined,
+        baselineMonthlyCustomers: form.monthlyCustomers || undefined,
       })
     }
     router.push('/client/dashboard')
