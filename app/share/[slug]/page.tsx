@@ -58,6 +58,7 @@ export default function PublicJobPage({
 
   const milestones = job?.milestones ?? []
   const assignedPod = job?.podSlug ? (pods.find((pod) => pod.slug === job.podSlug) ?? null) : null
+  const hasAssignedPod = Boolean(job?.podSlug)
   const podMembers = assignedPod ? getPodMembers(assignedPod) : []
   const hasKnowledge = (job?.documents ?? []).length > 0
 
@@ -167,7 +168,7 @@ export default function PublicJobPage({
                   <LayoutDashboard size={14} /> Milestones
                 </TabsTrigger>
               )}
-              {assignedPod && (
+              {hasAssignedPod && (
                 <TabsTrigger value="pod" className="flex items-center gap-2">
                   <Users2 size={14} /> Pod
                 </TabsTrigger>
@@ -283,6 +284,10 @@ export default function PublicJobPage({
                       {assignedPod.rate && <span>{assignedPod.rate}</span>}
                     </div>
                   </div>
+                ) : hasAssignedPod ? (
+                  <p className="font-text text-sm text-muted-foreground">
+                    Pod details are attached to this brief, but they aren&apos;t available in this public view right now.
+                  </p>
                 ) : (
                   <p className="font-text text-sm text-muted-foreground">No pod assigned.</p>
                 )}
