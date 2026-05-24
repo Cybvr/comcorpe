@@ -51,11 +51,11 @@ export default function ArenasPage() {
               >
                 <div className="flex items-baseline gap-3 mb-5">
                   <span className="font-mono text-xs text-primary shrink-0">0{i+1}.</span>
-                  <h2 className="font-display font-black text-[clamp(26px,2.8vw,40px)] tracking-[-0.025em] leading-tight text-foreground group-hover:text-background transition-colors duration-[240ms]">{a.t}</h2>
+                  <h2 className="font-display font-black text-[clamp(26px,2.8vw,40px)] tracking-[-0.025em] leading-tight text-foreground group-hover:text-background transition-colors duration-[240ms]">{a.title}</h2>
                 </div>
-                <p className="font-text text-[17px] leading-relaxed text-muted-foreground group-hover:text-background/70 mb-8 max-w-[44ch] transition-colors duration-[240ms]">{a.s}</p>
+                <p className="font-text text-[17px] leading-relaxed text-muted-foreground group-hover:text-background/70 mb-8 max-w-[44ch] transition-colors duration-[240ms]">{a.summary}</p>
                 <div className="flex flex-wrap gap-2">
-                  {a.tags.map(t => (
+                  {[a.category, ...a.idealFor.slice(0, 2)].map(t => (
                     <span key={t} className="font-mono text-[11px] tracking-[0.08em] uppercase text-foreground group-hover:text-background px-2.5 py-1.5 border border-input group-hover:border-background/30 transition-colors duration-[240ms]">{t}</span>
                   ))}
                 </div>
