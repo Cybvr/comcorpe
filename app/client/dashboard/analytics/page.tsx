@@ -284,43 +284,6 @@ export default function AnalyticsPage() {
                 </div>
               </div>
 
-              {/* Success Metrics Progress (from treatment plan) */}
-              {treatmentPlan && treatmentPlan.successMetrics.length > 0 && (
-                <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
-                  <div className="mb-6">
-                    <h3 className="font-display font-black text-lg text-foreground">Surgery Targets</h3>
-                    <p className="font-text text-xs text-muted-foreground mt-1">Baseline → current → target</p>
-                  </div>
-                  <div className="space-y-5">
-                    {treatmentPlan.successMetrics.map((metric, i) => {
-                      const range = metric.target - metric.baseline
-                      const current = metric.current ?? metric.baseline
-                      const progress = range > 0 ? Math.min(100, Math.round(((current - metric.baseline) / range) * 100)) : 0
-
-                      return (
-                        <div key={i}>
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="font-text text-sm font-semibold text-foreground">{metric.label}</span>
-                            <span className="font-mono text-[11px] text-muted-foreground">
-                              {current}{metric.unit ?? ''} → target {metric.target}{metric.unit ?? ''}
-                            </span>
-                          </div>
-                          <div className="relative h-2 bg-border rounded-full overflow-hidden">
-                            <div
-                              className="absolute left-0 top-0 h-full bg-primary rounded-full transition-all duration-700"
-                              style={{ width: `${progress}%` }}
-                            />
-                          </div>
-                          <div className="flex justify-between mt-1">
-                            <span className="font-mono text-[9px] text-muted-foreground/50">Baseline: {metric.baseline}{metric.unit ?? ''}</span>
-                            <span className="font-mono text-[9px] text-primary font-bold">{progress}% to target</span>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              )}
             </>
           ) : (
             /* Empty state */
