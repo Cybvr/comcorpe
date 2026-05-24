@@ -115,9 +115,9 @@ export default function ClientOnboardingPage() {
         phaseLabel: 'Diagnosis & Onboarding',
         phaseStartedAt: new Date().toISOString(),
         baselinePerceptionScore: form.perceptionScore ? parseFloat(form.perceptionScore) : undefined,
-        baselineChurnRate: form.churnRate,
+        baselineChurnRate: form.churnRate ? parseFloat(form.churnRate) : undefined,
         baselineArpu: form.arpu ? parseFloat(form.arpu) : undefined,
-        baselineMonthlyCustomers: form.monthlyCustomers,
+        baselineMonthlyCustomers: form.monthlyCustomers ? parseInt(form.monthlyCustomers) : undefined,
       })
     }
     router.push('/client/dashboard')
