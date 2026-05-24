@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowUpRight, Check, ChevronLeft, ChevronRight, Clock, DollarSign, MapPin, Plus, Search, ShieldCheck, SlidersHorizontal, Users, X } from 'lucide-react'
 import SLABadge from '@/components/dashboard/SLABadge'
+import NetworkAffiliateBadge from '@/components/dashboard/NetworkAffiliateBadge'
 import { FaLinkedin } from 'react-icons/fa'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Slider } from '@/components/ui/slider'
@@ -482,7 +483,7 @@ export default function DiscoverPage() {
 
           {filteredTalent.length === 0 ? (
             <div className="py-20 text-center bg-background border border-dashed border-border rounded-2xl">
-              <p className="font-text text-muted-foreground/70">No results match your current filters.</p>
+              <p className="font-text text-muted-foreground/70">No results for your current filters.</p>
               <button
                 onClick={() => {
                   setSearchQuery('')
@@ -544,6 +545,9 @@ export default function DiscoverPage() {
 
                       <div className="mt-3 flex items-center gap-1.5 flex-wrap">
                         <ShieldCheck size={12} className="text-primary shrink-0" strokeWidth={2.5} />
+                        {(profile.networkAffiliations ?? []).length > 0 && (
+                          <NetworkAffiliateBadge affiliations={profile.networkAffiliations!} size={12} />
+                        )}
                         <span
                           aria-label="LinkedIn"
                           className="inline-flex items-center justify-center text-[#0A66C2]"
@@ -652,7 +656,7 @@ export default function DiscoverPage() {
 
           {filteredPods.length === 0 ? (
             <div className="py-20 text-center bg-background border border-dashed border-border rounded-2xl">
-              <p className="font-text text-muted-foreground/70">No results match your current filters.</p>
+              <p className="font-text text-muted-foreground/70">No results for your current filters.</p>
               <button
                 onClick={() => {
                   setSearchQuery('')

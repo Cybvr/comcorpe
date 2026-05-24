@@ -3,16 +3,17 @@
 import { use, useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import ReactMarkdown from 'react-markdown'
 import { FaLinkedin } from 'react-icons/fa'
 import { MapPin, Clock, Tag, CheckCircle2, ExternalLink, Target, LayoutDashboard, Users2, Stethoscope, FileText, Download, DollarSign, ShieldCheck, Link2, Check } from 'lucide-react'
 import { doc, onSnapshot } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import type { Job } from '@/lib/jobs'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { usePods, getPodMembers } from '@/lib/pods'
+import { usePods } from '@/lib/pods'
 import { useTreatmentPlan } from '@/lib/treatment-plan'
+import NetworkAffiliateBadge from '@/components/dashboard/NetworkAffiliateBadge'
 import SLABadge from '@/components/dashboard/SLABadge'
+import { getTalentProfile, useUsers } from '@/lib/user'
 
 const statusStyles: Record<string, string> = {
   'Active':     'bg-green-50 text-green-700 border-green-100',
@@ -39,6 +40,7 @@ export default function PublicJobPage({
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
   const { pods, loading: podsLoading } = usePods()
+  const { users } = useUsers()
   const { plan, loading: planLoading } = useTreatmentPlan(slug)
 
   useEffect(() => {
@@ -59,7 +61,9 @@ export default function PublicJobPage({
   const milestones = job?.milestones ?? []
   const assignedPod = job?.podSlug ? (pods.find((pod) => pod.slug === job.podSlug) ?? null) : null
   const hasAssignedPod = Boolean(job?.podSlug)
-  const podMembers = assignedPod ? getPodMembers(assignedPod) : []
+  const podMembers = assignedPod
+    ? assignedPod.memberIds.map((id) => users.find((user) => user.id === id) ?? getTalentProfile(id))
+    : []
   const hasKnowledge = (job?.documents ?? []).length > 0
 
   async function handleCopyLink() {
@@ -318,6 +322,9 @@ export default function PublicJobPage({
 
                         <div className="mt-3 flex items-center gap-1.5 flex-wrap">
                           <ShieldCheck size={12} className="text-primary shrink-0" strokeWidth={2.5} />
+                          {(member.networkAffiliations ?? []).length > 0 && (
+                            <NetworkAffiliateBadge affiliations={member.networkAffiliations!} size={12} />
+                          )}
                           <span aria-label="LinkedIn" className="inline-flex items-center justify-center text-[#0A66C2]">
                             <FaLinkedin size={12} aria-hidden="true" />
                           </span>
@@ -359,9 +366,10 @@ export default function PublicJobPage({
                   <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/50 mb-4">
                     {new Date(plan.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </p>
-                  <div className="font-text text-sm leading-relaxed prose prose-sm max-w-none prose-headings:font-display prose-headings:font-black prose-headings:tracking-tight prose-h2:text-base prose-h2:mt-6 prose-h2:mb-2 prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground">
-                    <ReactMarkdown>{plan.content}</ReactMarkdown>
-                  </div>
+                  <div
+                    className="font-text text-sm leading-relaxed prose prose-sm max-w-none prose-headings:font-display prose-headings:font-black prose-headings:tracking-tight prose-h2:text-base prose-h2:mt-6 prose-h2:mb-2 prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground"
+                    dangerouslySetInnerHTML={{ __html: plan.content }}
+                  />
                 </div>
               ) : (
                 <p className="font-text text-sm text-muted-foreground">No treatment plan has been shared yet.</p>

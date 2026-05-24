@@ -19,10 +19,5 @@ export default function SLABadge({ variant = 'chip', className = '' }: SLABadgeP
     )
   }
 
-  return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary border border-primary/20 rounded-full font-mono text-[9px] font-bold uppercase tracking-wider ${className}`}>
-      <Zap size={9} strokeWidth={3} />
-      48h match
-    </span>
-  )
+  return null
 }

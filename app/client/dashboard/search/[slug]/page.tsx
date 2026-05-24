@@ -158,7 +158,7 @@ export default function TalentPodDetailPage({
             href="/client/dashboard/jobs"
             className="mt-6 inline-flex items-center gap-1.5 font-text text-xs font-semibold px-4 py-2 bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms] rounded-full"
           >
-            Match to a brief <ArrowUpRight size={12} />
+            Attach to brief <ArrowUpRight size={12} />
           </Link>
         </aside>
       </div>
