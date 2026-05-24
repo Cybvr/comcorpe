@@ -3,6 +3,7 @@ import React from 'react'
 import './globals.css'
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
 import CookieConsent from '@/components/CookieConsent'
+import FloatingVideoAvatar from '@/components/FloatingVideoAvatar'
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
 
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-background text-foreground font-text antialiased leading-body tracking-body">
         <ServiceWorkerRegistration />
         {children}
+        <FloatingVideoAvatar />
         <CookieConsent />
       </body>
     </html>
