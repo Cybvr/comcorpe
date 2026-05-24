@@ -80,7 +80,7 @@ export default function JobsPage() {
         {displayJobs.map((job) => {
           return (
           <Link
-            key={job.id}
+            key={`${job.clientId}-${job.slug}`}
             href={`/client/dashboard/jobs/${job.slug}`}
             className="group block border border-border rounded-2xl p-6 bg-background hover:border-input hover:shadow-xl transition-all flex flex-col gap-5"
           >

@@ -931,11 +931,11 @@ export default function JobDetailPage({
                 <section className="border-t border-border space-y-6">
                   <div>
                     <h2 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-4 mt-4">Recommended pods</h2>
-                    <div className="grid grid-cols-1 gap-px bg-border border border-border overflow-hidden">
+                    <div className="flex flex-col gap-px border border-border overflow-hidden bg-border">
                       {primaryPods.map((pod) => {
                         const lead = getTalentProfile(pod.leadId)
                         return (
-                          <Link key={pod.id} href={`/client/dashboard/search/${pod.slug}?returnTo=${encodeURIComponent(tabHref('pod'))}`} className="p-4 bg-background flex items-center gap-4 hover:bg-muted transition-all group">
+                          <div key={pod.id} className="p-4 bg-background flex items-center gap-4">
                             <div className="w-10 h-10 rounded-sm bg-foreground flex items-center justify-center font-display font-black text-[11px] text-background shrink-0 border border-border overflow-hidden relative">
                               {lead.image ? (
                                 <Image src={lead.image} alt={lead.name} fill className="object-cover" />
@@ -943,8 +943,8 @@ export default function JobDetailPage({
                                 lead.initials
                               )}
                             </div>
-                            <div>
-                              <h3 className="font-display font-black text-[15px] text-foreground group-hover:text-primary transition-colors leading-tight">{pod.name}</h3>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-display font-black text-[15px] text-foreground leading-tight">{pod.name}</h3>
                               <div className="flex items-center gap-3 mt-1">
                                 <span className="font-text text-[12px] text-muted-foreground">{pod.focus}</span>
                                 <span className="w-1 h-1 bg-border rounded-full" />
@@ -953,7 +953,22 @@ export default function JobDetailPage({
                                 <span className="font-text text-[12px] text-foreground font-semibold">{pod.rate}</span>
                               </div>
                             </div>
-                          </Link>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <Link
+                                href={`/client/dashboard/search/${pod.slug}?returnTo=${encodeURIComponent(tabHref('pod'))}`}
+                                className="px-3 py-1.5 border border-border rounded-lg font-text text-xs font-semibold text-muted-foreground hover:border-input hover:text-foreground transition-colors"
+                              >
+                                View
+                              </Link>
+                              <button
+                                type="button"
+                                onClick={() => updateJob(job.id, { podSlug: pod.slug })}
+                                className="px-3 py-1.5 bg-foreground text-background rounded-lg font-text text-xs font-semibold hover:bg-primary hover:text-primary-foreground transition-colors"
+                              >
+                                Select
+                              </button>
+                            </div>
+                          </div>
                         )
                       })}
                     </div>

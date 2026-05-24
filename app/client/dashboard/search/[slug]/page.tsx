@@ -4,8 +4,10 @@ import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound, useRouter } from 'next/navigation'
-import { ArrowLeft, ArrowUpRight, CheckCircle2, DollarSign, Globe2, Layers3, ShieldCheck, Users } from 'lucide-react'
-import { getPods, getTalent } from '@/lib/admin/store'
+import { ArrowLeft, ArrowUpRight, CheckCircle2, DollarSign, Globe2, Layers3, ShieldCheck, Users, Check, X } from 'lucide-react'
+import { getPods, getTalent, updateJob } from '@/lib/admin/store'
+import { useJobs } from '@/lib/jobs'
+import { useCurrentUser } from '@/lib/user'
 import { type Pod } from '@/lib/pods'
 import { type User } from '@/lib/user'
 import NetworkAffiliateBadge from '@/components/dashboard/NetworkAffiliateBadge'
@@ -21,6 +23,24 @@ export default function TalentPodDetailPage({
   const [pod, setPod] = useState<Pod | null | undefined>(undefined)
   const [members, setMembers] = useState<User[]>([])
   const [lead, setLead] = useState<User | null>(null)
+  const [showAttach, setShowAttach] = useState(false)
+  const [attaching, setAttaching] = useState(false)
+  const [attached, setAttached] = useState(false)
+  const [selectedJobId, setSelectedJobId] = useState<number | null>(null)
+  const { user: currentUser } = useCurrentUser()
+  const { jobs } = useJobs()
+  const attachableJobs = jobs.filter(j => j.clientId === currentUser?.clientId && !j.podSlug && j.status !== 'Completed' && j.status !== 'Cancelled')
+
+  async function handleAttach() {
+    if (!selectedJobId) return
+    const job = attachableJobs.find(j => j.id === selectedJobId)
+    if (!job || !pod) return
+    setAttaching(true)
+    await updateJob(job.id, { podSlug: pod.slug })
+    setAttaching(false)
+    setAttached(true)
+    setTimeout(() => { setShowAttach(false); setAttached(false); setSelectedJobId(null) }, 1400)
+  }
 
   useEffect(() => {
     Promise.all([getPods(), getTalent()]).then(([pods, talent]) => {
@@ -145,21 +165,65 @@ export default function TalentPodDetailPage({
           </div>
         </article>
 
-        <aside className="border border-border rounded-xl p-5 bg-background">
-          <p className="font-mono text-[10px] uppercase tracking-eyebrow text-primary mb-4">Market coverage</p>
-          <div className="flex flex-col gap-2">
-            {pod.markets.map((market) => (
-              <div key={market} className="flex items-center gap-2 font-text text-sm text-muted-foreground">
-                <CheckCircle2 size={13} className="text-primary" /> {market}
-              </div>
-            ))}
+        <aside className="border border-border rounded-xl p-5 bg-background space-y-6">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-eyebrow text-primary mb-4">Market coverage</p>
+            <div className="flex flex-col gap-2">
+              {pod.markets.map((market) => (
+                <div key={market} className="flex items-center gap-2 font-text text-sm text-muted-foreground">
+                  <CheckCircle2 size={13} className="text-primary" /> {market}
+                </div>
+              ))}
+            </div>
           </div>
-          <Link
-            href="/client/dashboard/jobs"
-            className="mt-6 inline-flex items-center gap-1.5 font-text text-xs font-semibold px-4 py-2 bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms] rounded-full"
-          >
-            Attach to brief <ArrowUpRight size={12} />
-          </Link>
+
+          <div className="border-t border-border pt-5">
+            <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-3">Attach to brief</p>
+            {!showAttach ? (
+              <button
+                onClick={() => setShowAttach(true)}
+                disabled={attachableJobs.length === 0}
+                className="w-full inline-flex items-center justify-center gap-1.5 font-text text-xs font-semibold px-4 py-2.5 bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors rounded-lg disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {attachableJobs.length === 0 ? 'No open briefs' : <>Select a brief <ArrowUpRight size={12} /></>}
+              </button>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex flex-col gap-2">
+                  {attachableJobs.map(job => (
+                    <button
+                      key={job.id}
+                      type="button"
+                      onClick={() => setSelectedJobId(job.id)}
+                      className={`w-full text-left px-3 py-2.5 rounded-lg border font-text text-sm transition-colors ${
+                        selectedJobId === job.id
+                          ? 'border-primary bg-primary/5 text-primary font-semibold'
+                          : 'border-border hover:border-input text-foreground'
+                      }`}
+                    >
+                      {job.title}
+                      <span className="block font-mono text-[9px] uppercase tracking-wider text-muted-foreground/60 mt-0.5">{job.status}</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-2 pt-1">
+                  <button
+                    onClick={handleAttach}
+                    disabled={!selectedJobId || attaching || attached}
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-foreground text-background rounded-lg font-text text-xs font-semibold hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-40"
+                  >
+                    {attached ? <><Check size={12} /> Attached</> : attaching ? 'Attaching…' : 'Confirm'}
+                  </button>
+                  <button
+                    onClick={() => { setShowAttach(false); setSelectedJobId(null) }}
+                    className="p-2 text-muted-foreground/50 hover:text-foreground transition-colors"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </aside>
       </div>
     </div>
