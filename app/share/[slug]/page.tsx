@@ -3,11 +3,16 @@
 import { use, useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { MapPin, Clock, Tag, CheckCircle2, ExternalLink, Target, LayoutDashboard } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
+import { FaLinkedin } from 'react-icons/fa'
+import { MapPin, Clock, Tag, CheckCircle2, ExternalLink, Target, LayoutDashboard, Users2, Stethoscope, FileText, Download, DollarSign, ShieldCheck, Link2, Check } from 'lucide-react'
 import { doc, onSnapshot } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import type { Job } from '@/lib/jobs'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { usePods, getPodMembers } from '@/lib/pods'
+import { useTreatmentPlan } from '@/lib/treatment-plan'
+import SLABadge from '@/components/dashboard/SLABadge'
 
 const statusStyles: Record<string, string> = {
   'Active':     'bg-green-50 text-green-700 border-green-100',
@@ -32,6 +37,9 @@ export default function PublicJobPage({
   const { slug } = use(params)
   const [job, setJob] = useState<Job | null>(null)
   const [loading, setLoading] = useState(true)
+  const [copied, setCopied] = useState(false)
+  const { pods, loading: podsLoading } = usePods()
+  const { plan, loading: planLoading } = useTreatmentPlan(slug)
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -47,6 +55,18 @@ export default function PublicJobPage({
     )
     return () => unsubscribe()
   }, [slug])
+
+  const milestones = job?.milestones ?? []
+  const assignedPod = job?.podSlug ? (pods.find((pod) => pod.slug === job.podSlug) ?? null) : null
+  const podMembers = assignedPod ? getPodMembers(assignedPod) : []
+  const hasKnowledge = (job?.documents ?? []).length > 0
+
+  async function handleCopyLink() {
+    if (typeof window === 'undefined') return
+    await navigator.clipboard.writeText(window.location.href)
+    setCopied(true)
+    window.setTimeout(() => setCopied(false), 1800)
+  }
 
   if (loading) {
     return (
@@ -70,8 +90,6 @@ export default function PublicJobPage({
     )
   }
 
-  const milestones = job.milestones ?? []
-
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -85,12 +103,22 @@ export default function PublicJobPage({
             className="h-6 w-auto object-contain dark:invert"
             priority
           />
-          <a
-            href="mailto:hello@comcorpe.com"
-            className="inline-flex items-center gap-1.5 px-4 py-2 bg-foreground text-background rounded-full font-text text-xs font-semibold hover:bg-primary hover:text-primary-foreground transition-colors"
-          >
-            Get in touch <ExternalLink size={11} />
-          </a>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleCopyLink}
+              className="inline-flex items-center gap-1.5 px-4 py-2 border border-border rounded-full font-text text-xs font-semibold text-foreground hover:bg-muted transition-colors"
+            >
+              {copied ? <Check size={11} /> : <Link2 size={11} />}
+              {copied ? 'Copied' : 'Share'}
+            </button>
+            <a
+              href="mailto:hello@comcorpe.com"
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-foreground text-background rounded-full font-text text-xs font-semibold hover:bg-primary hover:text-primary-foreground transition-colors"
+            >
+              Get in touch <ExternalLink size={11} />
+            </a>
+          </div>
         </div>
       </header>
 
@@ -137,6 +165,19 @@ export default function PublicJobPage({
               {milestones.length > 0 && (
                 <TabsTrigger value="milestones" className="flex items-center gap-2">
                   <LayoutDashboard size={14} /> Milestones
+                </TabsTrigger>
+              )}
+              {assignedPod && (
+                <TabsTrigger value="pod" className="flex items-center gap-2">
+                  <Users2 size={14} /> Pod
+                </TabsTrigger>
+              )}
+              <TabsTrigger value="plan" className="flex items-center gap-2">
+                <Stethoscope size={14} /> Plan
+              </TabsTrigger>
+              {hasKnowledge && (
+                <TabsTrigger value="knowledge" className="flex items-center gap-2">
+                  <FileText size={14} /> Knowledge
                 </TabsTrigger>
               )}
             </TabsList>
@@ -223,6 +264,130 @@ export default function PublicJobPage({
                   </tbody>
                 </table>
               </div>
+            </section>
+          </TabsContent>
+
+          <TabsContent value="pod" className="mt-0">
+            <section className="border-t border-border pt-6 space-y-6">
+              <div>
+                <h2 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-4">Assigned pod</h2>
+                {podsLoading ? (
+                  <p className="font-text text-sm text-muted-foreground">Loading pod...</p>
+                ) : assignedPod ? (
+                  <div className="border border-border rounded-xl p-6 bg-background">
+                    <p className="font-display font-black text-xl text-foreground">{assignedPod.name}</p>
+                    <p className="font-text text-sm text-muted-foreground mt-2 max-w-[70ch]">{assignedPod.summary || assignedPod.focus}</p>
+                    <div className="flex flex-wrap gap-3 mt-4 text-sm text-muted-foreground">
+                      {assignedPod.focus && <span>{assignedPod.focus}</span>}
+                      {assignedPod.availability && <span>{assignedPod.availability}</span>}
+                      {assignedPod.rate && <span>{assignedPod.rate}</span>}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="font-text text-sm text-muted-foreground">No pod assigned.</p>
+                )}
+              </div>
+
+              {podMembers.length > 0 && (
+                <div>
+                  <h3 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-4">Pod members</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {podMembers.map((member) => (
+                      <article key={member.id} className="border border-border rounded-xl p-5 bg-background flex flex-col">
+                        <div className="mb-4">
+                          <div className={`w-14 h-14 rounded-xl border border-border overflow-hidden relative flex items-center justify-center ${member.color || 'bg-foreground'} font-display font-black text-[16px] text-background`}>
+                            {member.image ? (
+                              <Image src={member.image} alt={member.name} fill className="object-cover" />
+                            ) : (
+                              member.initials
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex-1">
+                          <h3 className="font-display font-black text-[18px] tracking-[-0.01em] text-foreground leading-tight pr-6">
+                            {member.name}
+                          </h3>
+                          <p className="font-mono text-[9px] uppercase tracking-eyebrow text-primary/60 mt-1">{member.talentRole ?? member.role}</p>
+                        </div>
+
+                        <div className="mt-3 flex items-center gap-1.5 flex-wrap">
+                          <ShieldCheck size={12} className="text-primary shrink-0" strokeWidth={2.5} />
+                          <span aria-label="LinkedIn" className="inline-flex items-center justify-center text-[#0A66C2]">
+                            <FaLinkedin size={12} aria-hidden="true" />
+                          </span>
+                          {member.ndaSigned && (
+                            <span className="font-mono text-[9px] uppercase tracking-eyebrow px-1.5 py-0.5 bg-green-50 text-green-700 border border-green-200 rounded-full">
+                              NDA
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="mt-4 pt-4 border-t border-muted flex items-center justify-between gap-2 text-muted-foreground font-text text-[11px]">
+                          <div className="flex items-center gap-2 truncate">
+                            <MapPin size={10} className="text-input" />
+                            <span className="truncate">{member.bg}</span>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <SLABadge variant="chip" />
+                            <span className="flex items-center gap-1 font-semibold text-foreground">
+                              <DollarSign size={10} className="text-input" />
+                              {member.rate}
+                            </span>
+                          </div>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </section>
+          </TabsContent>
+
+          <TabsContent value="plan" className="mt-0">
+            <section className="border-t border-border pt-6">
+              <h2 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-6">Diagnosis / treatment plan</h2>
+              {planLoading ? (
+                <p className="font-text text-sm text-muted-foreground">Loading plan...</p>
+              ) : plan?.content ? (
+                <div className="border border-border rounded-xl p-6 bg-background">
+                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/50 mb-4">
+                    {new Date(plan.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </p>
+                  <div className="font-text text-sm leading-relaxed prose prose-sm max-w-none prose-headings:font-display prose-headings:font-black prose-headings:tracking-tight prose-h2:text-base prose-h2:mt-6 prose-h2:mb-2 prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground">
+                    <ReactMarkdown>{plan.content}</ReactMarkdown>
+                  </div>
+                </div>
+              ) : (
+                <p className="font-text text-sm text-muted-foreground">No treatment plan has been shared yet.</p>
+              )}
+            </section>
+          </TabsContent>
+
+          <TabsContent value="knowledge" className="mt-0">
+            <section className="border-t border-border pt-6">
+              <h2 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-6">Shared documents</h2>
+              {(job.documents ?? []).length > 0 ? (
+                <div className="space-y-3">
+                  {(job.documents ?? []).map((file, i) => (
+                    <a
+                      key={`${file.storagePath}-${i}`}
+                      href={file.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center justify-between gap-3 border border-border rounded-xl p-4 bg-background hover:bg-muted/30 transition-colors"
+                    >
+                      <div className="min-w-0">
+                        <p className="font-text text-sm font-semibold text-foreground truncate">{file.name}</p>
+                        <p className="font-text text-xs text-muted-foreground mt-1">{file.size} · {file.uploadedAt}</p>
+                      </div>
+                      <Download size={16} className="text-muted-foreground/70 shrink-0" />
+                    </a>
+                  ))}
+                </div>
+              ) : (
+                <p className="font-text text-sm text-muted-foreground">No documents have been shared yet.</p>
+              )}
             </section>
           </TabsContent>
         </Tabs>
