@@ -10,7 +10,10 @@ import { cn } from "@/lib/utils";
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
-  title: 'Comcorpᵉ — A Growth Systems Company',
+  title: {
+    default: 'Comcorpᵉ — A Growth Systems Company',
+    template: '%s — Comcorpᵉ',
+  },
   description: 'Comcorpᵉ orchestrates data, creativity, technology and strategy into unified growth systems.',
   robots: 'noindex, nofollow',
   manifest: '/manifest.json',

@@ -1,5 +1,10 @@
+import type { Metadata } from 'next'
 import Closing from '@/components/Closing'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Comcorpᵉ — A Growth Systems Company',
+}
 
 export default function Home() {
   const sections = [
