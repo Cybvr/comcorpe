@@ -2,13 +2,14 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
-import { Star, Check, ShieldCheck } from 'lucide-react'
+import { Star, Check, ShieldCheck, Plus, X, TrendingUp } from 'lucide-react'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useCurrentUser, updateUserProfile, OMNICOM_AFFILIATES } from '@/lib/user'
 import { storage } from '@/lib/firebase'
 import NetworkAffiliateBadge from '@/components/dashboard/NetworkAffiliateBadge'
 
 const LOCATIONS = ['Lagos', 'London', 'Nairobi', 'Accra', 'Cape Town', 'New York', 'Remote only', 'Other']
+const INDUSTRIES = ['Fintech', 'Infrastructure', 'Consumer', 'Healthcare', 'Media', 'Education', 'Public sector', 'Other']
 const AVAILABILITY = ['Full-time (5 days/wk)', 'Part-time (2-3 days/wk)', 'Project-based only', 'Advisory (a few hrs/mo)']
 const EXPERIENCE = ['2-4 years', '5-8 years', '9-14 years', '15+ years']
 const SOURCES = ['Referral', 'LinkedIn', 'Comcorpe event', 'Press / media', 'Other']
@@ -19,6 +20,7 @@ export default function TalentSettingsProfilePage() {
   const { user: currentUser } = useCurrentUser()
   const [name, setName] = useState(currentUser?.name ?? '')
   const [role, setRole] = useState(currentUser?.talentRole ?? '')
+  const [industry, setIndustry] = useState(currentUser?.industry ?? '')
   const [bg, setBg] = useState(currentUser?.bg ?? '')
   const [desc, setDesc] = useState(currentUser?.desc ?? '')
   const [rate, setRate] = useState(currentUser?.rate ?? '')
@@ -32,6 +34,7 @@ export default function TalentSettingsProfilePage() {
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [affiliations, setAffiliations] = useState<string[]>(currentUser?.networkAffiliations ?? [])
+  const [highlights, setHighlights] = useState<string[]>(currentUser?.highlights ?? ['', '', ''])
   const [networkSaving, setNetworkSaving] = useState(false)
   const [networkSaved, setNetworkSaved] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -39,6 +42,14 @@ export default function TalentSettingsProfilePage() {
   useEffect(() => {
     if (currentUser?.networkAffiliations) setAffiliations(currentUser.networkAffiliations)
   }, [currentUser?.networkAffiliations])
+
+  useEffect(() => {
+    if (currentUser?.highlights) {
+      const padded = [...currentUser.highlights]
+      while (padded.length < 3) padded.push('')
+      setHighlights(padded.slice(0, 3))
+    }
+  }, [currentUser?.highlights])
 
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -63,13 +74,14 @@ export default function TalentSettingsProfilePage() {
   const isVerified = (currentUser.networkAffiliations ?? []).length > 0
 
   const hydratedFromUser =
-    name.length > 0 || role.length > 0 || bg.length > 0 || desc.length > 0 || rate.length > 0 ||
+    name.length > 0 || role.length > 0 || industry.length > 0 || bg.length > 0 || desc.length > 0 || rate.length > 0 ||
     linkedinUrl.length > 0 || portfolioUrl.length > 0 || disciplines.length > 0 || location.length > 0 ||
     yearsExp.length > 0 || availability.length > 0 || source.length > 0
 
   if (!hydratedFromUser) {
     setName(currentUser.name)
     setRole(currentUser.talentRole ?? '')
+    setIndustry(currentUser.industry ?? '')
     setBg(currentUser.bg ?? '')
     setDesc(currentUser.desc ?? '')
     setRate(currentUser.rate ?? '')
@@ -110,6 +122,7 @@ export default function TalentSettingsProfilePage() {
       await updateUserProfile(currentUser.id, {
         name,
         talentRole: role,
+        industry,
         bg,
         desc,
         rate,
@@ -121,6 +134,7 @@ export default function TalentSettingsProfilePage() {
         yearsExp,
         availability,
         source,
+        highlights: highlights.filter(h => h.trim().length > 0),
       })
     } catch (err) {
       console.error(err)
@@ -203,6 +217,15 @@ export default function TalentSettingsProfilePage() {
                   </div>
                 </div>
                 <div className="flex flex-col gap-1.5">
+                  <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Industry</label>
+                  <select className={I} value={industry} onChange={(e) => setIndustry(e.target.value)}>
+                    <option value="">Select industry</option>
+                    {INDUSTRIES.map((option) => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex flex-col gap-1.5">
                   <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Role / Title</label>
                   <input className={I} value={role} onChange={(e) => setRole(e.target.value)} />
                 </div>
@@ -233,6 +256,46 @@ export default function TalentSettingsProfilePage() {
                     ))}
                   </select>
                 </div>
+                {/* Impact highlights */}
+                <div className="flex flex-col gap-2">
+                  <div>
+                    <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Impact highlights</label>
+                    <p className="font-text text-xs text-muted-foreground/70 mt-0.5">Your top 3 results (optional). Quantified outcomes shown on your profile card.</p>
+                    <p className="font-text text-[11px] text-muted-foreground/50 mt-0.5 italic">e.g. &ldquo;Grew ARPU 40% in 6 months&rdquo; or &ldquo;Led market entry across 3 countries&rdquo;</p>
+                  </div>
+                  <div className="space-y-2">
+                    {highlights.map((h, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <TrendingUp size={13} className="text-green-500 shrink-0" />
+                        <input
+                          className={`${I} flex-1`}
+                          value={h}
+                          onChange={e => {
+                            const next = [...highlights]
+                            next[i] = e.target.value
+                            setHighlights(next)
+                          }}
+                          placeholder={`Highlight ${i + 1}…`}
+                        />
+                        {h.trim().length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const next = [...highlights]
+                              next[i] = ''
+                              setHighlights(next)
+                            }}
+                            className="p-1.5 text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+                            aria-label="Clear"
+                          >
+                            <X size={13} />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="flex flex-col gap-1.5">
                   <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Bio</label>
                   <textarea className={`${I} resize-none`} rows={3} value={desc} onChange={(e) => setDesc(e.target.value)} />

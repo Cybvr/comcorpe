@@ -15,6 +15,13 @@ function FooterLink({ children, href = '#' }: FooterLinkProps) {
 }
 
 export default function Footer() {
+  const footerSections = [
+    { head: 'Model', links: ['Orchestration', 'Specialist Pods', 'Growth Plays'] },
+    { head: 'Arenas', links: services.map((service) => service.title) },
+    { head: 'Company', links: [{ label: 'About', href: '/about' }, { label: 'Why Comcorpe', href: '/why' }, { label: 'How it works', href: '/how-it-works' }, { label: 'Use Cases', href: '/case-studies' }, 'Press'] },
+    { head: 'Contact', links: [{ label: 'Book a session call', href: '/book' }, { label: 'hello@comcorp.e', href: 'mailto:hello@comcorp.e' }, { label: 'Plot 5 Chief Yesufu Abiodun Oniru Rd, Victoria Island, Lagos 106104, Lagos', href: '#' }] },
+  ]
+
   return (
     <footer className="bg-foreground text-background dark-inv-section">
       <div className="px-6 md:px-24 pt-20 md:pt-[120px] pb-16 md:pb-24 border-b border-background/[0.12]">
@@ -29,15 +36,10 @@ export default function Footer() {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 px-6 md:px-24 py-16">
-        {[
-          { head: 'Model', links: ['Orchestration', 'Specialist Pods', 'Growth Plays'] },
-          { head: 'Arenas', links: services.map(s => s.t) },
-          { head: 'Company', links: [{ label: 'About', href: '/about' }, { label: 'Why Comcorpe', href: '/why' }, { label: 'Use Cases', href: '/case-studies' }, 'Press'] },
-          { head: 'Contact', links: [{ label: 'Book a session call', href: '/book' }, { label: 'hello@comcorp.e', href: 'mailto:hello@comcorp.e' }, { label: 'Plot 5 Chief Yesufu Abiodun Oniru Rd, Victoria Island, Lagos 106104, Lagos', href: '#' },] },
-        ].map(({ head, links }) => (
+        {footerSections.map(({ head, links }) => (
           <div key={head} className="flex flex-col gap-3.5">
             <span className="font-text text-[11px] font-semibold tracking-eyebrow uppercase text-background/50 mb-2">{head}</span>
-            {links.map(l => typeof l === 'string'
+            {links.filter(Boolean).map(l => typeof l === 'string'
               ? <FooterLink key={l}>{l}</FooterLink>
               : <FooterLink key={l.label} href={l.href}>{l.label}</FooterLink>
             )}

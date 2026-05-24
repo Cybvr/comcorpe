@@ -26,12 +26,26 @@ import {
   Play,
   Share2,
   Link2,
+  ClockIcon,
+  CheckCircle2,
+  XCircle,
+  AlertTriangle,
+  ChevronDown,
+  TrendingUp,
+  TrendingDown,
+  Stethoscope,
+  FlaskConical,
+  Activity,
+  Trophy,
+  Globe,
 } from 'lucide-react'
 import { usePods, getPodMembers } from '@/lib/pods'
 import NetworkAffiliateBadge from '@/components/dashboard/NetworkAffiliateBadge'
-import { getTalentProfile, useUsers } from '@/lib/user'
+import { getTalentProfile, useUsers, useCurrentUser } from '@/lib/user'
 import { getJobProgress, type JobDocument } from '@/lib/jobs'
 import { useJobBySlug } from '@/lib/jobs'
+import { useLatestGrowthMetric } from '@/lib/growth-metrics'
+import { useTreatmentPlan } from '@/lib/treatment-plan'
 import { updateJob, createPod } from '@/lib/admin/store'
 import { invoices, getInvoice } from '@/lib/invoices'
 import { contractTerms } from '@/lib/contract'
@@ -42,6 +56,22 @@ import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 
+const SURGERY_PHASES = [
+  { step: 1, label: 'Diagnosis', icon: Stethoscope },
+  { step: 2, label: 'Tests', icon: FlaskConical },
+  { step: 3, label: 'Treatment', icon: Activity },
+  { step: 4, label: 'Surgery', icon: Activity },
+  { step: 5, label: 'Recovery', icon: TrendingUp },
+  { step: 6, label: 'You Win', icon: Trophy },
+]
+
+const OPERATING_CYCLE = [
+  { label: 'Research & Listen', desc: 'Track perception, signals, feedback' },
+  { label: 'Execute', desc: 'Launch campaigns, offers, experiments' },
+  { label: 'Track & Report', desc: 'Monitor KPIs, dashboards, insights' },
+  { label: 'Optimise', desc: 'Refine messaging, offers, targeting' },
+]
+
 const statusStyles: Record<string, string> = {
   'Active': 'bg-green-50 text-green-700 border-green-100',
   'Completed': 'bg-primary/10 text-primary border-primary/20',
@@ -51,7 +81,7 @@ const statusStyles: Record<string, string> = {
   'Cancelled': 'bg-red-50 text-red-600 border-red-200',
 }
 
-const jobTabs = ['brief', 'milestones', 'pod', 'knowledge', 'payments', 'contract'] as const
+const jobTabs = ['brief', 'milestones', 'pod', 'plan', 'knowledge', 'payments', 'contract'] as const
 type JobTab = (typeof jobTabs)[number]
 
 function isJobTab(value: string | null): value is JobTab {
@@ -86,9 +116,15 @@ export default function JobDetailPage({
   const [newMilestone, setNewMilestone] = useState({ title: '', date: '', amount: '' })
   const [uploadingFiles, setUploadingFiles] = useState<{ name: string; progress: number }[]>([])
   const [deletingDoc, setDeletingDoc] = useState<string | null>(null)
+  const [showRejectInput, setShowRejectInput] = useState(false)
+  const [rejectReason, setRejectReason] = useState('')
+  const [approvalPending, setApprovalPending] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { user: currentUser } = useCurrentUser()
+  const { metric: latestMetric } = useLatestGrowthMetric(currentUser?.clientId)
+  const { plan, loading: planLoading } = useTreatmentPlan(slug)
 
   useEffect(() => {
     if (job) {
@@ -142,11 +178,11 @@ export default function JobDetailPage({
   const talentUsers = allUsers.filter(user => user.role === 'talent')
   const filteredTalentUsers = podMemberQuery
     ? talentUsers.filter(user =>
-        user.name.toLowerCase().includes(podMemberQuery) ||
-        (user.talentRole ?? '').toLowerCase().includes(podMemberQuery) ||
-        (user.bg ?? '').toLowerCase().includes(podMemberQuery) ||
-        (user.location ?? '').toLowerCase().includes(podMemberQuery)
-      )
+      user.name.toLowerCase().includes(podMemberQuery) ||
+      (user.talentRole ?? '').toLowerCase().includes(podMemberQuery) ||
+      (user.bg ?? '').toLowerCase().includes(podMemberQuery) ||
+      (user.location ?? '').toLowerCase().includes(podMemberQuery)
+    )
     : talentUsers
 
   function tabHref(tab: JobTab) {
@@ -220,8 +256,8 @@ export default function JobDetailPage({
       ? `$${parseInt(rawAmount).toLocaleString()}`
       : '—'
     const [y, m, d] = newMilestone.date.split('-')
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-    const formattedDate = y && m && d ? `${parseInt(d)} ${months[parseInt(m)-1]} ${y}` : newMilestone.date
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    const formattedDate = y && m && d ? `${parseInt(d)} ${months[parseInt(m) - 1]} ${y}` : newMilestone.date
     const ms: any = {
       id,
       title: newMilestone.title,
@@ -286,6 +322,36 @@ export default function JobDetailPage({
     }
     await updateDoc(doc(db, 'jobs', slug), { documents: arrayRemove(document) })
     setDeletingDoc(null)
+  }
+
+  const handleRequestApproval = async () => {
+    if (!job) return
+    setApprovalPending(true)
+    await updateJob(job.id, {
+      approvalStatus: 'pending-approval',
+      approvers: currentUser?.id ? [currentUser.id] : [],
+    })
+    setApprovalPending(false)
+  }
+
+  const handleApprove = async () => {
+    if (!job) return
+    await updateJob(job.id, {
+      approvalStatus: 'approved',
+      approvedAt: new Date().toISOString(),
+      approvedBy: currentUser?.id ?? '',
+    })
+  }
+
+  const handleReject = async () => {
+    if (!job || !rejectReason.trim()) return
+    await updateJob(job.id, {
+      approvalStatus: 'rejected',
+      rejectedAt: new Date().toISOString(),
+      rejectedReason: rejectReason.trim(),
+    })
+    setShowRejectInput(false)
+    setRejectReason('')
   }
 
   const jobUrl = typeof window !== 'undefined' ? window.location.href : ''
@@ -373,8 +439,51 @@ export default function JobDetailPage({
             </div>
 
             <div className="space-y-5 px-6 py-5">
-              <div>
-                <label className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 block mb-2">People</label>
+              {/* Public link toggle */}
+              <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-muted/20">
+                <div className="flex items-center gap-3">
+                  <Globe size={16} className={job.sharedPublicly ? 'text-primary' : 'text-muted-foreground/50'} />
+                  <div>
+                    <p className="font-text text-sm font-semibold text-foreground leading-tight">Public link</p>
+                    <p className="font-text text-[11px] text-muted-foreground/70 mt-0.5">Anyone with the link can view this brief</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await updateJob(job.id, { sharedPublicly: !job.sharedPublicly })
+                  }}
+                  className={`relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors ${job.sharedPublicly ? 'bg-primary' : 'bg-muted-foreground/20'}`}
+                >
+                  <span className={`pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${job.sharedPublicly ? 'translate-x-4' : 'translate-x-0'}`} />
+                </button>
+              </div>
+
+              {/* Public URL */}
+              {job.sharedPublicly && (
+                <div className="flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2">
+                  <input
+                    readOnly
+                    value={typeof window !== 'undefined' ? `${window.location.origin}/share/${job.slug}` : ''}
+                    className="min-w-0 flex-1 bg-transparent font-text text-xs text-muted-foreground focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(`${window.location.origin}/share/${job.slug}`)
+                      setCopied(true)
+                      setTimeout(() => setCopied(false), 1800)
+                    }}
+                    className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-text text-xs font-semibold text-foreground hover:bg-background transition-colors"
+                  >
+                    {copied ? <Check size={13} className="text-green-500" /> : <Link2 size={13} />}
+                    {copied ? 'Copied' : 'Copy'}
+                  </button>
+                </div>
+              )}
+
+              <div className="border-t border-border/50 pt-4">
+                <label className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 block mb-2">Invite by email</label>
                 <textarea
                   value={shareEmails}
                   onChange={e => setShareEmails(e.target.value)}
@@ -382,55 +491,6 @@ export default function JobDetailPage({
                   placeholder="Add emails separated by commas"
                   className="w-full resize-none rounded-xl border border-border bg-muted/40 px-4 py-3 font-text text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-muted-foreground/50"
                 />
-              </div>
-
-              <div>
-                <label className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 block mb-2">Description</label>
-                <textarea
-                  value={shareDescription}
-                  onChange={e => setShareDescription(e.target.value)}
-                  rows={4}
-                  placeholder="Add context for the people you are inviting..."
-                  className="w-full resize-none rounded-xl border border-border bg-muted/40 px-4 py-3 font-text text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-muted-foreground/50"
-                />
-              </div>
-
-              <div>
-                <label className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 block mb-2">Access</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setSharePermission('view')}
-                    className={`rounded-xl border px-4 py-3 text-left transition-colors ${
-                      sharePermission === 'view' ? 'border-foreground bg-foreground text-background' : 'border-border bg-background text-foreground hover:border-input'
-                    }`}
-                  >
-                    <span className="block font-text text-sm font-semibold">Can view</span>
-                    <span className="block font-text text-[11px] opacity-70 mt-0.5">Read-only access</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSharePermission('edit')}
-                    className={`rounded-xl border px-4 py-3 text-left transition-colors ${
-                      sharePermission === 'edit' ? 'border-foreground bg-foreground text-background' : 'border-border bg-background text-foreground hover:border-input'
-                    }`}
-                  >
-                    <span className="block font-text text-sm font-semibold">Can edit</span>
-                    <span className="block font-text text-[11px] opacity-70 mt-0.5">Update the brief</span>
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 rounded-xl border border-border bg-muted/30 px-3 py-2">
-                <input readOnly value={jobUrl} className="min-w-0 flex-1 bg-transparent font-text text-xs text-muted-foreground focus:outline-none" />
-                <button
-                  type="button"
-                  onClick={handleCopyLink}
-                  className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-text text-xs font-semibold text-foreground hover:bg-background transition-colors"
-                >
-                  {copied ? <Check size={13} className="text-green-500" /> : <Link2 size={13} />}
-                  {copied ? 'Copied' : 'Copy'}
-                </button>
               </div>
             </div>
 
@@ -440,7 +500,7 @@ export default function JobDetailPage({
                 onClick={() => setShowShareModal(false)}
                 className="px-5 py-2.5 font-text text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
               >
-                Cancel
+                Close
               </button>
               <button
                 type="button"
@@ -455,9 +515,100 @@ export default function JobDetailPage({
         </div>
       )}
 
+      {/* Approval action bar — shown to approvers when brief is pending */}
+      {(currentUser?.approverRole === 'approver' || currentUser?.approverRole === 'billing-admin') &&
+        job.approvalStatus === 'pending-approval' && (
+          <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-5 py-4 bg-amber-50 border border-amber-200 rounded-xl">
+            <div className="flex items-center gap-3">
+              <AlertTriangle size={16} className="text-amber-600 shrink-0" />
+              <p className="font-text text-sm font-semibold text-amber-800">
+                This brief is awaiting your approval
+              </p>
+            </div>
+            {!showRejectInput ? (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleApprove}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-green-600 text-white rounded-lg font-text text-xs font-semibold hover:bg-green-700 transition-colors"
+                >
+                  <CheckCircle2 size={13} /> Approve
+                </button>
+                <button
+                  onClick={() => setShowRejectInput(true)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-amber-300 text-amber-800 rounded-lg font-text text-xs font-semibold hover:bg-amber-100 transition-colors"
+                >
+                  <XCircle size={13} /> Reject
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <input
+                  type="text"
+                  value={rejectReason}
+                  onChange={e => setRejectReason(e.target.value)}
+                  placeholder="Reason for rejection…"
+                  className="flex-1 sm:w-56 px-3 py-2 border border-amber-300 rounded-lg font-text text-xs bg-white focus:outline-none focus:border-amber-500"
+                />
+                <button
+                  onClick={handleReject}
+                  disabled={!rejectReason.trim()}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg font-text text-xs font-semibold hover:bg-red-700 transition-colors disabled:opacity-40"
+                >
+                  Confirm
+                </button>
+                <button
+                  onClick={() => { setShowRejectInput(false); setRejectReason('') }}
+                  className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+      {/* ── Phase Journey Banner ── */}
+      {job.surgeryPhase != null && (
+        <div className="mb-8 bg-foreground text-background rounded-2xl px-6 py-5 overflow-hidden relative">
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none select-none flex items-center justify-end pr-8">
+            <span className="font-display font-black text-[140px] leading-none">{job.surgeryPhase}</span>
+          </div>
+          <div className="relative z-10">
+            <p className="font-mono text-[9px] uppercase tracking-[0.2em] opacity-40 mb-4">Growth Surgery Journey</p>
+            <div className="flex items-center gap-1 overflow-x-auto pb-1 mb-5">
+              {SURGERY_PHASES.map((phase, i) => {
+                const isActive = phase.step === job.surgeryPhase
+                const isDone = phase.step < (job.surgeryPhase ?? 1)
+                return (
+                  <div key={phase.step} className="flex items-center gap-1 shrink-0">
+                    <div className={`flex flex-col items-center gap-1.5 ${isActive ? 'opacity-100' : isDone ? 'opacity-60' : 'opacity-25'}`}>
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold border-2 transition-all ${isActive ? 'bg-primary border-primary text-primary-foreground scale-110' :
+                        isDone ? 'bg-background/20 border-background/40 text-background' :
+                          'bg-transparent border-background/20 text-background/40'
+                        }`}>
+                        {phase.step}
+                      </div>
+                      <span className={`font-mono text-[9px] uppercase tracking-wide whitespace-nowrap ${isActive ? 'text-primary' : 'text-background/60'}`}>
+                        {phase.label}
+                      </span>
+                    </div>
+                    {i < SURGERY_PHASES.length - 1 && (
+                      <div className={`h-px w-6 mt-[-14px] mx-0.5 ${phase.step < (job.surgeryPhase ?? 1) ? 'bg-primary/60' : 'bg-background/15'}`} />
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+            <p className="font-display font-black text-[18px] tracking-tight leading-snug">
+              Phase {job.surgeryPhase}: {SURGERY_PHASES.find(p => p.step === job.surgeryPhase)?.label}
+            </p>
+          </div>
+        </div>
+      )}
+
       <Tabs value={activeTab} className="w-full min-w-0">
         <div className="mb-8 w-full overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <TabsList className="flex w-max min-w-full">
+          <TabsList className="flex w-max min-w-full justify-start">
             <TabsTrigger value="brief" className="flex min-w-0 items-center justify-center gap-2" asChild>
               <Link href={tabHref('brief')} scroll={false}>
                 <Target size={14} /> Brief
@@ -471,6 +622,11 @@ export default function JobDetailPage({
             <TabsTrigger value="pod" className="flex min-w-0 items-center justify-center gap-2" asChild>
               <Link href={tabHref('pod')} scroll={false}>
                 <Users2 size={14} /> Pod
+              </Link>
+            </TabsTrigger>
+            <TabsTrigger value="plan" className="flex min-w-0 items-center justify-center gap-2" asChild>
+              <Link href={tabHref('plan')} scroll={false}>
+                <Stethoscope size={14} /> Plan
               </Link>
             </TabsTrigger>
             <TabsTrigger value="knowledge" className="flex min-w-0 items-center justify-center gap-2" asChild>
@@ -521,6 +677,69 @@ export default function JobDetailPage({
                     </ul>
                   </div>
                 </div>
+
+                {/* ── Operating Cycle ── */}
+                <div className="mt-8 border-t border-border/50 pt-6">
+                  <h3 className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-4">This week&apos;s operating cycle</h3>
+                  {job.weeklyFocus && (
+                    <p className="font-text text-sm font-semibold text-foreground mb-4 leading-snug">{job.weeklyFocus}</p>
+                  )}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {OPERATING_CYCLE.map((step, i) => {
+                      const progress = getJobProgress(job)
+                      const activeIdx = Math.floor((progress / 100) * 4) % 4
+                      const isActive = i === activeIdx
+                      return (
+                        <div key={step.label} className={`p-3 rounded-xl border transition-colors ${isActive ? 'border-primary/30 bg-primary/5' : 'border-border bg-background'}`}>
+                          <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold mb-2 ${isActive ? 'bg-primary text-primary-foreground' : 'bg-border text-muted-foreground/50'}`}>
+                            {i + 1}
+                          </div>
+                          <p className={`font-text text-xs font-semibold leading-tight ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>{step.label}</p>
+                          <p className="font-text text-[11px] text-muted-foreground/60 mt-0.5 leading-snug">{step.desc}</p>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* ── Growth Metrics ── */}
+                {(latestMetric || currentUser?.baselinePerceptionScore != null) && (
+                  <div className="mt-8 border-t border-border/50 pt-6">
+                    <h3 className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-4">Growth outcomes</h3>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="border border-border rounded-xl p-4 bg-background">
+                        <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-muted-foreground/70 mb-2">Perception</p>
+                        <p className="font-display font-black text-2xl text-foreground">
+                          {latestMetric?.perceptionScore ?? currentUser?.baselinePerceptionScore ?? '—'}
+                        </p>
+                        {latestMetric?.perceptionScore != null && currentUser?.baselinePerceptionScore != null && (
+                          <span className={`inline-flex items-center gap-1 font-mono text-[11px] font-bold mt-1 ${latestMetric.perceptionScore >= currentUser.baselinePerceptionScore ? 'text-green-600' : 'text-red-500'}`}>
+                            {latestMetric.perceptionScore >= currentUser.baselinePerceptionScore ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
+                            {latestMetric.perceptionScore > currentUser.baselinePerceptionScore ? '+' : ''}{(latestMetric.perceptionScore - currentUser.baselinePerceptionScore).toFixed(1)}
+                          </span>
+                        )}
+                      </div>
+                      <div className="border border-border rounded-xl p-4 bg-background">
+                        <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-muted-foreground/70 mb-2">Churn Rate</p>
+                        <p className="font-display font-black text-2xl text-foreground">
+                          {latestMetric?.churnRate != null ? `${latestMetric.churnRate}%` : (currentUser?.baselineChurnRate ?? '—')}
+                        </p>
+                      </div>
+                      <div className="border border-border rounded-xl p-4 bg-background">
+                        <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-muted-foreground/70 mb-2">ARPU</p>
+                        <p className="font-display font-black text-2xl text-foreground">
+                          {latestMetric?.arpu != null ? `₦${latestMetric.arpu.toLocaleString()}` : (currentUser?.baselineArpu ? `₦${currentUser.baselineArpu.toLocaleString()}` : '—')}
+                        </p>
+                        {latestMetric?.arpu != null && currentUser?.baselineArpu != null && (
+                          <span className={`inline-flex items-center gap-1 font-mono text-[11px] font-bold mt-1 ${latestMetric.arpu >= currentUser.baselineArpu ? 'text-green-600' : 'text-red-500'}`}>
+                            {latestMetric.arpu >= currentUser.baselineArpu ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
+                            {latestMetric.arpu > currentUser.baselineArpu ? '+' : ''}₦{Math.abs(latestMetric.arpu - currentUser.baselineArpu).toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </section>
             </TabsContent>
 
@@ -529,7 +748,7 @@ export default function JobDetailPage({
                 <div className="flex items-center justify-between py-4">
                   <div className="flex items-center gap-4">
                     <h2 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Milestones</h2>
-                    <button 
+                    <button
                       onClick={() => setIsAddingMilestone(!isAddingMilestone)}
                       className="p-1 hover:bg-muted rounded-sm text-primary transition-colors flex items-center gap-1 font-mono text-[9px] uppercase tracking-tight"
                     >
@@ -539,10 +758,10 @@ export default function JobDetailPage({
                   </div>
                   <div className="flex items-center gap-1.5">
                     <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    <span className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70">{getJobProgress({...job, milestones: localMilestones})}% Velocity</span>
+                    <span className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70">{getJobProgress({ ...job, milestones: localMilestones })}% Velocity</span>
                   </div>
                 </div>
-                
+
                 <div className="border border-border overflow-hidden">
                   <table className="w-full text-left border-collapse">
                     <thead>
@@ -564,18 +783,18 @@ export default function JobDetailPage({
                             </span>
                           </td>
                           <td className="px-4 py-3">
-                             <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider bg-muted text-muted-foreground/70 border-border">
-                                UNSET
-                             </span>
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider bg-muted text-muted-foreground/70 border-border">
+                              UNSET
+                            </span>
                           </td>
                           <td className="px-4 py-3">
-                            <input 
+                            <input
                               type="text"
                               placeholder="Milestone title..."
                               autoFocus
                               className="w-full bg-transparent border-none focus:ring-0 font-text text-sm font-bold text-foreground placeholder:text-input p-0"
                               value={newMilestone.title}
-                              onChange={e => setNewMilestone({...newMilestone, title: e.target.value})}
+                              onChange={e => setNewMilestone({ ...newMilestone, title: e.target.value })}
                             />
                           </td>
                           <td className="px-4 py-3">
@@ -583,7 +802,7 @@ export default function JobDetailPage({
                               type="date"
                               className="w-full bg-transparent border-none focus:ring-0 font-text text-[10px] text-muted-foreground/70 uppercase tracking-tight p-0"
                               value={newMilestone.date}
-                              onChange={e => setNewMilestone({...newMilestone, date: e.target.value})}
+                              onChange={e => setNewMilestone({ ...newMilestone, date: e.target.value })}
                             />
                           </td>
                           <td className="px-4 py-3 text-right">
@@ -593,7 +812,7 @@ export default function JobDetailPage({
                                 placeholder="$0"
                                 className="w-16 bg-transparent border-none focus:ring-0 font-mono text-[11px] font-bold text-foreground placeholder:text-input p-0 text-right"
                                 value={newMilestone.amount}
-                                onChange={e => setNewMilestone({...newMilestone, amount: e.target.value})}
+                                onChange={e => setNewMilestone({ ...newMilestone, amount: e.target.value })}
                               />
                               <button
                                 onClick={handleAddMilestone}
@@ -612,21 +831,19 @@ export default function JobDetailPage({
                         return (
                           <tr key={ms.id} className="group hover:bg-muted/30 transition-colors">
                             <td className="px-4 py-3 whitespace-nowrap">
-                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider ${
-                                ms.status === 'completed'  ? 'bg-primary/10 text-primary border-primary/20' :
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider ${ms.status === 'completed' ? 'bg-primary/10 text-primary border-primary/20' :
                                 ms.status === 'in-progress' ? 'bg-accent/5 text-accent border-accent/20' :
-                                'bg-border text-muted-foreground/70 border-input'
-                              }`}>
+                                  'bg-border text-muted-foreground/70 border-input'
+                                }`}>
                                 {ms.status}
                               </span>
                             </td>
                             <td className="px-4 py-3 whitespace-nowrap">
                               {inv && (
-                                <span className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider ${
-                                  inv.status === 'Paid'       ? 'bg-green-50 text-green-700 border-green-200' :
+                                <span className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider ${inv.status === 'Paid' ? 'bg-green-50 text-green-700 border-green-200' :
                                   inv.status === 'Processing' ? 'bg-orange-50 text-orange-700 border-orange-200' :
-                                  'bg-muted text-muted-foreground/70 border-border'
-                                }`}>
+                                    'bg-muted text-muted-foreground/70 border-border'
+                                  }`}>
                                   {inv.status}
                                 </span>
                               )}
@@ -660,20 +877,7 @@ export default function JobDetailPage({
                 </div>
               </section>
 
-              {/* Recent updates */}
-              {job.updates && job.updates.length > 0 && (
-                <section className="border-t border-border">
-                  <h3 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-4 mt-4">Pulse updates</h3>
-                  <ul className="space-y-3">
-                    {job.updates.map((update, i) => (
-                      <li key={i} className="flex items-start gap-3 font-text text-sm text-muted-foreground leading-relaxed">
-                        <div className="w-1 h-1 bg-primary/30 rounded-full mt-2 shrink-0" />
-                        {update}
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )}
+
             </TabsContent>
 
             <TabsContent value="pod" className="mt-0">
@@ -690,7 +894,7 @@ export default function JobDetailPage({
                       </Link>
                     </div>
                   </div>
-                  
+
                   <p className="font-display font-black text-[22px] tracking-[-0.02em] text-foreground mb-2">{assignedPod.name}</p>
                   <p className="font-text text-sm text-muted-foreground mb-5 leading-relaxed max-w-[65ch]">{assignedPod.focus}</p>
 
@@ -698,7 +902,7 @@ export default function JobDetailPage({
                     <span className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70">Pod/hour</span>
                     <span className="font-display font-black text-[15px] tracking-[-0.01em] text-foreground">{assignedPod.rate}</span>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border border border-border overflow-hidden">
                     {assignedPodMembers.map(member => (
                       <Link key={member.id} href={`/client/dashboard/search/talent/${member.id}`} className="flex items-center gap-3 p-4 bg-background hover:bg-muted transition-all group">
@@ -709,7 +913,9 @@ export default function JobDetailPage({
                         </div>
                         <div>
                           <p className="font-text text-sm font-bold text-foreground group-hover:text-primary transition-colors leading-tight">{member.name}</p>
-                          <p className="font-text text-[11px] text-muted-foreground/70 leading-tight mt-0.5">{member.talentRole ?? member.role}</p>
+                          <p className="font-text text-[11px] text-muted-foreground/70 leading-tight mt-0.5">
+                            {assignedPod?.memberRoles?.find(r => r.userId === member.id)?.role ?? member.talentRole ?? member.role}
+                          </p>
                           <div className="mt-1.5 flex items-center gap-1.5">
                             <ShieldCheck size={11} className="text-primary shrink-0" strokeWidth={2.5} />
                             {(member.networkAffiliations ?? []).length > 0 && (
@@ -816,11 +1022,10 @@ export default function JobDetailPage({
                                 onClick={() => setSelectedMemberIds(prev =>
                                   selected ? prev.filter(id => id !== person.id) : [...prev, person.id]
                                 )}
-                                className={`flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
-                                  selected
-                                    ? 'border-primary bg-primary/5'
-                                    : 'border-border bg-muted/30 hover:border-input'
-                                }`}
+                                className={`flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${selected
+                                  ? 'border-primary bg-primary/5'
+                                  : 'border-border bg-muted/30 hover:border-input'
+                                  }`}
                               >
                                 <div className={`w-9 h-9 rounded-sm shrink-0 flex items-center justify-center font-display font-black text-[10px] text-background overflow-hidden relative ${(person as any).color || 'bg-foreground'}`}>
                                   {(person as any).image ? (
@@ -860,6 +1065,115 @@ export default function JobDetailPage({
                   )}
                 </section>
               )}
+            </TabsContent>
+
+            <TabsContent value="plan" className="mt-0">
+              <section className="py-2 border-t border-border">
+                {planLoading ? (
+                  <div className="py-12 animate-pulse space-y-4">
+                    <div className="h-6 w-48 bg-muted rounded" />
+                    <div className="h-4 w-full bg-muted rounded" />
+                    <div className="h-4 w-5/6 bg-muted rounded" />
+                  </div>
+                ) : !plan ? (
+                  <div className="py-16 text-center max-w-md mx-auto">
+                    <div className="w-14 h-14 rounded-full bg-primary/8 flex items-center justify-center mx-auto mb-5">
+                      <Stethoscope size={24} className="text-primary/60" />
+                    </div>
+                    <h2 className="font-display font-black text-xl text-foreground mb-3">Diagnosis in preparation</h2>
+                    <p className="font-text text-sm text-muted-foreground leading-relaxed mb-6">
+                      Your Comcorpe partner is preparing the diagnosis for this engagement. It will appear here after the diagnostic phase — typically within{' '}
+                      <span className="font-semibold text-foreground">5–7 business days</span> of your onboarding.
+                    </p>
+                    <div className="p-4 bg-foreground text-background rounded-xl text-left">
+                      <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-2">What&apos;s being prepared</p>
+                      <ul className="space-y-1.5">
+                        {['Root causes of the growth problem', 'Key barriers to growth', 'Audience insights & truth gaps', 'Messaging & offer recommendations', 'Growth levers'].map((item, i) => (
+                          <li key={i} className="flex items-center gap-2 font-text text-xs opacity-70">
+                            <CheckCircle2 size={12} className="text-primary shrink-0" /> {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-10 mt-4">
+                    {/* Diagnosis */}
+                    {plan.content && (
+                      <div>
+                        <h2 className="font-display font-black text-lg tracking-[-0.02em] text-foreground mb-4">Diagnosis</h2>
+                        <div className="border border-border rounded-xl p-6 bg-background">
+                          <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/50 mb-4">
+                            {new Date(plan.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+                          </p>
+                          <div
+                            className="font-text text-sm leading-relaxed prose prose-sm max-w-none prose-headings:font-display prose-headings:font-black prose-headings:tracking-tight prose-h2:text-base prose-h2:mt-6 prose-h2:mb-2 prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground"
+                            dangerouslySetInnerHTML={{ __html: plan.content }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Milestones */}
+                    <div>
+                      <h2 className="font-display font-black text-lg tracking-[-0.02em] text-foreground mb-4">Milestones</h2>
+                      <div className="border border-border overflow-hidden">
+                        <table className="w-full text-left border-collapse">
+                          <thead>
+                            <tr className="border-b border-border bg-muted/50">
+                              <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 font-semibold w-[120px]">Status</th>
+                              <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 font-semibold w-[100px]">Payment</th>
+                              <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 font-semibold">Milestone</th>
+                              <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 font-semibold w-[100px]">Due</th>
+                              <th className="px-4 py-2.5 font-mono text-[9px] uppercase tracking-widest text-muted-foreground/70 font-semibold text-right w-[100px]">Amount</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-border">
+                            {localMilestones.length === 0 ? (
+                              <tr><td colSpan={5} className="px-4 py-10 text-center font-text text-sm text-muted-foreground/60">No milestones yet.</td></tr>
+                            ) : localMilestones.map((ms) => {
+                              const inv = getInvoice(job.slug, ms.id)
+                              return (
+                                <tr key={ms.id} className="hover:bg-muted/30 transition-colors">
+                                  <td className="px-4 py-3 whitespace-nowrap">
+                                    <span className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider ${ms.status === 'completed' ? 'bg-primary/10 text-primary border-primary/20' :
+                                        ms.status === 'in-progress' ? 'bg-accent/5 text-accent border-accent/20' :
+                                          'bg-border text-muted-foreground/70 border-input'
+                                      }`}>
+                                      {ms.status}
+                                    </span>
+                                  </td>
+                                  <td className="px-4 py-3 whitespace-nowrap">
+                                    {inv && (
+                                      <span className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider ${inv.status === 'Paid' ? 'bg-green-50 text-green-700 border-green-200' :
+                                          inv.status === 'Processing' ? 'bg-orange-50 text-orange-700 border-orange-200' :
+                                            'bg-muted text-muted-foreground/70 border-border'
+                                        }`}>
+                                        {inv.status}
+                                      </span>
+                                    )}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    <p className="font-text text-sm font-bold text-foreground">{ms.title}</p>
+                                  </td>
+                                  <td className="px-4 py-3 whitespace-nowrap">
+                                    <p className="font-text text-[10px] text-muted-foreground/70 uppercase tracking-tight">{ms.date}</p>
+                                  </td>
+                                  <td className="px-4 py-3 text-right">
+                                    <span className="font-mono text-[11px] font-bold text-foreground">
+                                      {inv?.amount ?? ms.amount ?? '—'}
+                                    </span>
+                                  </td>
+                                </tr>
+                              )
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </section>
             </TabsContent>
 
             <TabsContent value="knowledge" className="mt-0">
@@ -936,8 +1250,8 @@ export default function JobDetailPage({
                 const paid = jobInvoices.filter(i => i.status === 'Paid').reduce((a, i) => a + i.amountRaw, 0)
                 const due = jobInvoices.filter(i => i.status === 'Due').reduce((a, i) => a + i.amountRaw, 0)
                 const invoiceStatusStyles: Record<string, string> = {
-                  Paid:       'bg-green-50 text-green-700 border-green-200',
-                  Due:        'bg-amber-50 text-amber-700 border-amber-200',
+                  Paid: 'bg-green-50 text-green-700 border-green-200',
+                  Due: 'bg-amber-50 text-amber-700 border-amber-200',
                   Processing: 'bg-primary/10 text-primary border-primary/20',
                 }
                 return (
@@ -1009,6 +1323,28 @@ export default function JobDetailPage({
                   </button>
                 </div>
 
+                {/* NDA status in contract view */}
+                <div className="mb-4 flex items-start gap-3 px-4 py-3.5 rounded-xl border border-border bg-muted/30">
+                  <ShieldCheck size={15} className={`shrink-0 mt-0.5 ${job.ndaStatus === 'signed' ? 'text-green-600' : 'text-amber-500'}`} />
+                  <div>
+                    <p className="font-text text-[13px] font-semibold text-foreground leading-snug">
+                      {job.ndaStatus === 'signed'
+                        ? `NDA signed${job.ndaSignedAt ? ' · ' + new Date(job.ndaSignedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}`
+                        : job.ndaStatus === 'not-required'
+                          ? 'No NDA required for this engagement'
+                          : 'NDA pending'}
+                    </p>
+                    {(job.ndaStatus === 'pending' || !job.ndaStatus) && (
+                      <p className="font-text text-[11px] text-muted-foreground/70 mt-0.5 leading-snug">
+                        This engagement requires a signed NDA. Your Comcorpe partner will confirm once received.
+                      </p>
+                    )}
+                    {job.ndaStatus === 'signed' && job.ndaSignedBy && (
+                      <p className="font-text text-[11px] text-muted-foreground/70 mt-0.5">Signed by: {job.ndaSignedBy}</p>
+                    )}
+                  </div>
+                </div>
+
                 <div className="h-[calc(100vh-220px)] min-h-[480px] overflow-y-auto rounded-sm border border-border bg-muted/20 p-3 md:p-4 [scrollbar-gutter:stable]">
                   <div className="bg-[#fcfcfc] border border-border shadow-[0_4px_20px_rgba(0,0,0,0.03)] rounded-sm mx-auto max-w-[800px] p-10 md:p-14 relative overflow-hidden text-slate-900">
                     {/* Compact Letterhead */}
@@ -1031,7 +1367,7 @@ export default function JobDetailPage({
                     <div className="font-text text-[13px] leading-relaxed space-y-6 text-slate-800">
                       <p>Dear Partners,</p>
                       <p>This Letter of Engagement confirms the terms upon which Comcorpe Ltd (&quot;the Partner&quot;) will provide strategic services to <strong className="text-primary">{job.clientId.replace(/-/g, ' ').toUpperCase()}</strong> (&quot;the Client&quot;) for the project <em className="text-primary font-bold">&quot;{job.title}&quot;</em>.</p>
-                      
+
                       <div className="space-y-6">
                         {contractTerms.map((term) => (
                           <section key={term.id}>
@@ -1062,7 +1398,7 @@ export default function JobDetailPage({
                           <p className="font-mono text-[8px] text-slate-400 uppercase tracking-widest leading-none">Partner, Comcorpe</p>
                         </div>
                       </div>
-                      
+
                       <div className="space-y-3 text-right">
                         <div className="h-10 flex items-end justify-end">
                           <span className="font-display italic text-xl text-primary/40 pb-1 border-b border-slate-200 block w-full underline decoration-primary/20">/s/ Authorized Signatory</span>
@@ -1083,7 +1419,7 @@ export default function JobDetailPage({
             <div className="p-6 bg-background text-foreground border border-border rounded-lg shadow-sm">
               <div className="space-y-4">
                 <div>
-                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Commercial structure</p>
+                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1">Budget</p>
                   <p className="font-text text-sm text-foreground">{job.rate}</p>
                 </div>
                 <div>
@@ -1116,6 +1452,62 @@ export default function JobDetailPage({
                     <p className="font-text text-sm text-foreground">{job.lead}</p>
                   </div>
                 )}
+
+                {/* NDA Status */}
+                <div>
+                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1.5">NDA Status</p>
+                  {job.ndaStatus === 'signed' ? (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 border border-green-200 rounded-full font-mono text-[10px] font-bold">
+                      <ShieldCheck size={11} />
+                      NDA Signed{job.ndaSignedAt ? ` · ${new Date(job.ndaSignedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}` : ''}
+                    </span>
+                  ) : job.ndaStatus === 'not-required' ? (
+                    <span className="font-text text-sm text-muted-foreground/60">No NDA required</span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-full font-mono text-[10px] font-bold">
+                      <ClockIcon size={11} />
+                      NDA Pending
+                    </span>
+                  )}
+                </div>
+
+                {/* Approval Status */}
+                <div>
+                  <p className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 mb-1.5">Approval</p>
+                  {!job.approvalStatus || job.approvalStatus === 'not-required' ? (
+                    currentUser?.role === 'client' ? (
+                      <button
+                        onClick={handleRequestApproval}
+                        disabled={approvalPending}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-lg font-text text-xs font-semibold text-foreground hover:bg-muted transition-colors disabled:opacity-50"
+                      >
+                        {approvalPending ? 'Requesting…' : 'Request approval'}
+                      </button>
+                    ) : (
+                      <span className="font-text text-sm text-muted-foreground/60">Not required</span>
+                    )
+                  ) : job.approvalStatus === 'pending-approval' ? (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-full font-mono text-[10px] font-bold">
+                      <ClockIcon size={11} />
+                      Awaiting approval
+                    </span>
+                  ) : job.approvalStatus === 'approved' ? (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 border border-green-200 rounded-full font-mono text-[10px] font-bold">
+                      <CheckCircle2 size={11} />
+                      Approved{job.approvedAt ? ` · ${new Date(job.approvedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}` : ''}
+                    </span>
+                  ) : (
+                    <div className="space-y-1">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-50 text-red-700 border border-red-200 rounded-full font-mono text-[10px] font-bold">
+                        <XCircle size={11} />
+                        Rejected
+                      </span>
+                      {job.rejectedReason && (
+                        <p className="font-text text-[11px] text-muted-foreground/70 leading-snug">{job.rejectedReason}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

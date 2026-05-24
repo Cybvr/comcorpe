@@ -7,6 +7,7 @@ import { Check, ArrowRight, ArrowLeft } from 'lucide-react'
 import { useCurrentUser, updateUserProfile } from '@/lib/user'
 
 const DISCIPLINES = ['Growth Strategy', 'Brand & Marketing', 'Product Management', 'Operations', 'Finance & Revenue', 'Data & Analytics', 'Tech & Engineering', 'Customer Experience', 'Market Entry', 'Fundraising']
+const INDUSTRIES = ['Fintech', 'Infrastructure', 'Consumer', 'Healthcare', 'Media', 'Education', 'Public sector', 'Other']
 const LOCATIONS = ['Lagos', 'London', 'Nairobi', 'Accra', 'Cape Town', 'New York', 'Remote only', 'Other']
 const AVAILABILITY = ['Full-time (5 days/wk)', 'Part-time (2-3 days/wk)', 'Project-based only', 'Advisory (a few hrs/mo)']
 const RATES = ['Under $500/day', '$500 - $1,000/day', '$1,000 - $2,000/day', '$2,000+/day', 'Equity / outcome-based']
@@ -58,6 +59,7 @@ export default function TalentOnboardingPage() {
   const [form, setForm] = useState({
     fullName: '',
     role: '',
+    industry: '',
     location: '',
     yearsExp: '',
     disciplines: [] as string[],
@@ -83,7 +85,7 @@ export default function TalentOnboardingPage() {
   }
 
   function canAdvance() {
-    if (step === 1) return form.fullName.trim() && form.role.trim() && form.location && form.yearsExp
+    if (step === 1) return form.fullName.trim() && form.role.trim() && form.industry && form.location && form.yearsExp
     if (step === 2) return form.disciplines.length > 0
     if (step === 3) return !!form.availability && !!form.rate
     if (step === 4) return form.bio.trim().length > 20 && !!form.source
@@ -108,6 +110,7 @@ export default function TalentOnboardingPage() {
         name: form.fullName,
         initials: calculatedInitials,
         talentRole: form.role,
+        industry: form.industry,
         location: form.location,
         yearsExp: form.yearsExp,
         disciplines: form.disciplines,
@@ -146,6 +149,14 @@ export default function TalentOnboardingPage() {
               <div className="col-span-2">
                 <label className={L}>Professional title</label>
                 <input className={I} placeholder="e.g. Growth Strategy Director" value={form.role} onChange={e => set('role', e.target.value)} />
+              </div>
+            </div>
+            <div>
+              <label className={L}>Industry</label>
+              <div className="flex flex-wrap gap-2">
+                {INDUSTRIES.map((industry) => (
+                  <OptionPill key={industry} label={industry} selected={form.industry === industry} onClick={() => set('industry', industry)} />
+                ))}
               </div>
             </div>
             <div>

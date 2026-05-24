@@ -41,6 +41,18 @@ export interface User {
   linkedinUrl?: string
   availability?: string
   networkAffiliations?: string[]
+  ndaSigned?: boolean
+  approverRole?: 'viewer' | 'approver' | 'billing-admin'
+  highlights?: string[]
+  // Growth Surgery fields
+  clientPhase?: 1 | 2 | 3
+  phaseLabel?: string
+  phaseStartedAt?: string
+  baselinePerceptionScore?: number
+  baselineChurnRate?: number
+  baselineArpu?: number
+  baselineRevenueBaseline?: string
+  baselineMonthlyCustomers?: string
 }
 
 export interface OmnicomAffiliate {
@@ -229,6 +241,17 @@ function buildProfile(docId: string, data: Record<string, any>, fbUser: { uid: s
     linkedinUrl: data.linkedinUrl,
     availability: data.availability,
     networkAffiliations: data.networkAffiliations,
+    ndaSigned: data.ndaSigned ?? false,
+    approverRole: data.approverRole,
+    highlights: data.highlights,
+    clientPhase: data.clientPhase,
+    phaseLabel: data.phaseLabel,
+    phaseStartedAt: data.phaseStartedAt,
+    baselinePerceptionScore: data.baselinePerceptionScore,
+    baselineChurnRate: data.baselineChurnRate,
+    baselineArpu: data.baselineArpu,
+    baselineRevenueBaseline: data.baselineRevenueBaseline,
+    baselineMonthlyCustomers: data.baselineMonthlyCustomers,
   }
 }
 

@@ -3,7 +3,8 @@
 import { use } from 'react'
 import Image from 'next/image'
 import { notFound, useRouter } from 'next/navigation'
-import { ArrowUpRight, CheckCircle2, DollarSign, Layers3, MapPin, ShieldCheck, Star, ArrowLeft } from 'lucide-react'
+import { ArrowUpRight, CheckCircle2, DollarSign, Layers3, MapPin, ShieldCheck, Star, ArrowLeft, TrendingUp } from 'lucide-react'
+import { FaLinkedin } from 'react-icons/fa'
 import { useUser } from '@/lib/user'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -52,13 +53,6 @@ export default function ClientDashboardTalentDetailPage({
                 <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-foreground leading-tight">{profile.name}</h1>
                 <p className="font-text text-[17px] text-muted-foreground mb-3">{talentTitle}</p>
                 <div className="flex flex-wrap gap-2">
-                  {profile.linkedinUrl && (
-                    <Button variant="outline" size="sm" asChild className="h-7 px-3 rounded-full font-text text-xs font-semibold text-muted-foreground">
-                      <a href={profile.linkedinUrl} target="_blank" rel="noreferrer">
-                        LinkedIn <ArrowUpRight size={12} />
-                      </a>
-                    </Button>
-                  )}
                   {profile.portfolioUrl && (
                     <Button variant="outline" size="sm" asChild className="h-7 px-3 rounded-full font-text text-xs font-semibold text-muted-foreground">
                       <a href={profile.portfolioUrl} target="_blank" rel="noreferrer">
@@ -92,6 +86,27 @@ export default function ClientDashboardTalentDetailPage({
                   </TooltipContent>
                 </Tooltip>
               )}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    aria-label="LinkedIn"
+                    className="inline-flex items-center justify-center text-[#0A66C2]"
+                  >
+                    <FaLinkedin size={16} aria-hidden="true" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent><p>LinkedIn profile</p></TooltipContent>
+              </Tooltip>
+              {profile.ndaSigned && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="cursor-default inline-flex font-mono text-[10px] uppercase tracking-eyebrow px-2 py-1 bg-green-50 text-green-700 border border-green-200 rounded-full">
+                      NDA signed
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent><p>NDA signed and recorded for this operator.</p></TooltipContent>
+                </Tooltip>
+              )}
             </div>
           </div>
 
@@ -118,12 +133,34 @@ export default function ClientDashboardTalentDetailPage({
             </div>
           </div>
 
-          {profile.desc && (
+          {(profile.desc || (profile.highlights && profile.highlights.length > 0)) && (
             <section className="mt-8">
               <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-foreground mb-3">About</h2>
-              <p className="font-text text-[16px] leading-relaxed text-muted-foreground max-w-[65ch]">
-                {profile.desc}
-              </p>
+              {profile.highlights && profile.highlights.length > 0 && (
+                <ul className="space-y-2 mb-4">
+                  {profile.highlights.map((h, i) => (
+                    <li key={i} className="flex items-start gap-2.5">
+                      <TrendingUp size={14} className="text-green-500 shrink-0 mt-0.5" />
+                      <span className="font-text text-[15px] font-semibold text-foreground leading-snug">{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {profile.desc && (
+                <p className="font-text text-[16px] leading-relaxed text-muted-foreground max-w-[65ch]">
+                  {profile.desc}
+                </p>
+              )}
+              {profile.portfolioUrl && (
+                <a
+                  href={profile.portfolioUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 font-text text-sm font-semibold text-primary hover:underline mt-3"
+                >
+                  See full portfolio <ArrowUpRight size={13} />
+                </a>
+              )}
             </section>
           )}
 

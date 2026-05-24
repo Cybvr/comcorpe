@@ -1,7 +1,8 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { getPods, createPod, updatePod, deletePod } from '@/lib/admin/store'
-import type { Pod } from '@/lib/pods'
+import type { Pod, PodMemberRole } from '@/lib/pods'
+import { POD_MEMBER_ROLES } from '@/lib/pods'
 import Modal from '@/components/admin/Modal'
 import { Plus, Pencil, Trash2, Users2 } from 'lucide-react'
 
@@ -12,6 +13,7 @@ const EMPTY: Omit<Pod, 'id'> = {
   summary: '',
   leadId: '',
   memberIds: [],
+  memberRoles: [],
   markets: [],
   evidence: [],
   availability: '',
@@ -34,6 +36,9 @@ function PodForm({
 }) {
   const [form, setForm] = useState<Omit<Pod, 'id'>>({ ...EMPTY, ...initial })
   const [memberStr, setMemberStr] = useState((initial.memberIds ?? []).join(', '))
+  const [roleMap, setRoleMap] = useState<Record<string, string>>(
+    Object.fromEntries((initial.memberRoles ?? []).map(r => [r.userId, r.role]))
+  )
   const [marketsStr, setMarketsStr] = useState((initial.markets ?? []).join(', '))
   const [evidenceStr, setEvidenceStr] = useState((initial.evidence ?? []).join('\n'))
 
@@ -44,10 +49,15 @@ function PodForm({
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const slug = form.slug || form.name.toLowerCase().replace(/\s+/g, '-')
+    const memberIds = memberStr.split(',').map(s => s.trim()).filter(Boolean)
+    const memberRoles: PodMemberRole[] = memberIds
+      .filter(id => roleMap[id])
+      .map(id => ({ userId: id, role: roleMap[id] }))
     onSave({
       ...form,
       slug,
-      memberIds: memberStr.split(',').map(s => s.trim()).filter(Boolean),
+      memberIds,
+      memberRoles,
       markets: marketsStr.split(',').map(s => s.trim()).filter(Boolean),
       evidence: evidenceStr.split('\n').map(s => s.trim()).filter(Boolean),
     })
@@ -102,6 +112,29 @@ function PodForm({
         <label className={L}>Member IDs <span className="normal-case tracking-normal font-text font-normal text-muted-foreground/50">(comma-separated)</span></label>
         <input className={I} value={memberStr} onChange={e => setMemberStr(e.target.value)} placeholder="e.g. talent-001, talent-002" />
       </div>
+
+      {memberStr.split(',').map(s => s.trim()).filter(Boolean).length > 0 && (
+        <div className={F}>
+          <label className={L}>Pod role assignments</label>
+          <div className="space-y-2">
+            {memberStr.split(',').map(s => s.trim()).filter(Boolean).map(memberId => (
+              <div key={memberId} className="flex items-center gap-3">
+                <span className="font-mono text-[11px] text-muted-foreground/70 w-40 truncate shrink-0">{memberId}</span>
+                <select
+                  className={`${I} flex-1`}
+                  value={roleMap[memberId] ?? ''}
+                  onChange={e => setRoleMap(prev => ({ ...prev, [memberId]: e.target.value }))}
+                >
+                  <option value="">No role assigned</option>
+                  {POD_MEMBER_ROLES.map(r => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className={F}>
         <label className={L}>Markets <span className="normal-case tracking-normal font-text font-normal text-muted-foreground/50">(comma-separated)</span></label>

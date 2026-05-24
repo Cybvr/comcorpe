@@ -8,6 +8,7 @@ const EMPTY = {
   firstName: '',
   surname: '',
   talentRole: '',
+  industry: '',
   bg: '',
   desc: '',
   rateMin: '',
@@ -15,6 +16,7 @@ const EMPTY = {
   featured: false,
   image: '',
   networkAffiliations: [] as string[],
+  ndaSigned: false,
 }
 
 type TalentFormState = typeof EMPTY
@@ -64,11 +66,13 @@ function TalentForm({
       ...name,
       ...rate,
       talentRole: initial.talentRole ?? '',
+      industry: initial.industry ?? '',
       bg: initial.bg ?? '',
       desc: initial.desc ?? '',
       featured: initial.featured ?? false,
       image: initial.image ?? '',
       networkAffiliations: initial.networkAffiliations ?? [],
+      ndaSigned: initial.ndaSigned ?? false,
     }
   })
 
@@ -94,12 +98,14 @@ function TalentForm({
       name,
       initials: initialsFor(firstName, surname),
       talentRole: form.talentRole,
+      industry: form.industry,
       bg: form.bg,
       desc: form.desc,
       rate,
       featured: form.featured,
       image: form.image,
       networkAffiliations: form.networkAffiliations,
+      ndaSigned: form.ndaSigned,
     })
   }
 
@@ -166,6 +172,11 @@ function TalentForm({
       </div>
 
       <div className={F}>
+        <label className={L}>Industry</label>
+        <input className={I} value={form.industry ?? ''} onChange={e => set('industry', e.target.value)} placeholder="Fintech" />
+      </div>
+
+      <div className={F}>
         <label className={L}>Background</label>
         <input className={I} value={form.bg ?? ''} onChange={e => set('bg', e.target.value)} placeholder="Formerly at McKinsey" />
       </div>
@@ -204,6 +215,17 @@ function TalentForm({
           className="w-4 h-4 accent-foreground"
         />
         <label htmlFor="featured" className="font-text text-sm text-muted-foreground">Featured on public talent page</label>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <input
+          id="ndaSigned"
+          type="checkbox"
+          checked={form.ndaSigned ?? false}
+          onChange={e => set('ndaSigned', e.target.checked)}
+          className="w-4 h-4 accent-foreground"
+        />
+        <label htmlFor="ndaSigned" className="font-text text-sm text-muted-foreground">NDA signed and on file</label>
       </div>
 
       <div className="flex gap-3 pt-2">
@@ -295,8 +317,13 @@ export default function AdminTalentPage() {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               {user.featured && (
-               <span className="font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 bg-primary/10 text-primary">
+                <span className="font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 bg-primary/10 text-primary">
                   Featured
+                </span>
+              )}
+              {user.ndaSigned && (
+                <span className="font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 bg-green-50 text-green-700 border border-green-200">
+                  NDA signed
                 </span>
               )}
               <span className="hidden sm:block font-mono text-[11px] text-muted-foreground/70">{user.rate}</span>

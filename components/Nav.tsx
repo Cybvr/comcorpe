@@ -6,8 +6,9 @@ import {
   Moon, Sun,
   LayoutDashboard,
   CalendarDays,
+  MoveRight,
   Zap, Landmark, ShoppingBag,
-  Lightbulb, Network, Users, Target,
+  Lightbulb, Network, Users, Target, BriefcaseBusiness, Brush, Microscope, Megaphone, Radio, BarChart3,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useCurrentUser } from '@/lib/user'
@@ -107,6 +108,59 @@ export default function Nav({ authState }: NavProps) {
       ],
     },
     {
+      label: 'Services',
+      dropdown: [
+        {
+          label: 'Campaign Launch',
+          href: '/services/campaign-launch',
+          desc: 'Launch systems for products, offers, partnerships, and market moments.',
+          icon: BriefcaseBusiness,
+        },
+        {
+          label: 'Market Entry',
+          href: '/services/market-entry',
+          desc: 'Entry strategy for brands expanding into new and unfamiliar markets.',
+          icon: MoveRight,
+        },
+        {
+          label: 'Brand Refresh',
+          href: '/services/brand-refresh',
+          desc: 'Repositioning and identity recalibration for brands in transition.',
+          icon: Brush,
+        },
+        {
+          label: 'Consumer Research',
+          href: '/services/consumer-research',
+          desc: 'Decision-ready insight into customer behavior, language, and demand.',
+          icon: Microscope,
+        },
+        {
+          label: 'Growth Strategy',
+          href: '/services/growth-strategy',
+          desc: 'Integrated planning across positioning, channels, and operating priorities.',
+          icon: Megaphone,
+        },
+        {
+          label: 'Influencer Strategy',
+          href: '/services/influencer-strategy',
+          desc: 'Creator and influence systems built for credibility and measurable impact.',
+          icon: Radio,
+        },
+        {
+          label: 'Regional Expansion',
+          href: '/services/regional-expansion',
+          desc: 'Regional rollout planning for multi-market growth and operating coherence.',
+          icon: Target,
+        },
+        {
+          label: 'Analytics and Dashboarding',
+          href: '/services/analytics-dashboarding',
+          desc: 'Measurement systems and dashboards for sharper operating decisions.',
+          icon: BarChart3,
+        },
+      ],
+    },
+    {
       label: 'About',
       dropdown: [
         { label: 'The Provocation', href: '/provocation', desc: 'Why emerging markets demand a new approach to growth.', icon: Lightbulb },
@@ -150,7 +204,9 @@ export default function Nav({ authState }: NavProps) {
                     </span>
 
                     <div className={`absolute top-full mt-0 bg-background border border-border shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 p-3 gap-1
-                      ${item.dropdown.length === 3
+                      ${item.dropdown.length >= 7
+                        ? 'left-1/2 -translate-x-1/2 w-[920px] grid grid-cols-4'
+                        : item.dropdown.length === 3
                         ? 'left-1/2 -translate-x-1/2 w-[600px] grid grid-cols-3'
                         : 'left-1/2 -translate-x-1/2 w-[640px] grid grid-cols-2'
                       }`}

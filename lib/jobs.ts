@@ -51,6 +51,22 @@ export interface Job {
   requirements: string[]
   milestones?: Milestone[]
   documents?: JobDocument[]
+  weeklyFocus?: string
+  podMembers?: string[]
+  surgeryPhase?: 1 | 2 | 3 | 4 | 5 | 6
+  // NDA tracking
+  ndaStatus?: 'not-required' | 'pending' | 'signed'
+  ndaSignedAt?: string
+  ndaSignedBy?: string
+  // Approval workflow
+  approvalStatus?: 'not-required' | 'pending-approval' | 'approved' | 'rejected'
+  approvers?: string[]
+  approvedAt?: string
+  approvedBy?: string
+  rejectedAt?: string
+  rejectedReason?: string
+  // Public sharing
+  sharedPublicly?: boolean
 }
 
 export const jobs: Job[] = []

@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { use, useState } from 'react'
 import Link from 'next/link'
@@ -109,7 +109,7 @@ export default function TalentJobDetailPage({
 
       <Tabs defaultValue="job" className="w-full min-w-0">
         <div className="mb-8 w-full overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="flex w-max min-w-full justify-start">
             <TabsTrigger value="job" className="flex min-w-0 items-center justify-center gap-2">
               <Target size={14} /> Job
             </TabsTrigger>
@@ -186,11 +186,10 @@ export default function TalentJobDetailPage({
                         {jobMilestones.map(ms => (
                           <tr key={ms.id} className="hover:bg-muted/30 transition-colors">
                             <td className="px-4 py-3 whitespace-nowrap">
-                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider ${
-                                ms.status === 'completed' ? 'bg-primary/10 text-primary border-primary/20' :
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[8px] font-bold border uppercase tracking-wider ${ms.status === 'completed' ? 'bg-primary/10 text-primary border-primary/20' :
                                 ms.status === 'in-progress' ? 'bg-accent/5 text-accent border-accent/20' :
-                                'bg-border text-muted-foreground/70 border-input'
-                              }`}>
+                                  'bg-border text-muted-foreground/70 border-input'
+                                }`}>
                                 {ms.status}
                               </span>
                             </td>
@@ -215,19 +214,7 @@ export default function TalentJobDetailPage({
                 )}
               </section>
 
-              {job.updates && job.updates.length > 0 && (
-                <section className="border-t border-border">
-                  <h3 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-4 mt-4">Pulse updates</h3>
-                  <ul className="space-y-3">
-                    {job.updates.map((update, i) => (
-                      <li key={i} className="flex items-start gap-3 font-text text-sm text-muted-foreground leading-relaxed">
-                        <div className="w-1 h-1 bg-primary/30 rounded-full mt-2 shrink-0" />
-                        {update}
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )}
+
             </TabsContent>
 
             <TabsContent value="pod" className="mt-0 min-w-0 max-w-full overflow-hidden">
@@ -235,12 +222,12 @@ export default function TalentJobDetailPage({
                 <div className="flex items-center justify-between py-4">
                   <h3 className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Project Team</h3>
                 </div>
-                
+
                 {assignedPod ? (
                   <>
                     <p className="font-display font-black text-[22px] tracking-[-0.02em] text-foreground mb-2">{assignedPod.name}</p>
                     <p className="font-text text-sm text-muted-foreground mb-8 leading-relaxed max-w-[65ch]">{assignedPod.focus}</p>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border border border-border overflow-hidden">
                       {assignedPodMembers.map(member => (
                         <div key={member.id} className="flex items-center gap-3 p-4 bg-background group">
@@ -303,8 +290,8 @@ export default function TalentJobDetailPage({
                 const pending = jobPayouts.filter(p => p.status === 'Pending' || p.status === 'Processing').reduce((a, p) => a + p.amountRaw, 0)
                 const nextPayout = jobPayouts.filter(p => p.status === 'Pending').sort((a, b) => a.id - b.id)[0]
                 const payoutStatusStyles: Record<string, string> = {
-                  Cleared:    'bg-green-50 text-green-700 border-green-200',
-                  Pending:    'bg-amber-50 text-amber-700 border-amber-200',
+                  Cleared: 'bg-green-50 text-green-700 border-green-200',
+                  Pending: 'bg-amber-50 text-amber-700 border-amber-200',
                   Processing: 'bg-primary/10 text-primary border-primary/20',
                 }
                 return (
@@ -379,7 +366,7 @@ export default function TalentJobDetailPage({
                   <p className="font-text text-sm font-semibold text-foreground">{getClientUser(job.clientId).name}</p>
                 </div>
                 <div>
-                  <p className="font-text text-sm text-muted-foreground mb-1">Commercial structure</p>
+                  <p className="font-text text-sm text-muted-foreground mb-1">Budget</p>
                   <p className="font-text text-sm font-semibold text-foreground">{job.rate}</p>
                 </div>
                 <div>

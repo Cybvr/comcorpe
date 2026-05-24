@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { getJobs, createJob, updateJob, deleteJob, getSystemUsers } from '@/lib/admin/store'
+import Link from 'next/link'
+import { getJobs, createJob, deleteJob, getSystemUsers } from '@/lib/admin/store'
 import type { User } from '@/lib/user'
 import type { Job, JobStatus, JobType } from '@/lib/jobs'
 import { invoices as seedInvoices, type Invoice, type InvoiceStatus } from '@/lib/invoices'
@@ -150,6 +151,64 @@ function JobForm({
         <textarea className={`${I} resize-none`} rows={3} value={reqStr} onChange={e => setReqStr(e.target.value)} placeholder="Experience in loyalty/rewards design…" />
       </div>
 
+      <div className={F}>
+        <label className={L}>Surgery Phase (1–6)</label>
+        <select
+          className={S}
+          value={form.surgeryPhase ?? ''}
+          onChange={e => set('surgeryPhase', e.target.value ? Number(e.target.value) as Job['surgeryPhase'] : undefined)}
+        >
+          <option value="">Not set</option>
+          <option value="1">1 — Diagnosis</option>
+          <option value="2">2 — Tests</option>
+          <option value="3">3 — Treatment Plan</option>
+          <option value="4">4 — Surgery</option>
+          <option value="5">5 — Recovery</option>
+          <option value="6">6 — You Win</option>
+        </select>
+      </div>
+
+      {/* NDA & Approval */}
+      <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border">
+        <div className={F}>
+          <label className={L}>NDA Status</label>
+          <select
+            className={S}
+            value={form.ndaStatus ?? 'pending'}
+            onChange={e => set('ndaStatus', e.target.value as Job['ndaStatus'])}
+          >
+            <option value="pending">Pending</option>
+            <option value="signed">Signed</option>
+            <option value="not-required">Not required</option>
+          </select>
+        </div>
+        <div className={F}>
+          <label className={L}>Approval Status</label>
+          <select
+            className={S}
+            value={form.approvalStatus ?? 'not-required'}
+            onChange={e => set('approvalStatus', e.target.value as Job['approvalStatus'])}
+          >
+            <option value="not-required">Not required</option>
+            <option value="pending-approval">Pending approval</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+
+      {form.ndaStatus === 'signed' && (
+        <div className={F}>
+          <label className={L}>NDA Signed date (ISO)</label>
+          <input
+            className={I}
+            type="date"
+            value={form.ndaSignedAt ? form.ndaSignedAt.substring(0, 10) : ''}
+            onChange={e => set('ndaSignedAt', e.target.value ? new Date(e.target.value).toISOString() : undefined)}
+          />
+        </div>
+      )}
+
       <div className="flex gap-3 pt-2">
         <button type="submit" className="flex-1 py-3 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100">
           Save
@@ -258,7 +317,7 @@ function PaymentsPanel({ job, invoices, payouts, onUpdateInvoice, onUpdatePayout
   )
 }
 
-type ModalState = 'create' | { job: Job } | { payments: Job } | null
+type ModalState = 'create' | { payments: Job } | null
 
 export default function AdminJobsPage() {
   const [jobs, setJobs] = useState<Job[]>([])
@@ -284,8 +343,6 @@ export default function AdminJobsPage() {
   async function handleSave(data: Partial<Job>) {
     if (modal === 'create') {
       await createJob(data as Omit<Job, 'id'>)
-    } else if (modal && typeof modal === 'object' && 'job' in modal) {
-      await updateJob(modal.job.id, data)
     }
     setModal(null)
     await reload()
@@ -358,9 +415,27 @@ export default function AdminJobsPage() {
                   {job.status}
                 </span>
               </div>
-              <p className="font-mono text-[11px] text-muted-foreground/70 mt-1">
-                {job.clientId} · {job.type} · {job.rate}
-              </p>
+              <div className="flex items-center gap-2 flex-wrap mt-1">
+                <p className="font-mono text-[11px] text-muted-foreground/70">
+                  {job.clientId} · {job.type} · {job.rate}
+                </p>
+                {job.ndaStatus && job.ndaStatus !== 'not-required' && (
+                  <span className={`font-mono text-[9px] tracking-eyebrow uppercase px-1.5 py-0.5 rounded ${
+                    job.ndaStatus === 'signed' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+                  }`}>
+                    NDA {job.ndaStatus}
+                  </span>
+                )}
+                {job.approvalStatus && job.approvalStatus !== 'not-required' && (
+                  <span className={`font-mono text-[9px] tracking-eyebrow uppercase px-1.5 py-0.5 rounded ${
+                    job.approvalStatus === 'approved' ? 'bg-green-100 text-green-700' :
+                    job.approvalStatus === 'rejected' ? 'bg-red-100 text-red-700' :
+                    'bg-amber-100 text-amber-700'
+                  }`}>
+                    {job.approvalStatus === 'pending-approval' ? 'Pending approval' : job.approvalStatus}
+                  </span>
+                )}
+              </div>
             </div>
             <div className="flex items-center gap-2 shrink-0 mt-0.5">
               <button
@@ -369,12 +444,12 @@ export default function AdminJobsPage() {
               >
                 Payments
               </button>
-              <button
-                onClick={() => setModal({ job })}
+              <Link
+                href={`/admin/jobs/${job.slug}`}
                 className="px-3 py-1.5 border border-input font-text text-xs text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-colors duration-100"
               >
                 Edit
-              </button>
+              </Link>
               <button
                 onClick={() => setDeleteTarget(job)}
                 className="px-3 py-1.5 border border-red-200 font-text text-xs text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600 transition-colors duration-100"
@@ -398,13 +473,13 @@ export default function AdminJobsPage() {
         </Modal>
       )}
 
-      {modal !== null && (modal === 'create' || 'job' in modal) && (
+      {modal === 'create' && (
         <Modal
-          title={modal === 'create' ? 'New job' : 'Edit job'}
+          title="New job"
           onClose={() => setModal(null)}
         >
           <JobForm
-            initial={modal === 'create' ? {} : (modal as { job: Job }).job}
+            initial={{}}
             onSave={handleSave}
             onCancel={() => setModal(null)}
           />

@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -7,6 +7,7 @@ import ClientAvatar from '@/components/dashboard/ClientAvatar'
 import { getJobProgress } from '@/lib/jobs'
 import { useJobs } from '@/lib/jobs'
 import { useCurrentUser } from '@/lib/user'
+import { Button } from '@/components/ui/button'
 
 const statusStyles = {
   Scoping: 'bg-amber-100 text-amber-700 border-amber-200',
@@ -34,48 +35,45 @@ export default function JobsPage() {
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1240px] mx-auto">
       {/* Header & Controls */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-        <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 mb-12">
+        {/* Title row — aligned with New job button */}
+        <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-foreground leading-none">My Jobs</h1>
             <span className="px-2 py-0.5 rounded-full bg-muted text-muted-foreground/70 font-mono text-[10px] uppercase tracking-wider">
               {clientJobs.length} total
             </span>
           </div>
-          
-          <div className="flex items-center gap-4">
-            {/* Filter Toggle */}
-            <div className="inline-flex p-1 bg-muted rounded-lg w-fit">
-              <button
-                onClick={() => setFilter('all')}
-                className={`px-4 py-1.5 rounded-md font-text text-xs font-semibold transition-all ${
-                  filter === 'all' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground/70 hover:text-foreground'
-                }`}
-              >
-                All
-              </button>
-              <button
-                onClick={() => setFilter('active')}
-                className={`px-4 py-1.5 rounded-md font-text text-xs font-semibold transition-all flex items-center gap-2 ${
-                  filter === 'active' ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground/70 hover:text-foreground'
-                }`}
-              >
-                Active
-                {clientJobs.filter(j => j.status === 'Active').length > 0 && (
-                  <span className={`w-1.5 h-1.5 rounded-full ${filter === 'active' ? 'bg-primary' : 'bg-input'}`} />
-                )}
-              </button>
-            </div>
-
-          </div>
+          <Link
+            href="/client/dashboard/jobs/new"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-text text-xs font-bold shadow-sm hover:bg-primary/90 transition-all flex items-center gap-2"
+          >
+            <Plus size={14} /> New job
+          </Link>
         </div>
 
-        <Link 
-          href="/client/dashboard/jobs/new"
-          className="font-text text-sm font-semibold px-6 py-3 rounded-full bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-all duration-200 flex items-center gap-2 w-fit"
-        >
-          <Plus size={18} /> New job
-        </Link>
+        {/* Filters row */}
+        <div className="inline-flex p-1 bg-muted rounded-lg w-fit">
+          <button
+            onClick={() => setFilter('all')}
+            className={`px-4 py-1.5 rounded-md font-text text-xs font-semibold transition-all ${
+              filter === 'all' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground/70 hover:text-foreground'
+            }`}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setFilter('active')}
+            className={`px-4 py-1.5 rounded-md font-text text-xs font-semibold transition-all flex items-center gap-2 ${
+              filter === 'active' ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground/70 hover:text-foreground'
+            }`}
+          >
+            Active
+            {clientJobs.filter(j => j.status === 'Active').length > 0 && (
+              <span className={`w-1.5 h-1.5 rounded-full ${filter === 'active' ? 'bg-primary' : 'bg-input'}`} />
+            )}
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-col gap-6 max-w-[1040px]">

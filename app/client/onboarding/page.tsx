@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -12,8 +12,10 @@ const CHALLENGE_TYPES = ['Growth & Revenue', 'Brand & Marketing', 'Product & Inn
 const BUDGETS = ['Under $20k', '$20k - $50k', '$50k - $100k', '$100k - $250k', '$250k+']
 const TIMELINES = ['Under 4 weeks', '4-8 weeks', '8-12 weeks', '3-6 months', '6+ months (retained)']
 const SOURCES = ['Referral from colleague', 'LinkedIn', 'Google search', 'Comcorpe event', 'Press / media', 'Other']
+const CHURN_RATES = ['< 1%', '1–3%', '3–7%', '7%+', "Don't know"]
+const CUSTOMER_RANGES = ['< 1,000', '1k–10k', '10k–100k', '100k–1M', '1M+', "Don't know"]
 
-const TOTAL_STEPS = 3
+const TOTAL_STEPS = 4
 
 const L = 'font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground mb-2 block'
 const I = 'w-full px-4 py-3 border border-input bg-background font-text text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-foreground transition-colors duration-100'
@@ -64,6 +66,11 @@ export default function ClientOnboardingPage() {
     timeline: '',
     source: '',
     anythingElse: '',
+    // Step 4: baseline metrics
+    perceptionScore: '',
+    churnRate: '',
+    arpu: '',
+    monthlyCustomers: '',
   })
 
   function toggle(field: 'challenges', value: string) {
@@ -83,6 +90,7 @@ export default function ClientOnboardingPage() {
     if (step === 1) return form.companyName.trim() && form.industry && form.size
     if (step === 2) return form.challenges.length > 0 && form.budget && form.timeline
     if (step === 3) return !!form.source
+    if (step === 4) return !!form.churnRate && !!form.monthlyCustomers
     return false
   }
 
@@ -102,6 +110,14 @@ export default function ClientOnboardingPage() {
         timeline: form.timeline,
         source: form.source,
         notes: form.anythingElse,
+        // Growth Surgery baseline
+        clientPhase: 1,
+        phaseLabel: 'Diagnosis & Onboarding',
+        phaseStartedAt: new Date().toISOString(),
+        baselinePerceptionScore: form.perceptionScore ? parseFloat(form.perceptionScore) : undefined,
+        baselineChurnRate: form.churnRate,
+        baselineArpu: form.arpu ? parseFloat(form.arpu) : undefined,
+        baselineMonthlyCustomers: form.monthlyCustomers,
       })
     }
     router.push('/client/dashboard')
@@ -111,7 +127,7 @@ export default function ClientOnboardingPage() {
     <div className="min-h-screen bg-background flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-[520px]">
         <div className="flex justify-center mb-12">
-          <Image src="/images/comcorpe.png" alt="Comcorpáµ‰" width={140} height={36} className="h-8 w-auto object-contain" priority />
+          <Image src="/images/comcorpe.png" alt="Comcorpe" width={140} height={36} className="h-8 w-auto object-contain" priority />
         </div>
 
         <StepIndicator current={step} total={TOTAL_STEPS} />
@@ -205,6 +221,59 @@ export default function ClientOnboardingPage() {
                 onChange={e => set('anythingElse', e.target.value)}
               />
             </div>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="space-y-6">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-eyebrow text-primary mb-2">Step 4</p>
+              <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-foreground leading-tight">Set your starting line</h1>
+              <p className="font-text text-sm text-muted-foreground mt-2">
+                We use these baselines to measure the real impact of the growth surgery. Estimates are fine.
+              </p>
+            </div>
+
+            <div>
+              <label className={L}>Current brand / perception score (NPS or 1–10)</label>
+              <input
+                className={I}
+                type="number"
+                placeholder="e.g. 42 (NPS) or 6.5 (out of 10)"
+                value={form.perceptionScore}
+                onChange={e => set('perceptionScore', e.target.value)}
+              />
+              <p className="font-text text-[11px] text-muted-foreground/60 mt-1.5">Optional — leave blank if you don&apos;t have a score yet.</p>
+            </div>
+
+            <div>
+              <label className={L}>Approximate monthly churn rate</label>
+              <div className="flex flex-wrap gap-2">
+                {CHURN_RATES.map(c => (
+                  <OptionPill key={c} label={c} selected={form.churnRate === c} onClick={() => set('churnRate', c)} />
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className={L}>Average revenue per user / customer (optional)</label>
+              <input
+                className={I}
+                placeholder="e.g. ₦4,500 / month or $12 / year"
+                value={form.arpu}
+                onChange={e => set('arpu', e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className={L}>Monthly active customers</label>
+              <div className="flex flex-wrap gap-2">
+                {CUSTOMER_RANGES.map(r => (
+                  <OptionPill key={r} label={r} selected={form.monthlyCustomers === r} onClick={() => set('monthlyCustomers', r)} />
+                ))}
+              </div>
+            </div>
+
             <div className="p-5 bg-foreground text-background rounded-xl">
               <p className="font-mono text-[9px] uppercase tracking-eyebrow opacity-40 mb-2">What happens next</p>
               <p className="font-text text-sm leading-relaxed opacity-80">Your Comcorpe partner will review your profile and reach out within 24 hours to discuss the right pod match for your challenge.</p>
