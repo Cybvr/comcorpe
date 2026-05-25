@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "comcorpe",
-      "runtimeExecutable": "npm.cmd",
+      "runtimeExecutable": "C:\\Users\\JidePinheiro\\AppData\\Roaming\\fnm\\node-versions\\v22.22.3\\installation\\npm.cmd",
       "runtimeArgs": ["run", "dev"],
       "port": 3000,
       "autoPort": true

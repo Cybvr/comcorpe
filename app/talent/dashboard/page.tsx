@@ -13,12 +13,92 @@ import {
   Zap,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import type { User } from '@/lib/user'
 import JobCard from '@/components/dashboard/JobCard'
 import GrowthCommunity from '@/components/dashboard/GrowthCommunity'
 import { useJobs } from '@/lib/jobs'
 import { referral } from '@/lib/referrals'
 import { resolveClientUser, useCurrentUser, useUsers } from '@/lib/user'
 import TalentDashboardLoading from './loading'
+
+function TalentProfileCard({ user }: { user: User }) {
+  const fields = [user.talentRole, user.desc, user.rate, user.availability, user.location, user.image, user.yearsExp, user.linkedinUrl]
+  const pct = Math.round((fields.filter(Boolean).length / fields.length) * 100)
+
+  return (
+    <div className="border border-border rounded-xl overflow-hidden bg-background">
+      {/* Avatar + name */}
+      <div className="flex flex-col items-center text-center px-5 pt-6 pb-5 border-b border-border">
+        <div className="w-16 h-16 bg-foreground shrink-0 overflow-hidden relative mb-3">
+          {user.image
+            ? <Image src={user.image} alt={user.name} fill className="object-cover" />
+            : <div className="w-full h-full flex items-center justify-center font-display font-black text-[22px] text-background">{user.initials}</div>
+          }
+        </div>
+        <Link href="/talent/dashboard/settings" className="font-display font-black text-[17px] tracking-[-0.02em] text-foreground hover:text-primary underline underline-offset-2 leading-tight">
+          {user.name}
+        </Link>
+        {user.talentRole && (
+          <p className="font-text text-sm text-muted-foreground mt-0.5 line-clamp-1">{user.talentRole}</p>
+        )}
+      </div>
+
+      {/* Profile completeness */}
+      <div className="px-5 py-4 border-b border-border bg-muted/40">
+        <div className="flex items-center justify-between mb-2">
+          <span className="font-text text-sm font-semibold text-foreground">Profile Completeness</span>
+          <span className="font-mono text-xs text-muted-foreground">{pct}%</span>
+        </div>
+        <div className="h-1.5 w-full bg-border rounded-full overflow-hidden">
+          <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+        </div>
+        {pct < 100 && (
+          <Link href="/talent/dashboard/settings" className="font-text text-xs text-primary mt-2 inline-block hover:underline">
+            Complete your profile →
+          </Link>
+        )}
+      </div>
+
+      {/* Stat rows */}
+      <div className="divide-y divide-border">
+        {[
+          { label: 'Availability', value: user.availability },
+          { label: 'Rate', value: user.rate },
+          { label: 'Location', value: user.location },
+        ].map(({ label, value }) => (
+          <div key={label} className="flex items-center justify-between px-5 py-3">
+            <div>
+              <p className="font-text text-sm font-medium text-foreground">{label}</p>
+              <p className="font-text text-sm text-muted-foreground mt-0.5">
+                {value || <span className="italic opacity-50">Not set</span>}
+              </p>
+            </div>
+            <Link href="/talent/dashboard/settings" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Pencil size={14} />
+            </Link>
+          </div>
+        ))}
+      </div>
+
+      {/* Disciplines */}
+      {user.disciplines && user.disciplines.length > 0 && (
+        <div className="px-5 py-4 border-t border-border">
+          <div className="flex items-center justify-between mb-3">
+            <p className="font-text text-sm font-semibold text-foreground">My Categories</p>
+            <Link href="/talent/dashboard/settings" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Pencil size={14} />
+            </Link>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            {user.disciplines.map(d => (
+              <span key={d} className="font-text text-sm text-primary">{d}</span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 type HomeAction = {
   icon: LucideIcon
@@ -63,7 +143,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="px-6 py-6 lg:px-8 lg:py-8 max-w-[1200px] mx-auto">
+    <div className="px-4 py-6 lg:px-8 lg:py-8 max-w-[1200px] mx-auto">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
         <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-foreground leading-none">
           Hi, {currentUser.name}!
@@ -108,6 +188,11 @@ export default function DashboardPage() {
         </div>
       </section>
 
+      {/* Mobile-only profile card — shown between welcome and job matches */}
+      <div className="xl:hidden mb-6">
+        <TalentProfileCard user={currentUser} />
+      </div>
+
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-8">
         <div className="flex flex-col gap-8">
           <section>
@@ -146,98 +231,8 @@ export default function DashboardPage() {
           </section>
         </div>
 
-        <div className="flex flex-col gap-4">
-          {/* Profile card */}
-          <div className="border border-border rounded-xl overflow-hidden bg-background">
-
-            {/* Avatar + name */}
-            <div className="flex flex-col items-center text-center px-5 pt-6 pb-5 border-b border-border">
-              <div className="w-16 h-16 bg-foreground shrink-0 overflow-hidden relative mb-3">
-                {currentUser.image
-                  ? <Image src={currentUser.image} alt={currentUser.name} fill className="object-cover" />
-                  : <div className="w-full h-full flex items-center justify-center font-display font-black text-[22px] text-background">{currentUser.initials}</div>
-                }
-              </div>
-              <Link href="/talent/dashboard/settings" className="font-display font-black text-[17px] tracking-[-0.02em] text-foreground hover:text-primary underline underline-offset-2 leading-tight">
-                {currentUser.name}
-              </Link>
-              {currentUser.talentRole && (
-                <p className="font-text text-sm text-muted-foreground mt-0.5 line-clamp-1">{currentUser.talentRole}</p>
-              )}
-            </div>
-
-            {/* Profile completeness */}
-            {(() => {
-              const fields = [currentUser.talentRole, currentUser.desc, currentUser.rate, currentUser.availability, currentUser.location, currentUser.image, currentUser.yearsExp, currentUser.linkedinUrl]
-              const filled = fields.filter(Boolean).length
-              const pct = Math.round((filled / fields.length) * 100)
-              return (
-                <div className="px-5 py-4 border-b border-border bg-muted/40">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-text text-sm font-semibold text-foreground">Profile Completeness</span>
-                    <span className="font-mono text-xs text-muted-foreground">{pct}%</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-border rounded-full overflow-hidden">
-                    <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
-                  </div>
-                  {pct < 100 && (
-                    <Link href="/talent/dashboard/settings" className="font-text text-xs text-primary mt-2 inline-block hover:underline">
-                      Complete your profile →
-                    </Link>
-                  )}
-                </div>
-              )
-            })()}
-
-            {/* Stat rows */}
-            <div className="divide-y divide-border">
-              <div className="flex items-center justify-between px-5 py-3">
-                <div>
-                  <p className="font-text text-sm font-medium text-foreground">Availability</p>
-                  <p className="font-text text-sm text-muted-foreground mt-0.5">{currentUser.availability || <span className="italic opacity-50">Not set</span>}</p>
-                </div>
-                <Link href="/talent/dashboard/settings" className="text-muted-foreground hover:text-foreground transition-colors">
-                  <Pencil size={14} />
-                </Link>
-              </div>
-              <div className="flex items-center justify-between px-5 py-3">
-                <div>
-                  <p className="font-text text-sm font-medium text-foreground">Rate</p>
-                  <p className="font-text text-sm text-muted-foreground mt-0.5">{currentUser.rate || <span className="italic opacity-50">Not set</span>}</p>
-                </div>
-                <Link href="/talent/dashboard/settings" className="text-muted-foreground hover:text-foreground transition-colors">
-                  <Pencil size={14} />
-                </Link>
-              </div>
-              <div className="flex items-center justify-between px-5 py-3">
-                <div>
-                  <p className="font-text text-sm font-medium text-foreground">Location</p>
-                  <p className="font-text text-sm text-muted-foreground mt-0.5">{currentUser.location || <span className="italic opacity-50">Not set</span>}</p>
-                </div>
-                <Link href="/talent/dashboard/settings" className="text-muted-foreground hover:text-foreground transition-colors">
-                  <Pencil size={14} />
-                </Link>
-              </div>
-            </div>
-
-            {/* Disciplines */}
-            {currentUser.disciplines && currentUser.disciplines.length > 0 && (
-              <div className="px-5 py-4 border-t border-border">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="font-text text-sm font-semibold text-foreground">My Categories</p>
-                  <Link href="/talent/dashboard/settings" className="text-muted-foreground hover:text-foreground transition-colors">
-                    <Pencil size={14} />
-                  </Link>
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  {currentUser.disciplines.map(d => (
-                    <span key={d} className="font-text text-sm text-primary">{d}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
+        <div className="hidden xl:flex flex-col gap-4">
+          <TalentProfileCard user={currentUser} />
           <GrowthCommunity audience="talent" />
         </div>
       </div>

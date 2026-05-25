@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { CreditCard, Settings, User } from 'lucide-react'
+import { CreditCard, FileText, Settings, User } from 'lucide-react'
 import type React from 'react'
 
 const settingsItems = [
   { label: 'General', href: '/talent/dashboard/settings', icon: Settings },
   { label: 'Profile', href: '/talent/dashboard/settings/profile', icon: User },
   { label: 'Payments', href: '/talent/dashboard/settings/payments', icon: CreditCard },
+  { label: 'Invoices', href: '/talent/dashboard/settings/invoices', icon: FileText },
 ]
 
 function isActive(pathname: string, href: string) {

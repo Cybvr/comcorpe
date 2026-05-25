@@ -1,140 +1,167 @@
 'use client'
 
-import Link from 'next/link'
 import { useState } from 'react'
-import { Search } from 'lucide-react'
-import { useCurrentUser, getClientUser } from '@/lib/user'
-import { payouts, ccreditsBalance, type PayoutStatus } from '@/lib/payouts'
-import { useJobs } from '@/lib/jobs'
-import { getPodBySlug } from '@/lib/pods'
+import { Building2, CreditCard, Lock } from 'lucide-react'
 
-const statusStyles: Record<PayoutStatus, string> = {
-  Cleared: 'bg-green-50 text-green-700 border-green-200',
-  Pending: 'bg-amber-50 text-amber-700 border-amber-200',
-  Processing: 'bg-primary/10 text-primary border-primary/20',
-}
+type PayoutMethod = 'bank' | 'paypal'
 
 export default function TalentSettingsPaymentsPage() {
-  const { user: currentUser } = useCurrentUser()
-  const { jobs } = useJobs()
-  const [payoutSearch, setPayoutSearch] = useState('')
+  const [method, setMethod] = useState<PayoutMethod>('bank')
+  const [saved, setSaved] = useState(false)
 
-  if (!currentUser) {
-    return <p className="font-text text-sm text-muted-foreground">Loading...</p>
+  function handleSave(e: React.FormEvent) {
+    e.preventDefault()
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2500)
   }
-
-  const pendingTotal = payouts.filter((p) => p.status === 'Pending' || p.status === 'Processing').reduce((a, p) => a + p.amountRaw, 0)
-  const clearedTotal = payouts.filter((p) => p.status === 'Cleared').reduce((a, p) => a + p.amountRaw, 0)
-  const nextPayout = payouts.filter((p) => p.status === 'Pending').sort((a, b) => a.id - b.id)[0]
-  const filteredPayouts = payouts.filter((p) =>
-    p.label.toLowerCase().includes(payoutSearch.toLowerCase()) ||
-    getClientUser(p.clientId).name.toLowerCase().includes(payoutSearch.toLowerCase()) ||
-    p.status.toLowerCase().includes(payoutSearch.toLowerCase())
-  )
 
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-foreground text-background rounded-2xl p-6">
-          <p className="font-mono text-[10px] uppercase tracking-eyebrow text-background/40 mb-3">CCredits</p>
-          <p className="font-display font-black text-[48px] tracking-[-0.03em] leading-none">{ccreditsBalance}</p>
-          <p className="font-text text-sm text-background/50 mt-4">Apply to priority briefs</p>
+      <div>
+        <p className="font-mono text-xs uppercase tracking-eyebrow text-primary mb-2">Payments</p>
+        <h2 className="font-display font-black text-[28px] tracking-[-0.03em] text-foreground leading-tight">
+          Payout details
+        </h2>
+        <p className="font-text text-sm text-muted-foreground mt-1">
+          Where we send your earnings when a milestone clears.
+        </p>
+      </div>
+
+      {/* Method toggle */}
+      <div className="border border-border rounded-2xl bg-background p-6 space-y-6">
+        <div>
+          <p className="font-text text-sm font-semibold text-foreground mb-3">Payout method</p>
+          <div className="grid grid-cols-2 gap-3 max-w-sm">
+            <button
+              type="button"
+              onClick={() => setMethod('bank')}
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border font-text text-sm font-semibold transition-colors ${
+                method === 'bank'
+                  ? 'bg-foreground text-background border-foreground'
+                  : 'bg-background text-muted-foreground border-border hover:border-foreground/30 hover:text-foreground'
+              }`}
+            >
+              <Building2 size={15} strokeWidth={1.7} />
+              Bank transfer
+            </button>
+            <button
+              type="button"
+              onClick={() => setMethod('paypal')}
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border font-text text-sm font-semibold transition-colors ${
+                method === 'paypal'
+                  ? 'bg-foreground text-background border-foreground'
+                  : 'bg-background text-muted-foreground border-border hover:border-foreground/30 hover:text-foreground'
+              }`}
+            >
+              <CreditCard size={15} strokeWidth={1.7} />
+              PayPal
+            </button>
+          </div>
         </div>
-        <div className="border border-border rounded-2xl p-6 bg-background">
-          <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-3">Pending</p>
-          <p className="font-display font-black text-[36px] tracking-[-0.03em] text-foreground leading-none">${pendingTotal.toLocaleString()}</p>
-          <p className="font-text text-sm text-muted-foreground mt-4">{payouts.filter((p) => p.status === 'Pending' || p.status === 'Processing').length} in flight</p>
-        </div>
-        <div className="border border-border rounded-2xl p-6 bg-background">
-          <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-3">Cleared</p>
-          <p className="font-display font-black text-[36px] tracking-[-0.03em] text-foreground leading-none">${clearedTotal.toLocaleString()}</p>
-          <p className="font-text text-sm text-muted-foreground mt-4">{payouts.filter((p) => p.status === 'Cleared').length} payouts received</p>
-        </div>
-        <div className={`border rounded-2xl p-6 bg-background ${nextPayout ? 'border-amber-200' : 'border-border'}`}>
-          <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 mb-3">Next payout</p>
-          {nextPayout ? (
+
+        <form onSubmit={handleSave} className="space-y-5">
+          {method === 'bank' ? (
             <>
-              <p className="font-display font-black text-[36px] tracking-[-0.03em] text-foreground leading-none">{nextPayout.amount}</p>
-              <p className="font-text text-sm text-amber-600 mt-4">{nextPayout.date} · {getClientUser(nextPayout.clientId).name}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="font-text text-xs font-semibold text-foreground uppercase tracking-eyebrow mb-1.5 block">
+                    Account holder name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Full legal name"
+                    className="w-full px-4 py-2.5 bg-background border border-border rounded-xl font-text text-sm focus:outline-none focus:border-primary/40 transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="font-text text-xs font-semibold text-foreground uppercase tracking-eyebrow mb-1.5 block">
+                    Bank name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Chase, Barclays"
+                    className="w-full px-4 py-2.5 bg-background border border-border rounded-xl font-text text-sm focus:outline-none focus:border-primary/40 transition-colors"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="font-text text-xs font-semibold text-foreground uppercase tracking-eyebrow mb-1.5 block">
+                    Account number
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="••••••••"
+                    className="w-full px-4 py-2.5 bg-background border border-border rounded-xl font-text text-sm font-mono focus:outline-none focus:border-primary/40 transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="font-text text-xs font-semibold text-foreground uppercase tracking-eyebrow mb-1.5 block">
+                    Sort code / routing number
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 04-00-04"
+                    className="w-full px-4 py-2.5 bg-background border border-border rounded-xl font-text text-sm font-mono focus:outline-none focus:border-primary/40 transition-colors"
+                  />
+                </div>
+              </div>
+              <div className="max-w-xs">
+                <label className="font-text text-xs font-semibold text-foreground uppercase tracking-eyebrow mb-1.5 block">
+                  Currency
+                </label>
+                <select className="w-full px-4 py-2.5 bg-background border border-border rounded-xl font-text text-sm focus:outline-none focus:border-primary/40 transition-colors appearance-none">
+                  <option value="USD">USD — US Dollar</option>
+                  <option value="GBP">GBP — British Pound</option>
+                  <option value="EUR">EUR — Euro</option>
+                  <option value="CAD">CAD — Canadian Dollar</option>
+                  <option value="AUD">AUD — Australian Dollar</option>
+                </select>
+              </div>
             </>
           ) : (
-            <p className="font-display font-black text-[28px] tracking-[-0.03em] text-muted-foreground/70 leading-none">Nothing due</p>
+            <div className="max-w-sm">
+              <label className="font-text text-xs font-semibold text-foreground uppercase tracking-eyebrow mb-1.5 block">
+                PayPal email address
+              </label>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                className="w-full px-4 py-2.5 bg-background border border-border rounded-xl font-text text-sm focus:outline-none focus:border-primary/40 transition-colors"
+              />
+            </div>
           )}
-        </div>
+
+          <div className="flex items-center justify-between pt-2 border-t border-border">
+            <div className="flex items-center gap-2 text-muted-foreground/70">
+              <Lock size={13} strokeWidth={1.7} />
+              <p className="font-text text-xs">Details are encrypted and stored securely.</p>
+            </div>
+            <button
+              type="submit"
+              className="px-5 py-2.5 bg-foreground text-background rounded-xl font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
+            >
+              {saved ? 'Saved!' : 'Save details'}
+            </button>
+          </div>
+        </form>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
-        <div className="relative max-w-sm flex-1">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/70" />
-          <input
-            type="text"
-            placeholder="Filter payouts..."
-            value={payoutSearch}
-            onChange={(e) => setPayoutSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 bg-background border border-border rounded-xl font-text text-sm focus:outline-none focus:border-primary/40 transition-colors"
-          />
-        </div>
-        <button className="px-4 py-2.5 border border-border rounded-xl font-text text-sm font-semibold hover:bg-muted transition-colors">
-          Export CSV
-        </button>
-      </div>
-
-      <div className="border border-border rounded-2xl overflow-hidden bg-background">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b border-border bg-muted/50">
-              <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Status</th>
-              <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Milestone</th>
-              <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Client</th>
-              <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Pod</th>
-              <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 text-right">Amount</th>
-              <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Date</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {filteredPayouts.map((payout) => {
-              const job = jobs.find((item) => item.slug === payout.jobSlug)
-              const pod = job?.podSlug ? getPodBySlug(job.podSlug) : null
-              return (
-                <tr key={payout.id} className="hover:bg-muted/30 transition-colors">
-                  <td className="px-5 py-4">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border ${statusStyles[payout.status]}`}>
-                      {payout.status}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4 max-w-[260px]">
-                    <p className="font-text text-sm font-semibold text-foreground leading-tight truncate">{payout.label}</p>
-                  </td>
-                  <td className="px-5 py-4">
-                    {job ? (
-                      <Link href={`/talent/dashboard/jobs/${job.slug}`} className="font-text text-sm text-primary hover:underline">
-                        {getClientUser(payout.clientId).name}
-                      </Link>
-                    ) : (
-                      <span className="font-text text-sm text-muted-foreground">{getClientUser(payout.clientId).name}</span>
-                    )}
-                  </td>
-                  <td className="px-5 py-4">
-                    {pod ? (
-                      <Link href={`/talent/dashboard/search/${pod.slug}`} className="font-text text-sm text-primary hover:underline">
-                        {pod.name}
-                      </Link>
-                    ) : <span className="font-text text-sm text-muted-foreground/70">–</span>}
-                  </td>
-                  <td className="px-5 py-4 text-right">
-                    <span className="font-mono text-sm font-bold text-foreground">{payout.amount}</span>
-                  </td>
-                  <td className="px-5 py-4">
-                    <span className="font-text text-xs text-muted-foreground">{payout.date}</span>
-                  </td>
-                </tr>
-              )
-            })}
-            {filteredPayouts.length === 0 && (
-              <tr><td colSpan={6} className="px-5 py-12 text-center font-text text-sm text-muted-foreground/70">No payouts match your search.</td></tr>
-            )}
-          </tbody>
-        </table>
+      {/* Payout schedule info */}
+      <div className="border border-border rounded-2xl bg-muted/30 p-6 space-y-3">
+        <p className="font-text text-sm font-semibold text-foreground">How payouts work</p>
+        <ul className="space-y-2">
+          {[
+            "Payouts are triggered when a client approves a milestone.",
+            "Funds clear within 3-5 business days depending on your bank.",
+            "You'll receive an email confirmation when each payout is sent.",
+          ].map((line) => (
+            <li key={line} className="flex items-start gap-2">
+              <span className="mt-1.5 w-1 h-1 rounded-full bg-primary shrink-0" />
+              <p className="font-text text-sm text-muted-foreground">{line}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   )

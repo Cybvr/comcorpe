@@ -138,7 +138,7 @@ export default function TalentJobsBoard({
   const hasActiveFilters = search || typeFilter !== 'All' || locationFilter !== 'All' || tagFilter !== 'All'
 
   return (
-    <div className="px-8 py-8 max-w-[1240px] mx-auto">
+    <div className="px-4 py-6 lg:px-8 lg:py-8 max-w-[1240px] mx-auto">
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-foreground leading-none">{title}</h1>
@@ -224,21 +224,22 @@ export default function TalentJobsBoard({
               <Link
                 key={job.id}
                 href={`${baseHref}/${job.slug}`}
-                className="group border border-border rounded-2xl p-6 bg-background hover:border-input hover:shadow-xl transition-all flex items-center gap-6"
+                className="group border border-border rounded-2xl p-3 sm:p-6 bg-background hover:border-input hover:shadow-xl transition-all"
               >
-                <div className="flex flex-1 min-w-0 items-start gap-4">
-                  <ClientAvatar client={client} sizeClass="w-12 h-12" iconSize={20} />
+                {/* Header row: avatar + meta + arrow */}
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <ClientAvatar client={client} sizeClass="w-10 h-10 sm:w-11 sm:h-11" iconSize={18} />
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm ${statusStyles[job.status]}`}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`font-mono text-[9px] uppercase tracking-eyebrow px-2 py-0.5 border rounded-sm shrink-0 ${statusStyles[job.status]}`}>
                         {job.status}
                       </span>
                       <span className="font-display font-black text-[10px] text-muted-foreground/70 uppercase tracking-widest truncate">{client.name}</span>
                     </div>
-                    <h2 className="font-display font-black text-[18px] tracking-[-0.02em] text-foreground group-hover:text-primary transition-colors leading-tight truncate">
+                    <h2 className="font-display font-black text-[16px] sm:text-[18px] tracking-[-0.02em] text-foreground group-hover:text-primary transition-colors leading-tight mb-2">
                       {job.title}
                     </h2>
-                    <div className="flex flex-wrap gap-1.5 mt-2">
+                    <div className="flex flex-wrap gap-1.5">
                       {job.tags.slice(0, 3).map((tag) => (
                         <span key={tag} className="font-mono text-[9px] uppercase tracking-eyebrow text-muted-foreground/70 px-2 py-0.5 border border-muted rounded-sm bg-muted/30">
                           {tag}
@@ -246,18 +247,25 @@ export default function TalentJobsBoard({
                       ))}
                     </div>
                   </div>
-                </div>
-
-                <div className="shrink-0 text-right">
-                  <div className="font-display font-black text-[16px] text-foreground leading-none mb-1">{job.rate}</div>
-                  <div className="flex items-center gap-3 justify-end text-[11px] text-muted-foreground/70">
-                    <span className="flex items-center gap-1"><Clock size={11} strokeWidth={1.5} /> {job.time}</span>
-                    <span className="flex items-center gap-1"><MapPin size={11} strokeWidth={1.5} /> {job.location}</span>
+                  {/* Desktop rate column */}
+                  <div className="shrink-0 text-right hidden sm:block">
+                    <div className="font-display font-black text-[16px] text-foreground leading-none mb-1">{job.rate}</div>
+                    <div className="flex items-center gap-3 justify-end text-[11px] text-muted-foreground/70">
+                      <span className="flex items-center gap-1"><Clock size={11} strokeWidth={1.5} /> {job.time}</span>
+                      <span className="flex items-center gap-1"><MapPin size={11} strokeWidth={1.5} /> {job.location}</span>
+                    </div>
+                    <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground/50 mt-1.5">{dateLabel}</div>
                   </div>
-                  <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground/50 mt-1.5">{dateLabel}</div>
+                  <ArrowUpRight size={16} className="text-input group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
                 </div>
 
-                <ArrowUpRight size={16} className="text-input group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
+                {/* Mobile-only rate/meta row */}
+                <div className="flex items-center gap-3 mt-3 pt-3 border-t border-border/50 sm:hidden">
+                  <span className="font-display font-black text-[14px] text-foreground">{job.rate}</span>
+                  <span className="flex items-center gap-1 text-[10px] text-muted-foreground/70"><Clock size={10} strokeWidth={1.5} /> {job.time}</span>
+                  <span className="flex items-center gap-1 text-[10px] text-muted-foreground/70"><MapPin size={10} strokeWidth={1.5} /> {job.location}</span>
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground/50 ml-auto">{dateLabel}</span>
+                </div>
               </Link>
             )
           })}

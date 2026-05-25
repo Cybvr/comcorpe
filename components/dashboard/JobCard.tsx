@@ -21,7 +21,7 @@ export default function JobCard({
 }) {
   return (
     <Link href={`${baseHref}/${job.slug}`} className="block border border-border rounded-xl p-3.5 hover:border-input hover:shadow-sm transition-all duration-150 bg-background group cursor-pointer">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-2 sm:gap-4">
         <div className="flex items-start gap-3 flex-1 min-w-0">
           <ClientAvatar client={client} sizeClass="w-8 h-8" iconSize={14} roundedClass="rounded-lg" />
           <div className="flex-1 min-w-0">
@@ -37,13 +37,13 @@ export default function JobCard({
           </div>
         </div>
 
-        <div className="text-right shrink-0">
+        <div className="text-right shrink-0 max-w-[90px]">
           <div className="font-display font-black text-[14px] tracking-[-0.02em] text-foreground">{job.rate}</div>
           <div className="flex items-center gap-1 text-muted-foreground/70 text-[10px] mt-1 justify-end">
-            <MapPin size={9} /> {job.location}
+            <MapPin size={9} className="shrink-0" /> <span className="truncate">{job.location}</span>
           </div>
           <div className="flex items-center gap-1 text-muted-foreground/70 text-[10px] mt-0.5 justify-end">
-            <Clock size={9} /> {job.time}
+            <Clock size={9} className="shrink-0" /> {job.time}
           </div>
         </div>
       </div>
