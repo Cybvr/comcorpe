@@ -9,9 +9,27 @@ export const metadata: Metadata = {
 
 export default function Home() {
   const sections = [
-    { label: 'Provocation', title: 'Rewiring growth systems', href: '/provocation', description: 'Growth is the most mismanaged function in emerging markets. We treat growth as architecture, not effort.' },
-    { label: 'Model', title: 'Architect. Assemble. Operate.', href: '/model', description: 'We build growth engines that run by collapsing the gap between strategy and execution.' },
-    { label: 'Arenas', title: 'Concentration over coverage', href: '/arenas', description: 'Focusing on high-impact sectors across Pan-Africa: Fintech, Infrastructure, and Consumer Ecosystems.' },
+    {
+      label: 'Provocation',
+      title: 'Rewiring growth systems',
+      href: '/provocation',
+      description: 'Growth is the most mismanaged function in emerging markets. We treat growth as architecture, not effort.',
+      image: '/images/site/Koi Fish _ Flow 1.png',
+    },
+    {
+      label: 'Model',
+      title: 'Architect. Assemble. Operate.',
+      href: '/model',
+      description: 'We build growth engines that run by collapsing the gap between strategy and execution.',
+      image: '/images/site/Moth Wings _ Patterned Systems 1.png',
+    },
+    {
+      label: 'Arenas',
+      title: 'Concentration over coverage',
+      href: '/arenas',
+      description: 'Focusing on high-impact sectors across Pan-Africa: Fintech, Infrastructure, and Consumer Ecosystems.',
+      image: '/images/site/Protea Bloom _ Emergence 1.png',
+    },
   ]
 
   const tickerWords = [
@@ -63,7 +81,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* High-level navigation section */}
+      {/* Foundation cards */}
       <section className="py-24 md:py-40 px-6 md:px-24 bg-background">
         <div className="flex items-baseline gap-6 mb-20">
           <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-foreground inline-flex items-center gap-2.5">
@@ -77,21 +95,45 @@ export default function Home() {
             <Link
               key={s.label}
               href={s.href}
-              className="group p-8 md:p-12 bg-background hover:bg-primary/[0.03] transition-all duration-300 flex flex-col min-h-[320px]"
+              className="group bg-background hover:bg-primary/[0.03] transition-all duration-300 flex flex-col overflow-hidden"
             >
-              <div className="font-mono text-xs text-muted-foreground/70 uppercase tracking-widest mb-8">{s.label}</div>
-              <h2 className="font-display font-black text-[32px] md:text-[42px] leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors duration-300 mb-6">
-                {s.title}
-              </h2>
-              <p className="font-text text-[16px] leading-relaxed text-muted-foreground m-0 mb-auto">
-                {s.description}
-              </p>
-              <div className="mt-12 font-mono text-xs text-primary flex items-center gap-2 group-hover:gap-4 transition-all duration-300">
-                Explore section <span>→</span>
+              <div className="relative aspect-[16/10] overflow-hidden border-b border-foreground">
+                <Image
+                  src={s.image}
+                  alt=""
+                  fill
+                  className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                />
+              </div>
+              <div className="p-8 md:p-12 flex flex-col flex-1">
+                <div className="font-mono text-xs text-muted-foreground/70 uppercase tracking-widest mb-8">{s.label}</div>
+                <h2 className="font-display font-black text-[32px] md:text-[42px] leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors duration-300 mb-6">
+                  {s.title}
+                </h2>
+                <p className="font-text text-[16px] leading-relaxed text-muted-foreground m-0 mb-auto">
+                  {s.description}
+                </p>
+                <div className="mt-12 font-mono text-xs text-primary flex items-center gap-2 group-hover:gap-4 transition-all duration-300">
+                  Explore section <span>→</span>
+                </div>
               </div>
             </Link>
           ))}
         </div>
+      </section>
+
+      {/* Editorial image strip */}
+      <section className="border-t border-foreground grid grid-cols-2 md:grid-cols-4 gap-px bg-foreground overflow-hidden">
+        {[
+          '/images/site/Architectural Lattice _ Motion Study 1.png',
+          '/images/site/Woman in Profile _ Vision 1.png',
+          '/images/site/Panther Prowl _ Concentration 1.png',
+          '/images/site/Coiled Serpent _ Strategy 1.png',
+        ].map((src, i) => (
+          <div key={i} className="relative aspect-square overflow-hidden bg-background">
+            <Image src={src} alt="" fill className="object-cover grayscale hover:grayscale-0 transition-all duration-700" />
+          </div>
+        ))}
       </section>
 
       <Closing />

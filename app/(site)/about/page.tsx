@@ -209,6 +209,102 @@ export default function AboutPage() {
           )}
         </div>
 
+        {/* Provocation */}
+        <div className="border-t border-foreground mt-20 md:mt-28 pt-20 md:pt-28">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-center">
+            <div>
+              <div className="font-mono text-xs text-muted-foreground uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
+                <span className="w-6 h-px bg-muted-foreground inline-block" />
+                The Provocation
+              </div>
+              <h2 className="font-display font-black text-[clamp(36px,4.5vw,64px)] leading-[0.92] tracking-hero text-foreground mb-6">
+                Growth is the most mismanaged function.
+              </h2>
+              <p className="font-text text-[17px] leading-relaxed text-muted-foreground max-w-[40ch] mb-8">
+                Across emerging markets, growth is treated as effort rather than architecture. The result is reactive, fragmented, non-compounding. We are here to rewire that assumption.
+              </p>
+              <Link href="/provocation" className="font-mono text-xs text-primary inline-flex items-center gap-2 hover:gap-4 transition-all duration-200">
+                Read the provocation <span>→</span>
+              </Link>
+            </div>
+            <div className="relative aspect-[4/3] overflow-hidden border border-foreground">
+              <Image src="/images/site/Koi Fish _ Flow 1.png" alt="" fill className="object-cover grayscale" />
+            </div>
+          </div>
+        </div>
+
+        {/* Model */}
+        <div className="border-t border-foreground mt-20 md:mt-28 pt-20 md:pt-28">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-center">
+            <div className="relative aspect-[4/3] overflow-hidden border border-foreground order-2 md:order-1">
+              <Image src="/images/site/Moth Wings _ Patterned Systems 1.png" alt="" fill className="object-cover grayscale" />
+            </div>
+            <div className="order-1 md:order-2">
+              <div className="font-mono text-xs text-muted-foreground uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
+                <span className="w-6 h-px bg-muted-foreground inline-block" />
+                The Model
+              </div>
+              <h2 className="font-display font-black text-[clamp(36px,4.5vw,64px)] leading-[0.92] tracking-hero text-foreground mb-6">
+                Architect. Assemble. Operate.
+              </h2>
+              <p className="font-text text-[17px] leading-relaxed text-muted-foreground max-w-[40ch] mb-8">
+                Three pillars. One system. We design the commercial logic, configure specialist pods to the brief, and drive implementation until outcomes compound.
+              </p>
+              <Link href="/model" className="font-mono text-xs text-primary inline-flex items-center gap-2 hover:gap-4 transition-all duration-200">
+                Explore the model <span>→</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Oversight */}
+        <div className="border-t border-foreground mt-20 md:mt-28 pt-20 md:pt-28">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-center">
+            <div>
+              <div className="font-mono text-xs text-muted-foreground uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
+                <span className="w-6 h-px bg-muted-foreground inline-block" />
+                Oversight
+              </div>
+              <h2 className="font-display font-black text-[clamp(36px,4.5vw,64px)] leading-[0.92] tracking-hero text-foreground mb-6">
+                Governance that accelerates.
+              </h2>
+              <p className="font-text text-[17px] leading-relaxed text-muted-foreground max-w-[40ch] mb-8">
+                The International Board and Advisory Network provide the institutional spine — strategic counsel, geographic reach, and sector depth. Oversight is not compliance here; it is accelerant.
+              </p>
+              <Link href="/about#advisors" className="font-mono text-xs text-primary inline-flex items-center gap-2 hover:gap-4 transition-all duration-200">
+                Meet the board <span>→</span>
+              </Link>
+            </div>
+            <div className="relative aspect-[4/3] overflow-hidden border border-foreground">
+              <Image src="/images/site/Orchid Bloom _ Emergence 1.png" alt="" fill className="object-cover grayscale" />
+            </div>
+          </div>
+        </div>
+
+        {/* Why Comcorpᵉ */}
+        <div className="border-t border-foreground mt-20 md:mt-28 pt-20 md:pt-28">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-center">
+            <div className="relative aspect-[4/3] overflow-hidden border border-foreground order-2 md:order-1">
+              <Image src="/images/site/Protea Bloom _ Emergence 1.png" alt="" fill className="object-cover grayscale" />
+            </div>
+            <div className="order-1 md:order-2">
+              <div className="font-mono text-xs text-muted-foreground uppercase tracking-eyebrow mb-6 inline-flex items-center gap-2.5">
+                <span className="w-6 h-px bg-muted-foreground inline-block" />
+                Why Comcorpᵉ
+              </div>
+              <h2 className="font-display font-black text-[clamp(36px,4.5vw,64px)] leading-[0.92] tracking-hero text-foreground mb-6">
+                Designed for complexity.
+              </h2>
+              <p className="font-text text-[17px] leading-relaxed text-muted-foreground max-w-[40ch] mb-8">
+                Emerging markets don&apos;t reward standard playbooks. They reward systems that adapt, scale, and execute flawlessly under friction. Every decision we have made — structural, commercial, operational — is a response to that reality.
+              </p>
+              <Link href="/why" className="font-mono text-xs text-primary inline-flex items-center gap-2 hover:gap-4 transition-all duration-200">
+                The full case <span>→</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+
       </div>
       <div className="h-24 md:h-32" />
     </div>
