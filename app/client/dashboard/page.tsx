@@ -57,7 +57,7 @@ export default function ClientDashboardHome() {
             href="/client/dashboard/jobs/new"
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-foreground text-background rounded-full font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors shrink-0"
           >
-            New brief <ArrowUpRight size={14} />
+            New job <ArrowUpRight size={14} />
           </Link>
         </div>
       </header>
@@ -87,7 +87,7 @@ export default function ClientDashboardHome() {
       <section>
         <div className="flex items-center justify-between mb-5">
           <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-foreground">
-            Your jobs
+            My Jobs
             {companyJobs.length > 0 && (
               <span className="ml-2 font-mono text-[12px] font-bold text-muted-foreground/50 tracking-normal">
                 {companyJobs.length}
@@ -173,7 +173,7 @@ export default function ClientDashboardHome() {
               href="/client/dashboard/jobs/new"
               className="mt-5 inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-foreground text-background rounded-full font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors"
             >
-              Create new brief <ArrowUpRight size={14} />
+              Create new job <ArrowUpRight size={14} />
             </Link>
             <div className="mt-5 flex justify-center">
               <SLABadge variant="banner" className="max-w-sm" />
