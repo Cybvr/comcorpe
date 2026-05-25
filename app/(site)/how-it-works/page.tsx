@@ -4,18 +4,16 @@ import {
   ArrowRight,
   BriefcaseBusiness,
   Building2,
-  CheckCircle2,
   FileSignature,
   Lightbulb,
   Search,
   SlidersHorizontal,
-  Star,
   TrendingUp,
   Users,
 } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'How It Works — Comcorpe',
+  title: 'How It Works - Comcorpe',
   description:
     'See how Comcorpe helps teams move from a business problem to a live specialist pod with structured search, approval, onboarding, and execution.',
 }
@@ -25,143 +23,73 @@ const steps = [
     number: '01',
     title: 'Problem appears',
     body: 'A specific growth challenge surfaces inside the business and needs fast, specialist support.',
-    bullets: ['Market launch in three weeks', 'Brand strategy reset', 'Commercial research sprint'],
     icon: Lightbulb,
   },
   {
     number: '02',
     title: 'Opens marketplace',
     body: 'The manager enters the marketplace with a clear brief and the kind of outcome they need.',
-    bullets: ['Strategy', 'Growth', 'Market entry', 'Brand systems', 'Research'],
     icon: Search,
   },
   {
     number: '03',
     title: 'Searches talent',
     body: 'Talent is filtered against the real shape of the brief, not just a job title.',
-    bullets: ['Formerly at', 'Region', 'Industry', 'Budget / rate', 'Availability', 'Language'],
     icon: SlidersHorizontal,
   },
   {
     number: '04',
     title: 'Reviews profiles',
     body: 'The team evaluates fit across experience, context, seniority, and expected impact.',
-    bullets: ['Operator track record', 'Relevant market exposure', 'Delivery readiness'],
-    icon: Star,
-    featuredProfile: true,
+    icon: Users,
   },
   {
     number: '05',
     title: 'Shortlists talent',
     body: 'The right specialists are grouped into a focused project workspace around the problem.',
-    bullets: ['Strategist', 'Market operator', 'Comms lead'],
     icon: Users,
-    checklist: true,
   },
   {
     number: '06',
     title: 'Internal approval',
     body: 'Stakeholders review the scope, budget, and selected talent before activation.',
-    bullets: ['Budget estimate', 'Scope of work', 'Selected specialists'],
     icon: Building2,
   },
   {
     number: '07',
     title: 'Contract + onboarding',
     body: 'The platform handles the admin layer so the team can move into execution quickly.',
-    bullets: ['NDA', 'Contracts', 'Invoicing', 'Kickoff', 'Workspace access'],
     icon: FileSignature,
   },
   {
     number: '08',
     title: 'Execution',
     body: 'The pod delivers outcomes inside a shared workflow, with visibility from brief to output.',
-    bullets: ['Strategy deck', 'Research', 'Launch plan', 'Dashboards', 'Campaign systems'],
     icon: BriefcaseBusiness,
-    accent: true,
   },
 ]
 
-function StepCard({
-  step,
-  index,
-}: {
-  step: (typeof steps)[number]
-  index: number
-}) {
+function StepCard({ step }: { step: (typeof steps)[number] }) {
   const Icon = step.icon
 
   return (
-    <article className="relative flex h-full flex-col overflow-hidden rounded-[28px] border border-border bg-card p-6 md:p-8">
-      <div className="absolute left-6 top-0 -translate-y-1/2 rounded-full bg-primary px-3 py-2 font-mono text-xs font-semibold tracking-[0.1em] text-primary-foreground md:left-8">
+    <article className="relative flex h-full flex-col bg-background p-6 md:p-8">
+      <div className="mb-8 inline-flex w-fit bg-primary px-3 py-2 font-mono text-xs font-semibold tracking-[0.1em] text-primary-foreground">
         {step.number}
       </div>
 
-      <div className="mb-8 flex items-center justify-between pt-4">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-background">
+      <div className="mb-8 flex items-center justify-between">
+        <div className="flex h-14 w-14 items-center justify-center border border-foreground bg-background">
           <Icon className="h-6 w-6 text-foreground" strokeWidth={2.2} />
         </div>
-        {index < steps.length - 1 ? (
-          <div className="hidden xl:flex items-center gap-2 text-muted-foreground">
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em]">Next</span>
-            <ArrowRight className="h-4 w-4" />
-          </div>
-        ) : null}
       </div>
 
       <h2 className="mb-3 font-display text-[28px] leading-tight tracking-h3 text-foreground md:text-[32px]">
         {step.title}
       </h2>
-      <p className="mb-6 max-w-[34ch] font-text text-[16px] leading-relaxed text-muted-foreground">
+      <p className="max-w-[34ch] font-text text-[16px] leading-relaxed text-muted-foreground">
         {step.body}
       </p>
-
-      {step.featuredProfile ? (
-        <div className="mb-6 rounded-2xl border border-border bg-background p-4">
-          <div className="mb-4 flex items-start gap-3">
-            <img
-              src="/images/talent/Daniel Osei.png"
-              alt="Daniel Osei"
-              className="h-14 w-14 rounded-xl object-cover"
-            />
-            <div>
-              <div className="font-text text-sm font-semibold text-foreground">Daniel Osei</div>
-              <div className="font-text text-sm text-muted-foreground">Strategy Lead</div>
-              <div className="font-text text-xs text-muted-foreground">Formerly at Interbrand</div>
-            </div>
-          </div>
-          <div className="mb-4 flex flex-wrap items-center gap-3 font-text text-sm text-foreground">
-            <span className="inline-flex items-center gap-1.5">
-              <Star className="h-4 w-4 fill-primary text-primary" />
-              4.9 (28)
-            </span>
-            <span>$140–$190/hr</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {['Brand Strategy', 'Growth'].map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full bg-secondary px-3 py-1.5 font-text text-xs text-secondary-foreground"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
-      <ul className="mt-auto flex flex-col gap-3">
-        {step.bullets.map((bullet) => (
-          <li key={bullet} className="flex items-start gap-3 font-text text-[15px] leading-relaxed text-foreground">
-            {step.checklist ? (
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-            ) : (
-              <span className={`mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full ${step.accent ? 'bg-primary' : 'bg-foreground'}`} />
-            )}
-            <span>{bullet}</span>
-          </li>
-        ))}
-      </ul>
     </article>
   )
 }
@@ -197,15 +125,15 @@ export default function HowItWorksPage() {
               Each step reduces decision friction and keeps the company moving toward a validated outcome.
             </p>
           </div>
-          <div className="hidden md:flex items-center gap-2 rounded-full border border-border px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+          <div className="hidden md:flex items-center gap-2 border border-foreground px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
             <TrendingUp className="h-4 w-4 text-primary" />
             Faster activation
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {steps.map((step, index) => (
-            <StepCard key={step.number} step={step} index={index} />
+        <div className="grid grid-cols-1 gap-px border border-foreground bg-foreground md:grid-cols-2 xl:grid-cols-4">
+          {steps.map((step) => (
+            <StepCard key={step.number} step={step} />
           ))}
         </div>
       </section>

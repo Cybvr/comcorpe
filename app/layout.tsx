@@ -4,10 +4,13 @@ import './globals.css'
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
 import CookieConsent from '@/components/CookieConsent'
 import FloatingVideoAvatar from '@/components/FloatingVideoAvatar'
-import { Geist } from "next/font/google";
-import { cn } from "@/lib/utils";
+import { Inter } from 'next/font/google'
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+})
 
 export const metadata: Metadata = {
   title: {
@@ -31,7 +34,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
+    <html lang="en" suppressHydrationWarning className={inter.variable}>
       <body className="bg-background text-foreground font-text antialiased leading-body tracking-body">
         <ServiceWorkerRegistration />
         {children}

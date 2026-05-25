@@ -1,0 +1,270 @@
+[debug] [2026-05-24T04:43:18.956Z] ----------------------------------------------------------------------
+[debug] [2026-05-24T04:43:18.959Z] Command:       C:\Users\JidePinheiro\AppData\Local\fnm_multishells\20244_1779597781951\node.exe C:\Users\JidePinheiro\sites\comcorpe\node_modules\firebase-tools\lib\bin\firebase.js deploy --only firestore:rules
+[debug] [2026-05-24T04:43:18.960Z] CLI Version:   15.18.0
+[debug] [2026-05-24T04:43:18.960Z] Platform:      win32
+[debug] [2026-05-24T04:43:18.960Z] Node Version:  v22.22.3
+[debug] [2026-05-24T04:43:18.960Z] Time:          Sun May 24 2026 05:43:18 GMT+0100 (West Africa Time)
+[debug] [2026-05-24T04:43:18.961Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-05-24T04:43:55.877Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-05-24T04:43:55.878Z] > authorizing via signed-in user (art@visual.ng)
+[debug] [2026-05-24T04:43:55.878Z] [iam] checking project comcorpe for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]
+[debug] [2026-05-24T04:43:55.879Z] Checked if tokens are valid: false, expires at: 1779597154730
+[debug] [2026-05-24T04:43:55.880Z] Checked if tokens are valid: false, expires at: 1779597154730
+[debug] [2026-05-24T04:43:55.880Z] > refreshing access token with scopes: []
+[debug] [2026-05-24T04:43:55.882Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-05-24T04:43:55.882Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-05-24T04:43:56.364Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-05-24T04:43:56.364Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-05-24T04:43:56.386Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions [none]
+[debug] [2026-05-24T04:43:56.386Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions  x-goog-user-project=comcorpe
+[debug] [2026-05-24T04:43:56.386Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[debug] [2026-05-24T04:43:57.790Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions 200
+[debug] [2026-05-24T04:43:57.790Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[info] 
+[info] === Deploying to 'comcorpe'...
+[info] 
+[info] i  deploying firestore 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2026-05-24T04:43:57.794Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:43:57.794Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:43:57.794Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/comcorpe/databases/(default) [none]
+[debug] [2026-05-24T04:43:59.258Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/comcorpe/databases/(default) 200
+[debug] [2026-05-24T04:43:59.258Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/comcorpe/databases/(default) {"name":"projects/comcorpe/databases/(default)","uid":"524063cf-ca5f-46b1-ab5a-330c592454f6","createTime":"2026-05-16T21:42:52.049754Z","updateTime":"2026-05-16T21:42:52.049754Z","locationId":"nam5","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-05-24T03:43:59.029630Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"s","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"IOKkp8iO0ZQDMKmmubfxvpQD"}
+[info] i  cloud.firestore: checking firestore.rules for compilation errors... 
+[debug] [2026-05-24T04:43:59.259Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:43:59.259Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:43:59.260Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/comcorpe:test [none]
+[debug] [2026-05-24T04:43:59.260Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/comcorpe:test [omitted]
+[debug] [2026-05-24T04:44:00.398Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/comcorpe:test 200
+[debug] [2026-05-24T04:44:00.399Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/comcorpe:test {}
+[info] +  cloud.firestore: rules file firestore.rules compiled successfully 
+[debug] [2026-05-24T04:44:00.401Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:00.401Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:00.401Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/releases pageSize=10&pageToken=
+[debug] [2026-05-24T04:44:01.214Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/releases 200
+[debug] [2026-05-24T04:44:01.214Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/releases {"releases":[{"name":"projects/comcorpe/releases/cloud.firestore","rulesetName":"projects/comcorpe/rulesets/f155818a-3bb3-4873-b6e0-c31d686a072f","createTime":"2026-05-16T21:42:56.479675Z","updateTime":"2026-05-24T03:43:18.044362Z"},{"name":"projects/comcorpe/releases/firebase.storage/comcorpe.firebasestorage.app","rulesetName":"projects/comcorpe/rulesets/dfecd100-e388-4268-a94c-dad34d381cb4","createTime":"2026-05-22T09:51:17.655481Z","updateTime":"2026-05-22T22:16:11.124210Z"}]}
+[debug] [2026-05-24T04:44:01.230Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:01.230Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:01.230Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets/f155818a-3bb3-4873-b6e0-c31d686a072f [none]
+[debug] [2026-05-24T04:44:02.042Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets/f155818a-3bb3-4873-b6e0-c31d686a072f 200
+[debug] [2026-05-24T04:44:02.042Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets/f155818a-3bb3-4873-b6e0-c31d686a072f [omitted]
+[info] i  firestore: uploading rules firestore.rules... 
+[debug] [2026-05-24T04:44:02.043Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:02.043Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:02.043Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets [none]
+[debug] [2026-05-24T04:44:02.043Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets [omitted]
+[debug] [2026-05-24T04:44:03.019Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets 200
+[debug] [2026-05-24T04:44:03.020Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets {"name":"projects/comcorpe/rulesets/bce2203e-c8e2-45c0-8cc1-6a9c706ba35d","source":{"files":[{"content":"rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /insights/{document} {\n      allow read: if true;\n      allow write: if request.auth != null;\n    }\n\n    match /jobs/{jobId} {\n      allow read: if request.auth != null || resource.data.sharedPublicly == true;\n      allow write: if request.auth != null;\n    }\n\n    match /pods/{podId} {\n      allow read: if true;\n      allow write: if request.auth != null;\n    }\n\n    match /{document=**} {\n      allow read, write: if request.auth != null;\n    }\n  }\n}\n","name":"firestore.rules"}]},"createTime":"2026-05-24T04:44:02.752015Z","metadata":{"services":["cloud.firestore"]}}
+[debug] [2026-05-24T04:44:03.020Z] [rules] created ruleset projects/comcorpe/rulesets/bce2203e-c8e2-45c0-8cc1-6a9c706ba35d
+[debug] [2026-05-24T04:44:03.020Z] [rules] releasing cloud.firestore with ruleset projects/comcorpe/rulesets/bce2203e-c8e2-45c0-8cc1-6a9c706ba35d
+[debug] [2026-05-24T04:44:03.021Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:03.021Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:03.021Z] >>> [apiv2][query] PATCH https://firebaserules.googleapis.com/v1/projects/comcorpe/releases/cloud.firestore [none]
+[debug] [2026-05-24T04:44:03.021Z] >>> [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/comcorpe/releases/cloud.firestore {"release":{"name":"projects/comcorpe/releases/cloud.firestore","rulesetName":"projects/comcorpe/rulesets/bce2203e-c8e2-45c0-8cc1-6a9c706ba35d"}}
+[debug] [2026-05-24T04:44:03.469Z] <<< [apiv2][status] PATCH https://firebaserules.googleapis.com/v1/projects/comcorpe/releases/cloud.firestore 200
+[debug] [2026-05-24T04:44:03.470Z] <<< [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/comcorpe/releases/cloud.firestore {"name":"projects/comcorpe/releases/cloud.firestore","rulesetName":"projects/comcorpe/rulesets/bce2203e-c8e2-45c0-8cc1-6a9c706ba35d","createTime":"2026-05-16T21:42:56.479675Z","updateTime":"2026-05-24T04:44:03.205426Z"}
+[debug] [2026-05-24T04:44:03.470Z] [rules] updated release projects/comcorpe/releases/cloud.firestore
+[info] +  firestore: released rules firestore.rules to cloud.firestore 
+[info] 
+[info] +  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/comcorpe/overview
+[debug] [2026-05-24T04:44:46.551Z] ----------------------------------------------------------------------
+[debug] [2026-05-24T04:44:46.553Z] Command:       C:\Users\JidePinheiro\AppData\Local\fnm_multishells\22596_1779597885688\node.exe C:\Users\JidePinheiro\sites\comcorpe\node_modules\firebase-tools\lib\bin\firebase.js deploy --only firestore:rules --project comcorpe --non-interactive
+[debug] [2026-05-24T04:44:46.554Z] CLI Version:   15.18.0
+[debug] [2026-05-24T04:44:46.554Z] Platform:      win32
+[debug] [2026-05-24T04:44:46.554Z] Node Version:  v22.22.3
+[debug] [2026-05-24T04:44:46.554Z] Time:          Sun May 24 2026 05:44:46 GMT+0100 (West Africa Time)
+[debug] [2026-05-24T04:44:46.554Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-05-24T04:44:48.232Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-05-24T04:44:48.233Z] > authorizing via signed-in user (art@visual.ng)
+[debug] [2026-05-24T04:44:48.233Z] [iam] checking project comcorpe for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]
+[debug] [2026-05-24T04:44:48.235Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:48.235Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:48.237Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions [none]
+[debug] [2026-05-24T04:44:48.238Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions  x-goog-user-project=comcorpe
+[debug] [2026-05-24T04:44:48.239Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[debug] [2026-05-24T04:44:49.548Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions 200
+[debug] [2026-05-24T04:44:49.548Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[info] 
+[info] === Deploying to 'comcorpe'...
+[info] 
+[info] i  deploying firestore 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2026-05-24T04:44:49.553Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:49.553Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:49.553Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/comcorpe/databases/(default) [none]
+[debug] [2026-05-24T04:44:50.986Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/comcorpe/databases/(default) 200
+[debug] [2026-05-24T04:44:50.987Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/comcorpe/databases/(default) {"name":"projects/comcorpe/databases/(default)","uid":"524063cf-ca5f-46b1-ab5a-330c592454f6","createTime":"2026-05-16T21:42:52.049754Z","updateTime":"2026-05-16T21:42:52.049754Z","locationId":"nam5","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-05-24T03:44:50.742454Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"s","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"IOPL++CO0ZQDMKmmubfxvpQD"}
+[info] i  cloud.firestore: checking firestore.rules for compilation errors... 
+[debug] [2026-05-24T04:44:50.987Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:50.988Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:50.988Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/comcorpe:test [none]
+[debug] [2026-05-24T04:44:50.988Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/comcorpe:test [omitted]
+[debug] [2026-05-24T04:44:51.494Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/comcorpe:test 200
+[debug] [2026-05-24T04:44:51.495Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/comcorpe:test {}
+[info] +  cloud.firestore: rules file firestore.rules compiled successfully 
+[debug] [2026-05-24T04:44:51.496Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:51.496Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:51.496Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/releases pageSize=10&pageToken=
+[debug] [2026-05-24T04:44:52.315Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/releases 200
+[debug] [2026-05-24T04:44:52.315Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/releases {"releases":[{"name":"projects/comcorpe/releases/cloud.firestore","rulesetName":"projects/comcorpe/rulesets/bce2203e-c8e2-45c0-8cc1-6a9c706ba35d","createTime":"2026-05-16T21:42:56.479675Z","updateTime":"2026-05-24T04:44:03.205426Z"},{"name":"projects/comcorpe/releases/firebase.storage/comcorpe.firebasestorage.app","rulesetName":"projects/comcorpe/rulesets/dfecd100-e388-4268-a94c-dad34d381cb4","createTime":"2026-05-22T09:51:17.655481Z","updateTime":"2026-05-22T22:16:11.124210Z"}]}
+[debug] [2026-05-24T04:44:52.325Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:52.325Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:52.325Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets/bce2203e-c8e2-45c0-8cc1-6a9c706ba35d [none]
+[debug] [2026-05-24T04:44:53.103Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets/bce2203e-c8e2-45c0-8cc1-6a9c706ba35d 200
+[debug] [2026-05-24T04:44:53.103Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets/bce2203e-c8e2-45c0-8cc1-6a9c706ba35d [omitted]
+[info] i  firestore: latest version of firestore.rules already up to date, skipping upload... 
+[debug] [2026-05-24T04:44:53.104Z] [rules] releasing cloud.firestore with ruleset projects/comcorpe/rulesets/bce2203e-c8e2-45c0-8cc1-6a9c706ba35d
+[debug] [2026-05-24T04:44:53.105Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:53.105Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T04:44:53.105Z] >>> [apiv2][query] PATCH https://firebaserules.googleapis.com/v1/projects/comcorpe/releases/cloud.firestore [none]
+[debug] [2026-05-24T04:44:53.105Z] >>> [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/comcorpe/releases/cloud.firestore {"release":{"name":"projects/comcorpe/releases/cloud.firestore","rulesetName":"projects/comcorpe/rulesets/bce2203e-c8e2-45c0-8cc1-6a9c706ba35d"}}
+[debug] [2026-05-24T04:44:54.085Z] <<< [apiv2][status] PATCH https://firebaserules.googleapis.com/v1/projects/comcorpe/releases/cloud.firestore 200
+[debug] [2026-05-24T04:44:54.085Z] <<< [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/comcorpe/releases/cloud.firestore {"name":"projects/comcorpe/releases/cloud.firestore","rulesetName":"projects/comcorpe/rulesets/bce2203e-c8e2-45c0-8cc1-6a9c706ba35d","createTime":"2026-05-16T21:42:56.479675Z","updateTime":"2026-05-24T04:44:53.826233Z"}
+[debug] [2026-05-24T04:44:54.085Z] [rules] updated release projects/comcorpe/releases/cloud.firestore
+[info] +  firestore: released rules firestore.rules to cloud.firestore 
+[info] 
+[info] +  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/comcorpe/overview
+[debug] [2026-05-24T05:02:04.078Z] ----------------------------------------------------------------------
+[debug] [2026-05-24T05:02:04.081Z] Command:       C:\Users\JidePinheiro\AppData\Local\fnm_multishells\22876_1779598922471\node.exe C:\Users\JidePinheiro\sites\comcorpe\node_modules\firebase-tools\lib\bin\firebase.js deploy --only firestore:rules --project comcorpe --non-interactive
+[debug] [2026-05-24T05:02:04.081Z] CLI Version:   15.18.0
+[debug] [2026-05-24T05:02:04.081Z] Platform:      win32
+[debug] [2026-05-24T05:02:04.082Z] Node Version:  v22.22.3
+[debug] [2026-05-24T05:02:04.082Z] Time:          Sun May 24 2026 06:02:04 GMT+0100 (West Africa Time)
+[debug] [2026-05-24T05:02:04.082Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-05-24T05:02:07.312Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-05-24T05:02:07.314Z] > authorizing via signed-in user (art@visual.ng)
+[debug] [2026-05-24T05:02:07.314Z] [iam] checking project comcorpe for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]
+[debug] [2026-05-24T05:02:07.316Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:02:07.317Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:02:07.319Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions [none]
+[debug] [2026-05-24T05:02:07.319Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions  x-goog-user-project=comcorpe
+[debug] [2026-05-24T05:02:07.319Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[debug] [2026-05-24T05:02:08.954Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions 200
+[debug] [2026-05-24T05:02:08.954Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[info] 
+[info] === Deploying to 'comcorpe'...
+[info] 
+[info] i  deploying firestore 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2026-05-24T05:02:08.960Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:02:08.960Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:02:08.961Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/comcorpe/databases/(default) [none]
+[debug] [2026-05-24T05:02:10.418Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/comcorpe/databases/(default) 200
+[debug] [2026-05-24T05:02:10.418Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/comcorpe/databases/(default) {"name":"projects/comcorpe/databases/(default)","uid":"524063cf-ca5f-46b1-ab5a-330c592454f6","createTime":"2026-05-16T21:42:52.049754Z","updateTime":"2026-05-16T21:42:52.049754Z","locationId":"nam5","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-05-24T04:02:10.182857Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"s","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"IMuAztCS0ZQDMKmmubfxvpQD"}
+[info] i  cloud.firestore: checking firestore.rules for compilation errors... 
+[debug] [2026-05-24T05:02:10.420Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:02:10.420Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:02:10.420Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/comcorpe:test [none]
+[debug] [2026-05-24T05:02:10.420Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/comcorpe:test [omitted]
+[debug] [2026-05-24T05:02:11.505Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/comcorpe:test 200
+[debug] [2026-05-24T05:02:11.505Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/comcorpe:test {}
+[info] +  cloud.firestore: rules file firestore.rules compiled successfully 
+[debug] [2026-05-24T05:02:11.507Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:02:11.507Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:02:11.507Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/releases pageSize=10&pageToken=
+[debug] [2026-05-24T05:02:12.326Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/releases 200
+[debug] [2026-05-24T05:02:12.327Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/releases {"releases":[{"name":"projects/comcorpe/releases/cloud.firestore","rulesetName":"projects/comcorpe/rulesets/bce2203e-c8e2-45c0-8cc1-6a9c706ba35d","createTime":"2026-05-16T21:42:56.479675Z","updateTime":"2026-05-24T04:44:53.826233Z"},{"name":"projects/comcorpe/releases/firebase.storage/comcorpe.firebasestorage.app","rulesetName":"projects/comcorpe/rulesets/dfecd100-e388-4268-a94c-dad34d381cb4","createTime":"2026-05-22T09:51:17.655481Z","updateTime":"2026-05-22T22:16:11.124210Z"}]}
+[debug] [2026-05-24T05:02:12.341Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:02:12.342Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:02:12.342Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets/bce2203e-c8e2-45c0-8cc1-6a9c706ba35d [none]
+[debug] [2026-05-24T05:02:13.148Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets/bce2203e-c8e2-45c0-8cc1-6a9c706ba35d 200
+[debug] [2026-05-24T05:02:13.149Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets/bce2203e-c8e2-45c0-8cc1-6a9c706ba35d [omitted]
+[info] i  firestore: uploading rules firestore.rules... 
+[debug] [2026-05-24T05:02:13.150Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:02:13.150Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:02:13.150Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets [none]
+[debug] [2026-05-24T05:02:13.150Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets [omitted]
+[debug] [2026-05-24T05:02:14.139Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets 200
+[debug] [2026-05-24T05:02:14.139Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets {"name":"projects/comcorpe/rulesets/00f4f2bc-37f2-4e69-bc6b-24ef60ccbfb2","source":{"files":[{"content":"rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /insights/{document} {\n      allow read: if true;\n      allow write: if request.auth != null;\n    }\n\n    match /jobs/{jobId} {\n      allow read: if request.auth != null || resource.data.sharedPublicly == true;\n      allow write: if request.auth != null;\n    }\n\n    match /pods/{podId} {\n      allow read: if true;\n      allow write: if request.auth != null;\n    }\n\n    match /users/{userId} {\n      allow read: if request.auth != null || resource.data.role == 'talent';\n      allow write: if request.auth != null;\n    }\n\n    match /treatmentPlans/{planId} {\n      allow read: if request.auth != null || get(/databases/$(database)/documents/jobs/$(resource.data.jobSlug)).data.sharedPublicly == true;\n      allow write: if request.auth != null;\n    }\n\n    match /{document=**} {\n      allow read, write: if request.auth != null;\n    }\n  }\n}\n","name":"firestore.rules"}]},"createTime":"2026-05-24T05:02:13.872159Z","metadata":{"services":["cloud.firestore"]}}
+[debug] [2026-05-24T05:02:14.139Z] [rules] created ruleset projects/comcorpe/rulesets/00f4f2bc-37f2-4e69-bc6b-24ef60ccbfb2
+[debug] [2026-05-24T05:02:14.140Z] [rules] releasing cloud.firestore with ruleset projects/comcorpe/rulesets/00f4f2bc-37f2-4e69-bc6b-24ef60ccbfb2
+[debug] [2026-05-24T05:02:14.141Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:02:14.141Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:02:14.141Z] >>> [apiv2][query] PATCH https://firebaserules.googleapis.com/v1/projects/comcorpe/releases/cloud.firestore [none]
+[debug] [2026-05-24T05:02:14.141Z] >>> [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/comcorpe/releases/cloud.firestore {"release":{"name":"projects/comcorpe/releases/cloud.firestore","rulesetName":"projects/comcorpe/rulesets/00f4f2bc-37f2-4e69-bc6b-24ef60ccbfb2"}}
+[debug] [2026-05-24T05:02:15.122Z] <<< [apiv2][status] PATCH https://firebaserules.googleapis.com/v1/projects/comcorpe/releases/cloud.firestore 200
+[debug] [2026-05-24T05:02:15.123Z] <<< [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/comcorpe/releases/cloud.firestore {"name":"projects/comcorpe/releases/cloud.firestore","rulesetName":"projects/comcorpe/rulesets/00f4f2bc-37f2-4e69-bc6b-24ef60ccbfb2","createTime":"2026-05-16T21:42:56.479675Z","updateTime":"2026-05-24T05:02:14.854428Z"}
+[debug] [2026-05-24T05:02:15.123Z] [rules] updated release projects/comcorpe/releases/cloud.firestore
+[info] +  firestore: released rules firestore.rules to cloud.firestore 
+[info] 
+[info] +  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/comcorpe/overview
+[debug] [2026-05-24T05:03:34.155Z] ----------------------------------------------------------------------
+[debug] [2026-05-24T05:03:34.158Z] Command:       C:\Users\JidePinheiro\AppData\Local\fnm_multishells\13876_1779599012827\node.exe C:\Users\JidePinheiro\sites\comcorpe\node_modules\firebase-tools\lib\bin\firebase.js deploy --only firestore:rules --project comcorpe --non-interactive
+[debug] [2026-05-24T05:03:34.158Z] CLI Version:   15.18.0
+[debug] [2026-05-24T05:03:34.158Z] Platform:      win32
+[debug] [2026-05-24T05:03:34.158Z] Node Version:  v22.22.3
+[debug] [2026-05-24T05:03:34.159Z] Time:          Sun May 24 2026 06:03:34 GMT+0100 (West Africa Time)
+[debug] [2026-05-24T05:03:34.159Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-05-24T05:03:36.433Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-05-24T05:03:36.435Z] > authorizing via signed-in user (art@visual.ng)
+[debug] [2026-05-24T05:03:36.435Z] [iam] checking project comcorpe for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]
+[debug] [2026-05-24T05:03:36.438Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:03:36.438Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:03:36.440Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions [none]
+[debug] [2026-05-24T05:03:36.440Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions  x-goog-user-project=comcorpe
+[debug] [2026-05-24T05:03:36.440Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[debug] [2026-05-24T05:03:37.970Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions 200
+[debug] [2026-05-24T05:03:37.970Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/comcorpe:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[info] 
+[info] === Deploying to 'comcorpe'...
+[info] 
+[info] i  deploying firestore 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2026-05-24T05:03:37.976Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:03:37.976Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:03:37.976Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/comcorpe/databases/(default) [none]
+[debug] [2026-05-24T05:03:39.464Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/comcorpe/databases/(default) 200
+[debug] [2026-05-24T05:03:39.464Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/comcorpe/databases/(default) {"name":"projects/comcorpe/databases/(default)","uid":"524063cf-ca5f-46b1-ab5a-330c592454f6","createTime":"2026-05-16T21:42:52.049754Z","updateTime":"2026-05-16T21:42:52.049754Z","locationId":"nam5","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-05-24T04:03:39.174227Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"s","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"ILTNhfuS0ZQDMKmmubfxvpQD"}
+[info] i  cloud.firestore: checking firestore.rules for compilation errors... 
+[debug] [2026-05-24T05:03:39.465Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:03:39.466Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:03:39.466Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/comcorpe:test [none]
+[debug] [2026-05-24T05:03:39.466Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/comcorpe:test [omitted]
+[debug] [2026-05-24T05:03:40.482Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/comcorpe:test 200
+[debug] [2026-05-24T05:03:40.482Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/comcorpe:test {}
+[info] +  cloud.firestore: rules file firestore.rules compiled successfully 
+[debug] [2026-05-24T05:03:40.484Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:03:40.484Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:03:40.484Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/releases pageSize=10&pageToken=
+[debug] [2026-05-24T05:03:41.352Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/releases 200
+[debug] [2026-05-24T05:03:41.352Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/releases {"releases":[{"name":"projects/comcorpe/releases/cloud.firestore","rulesetName":"projects/comcorpe/rulesets/00f4f2bc-37f2-4e69-bc6b-24ef60ccbfb2","createTime":"2026-05-16T21:42:56.479675Z","updateTime":"2026-05-24T05:02:14.854428Z"},{"name":"projects/comcorpe/releases/firebase.storage/comcorpe.firebasestorage.app","rulesetName":"projects/comcorpe/rulesets/dfecd100-e388-4268-a94c-dad34d381cb4","createTime":"2026-05-22T09:51:17.655481Z","updateTime":"2026-05-22T22:16:11.124210Z"}]}
+[debug] [2026-05-24T05:03:41.371Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:03:41.372Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:03:41.372Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets/00f4f2bc-37f2-4e69-bc6b-24ef60ccbfb2 [none]
+[debug] [2026-05-24T05:03:41.800Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets/00f4f2bc-37f2-4e69-bc6b-24ef60ccbfb2 200
+[debug] [2026-05-24T05:03:41.800Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets/00f4f2bc-37f2-4e69-bc6b-24ef60ccbfb2 [omitted]
+[info] i  firestore: uploading rules firestore.rules... 
+[debug] [2026-05-24T05:03:41.802Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:03:41.802Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:03:41.803Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets [none]
+[debug] [2026-05-24T05:03:41.803Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets [omitted]
+[debug] [2026-05-24T05:03:42.393Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets 200
+[debug] [2026-05-24T05:03:42.393Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/comcorpe/rulesets {"name":"projects/comcorpe/rulesets/ef4ea50d-301e-42bc-9544-4688fd7a2440","source":{"files":[{"content":"rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /insights/{document} {\n      allow read: if true;\n      allow write: if request.auth != null;\n    }\n\n    match /jobs/{jobId} {\n      allow read: if request.auth != null || resource.data.sharedPublicly == true;\n      allow write: if request.auth != null;\n    }\n\n    match /pods/{podId} {\n      allow read: if true;\n      allow write: if request.auth != null;\n    }\n\n    match /users/{userId} {\n      allow read: if true;\n      allow write: if request.auth != null;\n    }\n\n    match /treatmentPlans/{planId} {\n      allow read: if request.auth != null || get(/databases/$(database)/documents/jobs/$(resource.data.jobSlug)).data.sharedPublicly == true;\n      allow write: if request.auth != null;\n    }\n\n    match /{document=**} {\n      allow read, write: if request.auth != null;\n    }\n  }\n}\n","name":"firestore.rules"}]},"createTime":"2026-05-24T05:03:42.119903Z","metadata":{"services":["cloud.firestore"]}}
+[debug] [2026-05-24T05:03:42.393Z] [rules] created ruleset projects/comcorpe/rulesets/ef4ea50d-301e-42bc-9544-4688fd7a2440
+[debug] [2026-05-24T05:03:42.394Z] [rules] releasing cloud.firestore with ruleset projects/comcorpe/rulesets/ef4ea50d-301e-42bc-9544-4688fd7a2440
+[debug] [2026-05-24T05:03:42.395Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:03:42.395Z] Checked if tokens are valid: true, expires at: 1779601435364
+[debug] [2026-05-24T05:03:42.395Z] >>> [apiv2][query] PATCH https://firebaserules.googleapis.com/v1/projects/comcorpe/releases/cloud.firestore [none]
+[debug] [2026-05-24T05:03:42.395Z] >>> [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/comcorpe/releases/cloud.firestore {"release":{"name":"projects/comcorpe/releases/cloud.firestore","rulesetName":"projects/comcorpe/rulesets/ef4ea50d-301e-42bc-9544-4688fd7a2440"}}
+[debug] [2026-05-24T05:03:43.442Z] <<< [apiv2][status] PATCH https://firebaserules.googleapis.com/v1/projects/comcorpe/releases/cloud.firestore 200
+[debug] [2026-05-24T05:03:43.442Z] <<< [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/comcorpe/releases/cloud.firestore {"name":"projects/comcorpe/releases/cloud.firestore","rulesetName":"projects/comcorpe/rulesets/ef4ea50d-301e-42bc-9544-4688fd7a2440","createTime":"2026-05-16T21:42:56.479675Z","updateTime":"2026-05-24T05:03:43.128830Z"}
+[debug] [2026-05-24T05:03:43.442Z] [rules] updated release projects/comcorpe/releases/cloud.firestore
+[info] +  firestore: released rules firestore.rules to cloud.firestore 
+[info] 
+[info] +  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/comcorpe/overview

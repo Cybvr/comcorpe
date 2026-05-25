@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
-  Moon, Sun,
   LayoutDashboard,
   CalendarDays,
   MoveRight,
@@ -11,6 +10,7 @@ import {
   Lightbulb, Network, Users, Target, BriefcaseBusiness, Brush, Microscope, Megaphone, Radio, BarChart3,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { useCurrentUser } from '@/lib/user'
 
 type DropdownItem = {
@@ -39,23 +39,13 @@ export default function Nav({ authState }: NavProps) {
   const { user: currentUser, isAuthenticated } = authState
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [darkMode, setDarkMode] = useState(false)
 
   useEffect(() => {
     const saved = localStorage.getItem('theme')
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
     const isDark = saved === 'dark' || (!saved && prefersDark)
-    if (isDark) document.documentElement.classList.add('dark')
-    const frame = requestAnimationFrame(() => setDarkMode(isDark))
-    return () => cancelAnimationFrame(frame)
+    document.documentElement.classList.toggle('dark', isDark)
   }, [])
-
-  const toggleDark = () => {
-    const next = !darkMode
-    setDarkMode(next)
-    document.documentElement.classList.toggle('dark', next)
-    localStorage.setItem('theme', next ? 'dark' : 'light')
-  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -166,10 +156,10 @@ export default function Nav({ authState }: NavProps) {
         { label: 'The Provocation', href: '/provocation', desc: 'Why emerging markets demand a new approach to growth.', icon: Lightbulb },
         { label: 'Our Model', href: '/model', desc: 'How we architect, assemble, and operate growth systems.', icon: Network },
         { label: 'Team & Advisory', href: '/about', desc: 'The people and the global network behind Comcorpáµ‰.', icon: Users },
+        { label: 'Oversight', href: '/enterprise', desc: 'How Comcorpe pairs AI systems with strategic and human oversight.', icon: Microscope },
         { label: 'Why Comcorpe', href: '/why', desc: 'Designed for complexity. Built for structural advantage.', icon: Target },
       ],
     },
-    { label: 'Oversight', href: '/enterprise' },
     { label: 'Talent', href: '/talent' },
     { label: 'Insights', href: '/insights' },
   ]
@@ -191,7 +181,7 @@ export default function Nav({ authState }: NavProps) {
 
         {/* Desktop center nav */}
         {isAuthenticated ? (
-          <div className="hidden lg:flex gap-6 xl:gap-9 items-center justify-self-center">
+          <div className="hidden lg:flex gap-4 xl:gap-6 items-center justify-self-center">
             {items.map((item) => (
               <div key={item.label} className="relative group">
                 {item.dropdown ? (
@@ -232,12 +222,14 @@ export default function Nav({ authState }: NavProps) {
                     </div>
                   </div>
                 ) : (
-                  <button
+                  <Button
                     onClick={() => handleNav(item)}
-                    className="font-text text-sm font-medium tracking-body text-foreground cursor-pointer pb-0.5 border-b border-transparent hover:border-primary hover:text-primary transition-colors duration-[120ms] bg-transparent border-0"
+                    variant="ghost"
+                    size="sm"
+                    className="px-0 font-text font-medium tracking-body hover:bg-transparent"
                   >
                     {item.label}
-                  </button>
+                  </Button>
                 )}
               </div>
             ))}
@@ -248,89 +240,58 @@ export default function Nav({ authState }: NavProps) {
 
         {/* Desktop actions */}
         <div className="hidden lg:flex items-center gap-4 justify-self-end">
-          <button
-            onClick={toggleDark}
-            aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-            className="w-8 h-8 flex items-center justify-center rounded-full text-foreground hover:bg-border transition-colors duration-[120ms] cursor-pointer"
-          >
-            {darkMode ? <Sun size={15} strokeWidth={1.5} /> : <Moon size={15} strokeWidth={1.5} />}
-          </button>
-
           {isAuthenticated ? (
             <>
-              <Link
-                href={dashboardHref}
-                className="font-text text-[13px] font-semibold px-[16px] py-[9px] rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms] inline-flex items-center gap-1.5"
-              >
-                <LayoutDashboard size={14} strokeWidth={1.6} />
-                Dashboard
-              </Link>
-              <Link
-                href="/book"
-                className="font-text text-[13px] font-semibold px-[18px] py-[10px] rounded-full bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
-              >
-                Book a session call
-              </Link>
+              <Button asChild variant="outline" className="font-text">
+                <Link href={dashboardHref}>
+                  <LayoutDashboard size={14} strokeWidth={1.6} />
+                  Dashboard
+                </Link>
+              </Button>
+              <Button asChild className="font-text">
+                <Link href="/book">Book a session call</Link>
+              </Button>
             </>
           ) : (
-            <Link
-              href="/login"
-              className="font-text text-[13px] font-semibold px-[16px] py-[9px] rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms]"
-            >
-              Login
-            </Link>
+            <Button asChild variant="outline" className="font-text">
+              <Link href="/login">Login</Link>
+            </Button>
           )}
         </div>
 
         {/* Mobile actions */}
         <div className="flex lg:hidden items-center gap-2 justify-self-end">
-          <button
-            onClick={toggleDark}
-            aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-            className="w-8 h-8 flex items-center justify-center rounded-full text-foreground hover:bg-border transition-colors duration-[120ms] cursor-pointer"
-          >
-            {darkMode ? <Sun size={15} strokeWidth={1.5} /> : <Moon size={15} strokeWidth={1.5} />}
-          </button>
-
           {isAuthenticated ? (
             <>
-              <Link
-                href={dashboardHref}
-                aria-label="Dashboard"
-                className="w-8 h-8 flex items-center justify-center rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms]"
-              >
-                <LayoutDashboard size={15} strokeWidth={1.6} />
-              </Link>
-              <Link
-                href="/book"
-                aria-label="Book a session call"
-                className="sm:hidden w-8 h-8 flex items-center justify-center rounded-full bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
-              >
-                <CalendarDays size={15} strokeWidth={1.6} />
-              </Link>
-              <Link
-                href="/book"
-                className="hidden sm:inline-flex font-text text-[12px] font-semibold px-4 py-2.5 rounded-full bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
-              >
-                Book a session call
-              </Link>
-              <button
+              <Button asChild variant="outline" size="icon">
+                <Link href={dashboardHref} aria-label="Dashboard">
+                  <LayoutDashboard size={15} strokeWidth={1.6} />
+                </Link>
+              </Button>
+              <Button asChild size="icon" className="sm:hidden">
+                <Link href="/book" aria-label="Book a session call">
+                  <CalendarDays size={15} strokeWidth={1.6} />
+                </Link>
+              </Button>
+              <Button asChild className="hidden font-text sm:inline-flex">
+                <Link href="/book">Book a session call</Link>
+              </Button>
+              <Button
                 onClick={() => setMenuOpen(o => !o)}
-                className="w-9 h-9 flex flex-col justify-center items-center gap-1.5 bg-transparent border-0 cursor-pointer"
+                variant="ghost"
+                size="icon"
+                className="flex flex-col gap-1.5"
                 aria-label="Toggle menu"
               >
                 <span className={`block w-5 h-px bg-foreground transition-all duration-[240ms] ${menuOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
                 <span className={`block w-5 h-px bg-foreground transition-all duration-[240ms] ${menuOpen ? 'opacity-0' : ''}`} />
                 <span className={`block w-5 h-px bg-foreground transition-all duration-[240ms] ${menuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
-              </button>
+              </Button>
             </>
           ) : (
-            <Link
-              href="/login"
-              className="px-3 h-8 flex items-center justify-center rounded-full border border-input text-foreground hover:border-primary hover:text-primary transition-colors duration-[120ms] font-text text-[12px] font-semibold"
-            >
-              Login
-            </Link>
+            <Button asChild variant="outline" size="sm" className="font-text">
+              <Link href="/login">Login</Link>
+            </Button>
           )}
         </div>
       </nav>

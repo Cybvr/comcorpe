@@ -10,11 +10,11 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
   const authState = useCurrentUser()
 
   return (
-    <>
+    <div className="site-shell">
       <HomeEventBanner />
       <Nav authState={authState} />
       {children}
       {authState.isAuthenticated && <Footer />}
-    </>
+    </div>
   )
 }

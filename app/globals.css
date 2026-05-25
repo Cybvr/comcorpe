@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -94,7 +94,7 @@
 }
 
 @theme inline {
-  --font-display: 'Archivo Black', system-ui, sans-serif;
+  --font-display: var(--font-inter), system-ui, sans-serif;
   --font-text: 'Inter Tight', Inter, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
@@ -201,6 +201,10 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+.site-shell .font-black {
+  font-weight: 700;
 }
 
 @layer base {
