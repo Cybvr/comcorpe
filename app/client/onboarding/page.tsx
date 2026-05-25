@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Check, ArrowRight, ArrowLeft } from 'lucide-react'
@@ -55,7 +55,7 @@ function StepIndicator({ current, total }: { current: number; total: number }) {
 export default function ClientOnboardingPage() {
   const router = useRouter()
   const { user: currentUser } = useCurrentUser()
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(0)
 
   const [form, setForm] = useState({
     companyName: '',
@@ -72,6 +72,26 @@ export default function ClientOnboardingPage() {
     arpu: '',
     monthlyCustomers: '',
   })
+
+  const seeded = useRef(false)
+  useEffect(() => {
+    if (!currentUser || seeded.current) return
+    seeded.current = true
+    setForm(f => ({
+      ...f,
+      companyName: currentUser.company || f.companyName,
+      industry: currentUser.industry || f.industry,
+      size: currentUser.companySize || f.size,
+      challenges: currentUser.challenges?.length ? currentUser.challenges : f.challenges,
+      budget: currentUser.budget || f.budget,
+      timeline: currentUser.timeline || f.timeline,
+      source: currentUser.source || f.source,
+      anythingElse: currentUser.notes || f.anythingElse,
+      perceptionScore: currentUser.baselinePerceptionScore != null ? String(currentUser.baselinePerceptionScore) : f.perceptionScore,
+      arpu: currentUser.baselineArpu != null ? String(currentUser.baselineArpu) : f.arpu,
+      monthlyCustomers: currentUser.baselineMonthlyCustomers || f.monthlyCustomers,
+    }))
+  }, [currentUser])
 
   function toggle(field: 'challenges', value: string) {
     setForm(f => ({
@@ -130,7 +150,26 @@ export default function ClientOnboardingPage() {
           <Image src="/images/comcorpe.png" alt="Comcorpe" width={140} height={36} className="h-8 w-auto object-contain" priority />
         </div>
 
-        <StepIndicator current={step} total={TOTAL_STEPS} />
+        {step > 0 && <StepIndicator current={step} total={TOTAL_STEPS} />}
+
+        {step === 0 && (
+          <div className="space-y-8">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-eyebrow text-primary mb-2">Welcome</p>
+              <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-foreground leading-tight">Before we begin</h1>
+              <p className="font-text text-sm text-muted-foreground mt-2">A quick word from the Comcorpe team.</p>
+            </div>
+            <div className="w-full aspect-video bg-foreground/5 border border-border overflow-hidden">
+              <video
+                src="/video/welcomevideo.mp4"
+                controls
+                autoPlay
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        )}
 
         {step === 1 && (
           <div className="space-y-6">
@@ -290,17 +329,26 @@ export default function ClientOnboardingPage() {
               <ArrowLeft size={14} /> Back
             </button>
           ) : <div />}
-          <button
-            onClick={next}
-            disabled={!canAdvance()}
-            className="flex items-center gap-2 px-7 py-3 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100 disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            {step === TOTAL_STEPS ? (
-              <><Check size={14} /> Complete setup</>
-            ) : (
-              <>Continue <ArrowRight size={14} /></>
-            )}
-          </button>
+          {step === 0 ? (
+            <button
+              onClick={() => setStep(1)}
+              className="flex items-center gap-2 px-7 py-3 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100"
+            >
+              Get started <ArrowRight size={14} />
+            </button>
+          ) : (
+            <button
+              onClick={next}
+              disabled={!canAdvance()}
+              className="flex items-center gap-2 px-7 py-3 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              {step === TOTAL_STEPS ? (
+                <><Check size={14} /> Complete setup</>
+              ) : (
+                <>Continue <ArrowRight size={14} /></>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>

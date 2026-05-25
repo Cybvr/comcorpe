@@ -30,7 +30,7 @@ export default function Home() {
             <span className="w-6 h-px bg-foreground inline-block" />
             A Growth Systems Company
           </span>
-          <h1 className="font-display font-black text-[clamp(36px,6.5vw,96px)] leading-[0.92] tracking-[-0.04em] text-foreground m-0 mb-6">
+          <h1 className="font-display text-[clamp(36px,6.5vw,96px)] leading-[0.92] tracking-[-0.04em] text-foreground m-0 mb-6">
             The Operating Layer for High-Velocity Growth<span className="text-primary">.</span>
           </h1>
           <p className="font-text text-[17px] md:text-[20px] leading-lede text-muted-foreground m-0 max-w-[34ch]">
