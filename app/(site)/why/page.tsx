@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import Image from 'next/image'
 
 export const metadata: Metadata = {
   title: 'Why Comcorpᵉ — A Growth Systems Company',
@@ -38,15 +39,15 @@ export default function WhyPage() {
               We bypass the traditional agency and consultancy models by building bespoke, high-velocity specialist pods. This gives us the structural advantage to move faster and hit harder without the overhead drag.
             </p>
           </div>
-          <div className="order-1 md:order-2 w-full aspect-[4/3] bg-border border border-border flex items-center justify-center transition-colors duration-300 hover:border-foreground">
-            <span className="font-mono text-[11px] text-muted-foreground/70 uppercase tracking-widest italic">Structural Model Visualization Placeholder</span>
+          <div className="order-1 md:order-2 relative w-full aspect-[4/3] overflow-hidden border border-foreground">
+            <Image src="/images/site/Architectural Lattice _ Motion Study 1.png" alt="" fill className="object-cover grayscale" />
           </div>
         </div>
 
         {/* Feature 2 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 mb-24 md:mb-32 items-center">
-          <div className="w-full aspect-[4/3] bg-border border border-border flex items-center justify-center transition-colors duration-300 hover:border-foreground">
-            <span className="font-mono text-[11px] text-muted-foreground/70 uppercase tracking-widest italic">Execution Engine Visualization Placeholder</span>
+          <div className="relative w-full aspect-[4/3] overflow-hidden border border-foreground">
+            <Image src="/images/site/Panther Prowl _ Concentration 1.png" alt="" fill className="object-cover grayscale" />
           </div>
           <div>
             <div className="font-mono text-[13px] text-primary mb-4">02.</div>
@@ -70,8 +71,8 @@ export default function WhyPage() {
               Every engagement with Comcorpᵉ is designed to produce a reusable asset. We turn transient project knowledge into institutional capability that belongs to you.
             </p>
           </div>
-          <div className="order-1 md:order-2 w-full aspect-[4/3] bg-border border border-border flex items-center justify-center transition-colors duration-300 hover:border-foreground">
-            <span className="font-mono text-[11px] text-muted-foreground/70 uppercase tracking-widest italic">Value Compounding Visualization Placeholder</span>
+          <div className="order-1 md:order-2 relative w-full aspect-[4/3] overflow-hidden border border-foreground">
+            <Image src="/images/site/Flowing Ribbon _ Orchestration Study 1.png" alt="" fill className="object-cover grayscale" />
           </div>
         </div>
 

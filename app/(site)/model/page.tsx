@@ -1,6 +1,5 @@
 import { Metadata } from 'next'
 import { Fragment } from 'react'
-import ImagePlaceholder from '@/components/ImagePlaceholder'
 
 export const metadata: Metadata = {
   title: 'Our Model — Comcorpᵉ',

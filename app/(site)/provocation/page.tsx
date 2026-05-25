@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import ImagePlaceholder from '@/components/ImagePlaceholder'
+import Image from 'next/image'
 
 export const metadata: Metadata = {
   title: 'Provocation — Comcorpᵉ',
@@ -34,10 +34,9 @@ export default function ProvocationPage() {
               We are here to rewire that assumption.
             </p>
           </div>
-          <ImagePlaceholder
-            label="Provocation image placeholder"
-            className="mt-12 md:mt-16 aspect-[16/7] w-full"
-          />
+          <div className="relative mt-12 md:mt-16 aspect-[16/7] w-full overflow-hidden border border-foreground">
+            <Image src="/images/site/Coiled Serpent _ Strategy 1.png" alt="" fill className="object-cover grayscale" />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 border border-foreground overflow-hidden rounded-sm">
