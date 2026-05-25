@@ -1,12 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import {
   Briefcase,
   ChevronRight,
   Gift,
   MessageCircle,
+  Pencil,
   Users,
   Zap,
 } from 'lucide-react'
@@ -144,7 +146,100 @@ export default function DashboardPage() {
           </section>
         </div>
 
-        <GrowthCommunity audience="talent" />
+        <div className="flex flex-col gap-4">
+          {/* Profile card */}
+          <div className="border border-border rounded-xl overflow-hidden bg-background">
+
+            {/* Avatar + name */}
+            <div className="flex flex-col items-center text-center px-5 pt-6 pb-5 border-b border-border">
+              <div className="w-16 h-16 bg-foreground shrink-0 overflow-hidden relative mb-3">
+                {currentUser.image
+                  ? <Image src={currentUser.image} alt={currentUser.name} fill className="object-cover" />
+                  : <div className="w-full h-full flex items-center justify-center font-display font-black text-[22px] text-background">{currentUser.initials}</div>
+                }
+              </div>
+              <Link href="/talent/dashboard/settings" className="font-display font-black text-[17px] tracking-[-0.02em] text-foreground hover:text-primary underline underline-offset-2 leading-tight">
+                {currentUser.name}
+              </Link>
+              {currentUser.talentRole && (
+                <p className="font-text text-sm text-muted-foreground mt-0.5 line-clamp-1">{currentUser.talentRole}</p>
+              )}
+            </div>
+
+            {/* Profile completeness */}
+            {(() => {
+              const fields = [currentUser.talentRole, currentUser.desc, currentUser.rate, currentUser.availability, currentUser.location, currentUser.image, currentUser.yearsExp, currentUser.linkedinUrl]
+              const filled = fields.filter(Boolean).length
+              const pct = Math.round((filled / fields.length) * 100)
+              return (
+                <div className="px-5 py-4 border-b border-border bg-muted/40">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-text text-sm font-semibold text-foreground">Profile Completeness</span>
+                    <span className="font-mono text-xs text-muted-foreground">{pct}%</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-border rounded-full overflow-hidden">
+                    <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                  </div>
+                  {pct < 100 && (
+                    <Link href="/talent/dashboard/settings" className="font-text text-xs text-primary mt-2 inline-block hover:underline">
+                      Complete your profile →
+                    </Link>
+                  )}
+                </div>
+              )
+            })()}
+
+            {/* Stat rows */}
+            <div className="divide-y divide-border">
+              <div className="flex items-center justify-between px-5 py-3">
+                <div>
+                  <p className="font-text text-sm font-medium text-foreground">Availability</p>
+                  <p className="font-text text-sm text-muted-foreground mt-0.5">{currentUser.availability || <span className="italic opacity-50">Not set</span>}</p>
+                </div>
+                <Link href="/talent/dashboard/settings" className="text-muted-foreground hover:text-foreground transition-colors">
+                  <Pencil size={14} />
+                </Link>
+              </div>
+              <div className="flex items-center justify-between px-5 py-3">
+                <div>
+                  <p className="font-text text-sm font-medium text-foreground">Rate</p>
+                  <p className="font-text text-sm text-muted-foreground mt-0.5">{currentUser.rate || <span className="italic opacity-50">Not set</span>}</p>
+                </div>
+                <Link href="/talent/dashboard/settings" className="text-muted-foreground hover:text-foreground transition-colors">
+                  <Pencil size={14} />
+                </Link>
+              </div>
+              <div className="flex items-center justify-between px-5 py-3">
+                <div>
+                  <p className="font-text text-sm font-medium text-foreground">Location</p>
+                  <p className="font-text text-sm text-muted-foreground mt-0.5">{currentUser.location || <span className="italic opacity-50">Not set</span>}</p>
+                </div>
+                <Link href="/talent/dashboard/settings" className="text-muted-foreground hover:text-foreground transition-colors">
+                  <Pencil size={14} />
+                </Link>
+              </div>
+            </div>
+
+            {/* Disciplines */}
+            {currentUser.disciplines && currentUser.disciplines.length > 0 && (
+              <div className="px-5 py-4 border-t border-border">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="font-text text-sm font-semibold text-foreground">My Categories</p>
+                  <Link href="/talent/dashboard/settings" className="text-muted-foreground hover:text-foreground transition-colors">
+                    <Pencil size={14} />
+                  </Link>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  {currentUser.disciplines.map(d => (
+                    <span key={d} className="font-text text-sm text-primary">{d}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <GrowthCommunity audience="talent" />
+        </div>
       </div>
     </div>
   )
