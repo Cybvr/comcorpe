@@ -1,8 +1,21 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { getLeadership, getAdvisors } from '@/lib/people'
 import type { LeadershipMember, AdvisorMember } from '@/lib/people'
+
+const leadershipImages = [
+  '/images/site/Architectural Lattice _ Motion Study 1.png',
+  '/images/site/Panther Prowl _ Concentration 1.png',
+  '/images/site/Flowing Ribbon _ Orchestration Study 1.png',
+]
+
+const advisorImages = [
+  '/images/site/Crane in Flight _ Velocity 1.png',
+  '/images/site/Coiled Serpent _ Strategy 1.png',
+  '/images/site/Woman in Profile _ Vision 1.png',
+]
 
 export default function AboutPage() {
   const [leadershipData, setLeadershipData] = useState<LeadershipMember[]>([])
@@ -88,8 +101,13 @@ export default function AboutPage() {
                   key={i}
                   className={`p-8 md:p-12 flex flex-col gap-6 ${i < leadershipData.length - 1 ? 'border-b md:border-b-0 md:border-r border-foreground' : ''}`}
                 >
-                  <div className="w-full aspect-[4/5] bg-border border border-border flex items-center justify-center group-hover:border-foreground transition-colors duration-300">
-                    <span className="font-mono text-[10px] text-muted-foreground/70 uppercase tracking-widest italic">Portrait Placeholder</span>
+                  <div className="w-full aspect-[4/5] relative overflow-hidden border border-border">
+                    <Image
+                      src={leadershipImages[i] ?? leadershipImages[0]}
+                      alt={p.name}
+                      fill
+                      className="object-cover grayscale"
+                    />
                   </div>
                   <div>
                     <div className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground/70 mb-3">{p.title}</div>
@@ -157,8 +175,13 @@ export default function AboutPage() {
                   key={i}
                   className="grid grid-cols-1 md:grid-cols-[200px_1fr] lg:grid-cols-[200px_1.5fr_2.5fr] gap-8 lg:gap-16 px-8 md:px-12 py-10 md:py-14 bg-background"
                 >
-                  <div className="w-full aspect-square md:aspect-[4/5] bg-border border border-border flex items-center justify-center group-hover:border-foreground transition-colors duration-300">
-                    <span className="font-mono text-[10px] text-muted-foreground/70 uppercase tracking-widest italic">Portrait</span>
+                  <div className="w-full aspect-square md:aspect-[4/5] relative overflow-hidden border border-border">
+                    <Image
+                      src={advisorImages[i % advisorImages.length]}
+                      alt={m.name}
+                      fill
+                      className="object-cover grayscale"
+                    />
                   </div>
                   <div>
                     <div className="font-mono text-[11px] tracking-eyebrow uppercase text-primary mb-4 flex items-center gap-2">

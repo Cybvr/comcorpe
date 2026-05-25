@@ -144,9 +144,25 @@ export default function TalentPage() {
       </section>
 
       {/* Logos */}
-      <section className="px-6 md:px-24 py-12 border-b border-foreground overflow-hidden flex items-center justify-center">
-        <div className="font-mono text-xs text-muted-foreground/70 uppercase tracking-widest text-center">
-          Delivering strategic talent the market cannot supply
+      <section className="px-6 md:px-24 py-12 border-b border-foreground overflow-hidden">
+        <div className="font-mono text-xs text-muted-foreground/70 uppercase tracking-widest text-center mb-10">
+          Our talent comes from the world's leading networks
+        </div>
+        <div className="flex items-center justify-center flex-wrap gap-x-10 gap-y-6 md:gap-x-16">
+          {[
+            { src: '/images/network/bbdo.jpg', alt: 'BBDO' },
+            { src: '/images/network/tbwa.jpeg', alt: 'TBWA' },
+            { src: '/images/network/omd.svg', alt: 'OMD' },
+            { src: '/images/network/critical-mass.webp', alt: 'Critical Mass' },
+            { src: '/images/network/ketchum.png', alt: 'Ketchum' },
+            { src: '/images/network/rapp.svg', alt: 'RAPP' },
+            { src: '/images/network/porter-novelli.svg', alt: 'Porter Novelli' },
+            { src: '/images/network/phd.png', alt: 'PHD' },
+          ].map(({ src, alt }) => (
+            <div key={alt} className="relative h-6 w-20 grayscale opacity-50 hover:opacity-80 transition-opacity">
+              <Image src={src} alt={alt} fill className="object-contain" />
+            </div>
+          ))}
         </div>
       </section>
 

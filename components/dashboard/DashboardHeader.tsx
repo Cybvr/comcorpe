@@ -109,24 +109,24 @@ export default function DashboardHeader({
   }
 
   return (
-    <header className="h-13 shrink-0 border-b border-border flex items-center gap-3 px-4 lg:px-6 bg-background">
+    <header className="h-13 shrink-0 border-b border-primary-foreground/10 flex items-center gap-3 px-4 lg:px-6 bg-primary">
       <button
         onClick={onMenuClick}
-        className="lg:hidden p-1.5 -ml-1 text-muted-foreground hover:text-foreground hover:bg-border rounded-md transition-colors"
+        className="lg:hidden p-1.5 -ml-1 text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10 rounded-md transition-colors"
       >
         <Menu size={20} />
       </button>
 
       <div className="relative flex-1 max-w-md" ref={searchRef}>
         <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-          <Search size={14} strokeWidth={1.8} className="text-muted-foreground/70" />
+          <Search size={14} strokeWidth={1.8} className="text-primary-foreground/50" />
         </div>
         <input
           type="search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search jobs..."
-          className="w-full pl-9 pr-4 py-2 text-sm bg-border/60 border border-transparent rounded-lg text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-input transition-all"
+          className="w-full pl-9 pr-4 py-2 text-sm bg-primary-foreground/10 border border-transparent rounded-lg text-primary-foreground placeholder:text-primary-foreground/50 focus:outline-none focus:border-primary-foreground/30 transition-all"
         />
         {normalizedSearch && (
           <div className="absolute left-0 right-0 top-full z-40 mt-2 overflow-hidden rounded-xl border border-border bg-background shadow-xl">
@@ -166,10 +166,10 @@ export default function DashboardHeader({
         <button
           type="button"
           aria-label="Notifications"
-          className="w-8 h-8 flex items-center justify-center rounded-full text-muted-foreground hover:bg-border transition-colors cursor-pointer relative"
+          className="w-8 h-8 flex items-center justify-center rounded-full text-primary-foreground/70 hover:bg-primary-foreground/10 transition-colors cursor-pointer relative"
         >
           <Bell size={14} strokeWidth={1.5} />
-          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-primary rounded-full" />
+          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-primary-foreground rounded-full" />
         </button>
 
         <div className="relative ml-1" ref={userMenuRef}>
@@ -180,19 +180,19 @@ export default function DashboardHeader({
             aria-expanded={userMenuOpen}
             aria-haspopup="true"
             onClick={() => setUserMenuOpen((o) => !o)}
-            className="flex items-center gap-2 rounded-full pl-1 pr-2 py-1 hover:bg-border transition-colors cursor-pointer group"
+            className="flex items-center gap-2 rounded-full pl-1 pr-2 py-1 hover:bg-primary-foreground/10 transition-colors cursor-pointer group"
           >
-            <div className="w-7 h-7 rounded-full bg-foreground shrink-0 overflow-hidden relative flex items-center justify-center">
+            <div className="w-7 h-7 rounded-full bg-primary-foreground/20 shrink-0 overflow-hidden relative flex items-center justify-center">
               {currentUser?.image ? (
                 <Image src={currentUser.image} alt={currentUser.name ?? ''} fill className="object-cover" />
               ) : (
-                <span className="font-display font-black text-[10px] text-background">{currentUser?.initials ?? ''}</span>
+                <span className="font-display font-black text-[10px] text-primary-foreground">{currentUser?.initials ?? ''}</span>
               )}
             </div>
             <ChevronDown
               size={12}
               strokeWidth={2}
-              className={`text-muted-foreground/70 transition-transform duration-150 ${userMenuOpen ? 'rotate-180' : ''}`}
+              className={`text-primary-foreground/50 transition-transform duration-150 ${userMenuOpen ? 'rotate-180' : ''}`}
             />
           </button>
 

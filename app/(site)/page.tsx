@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Closing from '@/components/Closing'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export const metadata: Metadata = {
   title: 'Comcorpᵉ — A Growth Systems Company',
@@ -25,21 +26,33 @@ export default function Home() {
         id="top"
         className="flex flex-col md:h-[calc(100vh-4rem)] md:[height:calc(100dvh-4rem)] border-b border-foreground overflow-hidden"
       >
-        <div className="px-6 md:px-24 pt-12 pb-14 md:my-auto">
-          <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-foreground inline-flex items-center gap-2.5 mb-8">
-            <span className="w-6 h-px bg-foreground inline-block" />
-            A Growth Systems Company
-          </span>
-          <h1 className="font-display text-[clamp(36px,6.5vw,96px)] leading-[0.92] tracking-[-0.04em] text-foreground m-0 mb-6">
-            The Operating Layer for High-Velocity Growth<span className="text-primary">.</span>
-          </h1>
-          <p className="font-text text-[17px] md:text-[20px] leading-lede text-muted-foreground m-0 max-w-[34ch]">
-            Comcorpᵉ orchestrates data, creativity, technology and strategy into unified growth systems —
-            built to perform in complex markets.
-          </p>
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-[1fr_42%] overflow-hidden">
+          <div className="px-6 md:px-24 pt-12 pb-14 md:my-auto">
+            <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-foreground inline-flex items-center gap-2.5 mb-8">
+              <span className="w-6 h-px bg-foreground inline-block" />
+              A Growth Systems Company
+            </span>
+            <h1 className="font-display text-[clamp(36px,6.5vw,96px)] leading-[0.92] tracking-[-0.04em] text-foreground m-0 mb-6">
+              The Operating Layer for High-Velocity Growth<span className="text-primary">.</span>
+            </h1>
+            <p className="font-text text-[17px] md:text-[20px] leading-lede text-muted-foreground m-0 max-w-[34ch]">
+              Comcorpᵉ orchestrates data, creativity, technology and strategy into unified growth systems —
+              built to perform in complex markets.
+            </p>
+          </div>
+
+          <div className="hidden md:block relative border-l border-foreground">
+            <Image
+              src="/images/site/Eagle in Motion _ Velocity Study 1.png"
+              alt=""
+              fill
+              className="object-cover grayscale"
+              priority
+            />
+          </div>
         </div>
 
-        <div className="mt-auto border-t border-foreground overflow-hidden py-3.5 whitespace-nowrap">
+        <div className="border-t border-foreground overflow-hidden py-3.5 whitespace-nowrap">
           <div className="inline-block animate-ticker font-display font-black text-[32px] tracking-[-0.03em] text-foreground">
             {[...tickerWords, ...tickerWords].map((w, i) => (
               <span key={i} className="inline-block px-8">
