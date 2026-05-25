@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { Fragment } from 'react'
+import Image from 'next/image'
 
 export const metadata: Metadata = {
   title: 'Our Model — Comcorpᵉ',
@@ -54,9 +55,12 @@ export default function ModelPage() {
               <span className="text-primary">Hybrid solutions.</span>
             </h1>
             <div className="font-text text-[19px] leading-relaxed text-muted-foreground max-w-[42ch]">
-              Emerging markets are defined by high-trust networks and low-visibility data. 
+              Emerging markets are defined by high-trust networks and low-visibility data.
               The winners are those who can navigate the gap between formal structure and informal reality.
             </div>
+          </div>
+          <div className="relative aspect-[16/7] w-full overflow-hidden border border-foreground mb-20">
+            <Image src="/images/site/Moth Wings _ Patterned Systems 1.png" alt="" fill className="object-cover grayscale" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-8 border-t border-foreground pt-12">
             {[
