@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { getLeadership, getAdvisors } from '@/lib/people'
 import type { LeadershipMember, AdvisorMember } from '@/lib/people'
 
