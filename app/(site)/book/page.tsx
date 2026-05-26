@@ -1,6 +1,8 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { db } from '@/lib/firebase'
 
 const ARENAS = [
   'Technology & Fintech',
@@ -81,9 +83,17 @@ export default function BookPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    await new Promise(r => setTimeout(r, 600))
-    setLoading(false)
-    setSubmitted(true)
+    try {
+      await addDoc(collection(db, 'bookings'), {
+        ...form,
+        createdAt: serverTimestamp(),
+      })
+      setSubmitted(true)
+    } catch (err) {
+      console.error('Booking submission failed:', err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (submitted) {
