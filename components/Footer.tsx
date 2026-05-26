@@ -17,9 +17,9 @@ function FooterLink({ children, href = '#' }: FooterLinkProps) {
 export default function Footer() {
   const footerSections = [
     { head: 'Model', links: ['Orchestration', 'Specialist Pods', 'Growth Plays'] },
-    { head: 'Arenas', links: services.map((service) => service.title) },
-    { head: 'Company', links: [{ label: 'About', href: '/about' }, { label: 'Why Comcorpe', href: '/why' }, { label: 'How it works', href: '/how-it-works' }, { label: 'Use Cases', href: '/case-studies' }, 'Press'] },
-    { head: 'Contact', links: [{ label: 'Book a session call', href: '/book' }, { label: 'hello@comcorp.e', href: 'mailto:hello@comcorp.e' }, { label: 'Plot 5 Chief Yesufu Abiodun Oniru Rd, Victoria Island, Lagos 106104, Lagos', href: '#' }] },
+    { head: 'Services', links: services.map((service) => service.title) },
+    { head: 'Company', links: [{ label: 'About', href: '/about' }, { label: 'Why Comcorpe', href: '/why' }, { label: 'How it works', href: '/how-it-works' }, { label: 'Use Cases', href: '/case-studies' }, { label: 'Blog', href: '/blog' }, 'Press'] },
+    { head: 'Contact', links: [{ label: 'Book a session call', href: '/book' }, { label: 'hello@comcorpe.com', href: 'mailto:hello@comcorpe.com' }, { label: 'Plot 5 Chief Yesufu Abiodun Oniru Rd, Victoria Island, Lagos 106104, Lagos', href: '#' }] },
   ]
 
   return (

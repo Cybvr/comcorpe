@@ -34,7 +34,7 @@ export default function LegalPage({ page }: { page: LegalPageData }) {
 
         <div className="mt-16 max-w-[820px] border border-border p-6">
           <p className="font-text text-sm leading-relaxed text-muted-foreground">
-            For questions about this page, contact <a href="mailto:hello@comcorp.e" className="text-primary hover:underline">hello@comcorp.e</a>.
+            For questions about this page, contact <a href="mailto:hello@comcorpe.com" className="text-primary hover:underline">hello@comcorpe.com</a>.
           </p>
         </div>
       </div>
