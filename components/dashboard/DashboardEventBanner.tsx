@@ -3,8 +3,8 @@
 import Link from 'next/link'
 import type { DashboardAudience } from '@/components/dashboard/DashboardSidebar'
 
-const EVENT_NAME = 'Comcorpe Signal'
-const EVENT_HREF = '/blog'
+const EVENT_NAME = 'Comcorpe Signals'
+const EVENT_HREF = '/signals'
 const EVENT_LABELS: Record<DashboardAudience, string> = {
   talent: 'Talent event',
   client: 'Whats Happening',
