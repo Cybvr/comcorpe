@@ -7,13 +7,13 @@ const CSP = [
   "font-src 'self' https://fonts.gstatic.com",
   "img-src 'self' blob: data: https://*.googleusercontent.com https://*.microsoft.com https://*.microsoftonline.com https://images.unsplash.com https://*.unsplash.com",
   "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com wss://*.firebaseio.com",
-  "frame-src 'self' https://*.firebaseapp.com https://accounts.google.com https://login.microsoftonline.com https://lu.ma https://cal.com",
+  "frame-src 'self' https://*.firebaseapp.com https://accounts.google.com https://login.microsoftonline.com https://lu.ma https://*.lu.ma https://luma.com https://*.luma.com https://cal.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  "upgrade-insecure-requests",
-].join('; ')
+  ...(isDev ? [] : ["upgrade-insecure-requests"]),
+].filter(Boolean).join('; ')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

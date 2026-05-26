@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Signals — Comcorpᵉ',
-  description: 'Signals is the Comcorpᵉ all-hands. An honest internal forum on how we work, what we\'re building, and where we\'re headed.',
+  description: 'Signals is the Comcorpᵉ all-hands. A candid internal forum on how we work, what we\'re building, and where we\'re headed.',
 }
 
 export default function SignalsPage() {
@@ -18,7 +18,7 @@ export default function SignalsPage() {
             Signals<span className="text-primary">.</span>
           </h1>
           <p className="max-w-[38ch] font-text text-[18px] leading-lede text-muted-foreground">
-            Our first all-hands. An honest conversation about how we work, what we're building, and where we're headed across Pan-Africa.
+            Our first all-hands. A candid conversation about how we work, what we're building, and where we're headed across Pan-Africa.
           </p>
         </div>
       </section>
@@ -33,7 +33,7 @@ export default function SignalsPage() {
                 {[
                   { n: '01', t: 'Opening', s: 'Why we exist and where we\'re going.' },
                   { n: '02', t: 'Operating Model, Live', s: 'Architect → Assemble → Operate with a real example.' },
-                  { n: '03', t: 'Honest Status', s: 'The 8-step flow — what\'s working and what\'s not.' },
+                  { n: '03', t: 'Status', s: 'The 8-step flow — what\'s working and what\'s not.' },
                   { n: '04', t: 'Arenas Update', s: 'What\'s in flight across Fintech, Infrastructure, and Consumer.' },
                   { n: '05', t: 'Open Floor', s: 'Real questions. No polishing.' },
                 ].map((item) => (
@@ -59,9 +59,10 @@ export default function SignalsPage() {
           <div className="flex flex-col gap-4">
             <div className="font-mono text-xs uppercase tracking-eyebrow text-muted-foreground">Reserve your spot</div>
             <iframe
-              src="https://lu.ma/embed/event/evt-M31gahBvjdJfHPB/simple"
+              className="min-h-[620px] w-full md:min-h-[760px] lg:min-h-[820px]"
+              src="https://luma.com/embed/event/evt-M31gahBvjdJfHPB/simple"
               width="100%"
-              height="450"
+              height="820"
               frameBorder="0"
               style={{ border: '1px solid #bfcbda88', borderRadius: '4px' }}
               allow="fullscreen; payment"
