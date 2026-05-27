@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Clock, CheckCircle, XCircle, FileText } from 'lucide-react'
+import { Clock, XCircle, FileText } from 'lucide-react'
 import { useCurrentUser, updateUserProfile } from '@/lib/user'
 import { useVettingTaskForTalent } from '@/lib/vetting'
 import { doc, setDoc } from 'firebase/firestore'
@@ -146,15 +146,6 @@ export default function TalentVettingPage() {
           <p className="font-text text-sm text-muted-foreground">
             We&apos;ve got your work. Our team will review it and get back to you within 2–3 business days.
           </p>
-        </div>
-      )}
-
-      {/* Approved */}
-      {status === 'approved' && (
-        <div className="border border-green-200 bg-green-50 px-6 py-8 text-center space-y-3">
-          <CheckCircle size={32} className="mx-auto text-green-600" />
-          <p className="font-text text-sm font-semibold text-green-700">You&apos;re in.</p>
-          <p className="font-text text-sm text-green-600/80">Your vetting is complete. You can now be deployed on projects.</p>
         </div>
       )}
 
