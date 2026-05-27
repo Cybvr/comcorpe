@@ -7,11 +7,6 @@ export default function TalentDashboardLoading() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
         <Skeleton className="h-9 w-48" />
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-border rounded-full px-4 py-2">
-            <Skeleton className="w-3.5 h-3.5 rounded-full bg-primary/20" />
-            <Skeleton className="h-3 w-16" />
-            <Skeleton className="h-5 w-8" />
-          </div>
           <Skeleton className="h-9 w-28 rounded-full" />
         </div>
       </div>

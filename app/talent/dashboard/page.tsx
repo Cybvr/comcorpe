@@ -10,7 +10,6 @@ import {
   MessageCircle,
   Pencil,
   Users,
-  Zap,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { User } from '@/lib/user'
@@ -145,15 +144,10 @@ export default function DashboardPage() {
   return (
     <div className="px-4 py-6 lg:px-8 lg:py-8 max-w-[1200px] mx-auto">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
-        <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-foreground leading-none">
+        <h1 className="font-display font-black text-[18px] tracking-[-0.03em] text-foreground leading-none md:text-[20px]">
           Hi, {currentUser.name}!
         </h1>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-border rounded-full px-4 py-2 text-sm text-foreground">
-            <Zap size={14} strokeWidth={1.5} className="text-primary" />
-            <span className="font-mono font-bold text-xs">CCREDITS</span>
-            <span className="font-display font-black text-[18px] leading-none">{currentUser.credits}</span>
-          </div>
           <Link href="/talent/dashboard/referrals" className="font-text text-sm font-semibold px-4 py-2 rounded-full bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]">
             Refer &amp; earn
           </Link>

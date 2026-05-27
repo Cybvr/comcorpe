@@ -27,8 +27,7 @@ export default function TalentSettingsContractsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <p className="font-mono text-xs uppercase tracking-eyebrow text-primary mb-2">Contracts</p>
-        <h2 className="font-display font-black text-[28px] tracking-[-0.03em] text-foreground leading-tight">
+        <h2 className="font-display font-black text-[18px] tracking-[-0.03em] text-foreground leading-tight md:text-[20px]">
           Master Agreement
         </h2>
         <p className="font-text text-sm text-muted-foreground mt-1">

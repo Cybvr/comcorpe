@@ -22,7 +22,7 @@ export default async function TalentHelpTopicPage({ params }: { params: Promise<
 
       <div className="border-b border-border pb-8 mb-8">
         <p className="font-mono text-xs uppercase tracking-eyebrow text-primary mb-3">Talent help</p>
-        <h1 className="font-display font-black text-[38px] tracking-[-0.03em] text-foreground leading-none">{topic.title}</h1>
+        <h1 className="font-display font-black text-[18px] tracking-[-0.03em] text-foreground leading-none md:text-[20px]">{topic.title}</h1>
         <p className="font-text text-[16px] leading-relaxed text-muted-foreground mt-5 max-w-[62ch]">{topic.body}</p>
       </div>
 

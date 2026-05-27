@@ -23,11 +23,7 @@ export default function TalentSettingsLayout({ children }: { children: React.Rea
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1200px] mx-auto">
       <div className="mb-8 border-b border-border pb-5">
-        <div className="flex items-center gap-2 text-primary mb-2">
-          <Settings size={16} strokeWidth={1.5} />
-          <p className="font-mono text-xs uppercase tracking-eyebrow font-black">Settings</p>
-        </div>
-        <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-foreground leading-tight">
+        <h1 className="font-display font-black text-[18px] tracking-[-0.03em] text-foreground leading-tight md:text-[20px]">
           Talent settings
         </h1>
       </div>

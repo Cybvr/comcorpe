@@ -73,8 +73,7 @@ export default function TalentVettingPage() {
   return (
     <div className="max-w-[640px] mx-auto py-10 px-4 space-y-8">
       <div>
-        <p className="font-mono text-[11px] uppercase tracking-eyebrow text-muted-foreground mb-1">Vetting</p>
-        <h1 className="font-display font-black text-[32px] tracking-hero text-foreground leading-tight">Your vetting task</h1>
+        <h1 className="font-display font-black text-[18px] tracking-hero text-foreground leading-tight md:text-[20px]">Your vetting task</h1>
       </div>
 
       {/* Pending — task not yet assigned */}

@@ -141,7 +141,7 @@ export default function TalentJobsBoard({
     <div className="px-4 py-6 lg:px-8 lg:py-8 max-w-[1240px] mx-auto">
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
-        <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-foreground leading-none">{title}</h1>
+        <h1 className="font-display font-black text-[18px] tracking-[-0.03em] text-foreground leading-none md:text-[20px]">{title}</h1>
         <span className="px-2 py-0.5 rounded-full bg-muted text-muted-foreground/70 font-mono text-[10px] uppercase tracking-wider">
           {countLabel}
         </span>

@@ -57,7 +57,7 @@ export default function CommunityPostPage({
             </span>
           </div>
 
-          <h1 className="font-display font-black text-[34px] tracking-[-0.03em] text-foreground leading-tight max-w-[18ch]">
+          <h1 className="font-display font-black text-[18px] tracking-[-0.03em] text-foreground leading-tight max-w-[18ch] md:text-[20px]">
             {post.title}
           </h1>
           <p className="font-text text-[16px] leading-relaxed text-muted-foreground mt-6">{post.body}</p>

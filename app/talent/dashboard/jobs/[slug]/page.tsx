@@ -178,7 +178,7 @@ export default function TalentJobDetailPage({
               {job.status}
             </span>
           </div>
-          <h1 className="font-display font-black text-[28px] tracking-[-0.03em] text-foreground leading-tight">{job.title}</h1>
+          <h1 className="font-display font-black text-[18px] tracking-[-0.03em] text-foreground leading-tight md:text-[20px]">{job.title}</h1>
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <button

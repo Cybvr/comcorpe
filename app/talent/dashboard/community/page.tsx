@@ -27,8 +27,7 @@ export default function CommunityPage() {
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1120px] mx-auto">
       <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <p className="font-mono text-xs uppercase tracking-eyebrow text-primary mb-2">Articles</p>
-          <h1 className="font-display font-black text-[36px] tracking-[-0.03em] text-foreground leading-none">Articles</h1>
+          <h1 className="font-display font-black text-[18px] tracking-[-0.03em] text-foreground leading-none md:text-[20px]">Articles</h1>
         </div>
         <div className="relative w-full md:w-80">
           <SearchIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/70" />

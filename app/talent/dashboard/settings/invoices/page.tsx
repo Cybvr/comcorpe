@@ -44,7 +44,7 @@ export default function TalentInvoicesPage() {
     <div className="space-y-8">
       <div>
         <p className="font-mono text-xs uppercase tracking-eyebrow text-primary mb-2">Invoices</p>
-        <h2 className="font-display font-black text-[28px] tracking-[-0.03em] text-foreground leading-tight">
+        <h2 className="font-display font-black text-[18px] tracking-[-0.03em] text-foreground leading-tight md:text-[20px]">
           Your earnings
         </h2>
       </div>

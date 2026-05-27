@@ -43,8 +43,7 @@ export default function TalentContractsPage() {
   return (
     <div className="max-w-[720px] mx-auto py-10 px-4 space-y-8">
       <div>
-        <p className="font-mono text-[11px] uppercase tracking-eyebrow text-muted-foreground mb-1">Contracts</p>
-        <h1 className="font-display font-black text-[32px] tracking-hero text-foreground leading-tight">Master Agreement</h1>
+        <h1 className="font-display font-black text-[18px] tracking-hero text-foreground leading-tight md:text-[20px]">Master Agreement</h1>
         <p className="font-text text-sm text-muted-foreground mt-2">
           This agreement covers IP, confidentiality, and data protection for all work delivered through the platform.
           You sign this once — it applies to every engagement.

@@ -2,8 +2,11 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { Search } from 'lucide-react'
+import { Search, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useCurrentUser, getClientUser } from '@/lib/user'
 import { payouts, type PayoutStatus } from '@/lib/payouts'
 import { useJobs } from '@/lib/jobs'
@@ -16,9 +19,31 @@ const statusStyles: Record<PayoutStatus, string> = {
 }
 
 export default function TalentPaymentsPage() {
+  type SortKey = 'amount' | 'client' | 'date'
+  type SortDir = 'asc' | 'desc'
+
   const { user: currentUser, loading: userLoading } = useCurrentUser()
   const { jobs, loading: jobsLoading } = useJobs()
   const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState<PayoutStatus | 'All'>('All')
+  const [sortKey, setSortKey] = useState<SortKey>('date')
+  const [sortDir, setSortDir] = useState<SortDir>('desc')
+
+  function toggleSort(key: SortKey) {
+    if (sortKey === key) {
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortKey(key)
+      setSortDir('desc')
+    }
+  }
+
+  function SortIcon({ col }: { col: SortKey }) {
+    if (sortKey !== col) return <ChevronsUpDown size={11} className="ml-1 inline text-muted-foreground/40" />
+    return sortDir === 'asc'
+      ? <ChevronUp size={11} className="ml-1 inline text-foreground" />
+      : <ChevronDown size={11} className="ml-1 inline text-foreground" />
+  }
 
   if (userLoading || jobsLoading || !currentUser) {
     return (
@@ -81,18 +106,28 @@ export default function TalentPaymentsPage() {
     .filter((p) => p.status === 'Pending')
     .sort((a, b) => a.id - b.id)[0]
 
-  const filtered = payouts.filter(
-    (p) =>
-      p.label.toLowerCase().includes(search.toLowerCase()) ||
-      getClientUser(p.clientId).name.toLowerCase().includes(search.toLowerCase()) ||
-      p.status.toLowerCase().includes(search.toLowerCase()),
-  )
+  const filtered = payouts
+    .filter((p) => {
+      if (statusFilter !== 'All' && p.status !== statusFilter) return false
+      const q = search.toLowerCase()
+      return (
+        p.label.toLowerCase().includes(q) ||
+        getClientUser(p.clientId).name.toLowerCase().includes(q) ||
+        p.status.toLowerCase().includes(q)
+      )
+    })
+    .sort((a, b) => {
+      let cmp = 0
+      if (sortKey === 'amount') cmp = a.amountRaw - b.amountRaw
+      else if (sortKey === 'client') cmp = getClientUser(a.clientId).name.localeCompare(getClientUser(b.clientId).name)
+      else if (sortKey === 'date') cmp = new Date(a.date).getTime() - new Date(b.date).getTime()
+      return sortDir === 'asc' ? cmp : -cmp
+    })
 
   return (
     <div className="mx-auto max-w-[1200px] space-y-8 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
       <div>
-        <p className="mb-2 font-mono text-xs uppercase tracking-eyebrow text-primary">Payments</p>
-        <h1 className="font-display text-[32px] font-black leading-tight tracking-[-0.03em] text-foreground">
+        <h1 className="font-display text-[18px] font-black leading-tight tracking-[-0.03em] text-foreground md:text-[20px]">
           Your earnings
         </h1>
       </div>
@@ -104,18 +139,12 @@ export default function TalentPaymentsPage() {
             <p className="font-text text-base font-bold leading-none text-foreground">
               ${pendingTotal.toLocaleString()}
             </p>
-            <p className="mt-3 font-text text-xs text-muted-foreground md:mt-4 md:text-sm">
-              {payouts.filter((p) => p.status === 'Pending' || p.status === 'Processing').length} in flight
-            </p>
           </div>
 
           <div className="min-w-[220px] snap-start rounded-2xl border border-border bg-background p-4 md:min-w-0 md:p-6">
             <p className="mb-2 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Cleared</p>
             <p className="font-text text-base font-bold leading-none text-foreground">
               ${clearedTotal.toLocaleString()}
-            </p>
-            <p className="mt-3 font-text text-xs text-muted-foreground md:mt-4 md:text-sm">
-              {payouts.filter((p) => p.status === 'Cleared').length} payouts received
             </p>
           </div>
 
@@ -125,9 +154,6 @@ export default function TalentPaymentsPage() {
               <>
                 <p className="font-text text-base font-bold leading-none text-foreground">
                   {nextPayout.amount}
-                </p>
-                <p className="mt-3 font-text text-xs text-amber-600 md:mt-4 md:text-sm">
-                  {nextPayout.date} - {getClientUser(nextPayout.clientId).name}
                 </p>
               </>
             ) : (
@@ -140,53 +166,73 @@ export default function TalentPaymentsPage() {
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-center justify-between gap-4">
-          <div className="relative max-w-sm flex-1">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative max-w-sm flex-1 min-w-[180px]">
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/70" />
             <input
               type="text"
-              placeholder="Filter payouts..."
+              placeholder="Search payouts…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full rounded-xl border border-border bg-background py-2.5 pl-9 pr-4 font-text text-sm transition-colors focus:border-primary/40 focus:outline-none"
             />
           </div>
-          <button className="rounded-xl border border-border px-4 py-2.5 font-text text-sm font-semibold transition-colors hover:bg-muted">
-            Export CSV
-          </button>
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as PayoutStatus | 'All')}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="All statuses" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All statuses</SelectItem>
+              <SelectItem value="Cleared">Cleared</SelectItem>
+              <SelectItem value="Pending">Pending</SelectItem>
+              <SelectItem value="Processing">Processing</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button variant="outline" className="ml-auto">Export CSV</Button>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl border border-border bg-background">
-          <table className="w-full min-w-[760px] border-collapse text-left">
-            <thead>
-              <tr className="border-b border-border bg-muted/50">
-                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Status</th>
-                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Milestone</th>
-                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Client</th>
-                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Pod</th>
-                <th className="px-5 py-3.5 text-right font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Amount</th>
-                <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Date</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
+        <div className="rounded-2xl border border-border bg-background overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead>Status</TableHead>
+                <TableHead>Milestone</TableHead>
+                <TableHead>
+                  <button type="button" onClick={() => toggleSort('client')} className="flex items-center hover:text-foreground transition-colors">
+                    Client <SortIcon col="client" />
+                  </button>
+                </TableHead>
+                <TableHead>Pod</TableHead>
+                <TableHead className="text-right">
+                  <button type="button" onClick={() => toggleSort('amount')} className="ml-auto flex items-center hover:text-foreground transition-colors">
+                    Amount <SortIcon col="amount" />
+                  </button>
+                </TableHead>
+                <TableHead>
+                  <button type="button" onClick={() => toggleSort('date')} className="flex items-center hover:text-foreground transition-colors">
+                    Date <SortIcon col="date" />
+                  </button>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {filtered.map((payout) => {
                 const job = jobs.find((j) => j.slug === payout.jobSlug)
                 const pod = job?.podSlug ? getPodBySlug(job.podSlug) : null
-
                 return (
-                  <tr key={payout.id} className="transition-colors hover:bg-muted/30">
-                    <td className="px-5 py-4">
+                  <TableRow key={payout.id}>
+                    <TableCell>
                       <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold ${statusStyles[payout.status]}`}>
                         {payout.status}
                       </span>
-                    </td>
-                    <td className="max-w-[260px] px-5 py-4">
+                    </TableCell>
+                    <TableCell className="max-w-[260px]">
                       <p className="truncate font-text text-sm font-semibold leading-tight text-foreground">{payout.label}</p>
                       {payout.meta && (
                         <p className="mt-0.5 truncate font-text text-xs text-muted-foreground/70">{payout.meta}</p>
                       )}
-                    </td>
-                    <td className="px-5 py-4">
+                    </TableCell>
+                    <TableCell>
                       {job ? (
                         <Link href={`/talent/dashboard/jobs/${job.slug}`} className="font-text text-sm text-primary hover:underline">
                           {getClientUser(payout.clientId).name}
@@ -194,35 +240,34 @@ export default function TalentPaymentsPage() {
                       ) : (
                         <span className="font-text text-sm text-muted-foreground">{getClientUser(payout.clientId).name}</span>
                       )}
-                    </td>
-                    <td className="px-5 py-4">
+                    </TableCell>
+                    <TableCell>
                       {pod ? (
                         <Link href={`/talent/dashboard/search/${pod.slug}`} className="font-text text-sm text-primary hover:underline">
                           {pod.name}
                         </Link>
                       ) : (
-                        <span className="font-text text-sm text-muted-foreground/70">-</span>
+                        <span className="font-text text-sm text-muted-foreground/70">–</span>
                       )}
-                    </td>
-                    <td className="px-5 py-4 text-right">
+                    </TableCell>
+                    <TableCell className="text-right">
                       <span className="font-mono text-sm font-bold text-foreground">{payout.amount}</span>
-                    </td>
-                    <td className="px-5 py-4">
+                    </TableCell>
+                    <TableCell>
                       <span className="font-text text-xs text-muted-foreground">{payout.date}</span>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )
               })}
-
               {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="px-5 py-12 text-center font-text text-sm text-muted-foreground/70">
+                <TableRow className="hover:bg-transparent">
+                  <TableCell colSpan={6} className="py-12 text-center font-text text-sm text-muted-foreground/70">
                     No payouts match your search.
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </div>
     </div>

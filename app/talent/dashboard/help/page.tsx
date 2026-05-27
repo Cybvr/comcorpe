@@ -6,8 +6,7 @@ export default function HelpPage() {
   return (
     <div className="px-8 py-8 max-w-[920px] mx-auto">
       <div className="mb-6">
-        <p className="font-mono text-xs uppercase tracking-eyebrow text-primary mb-2">Help centre</p>
-        <h1 className="font-display font-black text-[32px] tracking-[-0.03em] text-foreground leading-none">Support topics</h1>
+        <h1 className="font-display font-black text-[18px] tracking-[-0.03em] text-foreground leading-none md:text-[20px]">Support topics</h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
