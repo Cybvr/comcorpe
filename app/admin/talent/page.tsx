@@ -1,8 +1,17 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { getTalent, createTalent, updateTalent, deleteTalent } from '@/lib/admin/store'
+import { getTalent, createTalent, updateTalent, deleteTalent, createVettingTask, updateVettingTask, getVettingTaskForTalent } from '@/lib/admin/store'
 import { User, OMNICOM_AFFILIATES } from '@/lib/user'
+import { type VettingTask } from '@/lib/vetting'
 import Modal from '@/components/admin/Modal'
+
+const VETTING_COLORS: Record<string, string> = {
+  pending: 'bg-muted text-muted-foreground',
+  'task-assigned': 'bg-amber-100 text-amber-700',
+  submitted: 'bg-blue-100 text-blue-700',
+  approved: 'bg-green-100 text-green-700',
+  rejected: 'bg-red-100 text-red-600',
+}
 
 const EMPTY = {
   firstName: '',
@@ -245,6 +254,10 @@ export default function AdminTalentPage() {
   const [modal, setModal] = useState<'create' | { user: User } | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<User | null>(null)
   const [search, setSearch] = useState('')
+  const [vettingModal, setVettingModal] = useState<{ mode: 'assign'; user: User } | { mode: 'review'; user: User; task: VettingTask } | null>(null)
+  const [vettingForm, setVettingForm] = useState({ title: '', brief: '' })
+  const [reviewForm, setReviewForm] = useState({ notes: '' })
+  const [vettingSaving, setVettingSaving] = useState(false)
 
   async function reload() {
     setTalent(await getTalent())
@@ -275,6 +288,45 @@ export default function AdminTalentPage() {
       setDeleteTarget(null)
       await reload()
     }
+  }
+
+  async function openReviewModal(user: User) {
+    const task = await getVettingTaskForTalent(user.id)
+    if (task) setVettingModal({ mode: 'review', user, task })
+  }
+
+  async function handleAssignTask(e: React.FormEvent) {
+    e.preventDefault()
+    if (!vettingModal || vettingModal.mode !== 'assign') return
+    setVettingSaving(true)
+    const assignedAt = new Date().toISOString()
+    const deadline = new Date(Date.now() + 48 * 3_600_000).toISOString()
+    await createVettingTask({
+      talentId: vettingModal.user.id,
+      title: vettingForm.title,
+      brief: vettingForm.brief,
+      assignedAt,
+      deadline,
+      status: 'assigned',
+    })
+    setVettingSaving(false)
+    setVettingModal(null)
+    setVettingForm({ title: '', brief: '' })
+    await reload()
+  }
+
+  async function handleReviewDecision(decision: 'approved' | 'rejected') {
+    if (!vettingModal || vettingModal.mode !== 'review') return
+    setVettingSaving(true)
+    await updateVettingTask(vettingModal.task.id, {
+      status: decision,
+      reviewNotes: reviewForm.notes || undefined,
+      reviewedAt: new Date().toISOString(),
+    })
+    setVettingSaving(false)
+    setVettingModal(null)
+    setReviewForm({ notes: '' })
+    await reload()
   }
 
   return (
@@ -315,18 +367,40 @@ export default function AdminTalentPage() {
                 <p className="font-mono text-[11px] text-muted-foreground/70 mt-0.5 truncate">{user.talentRole}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
-              {user.featured && (
-                <span className="font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 bg-primary/10 text-primary">
-                  Featured
+            <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
+              {user.vettingStatus && (
+                <span className={`font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 ${VETTING_COLORS[user.vettingStatus] ?? 'bg-border text-muted-foreground'}`}>
+                  {user.vettingStatus.replace('-', ' ')}
                 </span>
+              )}
+              {user.performanceScore != null && (
+                <span className="font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 bg-foreground/10 text-foreground">
+                  ★ {user.performanceScore}
+                </span>
+              )}
+              {user.featured && (
+                <span className="font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 bg-primary/10 text-primary">Featured</span>
               )}
               {user.ndaSigned && (
-                <span className="font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 bg-green-50 text-green-700 border border-green-200">
-                  NDA signed
-                </span>
+                <span className="font-mono text-[10px] tracking-eyebrow uppercase px-2 py-0.5 bg-green-50 text-green-700 border border-green-200">NDA</span>
               )}
               <span className="hidden sm:block font-mono text-[11px] text-muted-foreground/70">{user.rate}</span>
+              {(!user.vettingStatus || user.vettingStatus === 'pending') && (
+                <button
+                  onClick={() => { setVettingModal({ mode: 'assign', user }); setVettingForm({ title: '', brief: '' }) }}
+                  className="px-3 py-1.5 border border-amber-200 font-text text-xs text-amber-700 hover:bg-amber-600 hover:text-white hover:border-amber-600 transition-colors duration-100"
+                >
+                  Assign task
+                </button>
+              )}
+              {user.vettingStatus === 'submitted' && (
+                <button
+                  onClick={() => openReviewModal(user)}
+                  className="px-3 py-1.5 border border-blue-200 font-text text-xs text-blue-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-colors duration-100"
+                >
+                  Review
+                </button>
+              )}
               <button
                 onClick={() => setModal({ user })}
                 className="px-3 py-1.5 border border-input font-text text-xs text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-colors duration-100"
@@ -365,18 +439,95 @@ export default function AdminTalentPage() {
             Remove <strong className="text-foreground">{deleteTarget.name}</strong> from the platform? This cannot be undone.
           </p>
           <div className="flex gap-3">
-            <button
-              onClick={confirmDelete}
-              className="flex-1 py-3 bg-red-600 text-white font-text text-sm font-semibold hover:bg-red-700 transition-colors duration-100"
-            >
-              Delete
-            </button>
-            <button
-              onClick={() => setDeleteTarget(null)}
-              className="flex-1 py-3 border border-input text-foreground font-text text-sm hover:bg-border transition-colors duration-100"
-            >
-              Cancel
-            </button>
+            <button onClick={confirmDelete} className="flex-1 py-3 bg-red-600 text-white font-text text-sm font-semibold hover:bg-red-700 transition-colors duration-100">Delete</button>
+            <button onClick={() => setDeleteTarget(null)} className="flex-1 py-3 border border-input text-foreground font-text text-sm hover:bg-border transition-colors duration-100">Cancel</button>
+          </div>
+        </Modal>
+      )}
+
+      {/* Assign vetting task */}
+      {vettingModal?.mode === 'assign' && (
+        <Modal title={`Assign task — ${vettingModal.user.name}`} onClose={() => setVettingModal(null)}>
+          <form onSubmit={handleAssignTask} className="space-y-4">
+            <p className="font-text text-xs text-muted-foreground">
+              The specialist will have 48 hours from the moment you save this to submit their work.
+            </p>
+            <div className="flex flex-col gap-1.5">
+              <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Task title *</label>
+              <input
+                className="w-full px-4 py-3 border border-input bg-white font-text text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors"
+                value={vettingForm.title}
+                onChange={e => setVettingForm(f => ({ ...f, title: e.target.value }))}
+                placeholder="e.g. Growth strategy for a B2C fintech"
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Brief *</label>
+              <textarea
+                className="w-full px-4 py-3 border border-input bg-white font-text text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors resize-none"
+                rows={6}
+                value={vettingForm.brief}
+                onChange={e => setVettingForm(f => ({ ...f, brief: e.target.value }))}
+                placeholder="Describe the task, what you're evaluating, and what a good submission looks like…"
+                required
+              />
+            </div>
+            <div className="flex gap-3 pt-1">
+              <button type="submit" disabled={vettingSaving} className="flex-1 py-3 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50">
+                {vettingSaving ? 'Saving…' : 'Assign task'}
+              </button>
+              <button type="button" onClick={() => setVettingModal(null)} className="flex-1 py-3 border border-input text-foreground font-text text-sm hover:bg-border transition-colors">Cancel</button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Review vetting submission */}
+      {vettingModal?.mode === 'review' && (
+        <Modal title={`Review — ${vettingModal.user.name}`} onClose={() => setVettingModal(null)}>
+          <div className="space-y-4">
+            <div className="bg-muted/40 p-4 space-y-2 rounded">
+              <p className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground">Task</p>
+              <p className="font-text text-sm font-semibold text-foreground">{vettingModal.task.title}</p>
+              {vettingModal.task.submissionUrl && (
+                <a href={vettingModal.task.submissionUrl} target="_blank" rel="noopener noreferrer" className="font-text text-xs text-primary underline break-all">
+                  {vettingModal.task.submissionUrl}
+                </a>
+              )}
+              {vettingModal.task.submissionNotes && (
+                <p className="font-text text-xs text-muted-foreground">{vettingModal.task.submissionNotes}</p>
+              )}
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Review notes (optional)</label>
+              <textarea
+                className="w-full px-4 py-3 border border-input bg-white font-text text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors resize-none"
+                rows={3}
+                value={reviewForm.notes}
+                onChange={e => setReviewForm(f => ({ ...f, notes: e.target.value }))}
+                placeholder="Feedback shown to the specialist if rejected…"
+              />
+            </div>
+            <div className="flex gap-3 pt-1">
+              <button
+                type="button"
+                onClick={() => handleReviewDecision('approved')}
+                disabled={vettingSaving}
+                className="flex-1 py-3 bg-green-600 text-white font-text text-sm font-semibold hover:bg-green-700 transition-colors disabled:opacity-50"
+              >
+                {vettingSaving ? 'Saving…' : 'Approve'}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleReviewDecision('rejected')}
+                disabled={vettingSaving}
+                className="flex-1 py-3 bg-red-600 text-white font-text text-sm font-semibold hover:bg-red-700 transition-colors disabled:opacity-50"
+              >
+                {vettingSaving ? 'Saving…' : 'Reject'}
+              </button>
+              <button type="button" onClick={() => setVettingModal(null)} className="px-4 py-3 border border-input text-foreground font-text text-sm hover:bg-border transition-colors">Cancel</button>
+            </div>
           </div>
         </Modal>
       )}

@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { getJobs, createJob, deleteJob, getSystemUsers } from '@/lib/admin/store'
+import { getJobs, createJob, deleteJob, closeJob, getSystemUsers } from '@/lib/admin/store'
 import type { User } from '@/lib/user'
 import type { Job, JobStatus, JobType } from '@/lib/jobs'
 import { invoices as seedInvoices, type Invoice, type InvoiceStatus } from '@/lib/invoices'
@@ -323,6 +323,8 @@ export default function AdminJobsPage() {
   const [jobs, setJobs] = useState<Job[]>([])
   const [modal, setModal] = useState<ModalState>(null)
   const [deleteTarget, setDeleteTarget] = useState<Job | null>(null)
+  const [closeTarget, setCloseTarget] = useState<Job | null>(null)
+  const [closing, setClosing] = useState(false)
   const [filter, setFilter] = useState<JobStatus | 'All'>('All')
   const [search, setSearch] = useState('')
   const [localInvoices, setLocalInvoices] = useState<Invoice[]>(seedInvoices)
@@ -362,6 +364,15 @@ export default function AdminJobsPage() {
       setDeleteTarget(null)
       await reload()
     }
+  }
+
+  async function confirmClose() {
+    if (!closeTarget) return
+    setClosing(true)
+    await closeJob(closeTarget.id)
+    setClosing(false)
+    setCloseTarget(null)
+    await reload()
   }
 
   return (
@@ -450,6 +461,14 @@ export default function AdminJobsPage() {
               >
                 Edit
               </Link>
+              {(job.status === 'Active' || job.status === 'Paused') && (
+                <button
+                  onClick={() => setCloseTarget(job)}
+                  className="px-3 py-1.5 border border-amber-200 font-text text-xs text-amber-700 hover:bg-amber-600 hover:text-white hover:border-amber-600 transition-colors duration-100"
+                >
+                  Close
+                </button>
+              )}
               <button
                 onClick={() => setDeleteTarget(job)}
                 className="px-3 py-1.5 border border-red-200 font-text text-xs text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600 transition-colors duration-100"
@@ -496,6 +515,25 @@ export default function AdminJobsPage() {
               Delete
             </button>
             <button onClick={() => setDeleteTarget(null)} className="flex-1 py-3 border border-input text-foreground font-text text-sm hover:bg-border transition-colors duration-100">
+              Cancel
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {closeTarget && (
+        <Modal title="Close project" onClose={() => setCloseTarget(null)}>
+          <p className="font-text text-sm text-muted-foreground mb-2">
+            Mark <strong className="text-foreground">{closeTarget.title}</strong> as Completed and revoke pod member access?
+          </p>
+          <p className="font-text text-xs text-muted-foreground/70 mb-6">
+            This removes the project from all assigned specialists&apos; dashboards. This cannot be undone.
+          </p>
+          <div className="flex gap-3">
+            <button onClick={confirmClose} disabled={closing} className="flex-1 py-3 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-100 disabled:opacity-50">
+              {closing ? 'Closing…' : 'Close project'}
+            </button>
+            <button onClick={() => setCloseTarget(null)} className="flex-1 py-3 border border-input text-foreground font-text text-sm hover:bg-border transition-colors duration-100">
               Cancel
             </button>
           </div>

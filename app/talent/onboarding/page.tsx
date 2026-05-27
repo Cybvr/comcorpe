@@ -107,6 +107,7 @@ export default function TalentOnboardingPage() {
 
       await updateUserProfile(currentUser.id, {
         isOnboarded: true,
+        vettingStatus: 'pending',
         name: form.fullName,
         initials: calculatedInitials,
         talentRole: form.role,

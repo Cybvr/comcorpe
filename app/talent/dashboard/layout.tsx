@@ -63,6 +63,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           collapsed={sidebarCollapsed}
           onClose={() => setSidebarOpen(false)}
           onToggleCollapse={() => setSidebarCollapsed((current) => !current)}
+          talentVetted={user.vettingStatus === 'approved'}
+          talentMsaSigned={user.msaSigned === true}
         />
       </div>
 

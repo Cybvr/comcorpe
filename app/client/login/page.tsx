@@ -19,7 +19,6 @@ function dashboardPathForRole(role: string | undefined) {
   return '/client/dashboard'
 }
 
-// ─── Icons ─────────────────────────────────────────────────────────────────────
 function GoogleIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -31,31 +30,18 @@ function GoogleIcon() {
   )
 }
 
-function MicrosoftIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0 0h8.571v8.571H0z" fill="#F25022"/>
-      <path d="M9.429 0H18v8.571H9.429z" fill="#7FBA00"/>
-      <path d="M0 9.429h8.571V18H0z" fill="#00A4EF"/>
-      <path d="M9.429 9.429H18V18H9.429z" fill="#FFB900"/>
-    </svg>
-  )
-}
-
-// ─── Main component ─────────────────────────────────────────────────────────────
-export default function LoginPage() {
+export default function ClientLoginPage() {
   const router = useRouter()
-  const [email, setEmail]       = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [error, setError]       = useState('')
-  const [loading, setLoading]   = useState<string | null>(null)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState<string | null>(null)
 
   function openDashboard(role: string | undefined) {
     router.push(dashboardPathForRole(role))
   }
 
-  // ─── Handle Google redirect result on mount ─────────────────────────────────
   useEffect(() => {
     getRedirectResult(auth)
       .then(result => {
@@ -64,16 +50,12 @@ export default function LoginPage() {
           finishLogin(result.user)
         }
       })
-      .catch(() => {
-        setError('Google sign-in failed. Please try again.')
-      })
+      .catch(() => setError('Google sign-in failed. Please try again.'))
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // ─── Post-auth: verify token server-side, set session cookie, redirect ──────
   async function finishLogin(user: User) {
     const emailLower = user.email?.toLowerCase().trim() ?? ''
-
     let role = 'client'
     let matchedDocId: string | null = null
 
@@ -83,15 +65,13 @@ export default function LoginPage() {
       if (existingDoc) {
         role = existingDoc.data().role ?? 'client'
         matchedDocId = existingDoc.id
-        // Link Firebase Auth UID to the pre-seeded document
         await setDoc(doc(db, 'users', matchedDocId), { firebaseUid: user.uid }, { merge: true })
       }
     } catch (err) {
-      console.error('Error matching pre-seeded user:', err)
+      console.error('Error matching user:', err)
     }
 
     if (!matchedDocId) {
-      // Create new user profile document if not pre-seeded
       const prefix = emailLower.split('@')[0].replace(/[\._]/g, '-')
       const defaultName = user.displayName || prefix.split('-').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ')
       await setDoc(doc(db, 'users', prefix), {
@@ -99,16 +79,14 @@ export default function LoginPage() {
         firebaseUid: user.uid,
         name: defaultName,
         email: emailLower,
-        role: 'talent', // default new user role
+        role: 'client',
         isOnboarded: false,
       })
     }
 
-    // ─── Establish server-side session cookies ───────────────────────────────
     openDashboard(role)
   }
 
-  // ─── Google sign-in ─────────────────────────────────────────────────────────
   async function handleGoogle() {
     setError('')
     setLoading('google')
@@ -117,7 +95,6 @@ export default function LoginPage() {
       await finishLogin(result.user)
     } catch (err: any) {
       if (err?.code === 'auth/popup-blocked') {
-        // Popup blocked (common on mobile) — fall back to redirect
         await signInWithRedirect(auth, googleProvider)
       } else if (err?.code !== 'auth/popup-closed-by-user') {
         setError('Google sign-in failed. Please try again.')
@@ -128,7 +105,6 @@ export default function LoginPage() {
     }
   }
 
-  // ─── Email + password sign-in ───────────────────────────────────────────────
   async function handleEmailPassword(e: React.FormEvent) {
     e.preventDefault()
     setError('')
@@ -138,20 +114,10 @@ export default function LoginPage() {
       await finishLogin(result.user)
     } catch (err: unknown) {
       const code = (err as { code?: string }).code
-
-      if (
-        code === 'auth/wrong-password' ||
-        code === 'auth/user-not-found' ||
-        code === 'auth/invalid-credential' ||
-        code === 'auth/invalid-login-credentials'
-      ) {
+      if (code === 'auth/wrong-password' || code === 'auth/user-not-found' || code === 'auth/invalid-credential' || code === 'auth/invalid-login-credentials') {
         setError('Incorrect email or password.')
-      } else if (code === 'auth/operation-not-allowed') {
-        setError('Email/password sign-in is not enabled in Firebase.')
       } else if (code === 'auth/too-many-requests') {
         setError('Too many login attempts. Try again later.')
-      } else if (code) {
-        setError(`Sign-in failed: ${code}`)
       } else {
         setError('Sign-in failed. Please try again.')
       }
@@ -163,29 +129,19 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6">
       <div className="w-full max-w-[400px]">
-
-        {/* Logo */}
         <div className="flex justify-center mb-12">
-          <Image
-            src="/images/comcorpe.png"
-            alt="Comcorpᵉ"
-            width={160}
-            height={40}
-            className="h-10 w-auto object-contain"
-            priority
-          />
+          <Image src="/images/comcorpe.png" alt="Comcorpᵉ" width={160} height={40} className="h-10 w-auto object-contain" priority />
         </div>
 
         <div className="mb-8">
           <h1 className="font-display font-black text-[32px] tracking-hero text-foreground leading-tight mb-2">
-            Team access
+            Client access
           </h1>
           <p className="font-text text-sm text-muted-foreground">
-            Sign in with your Comcorpᵉ account.
+            Sign in to your Comcorpᵉ client dashboard.
           </p>
         </div>
 
-        {/* SSO buttons */}
         <div className="flex flex-col gap-3">
           <button
             onClick={handleGoogle}
@@ -197,34 +153,27 @@ export default function LoginPage() {
           </button>
         </div>
 
-        {/* Divider */}
         <div className="flex items-center gap-3 my-6">
           <div className="flex-1 h-px bg-input" />
           <span className="font-mono text-[11px] text-muted-foreground/60 tracking-eyebrow uppercase">or</span>
           <div className="flex-1 h-px bg-input" />
         </div>
 
-        {/* Email + password */}
         <form onSubmit={handleEmailPassword} className="flex flex-col gap-3">
           <div className="flex flex-col gap-1.5">
-            <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">
-              Email
-            </label>
+            <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Email</label>
             <input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              placeholder="you@comcorpe.com"
+              placeholder="you@company.com"
               required
               autoComplete="email"
               className="w-full px-4 py-3.5 border border-input bg-card font-text text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors duration-[120ms]"
             />
           </div>
-
           <div className="flex flex-col gap-1.5">
-            <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">
-              Password
-            </label>
+            <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -237,16 +186,14 @@ export default function LoginPage() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(current => !current)}
+                onClick={() => setShowPassword(v => !v)}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
-                aria-pressed={showPassword}
-                className="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-muted-foreground hover:text-foreground focus:outline-none focus:text-foreground transition-colors duration-[120ms]"
+                className="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-muted-foreground hover:text-foreground focus:outline-none transition-colors duration-[120ms]"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
-
           <button
             type="submit"
             disabled={loading !== null}
@@ -256,15 +203,12 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Error */}
         {error && (
-          <p className="mt-4 font-text text-sm text-red-600 bg-red-50 px-4 py-3 border border-red-200">
-            {error}
-          </p>
+          <p className="mt-4 font-text text-sm text-red-600 bg-red-50 px-4 py-3 border border-red-200">{error}</p>
         )}
 
         <p className="mt-10 font-mono text-[11px] text-muted-foreground/70 text-center tracking-[0.06em]">
-          COMCORP<span className="gradient-e">E</span> · TEAM PORTAL
+          COMCORP<span className="gradient-e">E</span> · CLIENT PORTAL
         </p>
       </div>
     </div>

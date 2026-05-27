@@ -21,6 +21,7 @@ export interface Milestone {
   date: string
   status: 'pending' | 'in-progress' | 'completed'
   amount?: string
+  baseFee?: number
 }
 
 export interface Job {
@@ -67,6 +68,20 @@ export interface Job {
   rejectedReason?: string
   // Public sharing
   sharedPublicly?: boolean
+  // Pay structure
+  complexityMultiplier?: 1 | 1.25 | 1.5 | 1.75 | 2
+  actionBounty?: number
+  actionBountyCondition?: string
+  actionBountyStatus?: 'pending' | 'achieved' | 'not-achieved'
+  // Project close
+  closedAt?: string
+  // Addendum
+  addendumStatus?: 'pending' | 'signed'
+  addendumSignedAt?: string
+  addendumSignedBy?: string
+  addendumDeliverable?: string
+  addendumDeadline?: string
+  addendumFee?: string
 }
 
 export const jobs: Job[] = []

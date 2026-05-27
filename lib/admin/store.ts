@@ -6,9 +6,12 @@ import {
   getDoc,
   setDoc,
   deleteDoc,
+  query,
+  where,
   type DocumentData,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
+import type { VettingTask } from '@/lib/vetting'
 import { users, clientUsers, type User } from '@/lib/user'
 import { jobs, type Job } from '@/lib/jobs'
 import { pods as podsSeed, type Pod } from '@/lib/pods'
@@ -119,6 +122,30 @@ export async function deleteJob(id: number): Promise<void> {
   const existing = all.find(j => j.id === id)
   if (!existing) return
   await remove('jobs', existing.slug)
+}
+
+export async function closeJob(jobId: number): Promise<void> {
+  const all = await getJobs()
+  const job = all.find(j => j.id === jobId)
+  if (!job) return
+
+  const closedAt = new Date().toISOString()
+
+  // Mark job closed
+  await upsert('jobs', job.slug, { ...job, status: 'Completed', closedAt })
+
+  // Revoke access for all pod members
+  if (job.podMembers && job.podMembers.length > 0) {
+    await Promise.all(
+      job.podMembers.map(async (userId) => {
+        const userSnap = await getDoc(doc(db, 'users', userId))
+        if (!userSnap.exists()) return
+        const userData = userSnap.data()
+        const updated = (userData.assignedJobSlugs ?? []).filter((s: string) => s !== job.slug)
+        await upsert('users', userId, { ...userData, id: userId, assignedJobSlugs: updated })
+      })
+    )
+  }
 }
 
 // ─── Pods ─────────────────────────────────────────────────────────────────────
@@ -254,6 +281,56 @@ export async function updateSystemUser(id: string, data: Partial<User>): Promise
 
 export async function deleteSystemUser(id: string): Promise<void> {
   await remove('users', id)
+}
+
+// ─── Vetting ──────────────────────────────────────────────────────────────────
+export async function getVettingTasks(): Promise<VettingTask[]> {
+  try {
+    const snap = await getDocs(collection(db, 'vettingTasks'))
+    return snap.docs.map(d => ({ id: d.id, ...d.data() } as VettingTask))
+  } catch {
+    return []
+  }
+}
+
+export async function getVettingTaskForTalent(talentId: string): Promise<VettingTask | null> {
+  try {
+    const q = query(collection(db, 'vettingTasks'), where('talentId', '==', talentId))
+    const snap = await getDocs(q)
+    if (snap.empty) return null
+    return { id: snap.docs[0].id, ...snap.docs[0].data() } as VettingTask
+  } catch {
+    return null
+  }
+}
+
+export async function createVettingTask(data: Omit<VettingTask, 'id'>): Promise<VettingTask> {
+  const id = Date.now().toString()
+  const record: VettingTask = { ...data, id }
+  await upsert('vettingTasks', id, clean(record))
+  // Update talent's vettingStatus and vettingTaskId
+  await upsert('users', data.talentId, { vettingStatus: 'task-assigned', vettingTaskId: id })
+  return record
+}
+
+export async function updateVettingTask(id: string, data: Partial<VettingTask>): Promise<void> {
+  const snap = await getDoc(doc(db, 'vettingTasks', id))
+  const existing = snap.exists() ? snap.data() : {}
+  await upsert('vettingTasks', id, clean({ ...existing, ...data, id }))
+
+  // Sync vettingStatus to the talent's user document
+  if (data.status) {
+    const talentId = (existing.talentId ?? data.talentId) as string | undefined
+    if (talentId) {
+      const statusMap: Record<string, string> = {
+        assigned: 'task-assigned',
+        submitted: 'submitted',
+        approved: 'approved',
+        rejected: 'rejected',
+      }
+      await upsert('users', talentId, { vettingStatus: statusMap[data.status] ?? data.status })
+    }
+  }
 }
 
 // ─── Leadership ────────────────────────────────────────────────────────────────

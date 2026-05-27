@@ -7,6 +7,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useCurrentUser, updateUserProfile, OMNICOM_AFFILIATES } from '@/lib/user'
 import { storage } from '@/lib/firebase'
 import NetworkAffiliateBadge from '@/components/dashboard/NetworkAffiliateBadge'
+import { useReviewsForTalent } from '@/lib/performance'
 
 const LOCATIONS = ['Lagos', 'London', 'Nairobi', 'Accra', 'Cape Town', 'New York', 'Remote only', 'Other']
 const INDUSTRIES = ['Fintech', 'Infrastructure', 'Consumer', 'Healthcare', 'Media', 'Education', 'Public sector', 'Other']
@@ -18,6 +19,7 @@ const I = 'w-full px-4 py-3 border border-input bg-white font-text text-sm text-
 
 export default function TalentSettingsProfilePage() {
   const { user: currentUser } = useCurrentUser()
+  const { reviews } = useReviewsForTalent(currentUser?.id ?? '')
   const [name, setName] = useState(currentUser?.name ?? '')
   const [role, setRole] = useState(currentUser?.talentRole ?? '')
   const [industry, setIndustry] = useState(currentUser?.industry ?? '')
@@ -361,6 +363,45 @@ export default function TalentSettingsProfilePage() {
               </button>
             )}
           </div>
+        </div>
+
+        {/* Performance score */}
+        <div className="border-t border-border pt-8 space-y-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground mb-1">Performance</p>
+              <p className="font-text text-sm text-muted-foreground">Scores logged by project leads after each engagement.</p>
+            </div>
+            {currentUser.performanceScore != null && (
+              <div className="flex items-center gap-2 px-4 py-2 bg-foreground text-background">
+                <TrendingUp size={14} />
+                <span className="font-display font-black text-xl">{currentUser.performanceScore}</span>
+                <span className="font-mono text-[10px] opacity-60">/10</span>
+              </div>
+            )}
+          </div>
+
+          {reviews.length === 0 ? (
+            <p className="font-text text-sm text-muted-foreground/60">No performance reviews yet. Scores appear here after your first project.</p>
+          ) : (
+            <div className="border border-border divide-y divide-border">
+              {reviews.map(r => (
+                <div key={r.id} className="px-4 py-3 flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="font-text text-xs font-semibold text-foreground">{r.jobSlug.replace(/-/g, ' ')}</p>
+                    {r.notes && <p className="font-text text-xs text-muted-foreground mt-0.5">{r.notes}</p>}
+                    <p className="font-mono text-[10px] text-muted-foreground/50 mt-0.5">
+                      {new Date(r.scoredAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <span className="font-display font-black text-2xl text-foreground">{r.score}</span>
+                    <span className="font-mono text-[10px] text-muted-foreground/50">/10</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
   )

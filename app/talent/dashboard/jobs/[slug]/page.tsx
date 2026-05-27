@@ -4,11 +4,12 @@ import { use, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { ArrowLeft, Clock, Download, FileText, MapPin, Target, LayoutDashboard, Users2, CreditCard, Share2, Check } from 'lucide-react'
+import { ArrowLeft, Clock, Download, FileText, MapPin, Target, LayoutDashboard, Users2, CreditCard, Share2, Check, AlertCircle } from 'lucide-react'
 import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
-import { getTalentProfile, getClientUser } from '@/lib/user'
+import { getTalentProfile, getClientUser, useCurrentUser } from '@/lib/user'
 import { getJobProgress, useJobBySlug } from '@/lib/jobs'
 import { payouts } from '@/lib/payouts'
+import { updateJob } from '@/lib/admin/store'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -27,7 +28,25 @@ export default function TalentJobDetailPage({
 }) {
   const { slug } = use(params)
   const { job, loading } = useJobBySlug(slug)
+  const { user: currentUser } = useCurrentUser()
   const [copied, setCopied] = useState(false)
+  const [addendumModalOpen, setAddendumModalOpen] = useState(false)
+  const [addendumName, setAddendumName] = useState('')
+  const [addendumAgreed, setAddendumAgreed] = useState(false)
+  const [addendumSigning, setAddendumSigning] = useState(false)
+
+  async function handleSignAddendum(e: React.FormEvent) {
+    e.preventDefault()
+    if (!job || !currentUser || !addendumAgreed || !addendumName.trim()) return
+    setAddendumSigning(true)
+    await updateJob(job.id, {
+      addendumStatus: 'signed',
+      addendumSignedAt: new Date().toISOString(),
+      addendumSignedBy: currentUser.id,
+    })
+    setAddendumSigning(false)
+    setAddendumModalOpen(false)
+  }
 
   const handleShare = async () => {
     const url = window.location.href
@@ -83,6 +102,74 @@ export default function TalentJobDetailPage({
       <Link href="/talent/dashboard/jobs" className="font-text text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2 mb-8">
         <ArrowLeft size={14} /> Back to jobs
       </Link>
+
+      {/* Addendum banner */}
+      {job.addendumStatus === 'pending' && (
+        <div className="mb-6 flex items-center justify-between gap-4 px-5 py-4 border border-amber-200 bg-amber-50">
+          <div className="flex items-start gap-3">
+            <AlertCircle size={16} className="text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-text text-sm font-semibold text-amber-800">Sign project addendum</p>
+              <p className="font-text text-xs text-amber-600 mt-0.5">Confirm your deliverable, deadline, and fee before work begins.</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setAddendumModalOpen(true)}
+            className="shrink-0 px-4 py-2 bg-amber-600 text-white font-text text-xs font-semibold hover:bg-amber-700 transition-colors"
+          >
+            Sign now
+          </button>
+        </div>
+      )}
+      {job.addendumStatus === 'signed' && (
+        <div className="mb-6 flex items-center gap-3 px-5 py-3 border border-green-200 bg-green-50">
+          <Check size={14} className="text-green-600 shrink-0" />
+          <p className="font-text text-sm text-green-700">Project addendum signed.</p>
+        </div>
+      )}
+
+      {/* Addendum signing modal */}
+      {addendumModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-[500px] bg-background border border-border p-6 space-y-5 shadow-xl">
+            <div className="flex items-center justify-between">
+              <h2 className="font-display font-black text-lg text-foreground">Project Addendum</h2>
+              <button onClick={() => setAddendumModalOpen(false)} className="text-muted-foreground hover:text-foreground transition-colors">
+                <ArrowLeft size={18} />
+              </button>
+            </div>
+            <div className="bg-muted/40 p-4 space-y-2 text-sm">
+              {job.addendumDeliverable && <div><span className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground block mb-0.5">Deliverable</span><p className="font-text text-foreground">{job.addendumDeliverable}</p></div>}
+              {job.addendumDeadline && <div><span className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground block mb-0.5">Deadline</span><p className="font-text text-foreground">{job.addendumDeadline}</p></div>}
+              {job.addendumFee && <div><span className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground block mb-0.5">Fee</span><p className="font-text text-foreground font-semibold">{job.addendumFee}</p></div>}
+            </div>
+            <form onSubmit={handleSignAddendum} className="space-y-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground">Type your full name to sign</label>
+                <input
+                  type="text"
+                  value={addendumName}
+                  onChange={e => setAddendumName(e.target.value)}
+                  placeholder="Your legal name"
+                  required
+                  className="w-full px-4 py-3 border border-input bg-background font-text text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-foreground transition-colors"
+                />
+              </div>
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input type="checkbox" checked={addendumAgreed} onChange={e => setAddendumAgreed(e.target.checked)} className="mt-0.5 w-4 h-4 accent-foreground shrink-0" />
+                <span className="font-text text-sm text-muted-foreground">I confirm the deliverable, deadline, and fee above and agree to deliver accordingly.</span>
+              </label>
+              <button
+                type="submit"
+                disabled={!addendumName.trim() || !addendumAgreed || addendumSigning}
+                className="w-full py-3 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {addendumSigning ? 'Signing…' : 'Sign addendum'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div className="min-w-0">

@@ -44,6 +44,16 @@ export interface User {
   ndaSigned?: boolean
   approverRole?: 'viewer' | 'approver' | 'billing-admin'
   highlights?: string[]
+  // Vetting
+  vettingStatus?: 'pending' | 'task-assigned' | 'submitted' | 'approved' | 'rejected'
+  vettingTaskId?: string
+  // MSA contract
+  msaSigned?: boolean
+  msaSignedAt?: string
+  msaSignedName?: string
+  // Performance
+  performanceScore?: number
+  performanceReviewCount?: number
   // Growth Surgery fields
   clientPhase?: 1 | 2 | 3
   phaseLabel?: string
@@ -244,6 +254,13 @@ function buildProfile(docId: string, data: Record<string, any>, fbUser: { uid: s
     ndaSigned: data.ndaSigned ?? false,
     approverRole: data.approverRole,
     highlights: data.highlights,
+    vettingStatus: data.vettingStatus,
+    vettingTaskId: data.vettingTaskId,
+    msaSigned: data.msaSigned ?? false,
+    msaSignedAt: data.msaSignedAt,
+    msaSignedName: data.msaSignedName,
+    performanceScore: data.performanceScore,
+    performanceReviewCount: data.performanceReviewCount,
     clientPhase: data.clientPhase,
     phaseLabel: data.phaseLabel,
     phaseStartedAt: data.phaseStartedAt,

@@ -9,6 +9,8 @@ import {
   Newspaper,
   Briefcase,
   CalendarDays,
+  ClipboardCheck,
+  FileText,
   FolderOpen,
   Gift,
   HelpCircle,
@@ -52,6 +54,8 @@ const dashboardConfig: Record<
       { icon: Home, label: 'Home', href: '/talent/dashboard' },
       { icon: Briefcase, label: 'Jobs', href: '/talent/dashboard/jobs' },
       { icon: FolderOpen, label: 'My work', href: '/talent/dashboard/work' },
+      { icon: FileText, label: 'Contracts', href: '/talent/dashboard/contracts' },
+      { icon: ClipboardCheck, label: 'Vetting', href: '/talent/dashboard/vetting' },
       { icon: BookOpen, label: 'Articles', href: '/talent/dashboard/community', badge: 3 },
       { icon: Gift, label: 'Refer & grow', href: '/talent/dashboard/referrals' },
     ],
@@ -171,13 +175,31 @@ export default function DashboardSidebar({
   onClose,
   collapsed = false,
   onToggleCollapse,
+  talentVetted = true,
+  talentMsaSigned = true,
 }: {
   audience: DashboardAudience
   onClose?: () => void
   collapsed?: boolean
   onToggleCollapse?: () => void
+  talentVetted?: boolean
+  talentMsaSigned?: boolean
 }) {
   const config = dashboardConfig[audience]
+
+  // Gate talent nav: only show items the talent has unlocked
+  const visiblePrimaryItems = (() => {
+    if (audience !== 'talent') return config.primaryItems
+    if (!talentVetted) {
+      return config.primaryItems.filter(i => i.href === '/talent/dashboard/vetting')
+    }
+    if (!talentMsaSigned) {
+      return config.primaryItems.filter(i =>
+        i.href === '/talent/dashboard/contracts' || i.href === '/talent/dashboard/vetting'
+      )
+    }
+    return config.primaryItems
+  })()
 
   return (
     <aside
@@ -233,7 +255,7 @@ export default function DashboardSidebar({
       </div>
 
       <nav className="flex flex-1 flex-col gap-0.5 p-2" aria-label="Dashboard">
-        {config.primaryItems.map((item) => (
+        {visiblePrimaryItems.map((item) => (
           <div key={item.href} onClick={onClose}>
             <SidebarLink item={item} collapsed={collapsed} />
           </div>
@@ -265,7 +287,7 @@ export default function DashboardSidebar({
         </div>
       )}
 
-      {config.supportItems.length > 0 && (
+      {config.supportItems.length > 0 && talentVetted && talentMsaSigned && (
         <div className="">
           {audience === 'client' && (
             <button
