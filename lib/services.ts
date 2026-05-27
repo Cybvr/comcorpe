@@ -12,7 +12,6 @@ export type Service = {
 }
 
 export const typicalJobs = [
-  'Campaign launch',
   'Market entry',
   'Brand refresh',
   'Consumer research',
@@ -25,31 +24,6 @@ export const typicalJobs = [
 export const services: Service[] = [
   {
     id: '01',
-    slug: 'campaign-launch',
-    title: 'Campaign Launch',
-    shortTitle: 'Launches',
-    strapline: 'Market-facing launch systems for new products, offers, partnerships, and moments that need traction fast.',
-    summary:
-      'We design launch architecture across positioning, creative direction, channel sequencing, and execution governance so important announcements do not arrive fragmented.',
-    category: 'Activation',
-    idealFor: [
-      'New product or feature releases',
-      'High-stakes brand or partnership announcements',
-      'Moments that need aligned creative, media, and reporting',
-    ],
-    deliverables: [
-      'Launch narrative and message house',
-      'Channel plan, asset matrix, and execution calendar',
-      'Decision rhythm for internal teams and external partners',
-    ],
-    outcomes: [
-      'Sharper launch readiness across teams',
-      'Cleaner market reception and message consistency',
-      'A repeatable playbook for future launches',
-    ],
-  },
-  {
-    id: '02',
     slug: 'market-entry',
     title: 'Market Entry',
     shortTitle: 'Entry',
@@ -74,7 +48,7 @@ export const services: Service[] = [
     ],
   },
   {
-    id: '03',
+    id: '02',
     slug: 'brand-refresh',
     title: 'Brand Refresh',
     shortTitle: 'Refresh',
@@ -99,7 +73,7 @@ export const services: Service[] = [
     ],
   },
   {
-    id: '04',
+    id: '03',
     slug: 'consumer-research',
     title: 'Consumer Research',
     shortTitle: 'Research',
@@ -124,7 +98,7 @@ export const services: Service[] = [
     ],
   },
   {
-    id: '05',
+    id: '04',
     slug: 'growth-strategy',
     title: 'Growth Strategy',
     shortTitle: 'Strategy',
@@ -149,7 +123,7 @@ export const services: Service[] = [
     ],
   },
   {
-    id: '06',
+    id: '05',
     slug: 'influencer-strategy',
     title: 'Influencer Strategy',
     shortTitle: 'Influence',
@@ -174,7 +148,7 @@ export const services: Service[] = [
     ],
   },
   {
-    id: '07',
+    id: '06',
     slug: 'regional-expansion',
     title: 'Regional Expansion',
     shortTitle: 'Expansion',
@@ -199,7 +173,7 @@ export const services: Service[] = [
     ],
   },
   {
-    id: '08',
+    id: '07',
     slug: 'analytics-dashboarding',
     title: 'Analytics and Dashboarding',
     shortTitle: 'Analytics',

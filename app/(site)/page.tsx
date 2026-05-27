@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Closing from '@/components/Closing'
+import TalentCarousel from '@/components/TalentCarousel'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -80,6 +81,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <TalentCarousel />
 
       {/* Foundation cards */}
       <section className="py-24 md:py-40 px-6 md:px-24 bg-background">
