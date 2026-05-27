@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function TalentDashboardLoading() {
   return (
-    <div className="px-6 py-6 lg:px-8 lg:py-8 max-w-[1200px] mx-auto animate-pulse">
+    <div className="mx-auto max-w-[1200px] px-6 py-6 lg:px-8 lg:py-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
         <Skeleton className="h-9 w-48" />
@@ -16,15 +16,15 @@ export default function TalentDashboardLoading() {
         </div>
       </div>
 
-      {/* Welcome Banner (Dark Block) */}
-      <section className="bg-foreground rounded-xl p-6 mb-8 relative overflow-hidden">
-        <Skeleton className="h-3.5 w-36 bg-background/20 mb-4" />
+      {/* Welcome Banner */}
+      <section className="mb-8 overflow-hidden rounded-xl border border-border bg-background p-6">
+        <Skeleton className="mb-4 h-3.5 w-36" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-background/[0.08] rounded-lg p-4 flex flex-col gap-3 border border-background/[0.12]">
-              <Skeleton className="w-5 h-5 rounded bg-primary/20" />
-              <Skeleton className="h-4.5 w-36 bg-background/20" />
-              <Skeleton className="h-7 w-24 rounded-full bg-background/10" />
+            <div key={i} className="flex flex-col gap-3 rounded-lg border border-border bg-muted/40 p-4">
+              <Skeleton className="h-5 w-5 rounded" />
+              <Skeleton className="h-4.5 w-36" />
+              <Skeleton className="h-7 w-24 rounded-full" />
             </div>
           ))}
         </div>

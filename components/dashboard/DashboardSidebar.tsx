@@ -24,6 +24,7 @@ import {
   Sparkles,
   Users,
   Users2,
+  Wallet,
   X,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -54,6 +55,7 @@ const dashboardConfig: Record<
       { icon: Home, label: 'Home', href: '/talent/dashboard' },
       { icon: Briefcase, label: 'Jobs', href: '/talent/dashboard/jobs' },
       { icon: FolderOpen, label: 'My work', href: '/talent/dashboard/work' },
+      { icon: Wallet, label: 'Payments', href: '/talent/dashboard/payments' },
       { icon: FileText, label: 'Contracts', href: '/talent/dashboard/contracts' },
       { icon: ClipboardCheck, label: 'Vetting', href: '/talent/dashboard/vetting' },
       { icon: BookOpen, label: 'Articles', href: '/talent/dashboard/community', badge: 3 },
@@ -198,7 +200,9 @@ export default function DashboardSidebar({
         i.href === '/talent/dashboard/contracts' || i.href === '/talent/dashboard/vetting'
       )
     }
-    return config.primaryItems
+    return config.primaryItems.filter(i =>
+      i.href !== '/talent/dashboard/vetting' && i.href !== '/talent/dashboard/contracts'
+    )
   })()
 
   return (

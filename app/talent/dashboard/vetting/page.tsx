@@ -40,12 +40,17 @@ export default function TalentVettingPage() {
   const [submissionNotes, setSubmissionNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
+  useEffect(() => {
+    if (!userLoading && user?.vettingStatus === 'approved') {
+      router.replace('/talent/dashboard')
+    }
+  }, [user?.vettingStatus, userLoading, router])
+
   if (userLoading || taskLoading) {
     return <div className="py-20 text-center"><p className="font-mono text-sm text-muted-foreground animate-pulse">Loading…</p></div>
   }
 
   if (user?.vettingStatus === 'approved') {
-    router.replace('/talent/dashboard')
     return null
   }
 

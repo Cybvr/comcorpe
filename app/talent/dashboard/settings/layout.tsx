@@ -9,7 +9,7 @@ const settingsItems = [
   { label: 'General', href: '/talent/dashboard/settings', icon: Settings },
   { label: 'Profile', href: '/talent/dashboard/settings/profile', icon: User },
   { label: 'Payments', href: '/talent/dashboard/settings/payments', icon: CreditCard },
-  { label: 'Invoices', href: '/talent/dashboard/settings/invoices', icon: FileText },
+  { label: 'Contracts', href: '/talent/dashboard/settings/contracts', icon: FileText },
 ]
 
 function isActive(pathname: string, href: string) {

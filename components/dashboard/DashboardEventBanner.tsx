@@ -6,7 +6,7 @@ import type { DashboardAudience } from '@/components/dashboard/DashboardSidebar'
 const EVENT_NAME = 'Comcorpe Signals'
 const EVENT_HREF = '/signals'
 const EVENT_LABELS: Record<DashboardAudience, string> = {
-  talent: 'Talent event',
+  talent: 'TOWNHALL EVENT',
   client: 'Whats Happening',
   admin: 'Internal event',
 }

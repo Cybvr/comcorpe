@@ -1,7 +1,7 @@
 ﻿'use client'
 import type React from 'react'
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useCurrentUser } from '@/lib/user'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar'
@@ -11,6 +11,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const { user, loading } = useCurrentUser()
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     if (!loading && !user) {
@@ -25,8 +26,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     if (!loading && user && user.isOnboarded === false) {
       router.push('/talent/onboarding')
+      return
     }
-  }, [user, loading, router])
+
+    if (!loading && user && user.vettingStatus !== 'approved') {
+      if (!pathname.startsWith('/talent/dashboard/vetting')) {
+        router.push('/talent/dashboard/vetting')
+      }
+      return
+    }
+
+    if (!loading && user && user.vettingStatus === 'approved' && !user.msaSigned) {
+      if (
+        !pathname.startsWith('/talent/dashboard/contracts') &&
+        !pathname.startsWith('/talent/dashboard/vetting')
+      ) {
+        router.push('/talent/dashboard/contracts')
+      }
+    }
+  }, [user, loading, router, pathname])
 
   if (loading) {
     return (
