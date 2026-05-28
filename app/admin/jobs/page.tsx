@@ -337,7 +337,7 @@ function PaymentsPanel({ job, invoices, payouts, onUpdateInvoice, onUpdatePayout
                     </p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    {p.status === 'Pending' && !p.paystackTransferCode && (
+                    {p.status === 'Pending' && (
                       <button
                         onClick={() => { setSendingPayout(p.id); onSendPayout(p) }}
                         disabled={sendingPayout === p.id}
@@ -428,19 +428,16 @@ export default function AdminJobsPage() {
   }
 
   async function handleSendPayout(payout: Payout) {
-    if (!payout.paystackRecipientCode) {
-      alert('This talent has not set up a Paystack payout account yet.')
-      return
-    }
     try {
       const res = await fetch('/api/payouts/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           payoutId: payout.id,
-          recipientCode: payout.paystackRecipientCode,
+          jobSlug: payout.jobSlug,
           amountRaw: payout.amountRaw,
-          reason: payout.label,
+          label: payout.label,
+          milestoneId: payout.milestoneId,
         }),
       })
       const data = await res.json()
