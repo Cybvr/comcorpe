@@ -38,7 +38,7 @@ import {
 
 import { pods } from '@/lib/pods'
 import { jobs, getJobProgress } from '@/lib/jobs'
-import { invoices } from '@/lib/invoices'
+import { useInvoices } from '@/lib/invoices'
 import { useCurrentUser } from '@/lib/user'
 import { useGrowthMetrics } from '@/lib/growth-metrics'
 import { useTreatmentPlan } from '@/lib/treatment-plan'
@@ -99,6 +99,7 @@ export default function AnalyticsPage() {
   const { user: currentUser } = useCurrentUser()
   const { metrics: growthMetrics } = useGrowthMetrics(currentUser?.clientId)
   const { plan: treatmentPlan } = useTreatmentPlan(currentUser?.clientId)
+  const { invoices } = useInvoices(currentUser?.clientId ?? currentUser?.id ?? '')
 
   // --- FINANCIAL DATA ---
   const totalPaid = invoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + i.amountRaw, 0)

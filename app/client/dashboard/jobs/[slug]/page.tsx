@@ -47,7 +47,7 @@ import { useJobBySlug } from '@/lib/jobs'
 import { useLatestGrowthMetric } from '@/lib/growth-metrics'
 import { useTreatmentPlan } from '@/lib/treatment-plan'
 import { updateJob, createPod } from '@/lib/admin/store'
-import { invoices, getInvoice } from '@/lib/invoices'
+import { useAllInvoices } from '@/lib/invoices'
 import { contractTerms } from '@/lib/contract'
 import { storage, db } from '@/lib/firebase'
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
@@ -125,6 +125,7 @@ export default function JobDetailPage({
   const { user: currentUser } = useCurrentUser()
   const { metric: latestMetric } = useLatestGrowthMetric(currentUser?.clientId)
   const { plan, loading: planLoading } = useTreatmentPlan(slug)
+  const { invoices } = useAllInvoices()
 
   useEffect(() => {
     if (job) {
@@ -827,7 +828,7 @@ export default function JobDetailPage({
                         </tr>
                       )}
                       {localMilestones.map((ms) => {
-                        const inv = getInvoice(job.slug, ms.id)
+                        const inv = invoices.find(i => i.jobSlug === job.slug && i.milestoneId === ms.id)
                         return (
                           <tr key={ms.id} className="group hover:bg-muted/30 transition-colors">
                             <td className="px-4 py-3 whitespace-nowrap">
@@ -1147,7 +1148,7 @@ export default function JobDetailPage({
                             {localMilestones.length === 0 ? (
                               <tr><td colSpan={5} className="px-4 py-10 text-center font-text text-sm text-muted-foreground/60">No milestones yet.</td></tr>
                             ) : localMilestones.map((ms) => {
-                              const inv = getInvoice(job.slug, ms.id)
+                              const inv = invoices.find(i => i.jobSlug === job.slug && i.milestoneId === ms.id)
                               return (
                                 <tr key={ms.id} className="hover:bg-muted/30 transition-colors">
                                   <td className="px-4 py-3 whitespace-nowrap">
