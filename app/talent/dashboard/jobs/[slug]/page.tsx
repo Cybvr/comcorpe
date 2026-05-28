@@ -8,7 +8,7 @@ import { ArrowLeft, Clock, Download, FileText, MapPin, Target, LayoutDashboard, 
 import { pods, getPodBySlug, getPodMembers } from '@/lib/pods'
 import { getTalentProfile, getClientUser, useCurrentUser } from '@/lib/user'
 import { getJobProgress, useJobBySlug } from '@/lib/jobs'
-import { payouts } from '@/lib/payouts'
+import { usePayouts } from '@/lib/payouts'
 import { updateJob } from '@/lib/admin/store'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -29,6 +29,7 @@ export default function TalentJobDetailPage({
   const { slug } = use(params)
   const { job, loading } = useJobBySlug(slug)
   const { user: currentUser } = useCurrentUser()
+  const { payouts } = usePayouts(currentUser?.id ?? '')
   const [copied, setCopied] = useState(false)
   const [addendumModalOpen, setAddendumModalOpen] = useState(false)
   const [addendumName, setAddendumName] = useState('')
@@ -375,7 +376,7 @@ export default function TalentJobDetailPage({
                 const jobPayouts = payouts.filter(p => p.jobSlug === job.slug)
                 const cleared = jobPayouts.filter(p => p.status === 'Cleared').reduce((a, p) => a + p.amountRaw, 0)
                 const pending = jobPayouts.filter(p => p.status === 'Pending' || p.status === 'Processing').reduce((a, p) => a + p.amountRaw, 0)
-                const nextPayout = jobPayouts.filter(p => p.status === 'Pending').sort((a, b) => a.id - b.id)[0]
+                const nextPayout = jobPayouts.filter(p => p.status === 'Pending').sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0]
                 const payoutStatusStyles: Record<string, string> = {
                   Cleared: 'bg-green-50 text-green-700 border-green-200',
                   Pending: 'bg-amber-50 text-amber-700 border-amber-200',

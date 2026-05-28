@@ -6,7 +6,6 @@ export async function GET() {
 
   const res = await fetch('https://api.paystack.co/bank?use_cursor=false&perPage=100', {
     headers: { Authorization: `Bearer ${secretKey}` },
-    next: { revalidate: 86400 },
   })
 
   const data = await res.json()

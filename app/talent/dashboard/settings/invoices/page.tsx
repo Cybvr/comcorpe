@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Search } from 'lucide-react'
 import { useCurrentUser, getClientUser } from '@/lib/user'
-import { payouts, ccreditsBalance, type PayoutStatus } from '@/lib/payouts'
+import { usePayouts, ccreditsBalance, type PayoutStatus } from '@/lib/payouts'
 import { useJobs } from '@/lib/jobs'
 import { getPodBySlug } from '@/lib/pods'
 
@@ -16,6 +16,7 @@ const statusStyles: Record<PayoutStatus, string> = {
 
 export default function TalentInvoicesPage() {
   const { user: currentUser } = useCurrentUser()
+  const { payouts } = usePayouts(currentUser?.id ?? '')
   const { jobs } = useJobs()
   const [search, setSearch] = useState('')
 
@@ -31,7 +32,7 @@ export default function TalentInvoicesPage() {
     .reduce((a, p) => a + p.amountRaw, 0)
   const nextPayout = payouts
     .filter((p) => p.status === 'Pending')
-    .sort((a, b) => a.id - b.id)[0]
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0]
 
   const filtered = payouts.filter(
     (p) =>
