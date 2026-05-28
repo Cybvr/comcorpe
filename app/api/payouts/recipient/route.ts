@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { initializeApp, getApps, getApp, cert } from 'firebase-admin/app'
+import { initializeApp, getApps, getApp, applicationDefault } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 
 function getAdminDb() {
   const app = getApps().length
     ? getApp()
-    : initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON ?? '{}')) })
+    : initializeApp({ credential: applicationDefault() })
   return getFirestore(app)
 }
 
