@@ -1,96 +1,96 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import {
+  collection, doc, onSnapshot, query, where,
+  addDoc, updateDoc, getDocs,
+} from 'firebase/firestore'
+import { db } from './firebase'
+
 export type PayoutStatus = 'Cleared' | 'Pending' | 'Processing'
 
 export interface Payout {
-  id: number
+  id: string
+  talentId: string
   label: string
   meta: string
   jobSlug: string
+  milestoneId?: string
   clientId: string
   amount: string
   amountRaw: number
   status: PayoutStatus
   date: string
   note?: string
+  paystackTransferCode?: string
+  paystackRecipientCode?: string
+  sentAt?: string
+  updatedAt?: string
 }
 
 export const ccreditsBalance = 3
 
-export const payouts: Payout[] = [
-  {
-    id: 1,
-    label: 'Behavioral reward logic sign-off',
-    meta: 'Milestone 1 of 4',
-    jobSlug: 'volks-bank-loyalty-systems',
-    clientId: 'volks-bank',
-    amount: '$12,250',
-    amountRaw: 12250,
-    status: 'Cleared',
-    date: '18 Feb 2026',
-  },
-  {
-    id: 2,
-    label: 'Merchant API V1 documentation',
-    meta: 'Milestone 2 of 4',
-    jobSlug: 'volks-bank-loyalty-systems',
-    clientId: 'volks-bank',
-    amount: '$15,750',
-    amountRaw: 15750,
-    status: 'Pending',
-    date: '25 Mar 2026',
-  },
-  {
-    id: 3,
-    label: 'Funnel diagnostic audit',
-    meta: 'Sprint milestone',
-    jobSlug: 't-finance-retention-sprints',
-    clientId: 't-finance',
-    amount: '$5,250',
-    amountRaw: 5250,
-    status: 'Cleared',
-    date: '22 Feb 2026',
-  },
-  {
-    id: 4,
-    label: '12-week growth sprint plan',
-    meta: 'Sprint milestone',
-    jobSlug: 't-finance-retention-sprints',
-    clientId: 't-finance',
-    amount: '$8,750',
-    amountRaw: 8750,
-    status: 'Pending',
-    date: '02 Apr 2026',
-  },
-  {
-    id: 5,
-    label: 'SME cluster scoping',
-    meta: 'Discovery phase',
-    jobSlug: 'gridwell-sme-clusters',
-    clientId: 'gridwell',
-    amount: '$4,200',
-    amountRaw: 4200,
-    status: 'Cleared',
-    date: '20 Dec 2025',
-  },
-  {
-    id: 6,
-    label: 'FCA readiness sprint — final delivery',
-    meta: 'Full sprint completion',
-    jobSlug: 'volta-pay-uk-compliance',
-    clientId: 'volta-pay',
-    amount: '$25,200',
-    amountRaw: 25200,
-    status: 'Cleared',
-    date: '16 Oct 2025',
-  },
-  {
-    id: 7,
-    label: 'Consumer launch strategy — full engagement',
-    meta: 'Sprint close',
-    jobSlug: 'volta-pay-launch-strategy',
-    clientId: 'volta-pay',
-    amount: '$16,800',
-    amountRaw: 16800,
-    status: 'Cleared',
-    date: '24 Jul 2025',
-  },
-]
+export function usePayouts(talentId: string) {
+  const [payouts, setPayouts] = useState<Payout[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!talentId) { setLoading(false); return }
+    const q = query(collection(db, 'payouts'), where('talentId', '==', talentId))
+    const unsub = onSnapshot(
+      q,
+      snap => {
+        setPayouts(snap.docs.map(d => ({ id: d.id, ...d.data() } as Payout)))
+        setLoading(false)
+      },
+      () => setLoading(false),
+    )
+    return () => unsub()
+  }, [talentId])
+
+  return { payouts, loading }
+}
+
+export function useAllPayouts() {
+  const [payouts, setPayouts] = useState<Payout[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const unsub = onSnapshot(
+      collection(db, 'payouts'),
+      snap => {
+        setPayouts(snap.docs.map(d => ({ id: d.id, ...d.data() } as Payout)))
+        setLoading(false)
+      },
+      () => setLoading(false),
+    )
+    return () => unsub()
+  }, [])
+
+  return { payouts, loading }
+}
+
+export async function createPayout(data: Omit<Payout, 'id'>): Promise<Payout> {
+  const ref = await addDoc(collection(db, 'payouts'), {
+    ...data,
+    updatedAt: new Date().toISOString(),
+  })
+  return { id: ref.id, ...data }
+}
+
+export async function updatePayoutStatus(
+  id: string,
+  status: PayoutStatus,
+  extra?: Partial<Omit<Payout, 'id'>>,
+): Promise<void> {
+  await updateDoc(doc(db, 'payouts', id), {
+    status,
+    ...extra,
+    updatedAt: new Date().toISOString(),
+  })
+}
+
+export async function getAllPayouts(): Promise<Payout[]> {
+  const snap = await getDocs(collection(db, 'payouts'))
+  return snap.docs.map(d => ({ id: d.id, ...d.data() } as Payout))
+}

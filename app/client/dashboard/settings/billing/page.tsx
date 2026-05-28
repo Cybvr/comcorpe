@@ -1,9 +1,11 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useEffect } from 'react'
 import Link from 'next/link'
-import { Search } from 'lucide-react'
-import { invoices, type InvoiceStatus } from '@/lib/invoices'
+import { Search, CheckCircle2 } from 'lucide-react'
+import { useInvoices, updateInvoiceStatus, type InvoiceStatus } from '@/lib/invoices'
 import { useJobs } from '@/lib/jobs'
 import { getPodBySlug } from '@/lib/pods'
 import { useCurrentUser } from '@/lib/user'
@@ -14,19 +16,89 @@ const statusStyles: Record<InvoiceStatus, string> = {
   Processing: 'bg-primary/10 text-primary border-primary/20',
 }
 
-export default function ClientBillingPage() {
+function PayNowButton({ invoice, email }: { invoice: { id: string; amountRaw: number; label: string }; email: string }) {
+  const [loading, setLoading] = useState(false)
+
+  async function handlePay() {
+    setLoading(true)
+    try {
+      const callbackUrl = `${window.location.origin}/client/dashboard/settings/billing?ref=__REFERENCE__`
+      const res = await fetch('/api/payments/initialize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          amountRaw: invoice.amountRaw,
+          invoiceId: invoice.id,
+          callbackUrl,
+        }),
+      })
+      const data = await res.json()
+      if (data.authorizationUrl) {
+        window.location.href = data.authorizationUrl
+      } else {
+        alert(data.error ?? 'Could not initiate payment')
+        setLoading(false)
+      }
+    } catch {
+      alert('Payment failed — please try again')
+      setLoading(false)
+    }
+  }
+
+  return (
+    <button
+      onClick={handlePay}
+      disabled={loading}
+      className="shrink-0 px-3 py-1.5 bg-foreground text-background font-text text-xs font-semibold hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50"
+    >
+      {loading ? 'Redirecting…' : 'Pay now'}
+    </button>
+  )
+}
+
+function PaymentSuccessBanner({ reference, onDismiss }: { reference: string; onDismiss: () => void }) {
+  return (
+    <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-2xl">
+      <CheckCircle2 size={18} className="text-green-600 shrink-0" />
+      <div className="flex-1 min-w-0">
+        <p className="font-text text-sm font-semibold text-green-800">Payment confirmed</p>
+        <p className="font-mono text-[10px] text-green-600 mt-0.5">ref: {reference}</p>
+      </div>
+      <button onClick={onDismiss} className="font-text text-xs text-green-700 hover:text-green-900">Dismiss</button>
+    </div>
+  )
+}
+
+function BillingContent() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const { user: currentUser, loading: userLoading } = useCurrentUser()
+  const currentClientId = currentUser ? (currentUser.clientId ?? currentUser.id) : ''
+  const { invoices, loading: invoicesLoading } = useInvoices(currentClientId)
   const { jobs, loading: jobsLoading } = useJobs()
   const [search, setSearch] = useState('')
+  const [paymentRef, setPaymentRef] = useState<string | null>(null)
+  const [verifying, setVerifying] = useState(false)
 
-  if (userLoading || jobsLoading || !currentUser) {
+  useEffect(() => {
+    const ref = searchParams.get('ref')
+    if (!ref || ref === '__REFERENCE__') return
+    setVerifying(true)
+    fetch(`/api/payments/verify?reference=${ref}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) setPaymentRef(ref)
+        router.replace('/client/dashboard/settings/billing')
+      })
+      .finally(() => setVerifying(false))
+  }, [searchParams, router])
+
+  if (userLoading || jobsLoading || invoicesLoading || !currentUser) {
     return <p className="font-text text-sm text-muted-foreground">Loading billing...</p>
   }
 
-  const currentClientId = currentUser.clientId ?? currentUser.id
-  const clientInvoices = invoices.filter(i => i.clientId === currentClientId)
   const clientJobs = jobs.filter(j => j.clientId === currentClientId)
-
   const activeMonthly = clientJobs
     .filter(j => j.status === 'Active')
     .reduce((acc, j) => {
@@ -34,15 +106,15 @@ export default function ClientBillingPage() {
       return acc + (match ? parseInt(match[1]) * 1000 : 0)
     }, 0)
 
-  const outstanding = clientInvoices
+  const outstanding = invoices
     .filter(i => i.status === 'Due')
     .reduce((acc, i) => acc + i.amountRaw, 0)
 
-  const paidTotal = clientInvoices
+  const paidTotal = invoices
     .filter(i => i.status === 'Paid')
     .reduce((acc, i) => acc + i.amountRaw, 0)
 
-  const filtered = clientInvoices.filter(i =>
+  const filtered = invoices.filter(i =>
     i.label.toLowerCase().includes(search.toLowerCase()) ||
     i.status.toLowerCase().includes(search.toLowerCase())
   )
@@ -53,6 +125,16 @@ export default function ClientBillingPage() {
         <p className="font-mono text-xs uppercase tracking-eyebrow text-primary mb-2">Billing</p>
         <h2 className="font-display font-black text-[28px] tracking-[-0.03em] text-foreground leading-tight">Commercial spend</h2>
       </div>
+
+      {verifying && (
+        <div className="p-4 bg-muted/50 border border-border rounded-2xl">
+          <p className="font-text text-sm text-muted-foreground">Confirming payment…</p>
+        </div>
+      )}
+
+      {paymentRef && (
+        <PaymentSuccessBanner reference={paymentRef} onDismiss={() => setPaymentRef(null)} />
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-foreground text-background rounded-2xl p-6">
@@ -69,7 +151,7 @@ export default function ClientBillingPage() {
             ${outstanding.toLocaleString()}
           </p>
           <p className={`font-text text-sm mt-4 ${outstanding > 0 ? 'text-amber-600' : 'text-muted-foreground'}`}>
-            {clientInvoices.filter(i => i.status === 'Due').length} milestone{clientInvoices.filter(i => i.status === 'Due').length !== 1 ? 's' : ''} due
+            {invoices.filter(i => i.status === 'Due').length} milestone{invoices.filter(i => i.status === 'Due').length !== 1 ? 's' : ''} due
           </p>
         </div>
 
@@ -79,7 +161,7 @@ export default function ClientBillingPage() {
             ${paidTotal.toLocaleString()}
           </p>
           <p className="font-text text-sm text-muted-foreground mt-4">
-            {clientInvoices.filter(i => i.status === 'Paid').length} milestones cleared
+            {invoices.filter(i => i.status === 'Paid').length} milestones cleared
           </p>
         </div>
       </div>
@@ -111,6 +193,7 @@ export default function ClientBillingPage() {
                 <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Pod</th>
                 <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70 text-right">Amount</th>
                 <th className="px-5 py-3.5 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Date</th>
+                <th className="px-5 py-3.5" />
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -132,14 +215,14 @@ export default function ClientBillingPage() {
                         <Link href={`/client/dashboard/jobs/${job.slug}`} className="font-text text-sm text-primary hover:underline">
                           {job.title}
                         </Link>
-                      ) : <span className="text-muted-foreground/70">â€”</span>}
+                      ) : <span className="text-muted-foreground/70">–</span>}
                     </td>
                     <td className="px-5 py-4">
                       {pod ? (
                         <Link href={`/client/dashboard/search/${pod.slug}`} className="font-text text-sm text-primary hover:underline">
                           {pod.name}
                         </Link>
-                      ) : <span className="font-text text-sm text-muted-foreground/70">â€”</span>}
+                      ) : <span className="font-text text-sm text-muted-foreground/70">–</span>}
                     </td>
                     <td className="px-5 py-4 text-right">
                       <span className="font-mono text-sm font-bold text-foreground">{invoice.amount}</span>
@@ -147,16 +230,29 @@ export default function ClientBillingPage() {
                     <td className="px-5 py-4">
                       <span className="font-text text-xs text-muted-foreground">{invoice.date}</span>
                     </td>
+                    <td className="px-5 py-4">
+                      {invoice.status === 'Due' && currentUser.email && (
+                        <PayNowButton invoice={invoice} email={currentUser.email} />
+                      )}
+                    </td>
                   </tr>
                 )
               })}
               {filtered.length === 0 && (
-                <tr><td colSpan={6} className="px-5 py-12 text-center font-text text-sm text-muted-foreground/70">No invoices match your search.</td></tr>
+                <tr><td colSpan={7} className="px-5 py-12 text-center font-text text-sm text-muted-foreground/70">No invoices yet.</td></tr>
               )}
             </tbody>
           </table>
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ClientBillingPage() {
+  return (
+    <Suspense fallback={<p className="font-text text-sm text-muted-foreground">Loading billing...</p>}>
+      <BillingContent />
+    </Suspense>
   )
 }

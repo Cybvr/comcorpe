@@ -1,18 +1,99 @@
 'use client'
 
-import { useState } from 'react'
-import { Building2, CreditCard, Lock } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Building2, CheckCircle2, Lock, AlertCircle } from 'lucide-react'
+import { useCurrentUser } from '@/lib/user'
 
-type PayoutMethod = 'bank' | 'paypal'
+interface Bank {
+  id: number
+  name: string
+  code: string
+}
+
+type SaveState = 'idle' | 'verifying' | 'verified' | 'saving' | 'saved' | 'error'
 
 export default function TalentSettingsPaymentsPage() {
-  const [method, setMethod] = useState<PayoutMethod>('bank')
-  const [saved, setSaved] = useState(false)
+  const { user: currentUser, loading: userLoading } = useCurrentUser()
 
-  function handleSave(e: React.FormEvent) {
+  const [banks, setBanks] = useState<Bank[]>([])
+  const [banksLoading, setBanksLoading] = useState(true)
+
+  const [bankCode, setBankCode] = useState('')
+  const [accountNumber, setAccountNumber] = useState('')
+  const [accountName, setAccountName] = useState('')
+  const [saveState, setSaveState] = useState<SaveState>('idle')
+  const [errorMsg, setErrorMsg] = useState('')
+
+  const hasExistingAccount = Boolean(currentUser?.paystackRecipientCode)
+  const existingAccountName = currentUser?.paystackAccountName
+  const existingBankName = (currentUser as any)?.paystackBankName
+  const existingAccountNumber = currentUser?.paystackAccountNumber
+
+  useEffect(() => {
+    fetch('/api/payouts/banks')
+      .then(r => r.json())
+      .then((data: Bank[]) => { setBanks(Array.isArray(data) ? data : []); setBanksLoading(false) })
+      .catch(() => setBanksLoading(false))
+  }, [])
+
+  async function handleVerify() {
+    if (!bankCode || accountNumber.length < 10) return
+    setSaveState('verifying')
+    setErrorMsg('')
+    setAccountName('')
+    try {
+      const res = await fetch(`/api/payouts/verify-account?account_number=${accountNumber}&bank_code=${bankCode}`)
+      const data = await res.json()
+      if (data.accountName) {
+        setAccountName(data.accountName)
+        setSaveState('verified')
+      } else {
+        setErrorMsg(data.error ?? 'Account not found')
+        setSaveState('error')
+      }
+    } catch {
+      setErrorMsg('Verification failed — check your details')
+      setSaveState('error')
+    }
+  }
+
+  async function handleSave(e: React.FormEvent) {
     e.preventDefault()
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2500)
+    if (!currentUser || !accountName || !bankCode || !accountNumber) return
+    setSaveState('saving')
+    setErrorMsg('')
+    try {
+      const selectedBank = banks.find(b => b.code === bankCode)
+      const res = await fetch('/api/payouts/recipient', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: currentUser.id,
+          accountName,
+          accountNumber,
+          bankCode,
+          bankName: selectedBank?.name ?? '',
+        }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setSaveState('saved')
+      } else {
+        setErrorMsg(data.error ?? 'Failed to save payout details')
+        setSaveState('error')
+      }
+    } catch {
+      setErrorMsg('Something went wrong — please try again')
+      setSaveState('error')
+    }
+  }
+
+  const I = 'w-full px-4 py-2.5 bg-background border border-border rounded-xl font-text text-sm focus:outline-none focus:border-primary/40 transition-colors'
+  const isFormReady = bankCode && accountNumber.length >= 10
+  const canSave = saveState === 'verified' || saveState === 'saved'
+
+  if (userLoading) {
+    return <div className="space-y-4 animate-pulse"><div className="h-8 w-48 bg-muted rounded" /><div className="h-40 bg-muted rounded-2xl" /></div>
   }
 
   return (
@@ -26,108 +107,88 @@ export default function TalentSettingsPaymentsPage() {
         </p>
       </div>
 
-      {/* Method toggle */}
-      <div className="border border-border rounded-2xl bg-background p-6 space-y-6">
-        <div>
-          <p className="font-text text-sm font-semibold text-foreground mb-3">Payout method</p>
-          <div className="grid grid-cols-2 gap-3 max-w-sm">
-            <button
-              type="button"
-              onClick={() => setMethod('bank')}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border font-text text-sm font-semibold transition-colors ${
-                method === 'bank'
-                  ? 'bg-foreground text-background border-foreground'
-                  : 'bg-background text-muted-foreground border-border hover:border-foreground/30 hover:text-foreground'
-              }`}
-            >
-              <Building2 size={15} strokeWidth={1.7} />
-              Bank transfer
-            </button>
-            <button
-              type="button"
-              onClick={() => setMethod('paypal')}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border font-text text-sm font-semibold transition-colors ${
-                method === 'paypal'
-                  ? 'bg-foreground text-background border-foreground'
-                  : 'bg-background text-muted-foreground border-border hover:border-foreground/30 hover:text-foreground'
-              }`}
-            >
-              <CreditCard size={15} strokeWidth={1.7} />
-              PayPal
-            </button>
+      {hasExistingAccount && saveState !== 'saved' && (
+        <div className="flex items-start gap-3 p-4 bg-green-50 border border-green-200 rounded-2xl">
+          <CheckCircle2 size={16} className="text-green-600 shrink-0 mt-0.5" />
+          <div>
+            <p className="font-text text-sm font-semibold text-green-800">Payout account connected</p>
+            <p className="font-text text-sm text-green-700 mt-0.5">
+              {existingAccountName} · {existingBankName}
+              {existingAccountNumber && ` · ••••${existingAccountNumber.slice(-4)}`}
+            </p>
           </div>
+        </div>
+      )}
+
+      {saveState === 'saved' && (
+        <div className="flex items-start gap-3 p-4 bg-green-50 border border-green-200 rounded-2xl">
+          <CheckCircle2 size={16} className="text-green-600 shrink-0 mt-0.5" />
+          <div>
+            <p className="font-text text-sm font-semibold text-green-800">Payout account saved</p>
+            <p className="font-text text-sm text-green-700 mt-0.5">{accountName} · {banks.find(b => b.code === bankCode)?.name}</p>
+          </div>
+        </div>
+      )}
+
+      <div className="border border-border rounded-2xl bg-background p-6 space-y-6">
+        <div className="flex items-center gap-2.5">
+          <Building2 size={15} strokeWidth={1.7} />
+          <p className="font-text text-sm font-semibold text-foreground">Bank transfer</p>
         </div>
 
         <form onSubmit={handleSave} className="space-y-5">
-          {method === 'bank' ? (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="font-text text-xs font-semibold text-foreground uppercase tracking-eyebrow mb-1.5 block">
-                    Account holder name
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Full legal name"
-                    className="w-full px-4 py-2.5 bg-background border border-border rounded-xl font-text text-sm focus:outline-none focus:border-primary/40 transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="font-text text-xs font-semibold text-foreground uppercase tracking-eyebrow mb-1.5 block">
-                    Bank name
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Chase, Barclays"
-                    className="w-full px-4 py-2.5 bg-background border border-border rounded-xl font-text text-sm focus:outline-none focus:border-primary/40 transition-colors"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="font-text text-xs font-semibold text-foreground uppercase tracking-eyebrow mb-1.5 block">
-                    Account number
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="••••••••"
-                    className="w-full px-4 py-2.5 bg-background border border-border rounded-xl font-text text-sm font-mono focus:outline-none focus:border-primary/40 transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="font-text text-xs font-semibold text-foreground uppercase tracking-eyebrow mb-1.5 block">
-                    Sort code / routing number
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 04-00-04"
-                    className="w-full px-4 py-2.5 bg-background border border-border rounded-xl font-text text-sm font-mono focus:outline-none focus:border-primary/40 transition-colors"
-                  />
-                </div>
-              </div>
-              <div className="max-w-xs">
-                <label className="font-text text-xs font-semibold text-foreground uppercase tracking-eyebrow mb-1.5 block">
-                  Currency
-                </label>
-                <select className="w-full px-4 py-2.5 bg-background border border-border rounded-xl font-text text-sm focus:outline-none focus:border-primary/40 transition-colors appearance-none">
-                  <option value="USD">USD — US Dollar</option>
-                  <option value="GBP">GBP — British Pound</option>
-                  <option value="EUR">EUR — Euro</option>
-                  <option value="CAD">CAD — Canadian Dollar</option>
-                  <option value="AUD">AUD — Australian Dollar</option>
-                </select>
-              </div>
-            </>
-          ) : (
-            <div className="max-w-sm">
-              <label className="font-text text-xs font-semibold text-foreground uppercase tracking-eyebrow mb-1.5 block">
-                PayPal email address
-              </label>
+          <div>
+            <label className="font-text text-xs font-semibold text-foreground uppercase tracking-eyebrow mb-1.5 block">Bank</label>
+            {banksLoading ? (
+              <div className="h-10 bg-muted rounded-xl animate-pulse" />
+            ) : (
+              <select
+                value={bankCode}
+                onChange={e => { setBankCode(e.target.value); setAccountName(''); setSaveState('idle') }}
+                className={`${I} appearance-none`}
+                required
+              >
+                <option value="">Select your bank…</option>
+                {banks.map(b => <option key={b.code} value={b.code}>{b.name}</option>)}
+              </select>
+            )}
+          </div>
+
+          <div>
+            <label className="font-text text-xs font-semibold text-foreground uppercase tracking-eyebrow mb-1.5 block">Account number</label>
+            <div className="flex gap-2">
               <input
-                type="email"
-                placeholder="you@example.com"
-                className="w-full px-4 py-2.5 bg-background border border-border rounded-xl font-text text-sm focus:outline-none focus:border-primary/40 transition-colors"
+                type="text"
+                inputMode="numeric"
+                value={accountNumber}
+                onChange={e => { setAccountNumber(e.target.value.replace(/\D/g, '')); setAccountName(''); setSaveState('idle') }}
+                placeholder="10-digit account number"
+                maxLength={10}
+                className={`${I} flex-1 font-mono`}
+                required
               />
+              <button
+                type="button"
+                onClick={handleVerify}
+                disabled={!isFormReady || saveState === 'verifying'}
+                className="px-4 py-2.5 border border-border rounded-xl font-text text-sm font-semibold hover:bg-muted transition-colors disabled:opacity-40"
+              >
+                {saveState === 'verifying' ? 'Checking…' : 'Verify'}
+              </button>
+            </div>
+          </div>
+
+          {saveState === 'verified' && accountName && (
+            <div className="flex items-center gap-2 px-4 py-3 bg-green-50 border border-green-200 rounded-xl">
+              <CheckCircle2 size={14} className="text-green-600 shrink-0" />
+              <p className="font-text text-sm font-semibold text-green-800">{accountName}</p>
+            </div>
+          )}
+
+          {(saveState === 'error') && errorMsg && (
+            <div className="flex items-center gap-2 px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
+              <AlertCircle size={14} className="text-red-500 shrink-0" />
+              <p className="font-text text-sm text-red-700">{errorMsg}</p>
             </div>
           )}
 
@@ -138,23 +199,23 @@ export default function TalentSettingsPaymentsPage() {
             </div>
             <button
               type="submit"
-              className="px-5 py-2.5 bg-foreground text-background rounded-xl font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms]"
+              disabled={!canSave || saveState === 'saving'}
+              className="px-5 py-2.5 bg-foreground text-background rounded-xl font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms] disabled:opacity-40"
             >
-              {saved ? 'Saved!' : 'Save details'}
+              {saveState === 'saving' ? 'Saving…' : saveState === 'saved' ? 'Saved!' : 'Save details'}
             </button>
           </div>
         </form>
       </div>
 
-      {/* Payout schedule info */}
       <div className="border border-border rounded-2xl bg-muted/30 p-6 space-y-3">
         <p className="font-text text-sm font-semibold text-foreground">How payouts work</p>
         <ul className="space-y-2">
           {[
-            "Payouts are triggered when a client approves a milestone.",
-            "Funds clear within 3-5 business days depending on your bank.",
+            'Payouts are triggered when a client approves a milestone.',
+            'Funds clear within 1–3 business days depending on your bank.',
             "You'll receive an email confirmation when each payout is sent.",
-          ].map((line) => (
+          ].map(line => (
             <li key={line} className="flex items-start gap-2">
               <span className="mt-1.5 w-1 h-1 rounded-full bg-primary shrink-0" />
               <p className="font-text text-sm text-muted-foreground">{line}</p>

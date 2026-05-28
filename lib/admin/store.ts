@@ -5,6 +5,7 @@ import {
   getDocs,
   getDoc,
   setDoc,
+  addDoc,
   deleteDoc,
   query,
   where,
@@ -281,6 +282,39 @@ export async function updateSystemUser(id: string, data: Partial<User>): Promise
 
 export async function deleteSystemUser(id: string): Promise<void> {
   await remove('users', id)
+}
+
+// ─── Invoices ─────────────────────────────────────────────────────────────────
+import { type Invoice, type InvoiceStatus } from '@/lib/invoices'
+import { type Payout, type PayoutStatus } from '@/lib/payouts'
+
+export async function getInvoices(): Promise<Invoice[]> {
+  const snap = await getDocs(collection(db, 'invoices'))
+  return snap.docs.map(d => ({ id: d.id, ...d.data() } as Invoice))
+}
+
+export async function createInvoiceAdmin(data: Omit<Invoice, 'id'>): Promise<Invoice> {
+  const ref = await addDoc(collection(db, 'invoices'), clean({ ...data, updatedAt: new Date().toISOString() }))
+  return { id: ref.id, ...data }
+}
+
+export async function updateInvoiceAdmin(id: string, status: InvoiceStatus, extra?: Partial<Invoice>): Promise<void> {
+  await upsert('invoices', id, clean({ status, ...extra, updatedAt: new Date().toISOString() }))
+}
+
+// ─── Payouts ──────────────────────────────────────────────────────────────────
+export async function getPayouts(): Promise<Payout[]> {
+  const snap = await getDocs(collection(db, 'payouts'))
+  return snap.docs.map(d => ({ id: d.id, ...d.data() } as Payout))
+}
+
+export async function createPayoutAdmin(data: Omit<Payout, 'id'>): Promise<Payout> {
+  const ref = await addDoc(collection(db, 'payouts'), clean({ ...data, updatedAt: new Date().toISOString() }))
+  return { id: ref.id, ...data }
+}
+
+export async function updatePayoutAdmin(id: string, status: PayoutStatus, extra?: Partial<Payout>): Promise<void> {
+  await upsert('payouts', id, clean({ status, ...extra, updatedAt: new Date().toISOString() }))
 }
 
 // ─── Vetting ──────────────────────────────────────────────────────────────────

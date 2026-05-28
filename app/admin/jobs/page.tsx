@@ -1,11 +1,11 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { getJobs, createJob, deleteJob, closeJob, getSystemUsers } from '@/lib/admin/store'
+import { getJobs, createJob, deleteJob, closeJob, getSystemUsers, updateInvoiceAdmin, updatePayoutAdmin } from '@/lib/admin/store'
 import type { User } from '@/lib/user'
 import type { Job, JobStatus, JobType } from '@/lib/jobs'
-import { invoices as seedInvoices, type Invoice, type InvoiceStatus } from '@/lib/invoices'
-import { payouts as seedPayouts, type Payout, type PayoutStatus } from '@/lib/payouts'
+import { useAllInvoices, type Invoice, type InvoiceStatus } from '@/lib/invoices'
+import { useAllPayouts, type Payout, type PayoutStatus } from '@/lib/payouts'
 import Modal from '@/components/admin/Modal'
 
 const JOB_STATUSES: JobStatus[] = ['Scoping', 'Pod review', 'Active', 'Paused', 'Completed', 'Cancelled']
@@ -168,7 +168,6 @@ function JobForm({
         </select>
       </div>
 
-      {/* NDA & Approval */}
       <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border">
         <div className={F}>
           <label className={L}>NDA Status</label>
@@ -235,19 +234,23 @@ const PAYOUT_STATUS_STYLES: Record<PayoutStatus, string> = {
   Processing: 'bg-primary/10 text-primary',
 }
 
-function PaymentsPanel({ job, invoices, payouts, onUpdateInvoice, onUpdatePayout }: {
+function PaymentsPanel({ job, invoices, payouts, onUpdateInvoice, onUpdatePayout, onSendPayout }: {
   job: Job
   invoices: Invoice[]
   payouts: Payout[]
-  onUpdateInvoice: (id: number, status: InvoiceStatus) => void
-  onUpdatePayout: (id: number, status: PayoutStatus) => void
+  onUpdateInvoice: (id: string, status: InvoiceStatus) => void
+  onUpdatePayout: (id: string, status: PayoutStatus) => void
+  onSendPayout: (payout: Payout) => void
 }) {
   const jobInvoices = invoices.filter(i => i.jobSlug === job.slug)
   const jobPayouts = payouts.filter(p => p.jobSlug === job.slug)
   const totalInvoiced = jobInvoices.reduce((a, i) => a + i.amountRaw, 0)
   const totalPaidOut = jobPayouts.filter(p => p.status === 'Cleared').reduce((a, p) => a + p.amountRaw, 0)
 
-  const F = 'flex flex-col gap-1.5'
+  const [confirmInvoice, setConfirmInvoice] = useState<{ id: string; status: InvoiceStatus } | null>(null)
+  const [confirmPayout, setConfirmPayout] = useState<{ id: string; status: PayoutStatus } | null>(null)
+  const [sendingPayout, setSendingPayout] = useState<string | null>(null)
+
   const L = 'font-mono text-[11px] tracking-eyebrow uppercase text-muted-foreground'
   const S = 'px-2 py-1 border border-input bg-white font-text text-xs text-foreground focus:outline-none focus:border-foreground transition-colors duration-100 appearance-none'
 
@@ -271,18 +274,46 @@ function PaymentsPanel({ job, invoices, payouts, onUpdateInvoice, onUpdatePayout
         ) : (
           <div className="border border-border divide-y divide-border">
             {jobInvoices.map(inv => (
-              <div key={inv.id} className="px-3 py-2.5 flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="font-text text-xs font-semibold text-foreground truncate">{inv.label}</p>
-                  <p className="font-mono text-[10px] text-muted-foreground/70">{inv.amount} · {inv.date}</p>
+              <div key={inv.id} className="px-3 py-2.5 space-y-1.5">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-text text-xs font-semibold text-foreground truncate">{inv.label}</p>
+                    <p className="font-mono text-[10px] text-muted-foreground/70">
+                      {inv.amount} · {inv.date}
+                      {inv.paystackReference && <span className="ml-2 text-primary/70">ref: {inv.paystackReference}</span>}
+                    </p>
+                  </div>
+                  {confirmInvoice?.id === inv.id ? (
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span className="font-mono text-[10px] text-muted-foreground">Set to {confirmInvoice.status}?</span>
+                      <button
+                        onClick={() => { onUpdateInvoice(inv.id, confirmInvoice.status); setConfirmInvoice(null) }}
+                        className="px-2 py-0.5 bg-foreground text-background font-mono text-[10px] hover:bg-primary transition-colors"
+                      >
+                        Confirm
+                      </button>
+                      <button
+                        onClick={() => setConfirmInvoice(null)}
+                        className="px-2 py-0.5 border border-input font-mono text-[10px] hover:bg-border transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <select
+                      value={inv.status}
+                      onChange={e => setConfirmInvoice({ id: inv.id, status: e.target.value as InvoiceStatus })}
+                      className={`${S} ${INVOICE_STATUS_STYLES[inv.status]} border-0 font-mono text-[10px] uppercase tracking-eyebrow font-bold`}
+                    >
+                      {INVOICE_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  )}
                 </div>
-                <select
-                  value={inv.status}
-                  onChange={e => onUpdateInvoice(inv.id, e.target.value as InvoiceStatus)}
-                  className={`${S} ${INVOICE_STATUS_STYLES[inv.status]} border-0 font-mono text-[10px] uppercase tracking-eyebrow font-bold`}
-                >
-                  {INVOICE_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
+                {inv.paidAt && (
+                  <p className="font-mono text-[10px] text-green-600">
+                    Paid {new Date(inv.paidAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </p>
+                )}
               </div>
             ))}
           </div>
@@ -296,18 +327,57 @@ function PaymentsPanel({ job, invoices, payouts, onUpdateInvoice, onUpdatePayout
         ) : (
           <div className="border border-border divide-y divide-border">
             {jobPayouts.map(p => (
-              <div key={p.id} className="px-3 py-2.5 flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="font-text text-xs font-semibold text-foreground truncate">{p.label}</p>
-                  <p className="font-mono text-[10px] text-muted-foreground/70">{p.amount} · {p.date}</p>
+              <div key={p.id} className="px-3 py-2.5 space-y-1.5">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-text text-xs font-semibold text-foreground truncate">{p.label}</p>
+                    <p className="font-mono text-[10px] text-muted-foreground/70">
+                      {p.amount} · {p.date}
+                      {p.paystackTransferCode && <span className="ml-2 text-primary/70">transfer: {p.paystackTransferCode}</span>}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {p.status === 'Pending' && !p.paystackTransferCode && (
+                      <button
+                        onClick={() => { setSendingPayout(p.id); onSendPayout(p) }}
+                        disabled={sendingPayout === p.id}
+                        className="px-2 py-0.5 bg-foreground text-background font-mono text-[10px] hover:bg-primary transition-colors disabled:opacity-50"
+                      >
+                        {sendingPayout === p.id ? 'Sending…' : 'Send payout'}
+                      </button>
+                    )}
+                    {confirmPayout?.id === p.id ? (
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono text-[10px] text-muted-foreground">Set to {confirmPayout.status}?</span>
+                        <button
+                          onClick={() => { onUpdatePayout(p.id, confirmPayout.status); setConfirmPayout(null); setSendingPayout(null) }}
+                          className="px-2 py-0.5 bg-foreground text-background font-mono text-[10px] hover:bg-primary transition-colors"
+                        >
+                          Confirm
+                        </button>
+                        <button
+                          onClick={() => { setConfirmPayout(null); setSendingPayout(null) }}
+                          className="px-2 py-0.5 border border-input font-mono text-[10px] hover:bg-border transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <select
+                        value={p.status}
+                        onChange={e => setConfirmPayout({ id: p.id, status: e.target.value as PayoutStatus })}
+                        className={`${S} ${PAYOUT_STATUS_STYLES[p.status]} border-0 font-mono text-[10px] uppercase tracking-eyebrow font-bold`}
+                      >
+                        {PAYOUT_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    )}
+                  </div>
                 </div>
-                <select
-                  value={p.status}
-                  onChange={e => onUpdatePayout(p.id, e.target.value as PayoutStatus)}
-                  className={`${S} ${PAYOUT_STATUS_STYLES[p.status]} border-0 font-mono text-[10px] uppercase tracking-eyebrow font-bold`}
-                >
-                  {PAYOUT_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
+                {p.sentAt && (
+                  <p className="font-mono text-[10px] text-green-600">
+                    Sent {new Date(p.sentAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </p>
+                )}
               </div>
             ))}
           </div>
@@ -327,13 +397,12 @@ export default function AdminJobsPage() {
   const [closing, setClosing] = useState(false)
   const [filter, setFilter] = useState<JobStatus | 'All'>('All')
   const [search, setSearch] = useState('')
-  const [localInvoices, setLocalInvoices] = useState<Invoice[]>(seedInvoices)
-  const [localPayouts, setLocalPayouts] = useState<Payout[]>(seedPayouts)
+
+  const { invoices } = useAllInvoices()
+  const { payouts } = useAllPayouts()
 
   async function reload() { setJobs(await getJobs()) }
-  useEffect(() => {
-    reload()
-  }, [])
+  useEffect(() => { reload() }, [])
 
   const filtered = jobs
     .filter(j => filter === 'All' || j.status === filter)
@@ -350,12 +419,35 @@ export default function AdminJobsPage() {
     await reload()
   }
 
-  function handleUpdateInvoice(id: number, status: InvoiceStatus) {
-    setLocalInvoices(prev => prev.map(i => i.id === id ? { ...i, status } : i))
+  async function handleUpdateInvoice(id: string, status: InvoiceStatus) {
+    await updateInvoiceAdmin(id, status)
   }
 
-  function handleUpdatePayout(id: number, status: PayoutStatus) {
-    setLocalPayouts(prev => prev.map(p => p.id === id ? { ...p, status } : p))
+  async function handleUpdatePayout(id: string, status: PayoutStatus) {
+    await updatePayoutAdmin(id, status)
+  }
+
+  async function handleSendPayout(payout: Payout) {
+    if (!payout.paystackRecipientCode) {
+      alert('This talent has not set up a Paystack payout account yet.')
+      return
+    }
+    try {
+      const res = await fetch('/api/payouts/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          payoutId: payout.id,
+          recipientCode: payout.paystackRecipientCode,
+          amountRaw: payout.amountRaw,
+          reason: payout.label,
+        }),
+      })
+      const data = await res.json()
+      if (!data.success) alert(`Payout failed: ${data.error}`)
+    } catch {
+      alert('Failed to send payout — check network and try again.')
+    }
   }
 
   async function confirmDelete() {
@@ -484,24 +576,18 @@ export default function AdminJobsPage() {
         <Modal title={`Payments — ${modal.payments.title}`} onClose={() => setModal(null)}>
           <PaymentsPanel
             job={modal.payments}
-            invoices={localInvoices}
-            payouts={localPayouts}
+            invoices={invoices}
+            payouts={payouts}
             onUpdateInvoice={handleUpdateInvoice}
             onUpdatePayout={handleUpdatePayout}
+            onSendPayout={handleSendPayout}
           />
         </Modal>
       )}
 
       {modal === 'create' && (
-        <Modal
-          title="New job"
-          onClose={() => setModal(null)}
-        >
-          <JobForm
-            initial={{}}
-            onSave={handleSave}
-            onCancel={() => setModal(null)}
-          />
+        <Modal title="New job" onClose={() => setModal(null)}>
+          <JobForm initial={{}} onSave={handleSave} onCancel={() => setModal(null)} />
         </Modal>
       )}
 

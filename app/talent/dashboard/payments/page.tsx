@@ -8,13 +8,13 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useCurrentUser, getClientUser } from '@/lib/user'
-import { payouts, type PayoutStatus } from '@/lib/payouts'
+import { usePayouts, type PayoutStatus } from '@/lib/payouts'
 import { useJobs } from '@/lib/jobs'
 import { getPodBySlug } from '@/lib/pods'
 
 const statusStyles: Record<PayoutStatus, string> = {
-  Cleared: 'bg-green-50 text-green-700 border-green-200',
-  Pending: 'bg-amber-50 text-amber-700 border-amber-200',
+  Cleared:    'bg-green-50 text-green-700 border-green-200',
+  Pending:    'bg-amber-50 text-amber-700 border-amber-200',
   Processing: 'bg-primary/10 text-primary border-primary/20',
 }
 
@@ -23,6 +23,7 @@ export default function TalentPaymentsPage() {
   type SortDir = 'asc' | 'desc'
 
   const { user: currentUser, loading: userLoading } = useCurrentUser()
+  const { payouts, loading: payoutsLoading } = usePayouts(currentUser?.id ?? '')
   const { jobs, loading: jobsLoading } = useJobs()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<PayoutStatus | 'All'>('All')
@@ -45,14 +46,13 @@ export default function TalentPaymentsPage() {
       : <ChevronDown size={11} className="ml-1 inline text-foreground" />
   }
 
-  if (userLoading || jobsLoading || !currentUser) {
+  if (userLoading || payoutsLoading || jobsLoading || !currentUser) {
     return (
       <div className="mx-auto max-w-[1200px] space-y-8 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
         <div>
           <Skeleton className="mb-2 h-4 w-20" />
           <Skeleton className="h-9 w-52" />
         </div>
-
         <div className="-mx-4 overflow-x-auto px-4 pb-2 hide-scrollbar md:mx-0 md:overflow-visible md:px-0 md:pb-0">
           <div className="flex gap-3 snap-x snap-mandatory md:grid md:grid-cols-3 md:gap-4">
             {[1, 2, 3].map((item) => (
@@ -64,13 +64,11 @@ export default function TalentPaymentsPage() {
             ))}
           </div>
         </div>
-
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-4">
             <Skeleton className="h-11 max-w-sm flex-1 rounded-xl" />
             <Skeleton className="h-11 w-28 rounded-xl" />
           </div>
-
           <div className="overflow-hidden rounded-2xl border border-border bg-background">
             <div className="border-b border-border bg-muted/50 px-5 py-3.5">
               <Skeleton className="h-3 w-40" />
@@ -97,17 +95,17 @@ export default function TalentPaymentsPage() {
   }
 
   const pendingTotal = payouts
-    .filter((p) => p.status === 'Pending' || p.status === 'Processing')
+    .filter(p => p.status === 'Pending' || p.status === 'Processing')
     .reduce((a, p) => a + p.amountRaw, 0)
   const clearedTotal = payouts
-    .filter((p) => p.status === 'Cleared')
+    .filter(p => p.status === 'Cleared')
     .reduce((a, p) => a + p.amountRaw, 0)
   const nextPayout = payouts
-    .filter((p) => p.status === 'Pending')
-    .sort((a, b) => a.id - b.id)[0]
+    .filter(p => p.status === 'Pending')
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0]
 
   const filtered = payouts
-    .filter((p) => {
+    .filter(p => {
       if (statusFilter !== 'All' && p.status !== statusFilter) return false
       const q = search.toLowerCase()
       return (
@@ -151,15 +149,9 @@ export default function TalentPaymentsPage() {
           <div className={`min-w-[220px] snap-start rounded-2xl border bg-background p-4 md:min-w-0 md:p-6 ${nextPayout ? 'border-amber-200' : 'border-border'}`}>
             <p className="mb-2 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">Next payout</p>
             {nextPayout ? (
-              <>
-                <p className="font-text text-base font-bold leading-none text-foreground">
-                  {nextPayout.amount}
-                </p>
-              </>
+              <p className="font-text text-base font-bold leading-none text-foreground">{nextPayout.amount}</p>
             ) : (
-              <p className="font-text text-base font-bold leading-none text-muted-foreground/70">
-                Nothing due
-              </p>
+              <p className="font-text text-base font-bold leading-none text-muted-foreground/70">Nothing due</p>
             )}
           </div>
         </div>
@@ -173,11 +165,11 @@ export default function TalentPaymentsPage() {
               type="text"
               placeholder="Search payouts…"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={e => setSearch(e.target.value)}
               className="w-full rounded-xl border border-border bg-background py-2.5 pl-9 pr-4 font-text text-sm transition-colors focus:border-primary/40 focus:outline-none"
             />
           </div>
-          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as PayoutStatus | 'All')}>
+          <Select value={statusFilter} onValueChange={v => setStatusFilter(v as PayoutStatus | 'All')}>
             <SelectTrigger className="w-[160px]">
               <SelectValue placeholder="All statuses" />
             </SelectTrigger>
@@ -216,8 +208,8 @@ export default function TalentPaymentsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((payout) => {
-                const job = jobs.find((j) => j.slug === payout.jobSlug)
+              {filtered.map(payout => {
+                const job = jobs.find(j => j.slug === payout.jobSlug)
                 const pod = job?.podSlug ? getPodBySlug(job.podSlug) : null
                 return (
                   <TableRow key={payout.id}>
@@ -262,7 +254,7 @@ export default function TalentPaymentsPage() {
               {filtered.length === 0 && (
                 <TableRow className="hover:bg-transparent">
                   <TableCell colSpan={6} className="py-12 text-center font-text text-sm text-muted-foreground/70">
-                    No payouts match your search.
+                    No payouts yet.
                   </TableCell>
                 </TableRow>
               )}

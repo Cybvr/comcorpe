@@ -51,6 +51,12 @@ export interface User {
   msaSigned?: boolean
   msaSignedAt?: string
   msaSignedName?: string
+  // Paystack
+  paystackCustomerCode?: string
+  paystackRecipientCode?: string
+  paystackBankCode?: string
+  paystackAccountNumber?: string
+  paystackAccountName?: string
   // Performance
   performanceScore?: number
   performanceReviewCount?: number
@@ -259,6 +265,11 @@ function buildProfile(docId: string, data: Record<string, any>, fbUser: { uid: s
     msaSigned: data.msaSigned ?? false,
     msaSignedAt: data.msaSignedAt,
     msaSignedName: data.msaSignedName,
+    paystackCustomerCode: data.paystackCustomerCode,
+    paystackRecipientCode: data.paystackRecipientCode,
+    paystackBankCode: data.paystackBankCode,
+    paystackAccountNumber: data.paystackAccountNumber,
+    paystackAccountName: data.paystackAccountName,
     performanceScore: data.performanceScore,
     performanceReviewCount: data.performanceReviewCount,
     clientPhase: data.clientPhase,
