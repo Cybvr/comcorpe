@@ -90,6 +90,7 @@ export default function TalentSettingsPaymentsPage() {
 
   const I = 'w-full px-4 py-2.5 bg-background border border-border rounded-xl font-text text-sm focus:outline-none focus:border-primary/40 transition-colors'
   const isFormReady = bankCode && accountNumber.length >= 10
+  const isSaving = saveState === 'saving'
   const canSave = saveState === 'verified' || saveState === 'saved'
 
   if (userLoading) {
@@ -199,10 +200,10 @@ export default function TalentSettingsPaymentsPage() {
             </div>
             <button
               type="submit"
-              disabled={!canSave || saveState === 'saving'}
+              disabled={!canSave || isSaving}
               className="px-5 py-2.5 bg-foreground text-background rounded-xl font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors duration-[120ms] disabled:opacity-40"
             >
-              {saveState === 'saving' ? 'Saving…' : saveState === 'saved' ? 'Saved!' : 'Save details'}
+              {isSaving ? 'Saving…' : saveState === 'saved' ? 'Saved!' : 'Save details'}
             </button>
           </div>
         </form>
