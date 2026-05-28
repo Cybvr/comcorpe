@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { initializeApp, getApps, getApp, applicationDefault } from 'firebase-admin/app'
-import { getFirestore } from 'firebase-admin/firestore'
-
-function getAdminDb() {
-  const app = getApps().length
-    ? getApp()
-    : initializeApp({ credential: applicationDefault() })
-  return getFirestore(app)
-}
+import { doc, updateDoc } from 'firebase/firestore'
+import { db } from '@/lib/firebase'
 
 export async function POST(req: NextRequest) {
   const { payoutId, recipientCode, amountRaw, reason } = await req.json()
@@ -43,8 +36,7 @@ export async function POST(req: NextRequest) {
   }
 
   const transferCode = data.data.transfer_code
-  const db = getAdminDb()
-  await db.collection('payouts').doc(payoutId).update({
+  await updateDoc(doc(db, 'payouts', payoutId), {
     status: 'Processing',
     paystackTransferCode: transferCode,
     updatedAt: new Date().toISOString(),

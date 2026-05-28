@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { initializeApp, getApps, getApp, applicationDefault } from 'firebase-admin/app'
-import { getFirestore } from 'firebase-admin/firestore'
-
-function getAdminDb() {
-  const app = getApps().length
-    ? getApp()
-    : initializeApp({ credential: applicationDefault() })
-  return getFirestore(app)
-}
+import { doc, updateDoc } from 'firebase/firestore'
+import { db } from '@/lib/firebase'
 
 export async function GET(req: NextRequest) {
   const reference = req.nextUrl.searchParams.get('reference')
@@ -29,15 +22,14 @@ export async function GET(req: NextRequest) {
   const invoiceId = data.data.metadata?.invoiceId
   if (invoiceId) {
     try {
-      const db = getAdminDb()
-      await db.collection('invoices').doc(invoiceId).update({
+      await updateDoc(doc(db, 'invoices', invoiceId), {
         status: 'Paid',
         paystackReference: reference,
         paidAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       })
     } catch {
-      // Log but don't fail — webhook will also confirm
+      // webhook will also confirm
     }
   }
 

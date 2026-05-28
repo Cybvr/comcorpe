@@ -1,14 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
-import { initializeApp, getApps, getApp, applicationDefault } from 'firebase-admin/app'
-import { getFirestore } from 'firebase-admin/firestore'
-
-function getAdminDb() {
-  const app = getApps().length
-    ? getApp()
-    : initializeApp({ credential: applicationDefault() })
-  return getFirestore(app)
-}
+import { doc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore'
+import { db } from '@/lib/firebase'
 
 export async function POST(req: NextRequest) {
   const secretKey = process.env.PAYSTACK_SECRET_KEY
@@ -23,13 +16,12 @@ export async function POST(req: NextRequest) {
   }
 
   const event = JSON.parse(rawBody)
-  const db = getAdminDb()
 
   if (event.event === 'charge.success') {
     const { reference, metadata } = event.data
     const invoiceId = metadata?.invoiceId
     if (invoiceId) {
-      await db.collection('invoices').doc(invoiceId).update({
+      await updateDoc(doc(db, 'invoices', invoiceId), {
         status: 'Paid',
         paystackReference: reference,
         paidAt: new Date().toISOString(),
@@ -40,12 +32,9 @@ export async function POST(req: NextRequest) {
 
   if (event.event === 'transfer.success') {
     const { transfer_code } = event.data
-    const snap = await db.collection('payouts')
-      .where('paystackTransferCode', '==', transfer_code)
-      .limit(1)
-      .get()
+    const snap = await getDocs(query(collection(db, 'payouts'), where('paystackTransferCode', '==', transfer_code)))
     if (!snap.empty) {
-      await snap.docs[0].ref.update({
+      await updateDoc(snap.docs[0].ref, {
         status: 'Cleared',
         sentAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -55,12 +44,9 @@ export async function POST(req: NextRequest) {
 
   if (event.event === 'transfer.failed' || event.event === 'transfer.reversed') {
     const { transfer_code } = event.data
-    const snap = await db.collection('payouts')
-      .where('paystackTransferCode', '==', transfer_code)
-      .limit(1)
-      .get()
+    const snap = await getDocs(query(collection(db, 'payouts'), where('paystackTransferCode', '==', transfer_code)))
     if (!snap.empty) {
-      await snap.docs[0].ref.update({
+      await updateDoc(snap.docs[0].ref, {
         status: 'Pending',
         updatedAt: new Date().toISOString(),
       })
