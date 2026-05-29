@@ -25,6 +25,8 @@ export default function TalentPaymentsPage() {
   const { user: currentUser, loading: userLoading } = useCurrentUser()
   const { payouts, loading: payoutsLoading } = usePayouts(currentUser?.id ?? '')
   const { jobs, loading: jobsLoading } = useJobs()
+  const safePayouts = payouts ?? []
+  const safeJobs = jobs ?? []
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<PayoutStatus | 'All'>('All')
   const [sortKey, setSortKey] = useState<SortKey>('date')
@@ -94,17 +96,17 @@ export default function TalentPaymentsPage() {
     )
   }
 
-  const pendingTotal = payouts
+  const pendingTotal = safePayouts
     .filter(p => p.status === 'Pending' || p.status === 'Processing')
     .reduce((a, p) => a + p.amountRaw, 0)
-  const clearedTotal = payouts
+  const clearedTotal = safePayouts
     .filter(p => p.status === 'Cleared')
     .reduce((a, p) => a + p.amountRaw, 0)
-  const nextPayout = payouts
+  const nextPayout = safePayouts
     .filter(p => p.status === 'Pending')
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0]
 
-  const filtered = payouts
+  const filtered = safePayouts
     .filter(p => {
       if (statusFilter !== 'All' && p.status !== statusFilter) return false
       const q = search.toLowerCase()
@@ -209,7 +211,7 @@ export default function TalentPaymentsPage() {
             </TableHeader>
             <TableBody>
               {filtered.map(payout => {
-                const job = jobs.find(j => j.slug === payout.jobSlug)
+                const job = safeJobs.find(j => j.slug === payout.jobSlug)
                 const pod = job?.podSlug ? getPodBySlug(job.podSlug) : null
                 return (
                   <TableRow key={payout.id}>

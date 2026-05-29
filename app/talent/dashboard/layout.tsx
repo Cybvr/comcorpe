@@ -12,6 +12,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { user, loading } = useCurrentUser()
   const router = useRouter()
   const pathname = usePathname()
+  const isTalentUser = user?.role === 'talent'
+  const isAdminUser = user?.role === 'admin'
 
   useEffect(() => {
     if (!loading && !user) {
@@ -24,19 +26,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       return
     }
 
-    if (!loading && user && user.isOnboarded === false) {
+    if (!loading && isTalentUser && user.isOnboarded === false) {
       router.push('/talent/onboarding')
       return
     }
 
-    if (!loading && user && user.vettingStatus !== 'approved') {
+    if (!loading && isTalentUser && user.vettingStatus !== 'approved') {
       if (!pathname.startsWith('/talent/dashboard/vetting')) {
         router.push('/talent/dashboard/vetting')
       }
       return
     }
 
-    if (!loading && user && user.vettingStatus === 'approved' && !user.msaSigned) {
+    if (!loading && isTalentUser && user.vettingStatus === 'approved' && !user.msaSigned) {
       if (
         !pathname.startsWith('/talent/dashboard/contracts') &&
         !pathname.startsWith('/talent/dashboard/vetting')
@@ -44,7 +46,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         router.push('/talent/dashboard/contracts')
       }
     }
-  }, [user, loading, router, pathname])
+  }, [user, loading, router, pathname, isTalentUser])
 
   if (loading) {
     return (
@@ -81,8 +83,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           collapsed={sidebarCollapsed}
           onClose={() => setSidebarOpen(false)}
           onToggleCollapse={() => setSidebarCollapsed((current) => !current)}
-          talentVetted={user.vettingStatus === 'approved'}
-          talentMsaSigned={user.msaSigned === true}
+          talentVetted={isAdminUser || user.vettingStatus === 'approved'}
+          talentMsaSigned={isAdminUser || user.msaSigned === true}
         />
       </div>
 

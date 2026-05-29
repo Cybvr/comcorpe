@@ -47,7 +47,7 @@ import { useJobBySlug } from '@/lib/jobs'
 import { useLatestGrowthMetric } from '@/lib/growth-metrics'
 import { useTreatmentPlan } from '@/lib/treatment-plan'
 import { updateJob, createPod } from '@/lib/admin/store'
-import { useAllInvoices } from '@/lib/invoices'
+import { useInvoices } from '@/lib/invoices'
 import { contractTerms } from '@/lib/contract'
 import { storage, db } from '@/lib/firebase'
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
@@ -123,9 +123,10 @@ export default function JobDetailPage({
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const { user: currentUser } = useCurrentUser()
+  const currentClientId = currentUser ? (currentUser.clientId ?? currentUser.id) : ''
+  const { invoices } = useInvoices(currentClientId)
   const { metric: latestMetric } = useLatestGrowthMetric(currentUser?.clientId)
   const { plan, loading: planLoading } = useTreatmentPlan(slug)
-  const { invoices } = useAllInvoices()
 
   useEffect(() => {
     if (job) {
@@ -185,7 +186,6 @@ export default function JobDetailPage({
       (user.location ?? '').toLowerCase().includes(podMemberQuery)
     )
     : talentUsers
-
   function tabHref(tab: JobTab) {
     const params = new URLSearchParams(searchParams.toString())
     if (tab === 'brief') {

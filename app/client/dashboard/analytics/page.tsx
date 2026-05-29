@@ -97,9 +97,10 @@ export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState('6M')
 
   const { user: currentUser } = useCurrentUser()
+  const currentClientId = currentUser ? (currentUser.clientId ?? currentUser.id) : ''
+  const { invoices } = useInvoices(currentClientId)
   const { metrics: growthMetrics } = useGrowthMetrics(currentUser?.clientId)
   const { plan: treatmentPlan } = useTreatmentPlan(currentUser?.clientId)
-  const { invoices } = useInvoices(currentUser?.clientId ?? currentUser?.id ?? '')
 
   // --- FINANCIAL DATA ---
   const totalPaid = invoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + i.amountRaw, 0)
