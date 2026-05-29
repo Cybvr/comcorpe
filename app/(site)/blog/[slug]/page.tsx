@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { use } from 'react'
 import { useBlogPostBySlug, useBlogPosts, getBlogHref } from '@/lib/blog'
 import { notFound } from 'next/navigation'
+import PostThumbnail from '@/components/ui/PostThumbnail'
 
 export default function BlogDetailPage({
   params,
@@ -76,17 +77,16 @@ export default function BlogDetailPage({
           </div>
 
           {/* Cover image */}
-          {post.coverImage && (
-            <div className="relative w-full h-64 md:h-[480px] mb-12 overflow-hidden border border-foreground">
-              <Image
-                src={post.coverImage}
-                alt={post.title}
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-          )}
+          <div className="mb-12 border border-foreground overflow-hidden">
+            <PostThumbnail
+              src={post.coverImage || post.thumbnail || post.image || post.imageUrl}
+              alt={post.title}
+              category={post.category}
+              id={post.slug}
+              showBadge={false}
+              className="w-full h-64 md:h-[480px]"
+            />
+          </div>
 
           {/* Body + Sidebar */}
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] gap-16 items-start">
@@ -116,11 +116,13 @@ export default function BlogDetailPage({
                         href={getBlogHref(p.slug)}
                         className="group flex items-center gap-3 bg-background hover:bg-primary/[0.03] px-4 py-4 transition-colors"
                       >
-                        <div className="relative w-14 h-14 shrink-0 bg-muted overflow-hidden">
-                          {p.coverImage ? (
-                            <Image src={p.coverImage} alt={p.title} fill className="object-cover" />
+                        <div className="relative w-14 h-14 shrink-0 overflow-hidden bg-background">
+                          {(p.coverImage || p.thumbnail || p.image || p.imageUrl) ? (
+                            <Image src={(p.coverImage || p.thumbnail || p.image || p.imageUrl) as string} alt={p.title} fill className="object-cover" />
                           ) : (
-                            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/5 to-background" />
+                            <div className="w-full h-full relative">
+                              <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:14px_24px]" />
+                            </div>
                           )}
                         </div>
                         <div className="min-w-0">
@@ -157,11 +159,14 @@ export default function BlogDetailPage({
                     href={getBlogHref(p.slug)}
                     className="group bg-background hover:bg-primary/[0.03] transition-colors flex flex-col"
                   >
-                    <div className="relative w-full h-44 bg-muted overflow-hidden">
-                      {p.coverImage ? (
-                        <Image src={p.coverImage} alt={p.title} fill className="object-cover group-hover:scale-[1.02] transition-transform duration-500" />
+                    <div className="relative w-full h-44 overflow-hidden bg-background">
+                      {(p.coverImage || p.thumbnail || p.image || p.imageUrl) ? (
+                        <Image src={(p.coverImage || p.thumbnail || p.image || p.imageUrl) as string} alt={p.title} fill className="object-cover group-hover:scale-[1.02] transition-transform duration-500" />
                       ) : (
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/5 to-background" />
+                        <div className="w-full h-full flex items-center justify-center p-6 relative">
+                          <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:14px_24px]" />
+                          <div className="relative z-10 font-display font-black text-xl tracking-tight text-foreground/30 select-none uppercase">{p.category || 'Blog'}</div>
+                        </div>
                       )}
                     </div>
                     <div className="p-8 flex flex-col flex-1">

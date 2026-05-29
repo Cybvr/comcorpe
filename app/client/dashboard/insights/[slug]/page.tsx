@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Bookmark, MessageCircle, Share2, TrendingUp } from 'lucide-react'
 import PostCard from '@/components/dashboard/PostCard'
+import PostThumbnail from '@/components/ui/PostThumbnail'
 import { useInsights, useInsightBySlug } from '@/lib/insights'
 import { useUser } from '@/lib/user'
 
@@ -32,7 +33,15 @@ export default function ClientInsightPage({
       </Link>
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-8 items-start">
-        <article className="border border-border rounded-xl p-8 bg-background">
+        <article className="border border-border rounded-xl overflow-hidden bg-background">
+          <PostThumbnail
+            src={(insight as any).coverImage || (insight as any).thumbnail || (insight as any).image}
+            alt={insight.title}
+            category={insight.category}
+            id={insight.slug}
+            showBadge={false}
+          />
+          <div className="p-8">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-11 h-11 rounded-full bg-input flex items-center justify-center font-display font-black text-[12px] text-foreground shrink-0">
               {authorInitials}
@@ -65,6 +74,7 @@ export default function ClientInsightPage({
             <button className="flex items-center gap-1.5 font-text text-xs text-muted-foreground/70 hover:text-foreground transition-colors ml-auto" aria-label="Save post">
               <Bookmark size={12} />
             </button>
+          </div>
           </div>
         </article>
 

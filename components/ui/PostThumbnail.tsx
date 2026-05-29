@@ -1,27 +1,9 @@
-const GRADIENTS = [
-  'from-indigo-600 to-violet-600',
-  'from-emerald-600 to-teal-600',
-  'from-blue-600 to-indigo-600',
-  'from-purple-600 to-pink-600',
-  'from-violet-600 to-fuchsia-600',
-  'from-slate-800 to-slate-900',
-  'from-cyan-600 to-blue-600',
-]
-
-function gradientIndex(id?: string | number) {
-  if (id == null) return 0
-  const n =
-    typeof id === 'number'
-      ? id
-      : id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)
-  return n % GRADIENTS.length
-}
+import Image from 'next/image'
 
 export default function PostThumbnail({
   src,
   alt,
   category,
-  id,
   className = 'aspect-video w-full',
   showBadge = true,
 }: {
@@ -32,23 +14,20 @@ export default function PostThumbnail({
   className?: string
   showBadge?: boolean
 }) {
-  const gradient = GRADIENTS[gradientIndex(id)]
-
   return (
-    <div className={`relative overflow-hidden bg-muted ${className}`}>
+    <div className={`relative overflow-hidden bg-background ${className}`}>
       {src ? (
-        <img
+        <Image
           src={src}
           alt={alt}
-          className="object-cover w-full h-full group-hover:scale-[1.03] transition-transform duration-300"
+          fill
+          className="object-cover group-hover:scale-[1.03] transition-transform duration-300"
+          sizes="(max-width: 768px) 100vw, 50vw"
         />
       ) : (
-        <div
-          className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center p-6 relative overflow-hidden`}
-        >
-          <div className="absolute inset-0 bg-white/[0.04] backdrop-blur-[1px]" />
+        <div className="w-full h-full flex items-center justify-center p-6 relative">
           <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:14px_24px]" />
-          <div className="relative z-10 font-display font-black text-xl tracking-tight text-white/90 select-none uppercase truncate">
+          <div className="relative z-10 font-display font-black text-xl tracking-tight text-foreground/30 select-none uppercase truncate">
             {category || 'Insights'}
           </div>
         </div>
