@@ -69,7 +69,7 @@ export default function HomeInsightsSection() {
                 {insight.title}
               </h2>
               <p className="font-text text-[15px] leading-relaxed text-muted-foreground m-0 mb-auto line-clamp-3">
-                {insight.excerpt || insight.description}
+                {insight.excerpt}
               </p>
               <div className="mt-10 font-mono text-xs text-primary flex items-center gap-2 group-hover:gap-4 transition-all duration-300">
                 Read sourced note <span>→</span>
