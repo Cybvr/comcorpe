@@ -58,7 +58,7 @@ export default function InsightsContent() {
                 {insight.title}
               </h2>
               <p className="font-text text-[15px] leading-relaxed text-muted-foreground m-0 mb-auto">
-                {insight.description}
+                {insight.excerpt}
               </p>
               <div className="mt-12 font-mono text-xs text-primary flex items-center gap-2 group-hover:gap-4 transition-all duration-300">
                 Read sourced note <span>→</span>
