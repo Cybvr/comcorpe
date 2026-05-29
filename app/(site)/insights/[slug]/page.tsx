@@ -1,13 +1,16 @@
 import type { Metadata } from 'next'
-import InsightContent from './InsightContent'
+import { redirect } from 'next/navigation'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+
   return {
-    title: 'Insight — Comcorpᵉ',
+    title: `${slug} | Blog`,
     description: 'Pan-African telecoms and fintech insights for market growth systems.',
   }
 }
 
-export default function InsightPage({ params }: { params: Promise<{ slug: string }> }) {
-  return <InsightContent params={params} />
+export default async function InsightPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  redirect(`/blog/${slug}`)
 }

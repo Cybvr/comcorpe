@@ -9,6 +9,16 @@ import { getPosts, getTalent } from '@/lib/admin/store'
 import type { Post } from '@/lib/posts'
 import type { User } from '@/lib/user'
 
+function getInitials(name?: string | null) {
+  return (name ?? '')
+    .split(' ')
+    .filter(Boolean)
+    .map((part) => part.charAt(0))
+    .join('')
+    .toUpperCase()
+    .slice(0, 3)
+}
+
 export default function CommunityPostPage({
   params,
 }: {
@@ -33,8 +43,9 @@ export default function CommunityPostPage({
   if (post === undefined) return null
   if (!post) notFound()
 
+  const authorName = post.author?.trim() || author?.name || 'Unknown author'
   const authorTitle = author?.talentRole ?? post.role
-  const authorInitials = author?.initials ?? post.author.split(' ').map(n => n[0]).join('')
+  const authorInitials = author?.initials ?? (getInitials(authorName) || 'UA')
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1040px] mx-auto">
@@ -49,7 +60,7 @@ export default function CommunityPostPage({
               {authorInitials}
             </div>
             <div>
-              <div className="font-display font-black text-[16px] text-foreground leading-none">{post.author}</div>
+              <div className="font-display font-black text-[16px] text-foreground leading-none">{authorName}</div>
               <div className="font-text text-xs text-muted-foreground/70 mt-1">{post.role}</div>
             </div>
             <span className="ml-auto font-mono text-[10px] px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded-sm uppercase tracking-eyebrow">
@@ -86,7 +97,7 @@ export default function CommunityPostPage({
           <div className="w-12 h-12 rounded-full bg-foreground flex items-center justify-center font-display font-black text-[13px] text-background mb-4">
             {authorInitials}
           </div>
-          <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-foreground leading-tight">{post.author}</h2>
+          <h2 className="font-display font-black text-[20px] tracking-[-0.02em] text-foreground leading-tight">{authorName}</h2>
           <p className="font-mono text-[10px] uppercase tracking-eyebrow text-primary mt-2">{authorTitle}</p>
           {author?.desc && <p className="font-text text-sm text-muted-foreground mt-4">{author.desc}</p>}
           {author?.bg && <p className="font-text text-xs text-muted-foreground/70 mt-4">{author.bg}</p>}

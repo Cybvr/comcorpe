@@ -210,7 +210,7 @@ export default function AdminPodsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display font-black text-2xl tracking-tight text-foreground">Pods</h1>
-          <p className="font-text text-sm text-muted-foreground mt-1">{pods.length} pod{pods.length !== 1 ? 's' : ''} in Firestore</p>
+          <p className="font-text text-sm text-muted-foreground mt-1">{pods.length} pod{pods.length !== 1 ? 's' : ''} total</p>
         </div>
         <button
           onClick={() => setModal('create')}

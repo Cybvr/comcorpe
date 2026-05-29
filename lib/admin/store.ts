@@ -20,6 +20,15 @@ import { type GrowthHeadline } from '@/lib/insights'
 import { posts as postsSeed, type Post } from '@/lib/posts'
 import { spaces as spacesSeed, type Space } from '@/lib/spaces'
 import {
+  adaptArticleEntry,
+  adaptBlogEntry,
+  adaptInsightEntry,
+  filterContentEntries,
+  mergeContentEntries,
+  parseContentId,
+  type ContentEntry,
+} from '@/lib/content'
+import {
   leadership as leadershipSeed,
   advisors as advisorsSeed,
   type LeadershipMember,
@@ -48,6 +57,40 @@ async function upsert(collectionName: string, id: string, data: DocumentData): P
 
 async function remove(collectionName: string, id: string): Promise<void> {
   await deleteDoc(doc(db, collectionName, id))
+}
+
+function toPostId(id: string) {
+  let hash = 0
+  for (let i = 0; i < id.length; i += 1) {
+    hash = (hash * 31 + id.charCodeAt(i)) >>> 0
+  }
+  return hash || 1
+}
+
+function contentEntryToPost(entry: ContentEntry): Post {
+  return {
+    id: toPostId(entry.id),
+    slug: entry.slug,
+    authorId: entry.authorId || '',
+    author: entry.author,
+    role: entry.role || 'Contributor',
+    badge: entry.badge || entry.category || 'Articles',
+    title: entry.title,
+    body: entry.body,
+    likes: entry.likes ?? 0,
+    replies: entry.replies ?? 0,
+    category: entry.category || 'Articles',
+  }
+}
+
+async function getUnifiedContentEntries() {
+  const [blogEntries, insightEntries, articleEntries] = await Promise.all([
+    readAll<Record<string, any>>('blog', []).then((items) => items.map((item) => adaptBlogEntry(item, String(item.id ?? item.slug ?? '')))),
+    readAll<Record<string, any>>('insights', []).then((items) => items.map((item) => adaptInsightEntry({ slug: item.slug || item.id, ...item }, String(item.id ?? item.slug ?? '')))),
+    readAll<Record<string, any>>('posts', postsSeed as unknown as Record<string, any>[]).then((items) => items.map((item) => adaptArticleEntry(item, String(item.id ?? item.slug ?? '')))),
+  ])
+
+  return mergeContentEntries(blogEntries, insightEntries, articleEntries)
 }
 
 // ─── Talent ────────────────────────────────────────────────────────────────────
@@ -190,71 +233,133 @@ export async function getGrowthHeadlines(): Promise<GrowthHeadline[]> {
 
 // ─── Posts ────────────────────────────────────────────────────────────────────
 export async function getPosts(): Promise<Post[]> {
-  return readAll<Post>('posts', postsSeed)
+  const entries = await getUnifiedContentEntries()
+  return filterContentEntries(entries, { contentType: 'article' }).map(contentEntryToPost)
 }
 
 export async function createPost(data: Omit<Post, 'id'> & { id?: number }): Promise<Post> {
-  const all = await getPosts()
-  const nextId = all.length > 0 ? Math.max(...all.map(p => p.id)) + 1 : 1
-  const idStr = String(nextId)
-  const record: Post = {
-    id: nextId,
+  const record = await createBlogPost({
     slug: data.slug || data.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
-    authorId: data.authorId || '',
-    author: data.author || '',
-    role: data.role || 'Contributor',
-    badge: data.badge || 'Strategy',
     title: data.title || '',
+    excerpt: data.body || '',
     body: data.body || '',
+    category: 'Articles',
+    publishedAt: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+    author: data.author || '',
+    authorId: data.authorId || '',
+    badge: data.badge || data.category || 'Articles',
+    role: data.role || 'Contributor',
     likes: data.likes || 0,
     replies: data.replies || 0,
-    category: data.category || 'Strategy',
-  }
-  await upsert('posts', idStr, record)
-  return record
+    ...((data as any).thumbnail ? { thumbnail: (data as any).thumbnail } : {}),
+  } as any)
+
+  return contentEntryToPost(record)
 }
 
 export async function updatePost(id: number, data: Partial<Post>): Promise<void> {
-  const all = await getPosts()
-  const existing = all.find(p => p.id === id)
+  const all = await getUnifiedContentEntries()
+  const existing = filterContentEntries(all, { contentType: 'article' }).find((entry) => toPostId(entry.id) === id)
   if (!existing) return
-  await upsert('posts', String(id), { ...existing, ...data })
+
+  if (existing.sourceCollection === 'posts') {
+    await upsert('posts', existing.sourceId, {
+      slug: data.slug ?? existing.slug,
+      authorId: data.authorId ?? existing.authorId ?? '',
+      author: data.author ?? existing.author,
+      role: data.role ?? existing.role ?? 'Contributor',
+      badge: data.badge ?? existing.badge ?? 'Articles',
+      title: data.title ?? existing.title,
+      body: data.body ?? existing.body,
+      likes: data.likes ?? existing.likes ?? 0,
+      replies: data.replies ?? existing.replies ?? 0,
+      category: data.category ?? existing.category,
+    })
+    return
+  }
+
+  await updateBlogPost(existing.id, {
+    slug: data.slug ?? existing.slug,
+    title: data.title ?? existing.title,
+    excerpt: data.body ? data.body : existing.excerpt,
+    body: data.body ?? existing.body,
+    category: 'Articles',
+    author: data.author ?? existing.author,
+    authorId: data.authorId ?? existing.authorId ?? '',
+    badge: data.badge ?? existing.badge ?? 'Articles',
+    role: data.role ?? existing.role ?? 'Contributor',
+    likes: data.likes ?? existing.likes ?? 0,
+    replies: data.replies ?? existing.replies ?? 0,
+  } as any)
 }
 
 export async function deletePost(id: number): Promise<void> {
-  await remove('posts', String(id))
+  const all = await getUnifiedContentEntries()
+  const existing = filterContentEntries(all, { contentType: 'article' }).find((entry) => toPostId(entry.id) === id)
+  if (!existing) return
+
+  if (existing.sourceCollection === 'posts') {
+    await remove('posts', existing.sourceId)
+    return
+  }
+
+  await deleteBlogPost(existing.id)
 }
 
 // ─── Blog ─────────────────────────────────────────────────────────────────────
 import type { BlogPost } from '@/lib/blog'
 
 export async function getBlogPosts(): Promise<BlogPost[]> {
-  return readAll<BlogPost>('blog', [])
+  return getUnifiedContentEntries()
 }
 
-export async function createBlogPost(data: Omit<BlogPost, 'id'>): Promise<BlogPost> {
-  const id = Date.now().toString()
-  const record: BlogPost = {
-    id,
+export async function createBlogPost(
+  data: Partial<BlogPost> & Pick<BlogPost, 'title' | 'body' | 'category' | 'author'>
+): Promise<BlogPost> {
+  const sourceId = Date.now().toString()
+  const now = new Date().toISOString()
+  const record = {
     slug: data.slug || data.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
     title: data.title,
     excerpt: data.excerpt,
     body: data.body,
     category: data.category,
     publishedAt: data.publishedAt || new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+    updatedAt: now,
     author: data.author,
+    authorId: (data as any).authorId || '',
+    badge: (data as any).badge,
+    role: (data as any).role,
+    likes: (data as any).likes ?? 0,
+    replies: (data as any).replies ?? 0,
     ...(data.coverImage ? { coverImage: data.coverImage } : {}),
+    ...((data as any).thumbnail ? { thumbnail: (data as any).thumbnail } : {}),
+    ...((data as any).order != null ? { order: (data as any).order } : {}),
   }
-  await upsert('blog', id, record)
-  return record
+  await upsert('blog', sourceId, record)
+  return adaptBlogEntry(record, sourceId)
 }
 
 export async function updateBlogPost(id: string, data: Partial<BlogPost>): Promise<void> {
-  await upsert('blog', id, data)
+  const parsed = parseContentId(id)
+  const updatedAt = new Date().toISOString()
+
+  if (parsed.sourceCollection === 'insights') {
+    await upsert('insights', parsed.sourceId, { ...data, updatedAt, slug: data.slug ?? parsed.sourceId })
+    return
+  }
+
+  if (parsed.sourceCollection === 'posts') {
+    await upsert('posts', parsed.sourceId, { ...data, updatedAt })
+    return
+  }
+
+  await upsert('blog', parsed.sourceId, { ...data, updatedAt })
 }
 
 export async function deleteBlogPost(id: string): Promise<void> {
-  await remove('blog', id)
+  const parsed = parseContentId(id)
+  await remove(parsed.sourceCollection, parsed.sourceId)
 }
 
 // ─── Spaces ───────────────────────────────────────────────────────────────────

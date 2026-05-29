@@ -92,7 +92,6 @@ const dashboardConfig: Record<
       { icon: Users, label: 'Users', href: '/admin/users' },
       { icon: Users, label: 'People', href: '/admin/people' },
       { icon: Users2, label: 'Pods', href: '/admin/pods' },
-      { icon: BookOpen, label: 'Articles', href: '/admin/posts' },
       { icon: Newspaper, label: 'Blog', href: '/admin/blog' },
     ],
     supportItems: [],
@@ -294,16 +293,16 @@ export default function DashboardSidebar({
       {config.supportItems.length > 0 && talentVetted && talentMsaSigned && (
         <div className="">
           {audience === 'client' && (
-            <button
-              type="button"
+            <Link
+              href="/book"
               onClick={onClose}
               title={collapsed ? 'Book call' : undefined}
-              className={`mb-1.5 flex w-full items-center rounded-lg bg-foreground px-2.5 py-2 font-text text-sm font-semibold text-background transition-colors duration-150 hover:bg-primary hover:text-primary-foreground ${collapsed ? 'justify-center' : 'gap-3'
+              className={`mb-1.5 flex items-center rounded-lg bg-foreground px-2.5 py-2 font-text text-sm font-semibold text-background transition-colors duration-150 hover:bg-primary hover:text-primary-foreground ${collapsed ? 'justify-center' : 'gap-3'
                 }`}
             >
               <CalendarDays size={16} strokeWidth={1.8} />
               {!collapsed && <span className="flex-1 text-left">Book call</span>}
-            </button>
+            </Link>
           )}
           {config.supportItems.map((item) => (
             <div key={item.href} onClick={onClose}>

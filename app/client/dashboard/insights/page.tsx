@@ -2,10 +2,12 @@
 
 import Link from 'next/link'
 import { ArrowRight, Search as SearchIcon } from 'lucide-react'
-import { useInsights, useGrowthHeadlines } from '@/lib/insights'
+import { useGrowthHeadlines } from '@/lib/insights'
+import { useBlogPosts } from '@/lib/blog'
+import PostThumbnail from '@/components/ui/PostThumbnail'
 
 export default function ClientInsightsPage() {
-  const { insights } = useInsights()
+  const { posts: insights } = useBlogPosts({ contentType: 'insight' })
   const { headlines } = useGrowthHeadlines()
 
   return (
@@ -36,20 +38,20 @@ export default function ClientInsightsPage() {
                   <span className="sr-only">View insight</span>
                 </Link>
 
-                <div className="p-6 flex flex-col h-full">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="font-mono text-[10px] px-2 py-1 bg-primary/10 text-primary rounded uppercase tracking-wider font-bold">
-                      {insight.badge}
-                    </span>
-                    <span className="font-text text-xs text-muted-foreground">{insight.category}</span>
-                  </div>
+                <PostThumbnail
+                  src={insight.coverImage || insight.thumbnail || insight.image || insight.imageUrl}
+                  alt={insight.title}
+                  category={insight.category}
+                  id={insight.slug}
+                />
 
+                <div className="p-6 flex flex-col flex-1">
                   <h3 className="font-display font-black text-xl tracking-tight text-foreground group-hover:text-primary transition-colors leading-snug mb-3">
                     {insight.title}
                   </h3>
 
                   <p className="font-text text-sm leading-relaxed text-muted-foreground line-clamp-3 mb-6 flex-1">
-                    {insight.body}
+                    {insight.excerpt || insight.body}
                   </p>
 
                   <div className="mt-auto pt-4 border-t border-border flex items-center justify-between">

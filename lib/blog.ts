@@ -1,66 +1,95 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { collection, onSnapshot, query, where, orderBy } from 'firebase/firestore'
+import { useEffect, useMemo, useState } from 'react'
+import { collection, onSnapshot } from 'firebase/firestore'
 import { db } from './firebase'
+import {
+  adaptArticleEntry,
+  adaptBlogEntry,
+  adaptInsightEntry,
+  filterContentEntries,
+  mergeContentEntries,
+  type ContentEntry,
+  type ContentFilter,
+} from './content'
 
-export interface BlogPost {
-  id: string
-  slug: string
-  title: string
-  excerpt: string
-  body: string
-  category: string
-  publishedAt: string
-  author: string
-  coverImage?: string
-}
+export type BlogPost = ContentEntry
 
-export function useBlogPosts() {
-  const [posts, setPosts] = useState<BlogPost[]>([])
-  const [loading, setLoading] = useState(true)
+export function useBlogPosts(filter?: ContentFilter) {
+  const [blogPosts, setBlogPosts] = useState<ContentEntry[]>([])
+  const [insights, setInsights] = useState<ContentEntry[]>([])
+  const [articles, setArticles] = useState<ContentEntry[]>([])
+  const [ready, setReady] = useState({
+    blog: false,
+    insights: false,
+    posts: false,
+  })
 
   useEffect(() => {
-    const q = query(collection(db, 'blog'), orderBy('publishedAt', 'desc'))
-    const unsubscribe = onSnapshot(
-      q,
+    const unsubscribeBlog = onSnapshot(
+      collection(db, 'blog'),
       (snapshot) => {
-        setPosts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost)))
-        setLoading(false)
+        setBlogPosts(snapshot.docs.map((doc) => adaptBlogEntry(doc.data(), doc.id)))
+        setReady((current) => ({ ...current, blog: true }))
       },
       (err) => {
         console.error('Error fetching blog posts:', err)
-        setLoading(false)
+        setBlogPosts([])
+        setReady((current) => ({ ...current, blog: true }))
       }
     )
-    return () => unsubscribe()
-  }, [])
 
-  return { posts, loading }
-}
-
-export function useBlogPostBySlug(slug: string) {
-  const [post, setPost] = useState<BlogPost | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    if (!slug) return
-    const q = query(collection(db, 'blog'), where('slug', '==', slug))
-    const unsubscribe = onSnapshot(
-      q,
+    const unsubscribeInsights = onSnapshot(
+      collection(db, 'insights'),
       (snapshot) => {
-        setPost(snapshot.empty ? null : { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as BlogPost)
-        setLoading(false)
+        setInsights(snapshot.docs.map((doc) => adaptInsightEntry({ slug: doc.id, ...doc.data() }, doc.id)))
+        setReady((current) => ({ ...current, insights: true }))
       },
       (err) => {
-        console.error('Error fetching blog post:', err)
-        setLoading(false)
+        console.error('Error fetching insights:', err)
+        setInsights([])
+        setReady((current) => ({ ...current, insights: true }))
       }
     )
-    return () => unsubscribe()
-  }, [slug])
 
-  return { post, loading }
+    const unsubscribePosts = onSnapshot(
+      collection(db, 'posts'),
+      (snapshot) => {
+        setArticles(snapshot.docs.map((doc) => adaptArticleEntry(doc.data(), doc.id)))
+        setReady((current) => ({ ...current, posts: true }))
+      },
+      (err) => {
+        console.error('Error fetching articles:', err)
+        setArticles([])
+        setReady((current) => ({ ...current, posts: true }))
+      }
+    )
+
+    return () => {
+      unsubscribeBlog()
+      unsubscribeInsights()
+      unsubscribePosts()
+    }
+  }, [])
+
+  const posts = useMemo(() => {
+    const merged = mergeContentEntries(blogPosts, insights, articles)
+    return filterContentEntries(merged, filter)
+  }, [articles, blogPosts, filter?.category, filter?.contentType, filter?.slug, insights])
+
+  return {
+    posts,
+    loading: !ready.blog || !ready.insights || !ready.posts,
+  }
+}
+
+export function useBlogPostBySlug(slug: string, filter?: Omit<ContentFilter, 'slug'>) {
+  const { posts, loading } = useBlogPosts({ ...filter, slug })
+
+  return {
+    post: posts[0] ?? null,
+    loading,
+  }
 }
 
 export function getBlogHref(slug: string) {

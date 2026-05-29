@@ -1,11 +1,11 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { getTalent, getClients, getJobs, getLeadership, getAdvisors, getPosts } from '@/lib/admin/store'
+import { getTalent, getClients, getJobs, getLeadership, getAdvisors, getBlogPosts } from '@/lib/admin/store'
+import type { BlogPost } from '@/lib/blog'
 import type { Job } from '@/lib/jobs'
 import type { User } from '@/lib/user'
 import type { LeadershipMember, AdvisorMember } from '@/lib/people'
-import type { Post } from '@/lib/posts'
 import AdminDashboardLoading from './loading'
 
 const STATUS_COLOR: Record<string, string> = {
@@ -22,7 +22,7 @@ export default function AdminOverviewPage() {
   const [jobs, setJobs] = useState<Job[]>([])
   const [leadership, setLeadership] = useState<LeadershipMember[]>([])
   const [advisors, setAdvisors] = useState<AdvisorMember[]>([])
-  const [posts, setPosts] = useState<Post[]>([])
+  const [posts, setPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export default function AdminOverviewPage() {
           getJobs(),
           getLeadership(),
           getAdvisors(),
-          getPosts(),
+          getBlogPosts(),
         ])
         setTalent(talentData)
         setClients(clientData)
@@ -62,7 +62,7 @@ export default function AdminOverviewPage() {
     <div className="space-y-10">
       <div>
         <h1 className="font-display text-[32px] tracking-hero text-foreground leading-tight">Overview</h1>
-        <p className="text-sm text-muted-foreground mt-1">Manage platform data stored in Firestore.</p>
+        <p className="text-sm text-muted-foreground mt-1">Manage the core platform workspace.</p>
       </div>
 
       {/* Stats */}
@@ -72,7 +72,7 @@ export default function AdminOverviewPage() {
           { label: 'Clients', value: clients.length, href: '/admin/clients' },
           { label: 'Active Jobs', value: activeJobs, href: '/admin/jobs' },
           { label: 'Scoping Jobs', value: scopingJobs, href: '/admin/jobs' },
-          { label: 'Articles', value: posts.length, href: '/admin/posts' },
+          { label: 'Blog', value: posts.length, href: '/admin/blog' },
           { label: 'People (Team)', value: totalPeopleCount, href: '/admin/people' },
         ].map(stat => (
           <Link
@@ -118,7 +118,7 @@ export default function AdminOverviewPage() {
         {[
           { href: '/admin/talent/new', label: 'Add talent operator' },
           { href: '/admin/jobs/new', label: 'Post a new job' },
-          { href: '/admin/posts?new=true', label: 'Write an article' },
+          { href: '/admin/blog?new=true', label: 'Write a post' },
           { href: '/admin/clients/new', label: 'Add a client' },
           { href: '/admin/people?new=true', label: 'Add team leader/advisor' },
         ].map(link => (

@@ -2,10 +2,10 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useInsights } from '@/lib/insights'
+import { getBlogHref, useBlogPosts } from '@/lib/blog'
 
 export default function InsightsContent() {
-  const { insights } = useInsights()
+  const { posts: insights } = useBlogPosts({ contentType: 'insight' })
 
   return (
     <div className="min-h-screen bg-background">
@@ -40,7 +40,7 @@ export default function InsightsContent() {
           {insights.map((insight, index) => (
             <Link
               key={insight.slug}
-              href={`/insights/${insight.slug}`}
+              href={getBlogHref(insight.slug)}
               className="group p-8 md:p-10 bg-background hover:bg-primary/[0.03] transition-all duration-300 flex flex-col min-h-[340px]"
             >
               <div className="flex items-center justify-between gap-6 mb-10">

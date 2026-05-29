@@ -56,7 +56,7 @@ export default function SeedPaymentsPage() {
     <div className="space-y-6 max-w-lg">
       <div>
         <h1 className="font-display text-[28px] tracking-hero text-foreground">Seed payments</h1>
-        <p className="text-sm text-muted-foreground mt-1">Writes demo invoices and payouts to Firestore. Run once per environment.</p>
+        <p className="text-sm text-muted-foreground mt-1">Create demo invoices and payouts for a test environment.</p>
       </div>
 
       <div className="space-y-3 border border-amber-200 bg-amber-50 p-4 rounded">

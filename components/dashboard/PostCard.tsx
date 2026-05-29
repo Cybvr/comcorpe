@@ -2,23 +2,8 @@ import Link from 'next/link'
 import { Bookmark, MessageCircle, Share2, TrendingUp } from 'lucide-react'
 import type { Post } from '@/lib/posts'
 
-// Helper to get a beautiful CSS gradient for the fallback placeholder
-function getGradientClass(id: number) {
-  const gradients = [
-    'from-indigo-600 to-violet-600',
-    'from-emerald-600 to-teal-600',
-    'from-blue-600 to-indigo-600',
-    'from-purple-600 to-pink-600',
-    'from-violet-600 to-fuchsia-600',
-    'from-slate-800 to-slate-900',
-    'from-cyan-600 to-blue-600',
-  ]
-  const index = id ? (id % gradients.length) : 0
-  return gradients[index]
-}
-
-// Extend the Post type interface locally in case typescript doesn't have these optional fields yet
 interface PostWithImage extends Post {
+  coverImage?: string
   thumbnail?: string
   image?: string
   imageUrl?: string
@@ -31,17 +16,16 @@ export default function PostCard({
   post: PostWithImage
   baseHref?: string
 }) {
-  const initials = post.author
+  const initials = (post.author ?? '')
     .split(' ')
+    .filter(Boolean)
     .map((name) => name[0])
     .join('')
 
-  // Determine if there is a firebase dummy image/thumbnail
-  const thumbnailUrl = post.thumbnail || post.image || post.imageUrl
+  const thumbnailUrl = post.coverImage || post.thumbnail || post.image || post.imageUrl
 
   return (
     <article className="relative group flex flex-col h-full border border-border rounded-2xl bg-background hover:border-input hover:shadow-md transition-all overflow-hidden">
-      {/* Thumbnail or Fallback Premium CSS Gradient */}
       <div className="relative aspect-video w-full overflow-hidden bg-muted">
         {thumbnailUrl ? (
           <img
@@ -50,23 +34,14 @@ export default function PostCard({
             className="object-cover w-full h-full group-hover:scale-[1.03] transition-transform duration-300"
           />
         ) : (
-          <div className={`w-full h-full bg-gradient-to-br ${getGradientClass(post.id)} flex items-center justify-center p-6 relative overflow-hidden`}>
-            {/* Elegant glassmorphic background accent */}
-            <div className="absolute inset-0 bg-white/[0.04] backdrop-blur-[1px]" />
-            {/* Subtle mesh background grid */}
+          <div className="w-full h-full flex items-center justify-center p-6 relative overflow-hidden">
             <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:14px_24px]" />
-            <div className="relative z-10 font-display font-black text-xl tracking-tight text-white/90 select-none uppercase">
+            <div className="relative z-10 font-display font-black text-xl tracking-tight text-foreground/30 select-none uppercase">
               {post.category || 'Strategy'}
             </div>
           </div>
         )}
-        <div className="absolute top-3 left-3 z-20">
-          <span className="font-mono text-[9px] px-2 py-0.5 bg-background/90 backdrop-blur-sm border border-border rounded-full uppercase tracking-eyebrow text-foreground">
-            {post.category || 'Strategy'}
-          </span>
-        </div>
       </div>
-
       {/* Content */}
       <div className="flex-1 p-5 flex flex-col">
         {/* Author info */}

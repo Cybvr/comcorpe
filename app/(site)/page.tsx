@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Closing from '@/components/Closing'
 import TalentCarousel from '@/components/TalentCarousel'
+import HomeInsightsSection from '@/components/HomeInsightsSection'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -124,6 +125,8 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      <HomeInsightsSection />
 
       {/* Editorial image strip */}
       <section className="border-t border-foreground grid grid-cols-2 md:grid-cols-4 gap-px bg-foreground overflow-hidden">

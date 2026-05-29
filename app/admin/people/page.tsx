@@ -241,7 +241,7 @@ export default function PeopleAdminPage() {
       await loadPeople()
     } catch (err) {
       console.error('Error deleting person:', err)
-      showMsg('Failed to delete person from Firestore.', 'error')
+      showMsg('Failed to delete person.', 'error')
     } finally {
       setActionLoading(false)
     }
@@ -279,7 +279,7 @@ export default function PeopleAdminPage() {
         seedCount++
       }
 
-      showMsg(`Successfully seeded ${seedCount} records into Firestore!`, 'success')
+      showMsg(`Successfully added ${seedCount} starter records.`, 'success')
       await loadPeople()
     } catch (err) {
       console.error('Error seeding fallbacks:', err)
@@ -289,7 +289,7 @@ export default function PeopleAdminPage() {
     }
   }
 
-  // Check if actual Firestore collection holds zero documents
+  // Check if there are no saved people records
   const isFirestoreEmpty = people.length === 0 && !loading
 
   return (
@@ -299,7 +299,7 @@ export default function PeopleAdminPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
           <h1 className="font-display text-[32px] tracking-hero text-foreground leading-tight">People Management</h1>
-          <p className="text-sm text-muted-foreground mt-1">Create, view, update and delete board leadership and advisors in Firestore.</p>
+          <p className="text-sm text-muted-foreground mt-1">Create and manage board leadership and advisors.</p>
         </div>
         <button
           onClick={resetForm}
@@ -318,8 +318,8 @@ export default function PeopleAdminPage() {
               <Sparkles size={20} />
             </div>
             <div>
-              <h3 className="font-display text-base tracking-h3 text-foreground font-black">No dynamic records in Firestore</h3>
-              <p className="text-sm text-muted-foreground mt-0.5">We detected that the Firestore database is empty. Would you like to seed the initial team records from our local backup?</p>
+              <h3 className="font-display text-base tracking-h3 text-foreground font-black">No team records yet</h3>
+              <p className="text-sm text-muted-foreground mt-0.5">Start with the initial leadership and advisor profiles.</p>
             </div>
           </div>
           <button
@@ -392,12 +392,12 @@ export default function PeopleAdminPage() {
           {loading ? (
             <div className="border border-border p-12 text-center text-muted-foreground space-y-4">
               <div className="w-8 h-8 border-2 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin mx-auto" />
-              <p className="font-mono text-xs tracking-widest uppercase">Fetching people list from Firestore...</p>
+              <p className="font-mono text-xs tracking-widest uppercase">Loading people...</p>
             </div>
           ) : filteredPeople.length === 0 ? (
             <div className="border border-border border-dashed p-12 text-center text-muted-foreground">
               <p className="font-mono text-xs uppercase tracking-widest">No matching members found</p>
-              <p className="text-xs mt-1">Try adjusting your filters or add a new leader/advisor to this collection.</p>
+              <p className="text-xs mt-1">Try adjusting your filters or add a new leader/advisor.</p>
             </div>
           ) : (
             /* Items List */
@@ -488,14 +488,14 @@ export default function PeopleAdminPage() {
                 {isEditing ? 'Modify Profile' : 'Add New Profile'}
               </h2>
               <p className="text-xs text-muted-foreground mt-1">
-                {isEditing ? 'Editing active Firestore record profile below.' : 'Create a new team member document.'}
+                {isEditing ? 'Update this team member profile.' : 'Create a new team member profile.'}
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Type Switch (Only active on create) */}
               <div className="space-y-1.5">
-                <label className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground block">Collection Type</label>
+                <label className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground block">Profile Type</label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
@@ -635,7 +635,7 @@ export default function PeopleAdminPage() {
                   disabled={actionLoading}
                   className="flex-1 font-text text-xs font-bold py-2.5 px-4 bg-foreground text-background hover:bg-foreground/80 disabled:opacity-50 transition-colors border-0 cursor-pointer rounded-sm"
                 >
-                  {actionLoading ? 'Processing...' : isEditing ? 'Update Profile' : 'Publish to Firestore'}
+                  {actionLoading ? 'Processing...' : isEditing ? 'Update Profile' : 'Publish Profile'}
                 </button>
                 {isEditing && (
                   <button

@@ -2,15 +2,25 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
+import { useSearchParams } from 'next/navigation'
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { getBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost, getSystemUsers } from '@/lib/admin/store'
+import { storage } from '@/lib/firebase'
 import type { BlogPost } from '@/lib/blog'
 import type { User } from '@/lib/user'
 import Modal from '@/components/admin/Modal'
-import { Plus, Search, Trash2, Edit2, Check, AlertCircle, FileText, ChevronDown } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import { Plus, Search, Trash2, Edit2, Check, AlertCircle, FileText, UploadCloud, X } from 'lucide-react'
+import PostThumbnail from '@/components/ui/PostThumbnail'
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// Constants
 
 const CATEGORIES = [
+  'Blog',
   'Insights',
   'Events',
   'Announcements',
@@ -22,26 +32,22 @@ const CATEGORIES = [
   'Other',
 ]
 
-// ─── Form ──────────────────────────────────────────────────────────────────────
+// Form
 
 const EMPTY_FORM = {
   title: '',
   slug: '',
   excerpt: '',
   body: '',
-  category: 'Insights',
+  category: 'Blog',
   author: '',
   authorId: '',
   publishedAt: '',
   coverImage: '',
+  order: '',
 }
 
 type BlogFormData = typeof EMPTY_FORM
-
-const L = 'font-mono text-[10px] uppercase tracking-wider text-muted-foreground block mb-1'
-const I = 'w-full px-4 py-3 border border-input bg-background font-text text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-foreground transition-colors duration-100'
-const T = `${I} resize-none`
-const S = `${I} cursor-pointer appearance-none`
 
 function BlogForm({
   initial,
@@ -57,6 +63,8 @@ function BlogForm({
   users: User[]
 }) {
   const [form, setForm] = useState<BlogFormData>({ ...EMPTY_FORM, ...initial })
+  const [coverUploading, setCoverUploading] = useState(false)
+  const [coverError, setCoverError] = useState('')
 
   function set(field: keyof BlogFormData, value: string) {
     setForm(f => {
@@ -77,62 +85,96 @@ function BlogForm({
     }))
   }
 
+  async function handleCoverFile(file?: File | null) {
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      setCoverError('Please choose an image file.')
+      return
+    }
+
+    setCoverUploading(true)
+    setCoverError('')
+
+    try {
+      const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg'
+      const baseSlug = form.slug || form.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || 'blog-cover'
+      const imageRef = ref(storage, `blog-covers/${baseSlug}-${Date.now()}.${extension}`)
+      const uploadResult = await uploadBytes(imageRef, file)
+      const downloadUrl = await getDownloadURL(uploadResult.ref)
+      set('coverImage', downloadUrl)
+    } catch (error) {
+      console.error('Error uploading cover image:', error)
+      setCoverError('Upload failed. Please try again.')
+    } finally {
+      setCoverUploading(false)
+    }
+  }
+
   return (
     <form onSubmit={e => { e.preventDefault(); onSave(form) }} className="space-y-4">
       <div>
-        <label className={L}>Title *</label>
-        <input className={I} value={form.title} onChange={e => set('title', e.target.value)} required placeholder="Post title" />
+        <Label>Title *</Label>
+        <Input value={form.title} onChange={e => set('title', e.target.value)} required placeholder="Post title" />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className={L}>Slug *</label>
-          <input className={I} value={form.slug} onChange={e => set('slug', e.target.value)} required placeholder="my-post-slug" />
+          <Label>Slug *</Label>
+          <Input value={form.slug} onChange={e => set('slug', e.target.value)} required placeholder="my-post-slug" />
         </div>
-        <div className="relative">
-          <label className={L}>Category</label>
-          <select className={S} value={form.category} onChange={e => set('category', e.target.value)}>
-            {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-          <ChevronDown size={14} className="pointer-events-none absolute right-3 top-[calc(100%-22px)] -translate-y-1/2 text-muted-foreground/60" />
+        <div>
+          <Label>Category</Label>
+          <Select value={form.category} onValueChange={value => set('category', value)}>
+            <SelectTrigger className="rounded-none border-input px-4 py-3 text-foreground hover:border-foreground">
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
       <div>
-        <label className={L}>Excerpt *</label>
-        <textarea className={T} rows={2} value={form.excerpt} onChange={e => set('excerpt', e.target.value)} required placeholder="One or two sentences summarising the post" />
+        <Label>Excerpt *</Label>
+        <Textarea rows={2} value={form.excerpt} onChange={e => set('excerpt', e.target.value)} required placeholder="One or two sentences summarising the post" />
       </div>
 
       <div>
-        <label className={L}>Body *</label>
-        <textarea className={T} rows={10} value={form.body} onChange={e => set('body', e.target.value)} required placeholder={'Write the full post here.\n\nSeparate paragraphs with a blank line.'} />
+        <Label>Body *</Label>
+        <Textarea rows={10} value={form.body} onChange={e => set('body', e.target.value)} required placeholder={'Write the full post here.\n\nSeparate paragraphs with a blank line.'} />
         <p className="font-mono text-[10px] text-muted-foreground/60 mt-1">Blank line = new paragraph on the site.</p>
       </div>
 
       {/* Author */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="relative">
-          <label className={L}>Author</label>
-          <select
-            className={S}
-            value={form.authorId}
-            onChange={e => handleAuthorSelect(e.target.value)}
-          >
-            <option value="">— Select user —</option>
-            {users.map(u => (
-              <option key={u.id} value={u.id}>
-                {u.name}{u.role ? ` (${u.role})` : ''}
-              </option>
-            ))}
-          </select>
-          <ChevronDown size={14} className="pointer-events-none absolute right-3 top-[calc(100%-22px)] -translate-y-1/2 text-muted-foreground/60" />
+        <div>
+          <Label>Home order <span className="font-mono text-[10px] text-muted-foreground/60 ml-1">(1 = first on home page)</span></Label>
+          <Input type="number" min="1" value={form.order} onChange={e => set('order', e.target.value)} placeholder="e.g. 1" />
         </div>
         <div>
-          <label className={L}>Published date</label>
-          <input className={I} value={form.publishedAt} onChange={e => set('publishedAt', e.target.value)} placeholder="e.g. 22 May 2026" />
+          <Label>Published date</Label>
+          <Input value={form.publishedAt} onChange={e => set('publishedAt', e.target.value)} placeholder="e.g. 22 May 2026" />
         </div>
       </div>
 
+      <div>
+        <Label>Author</Label>
+        <Select value={form.authorId || 'none'} onValueChange={value => handleAuthorSelect(value === 'none' ? '' : value)}>
+          <SelectTrigger className="rounded-none border-input px-4 py-3 text-foreground hover:border-foreground">
+            <SelectValue placeholder="Select user" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">— Select user —</SelectItem>
+            {users.map(u => (
+              <SelectItem key={u.id} value={u.id}>
+                {u.name}{u.role ? ` (${u.role})` : ''}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
       {/* Author preview */}
       {form.authorId && (() => {
         const u = users.find(u => u.id === form.authorId)
@@ -151,30 +193,75 @@ function BlogForm({
       })()}
 
       <div>
-        <label className={L}>Cover image URL (optional)</label>
-        <input className={I} type="url" value={form.coverImage} onChange={e => set('coverImage', e.target.value)} placeholder="https://..." />
+        <Label>Cover image (optional)</Label>
+        <label
+          htmlFor="blog-cover-upload"
+          onDragOver={(event) => {
+            event.preventDefault()
+            event.currentTarget.classList.add('border-foreground', 'bg-muted/30')
+          }}
+          onDragLeave={(event) => {
+            event.currentTarget.classList.remove('border-foreground', 'bg-muted/30')
+          }}
+          onDrop={(event) => {
+            event.preventDefault()
+            event.currentTarget.classList.remove('border-foreground', 'bg-muted/30')
+            handleCoverFile(event.dataTransfer.files[0])
+          }}
+          className="flex min-h-32 cursor-pointer flex-col items-center justify-center border border-dashed border-input bg-background px-4 py-6 text-center transition-colors hover:border-foreground hover:bg-muted/20"
+        >
+          <input
+            id="blog-cover-upload"
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            onChange={(event) => handleCoverFile(event.target.files?.[0])}
+            disabled={coverUploading}
+          />
+          <UploadCloud size={22} className="mb-2 text-muted-foreground/70" />
+          <span className="font-text text-sm font-semibold text-foreground">
+            {coverUploading ? 'Uploading cover…' : 'Drop an image here or click to upload'}
+          </span>
+          <span className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground/60">
+            PNG, JPG, or WebP
+          </span>
+        </label>
+        {coverError && (
+          <p className="font-mono text-[10px] text-red-600 mt-1">{coverError}</p>
+        )}
         {form.coverImage && (
           <div className="relative mt-2 h-32 w-full overflow-hidden border border-border bg-muted">
             <Image src={form.coverImage} alt="Cover preview" fill className="object-cover" />
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => set('coverImage', '')}
+              className="absolute right-2 top-2 h-7 w-7 border-background/70 bg-background/90"
+              aria-label="Remove cover image"
+            >
+              <X size={13} />
+            </Button>
           </div>
         )}
       </div>
 
       <div className="flex gap-3 pt-2 border-t border-border">
-        <button type="submit" disabled={saving} className="flex-1 py-3 bg-foreground text-background font-text text-sm font-semibold hover:bg-primary hover:text-primary-foreground disabled:opacity-50 transition-colors">
-          {saving ? 'Saving…' : 'Publish post'}
-        </button>
-        <button type="button" onClick={onCancel} disabled={saving} className="flex-1 py-3 border border-input text-foreground font-text text-sm hover:bg-border transition-colors">
+        <Button type="submit" disabled={saving || coverUploading} className="h-auto flex-1 py-3 font-text text-sm">
+          {saving ? 'Saving…' : coverUploading ? 'Uploading…' : 'Publish post'}
+        </Button>
+        <Button type="button" variant="outline" onClick={onCancel} disabled={saving} className="h-auto flex-1 border-input py-3 font-text text-sm text-foreground hover:bg-border">
           Cancel
-        </button>
+        </Button>
       </div>
     </form>
   )
 }
 
-// ─── Page ──────────────────────────────────────────────────────────────────────
+// Page
 
 export default function AdminBlogPage() {
+  const searchParams = useSearchParams()
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
@@ -199,6 +286,12 @@ export default function AdminBlogPage() {
 
   useEffect(() => { reload() }, [reload])
 
+  useEffect(() => {
+    if (searchParams.get('new') === 'true') {
+      setModal('create')
+    }
+  }, [searchParams])
+
   function showMsg(text: string, type: 'success' | 'error') {
     setMessage({ text, type })
     setTimeout(() => setMessage(null), 4000)
@@ -215,17 +308,22 @@ export default function AdminBlogPage() {
       authorId: (post as any).authorId ?? '',
       publishedAt: post.publishedAt,
       coverImage: post.coverImage ?? '',
+      order: post.order != null ? String(post.order) : '',
     }
   }
 
   async function handleSave(data: BlogFormData) {
     setSaving(true)
+    const payload = {
+      ...data,
+      order: data.order !== '' ? Number(data.order) : undefined,
+    }
     try {
       if (modal === 'create') {
-        await createBlogPost(data)
+        await createBlogPost(payload as any)
         showMsg(`"${data.title}" published.`, 'success')
       } else if (modal && typeof modal === 'object') {
-        await updateBlogPost(modal.id, data)
+        await updateBlogPost(modal.id, payload as any)
         showMsg(`"${data.title}" updated.`, 'success')
       }
       setModal(null)
@@ -263,15 +361,15 @@ export default function AdminBlogPage() {
         <div>
           <h1 className="font-display text-[32px] tracking-hero text-foreground leading-tight">Blog</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Create and manage blog posts. Stored in the Firestore <code className="font-mono text-xs bg-muted px-1">blog</code> collection.
+            Create and manage every post published on the blog.
           </p>
         </div>
-        <button
+        <Button
           onClick={() => setModal('create')}
-          className="self-start sm:self-auto inline-flex items-center gap-2 px-4 py-2.5 bg-foreground text-background font-text text-xs font-semibold hover:bg-primary hover:text-primary-foreground transition-colors shrink-0"
+          className="self-start sm:self-auto h-auto px-4 py-2.5 font-text text-xs shrink-0"
         >
           <Plus size={14} /> New post
-        </button>
+        </Button>
       </div>
 
       {message && (
@@ -283,12 +381,12 @@ export default function AdminBlogPage() {
 
       <div className="relative max-w-sm">
         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
-        <input
+        <Input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search posts…"
-          className="w-full bg-background border border-input pl-9 pr-4 py-2.5 font-text text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-foreground transition-colors"
+          className="pl-9 pr-4 py-2.5"
         />
       </div>
 
@@ -310,13 +408,15 @@ export default function AdminBlogPage() {
             return (
               <div key={post.id} className="px-6 py-5 flex flex-col sm:flex-row sm:items-start justify-between gap-4 hover:bg-muted/5 transition-colors group">
                 <div className="flex items-start gap-4 flex-1 min-w-0">
-                  {/* Thumbnail */}
-                  <div className="relative w-16 h-16 shrink-0 bg-muted overflow-hidden hidden sm:block">
-                    {post.coverImage ? (
-                      <Image src={post.coverImage} alt={post.title} fill className="object-cover" />
-                    ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/5 to-background" />
-                    )}
+                  <div className="hidden sm:block shrink-0">
+                    <PostThumbnail
+                      src={post.coverImage}
+                      alt={post.title}
+                      category={post.category}
+                      id={post.id}
+                      className="w-16 h-16"
+                      showBadge={false}
+                    />
                   </div>
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
@@ -341,12 +441,12 @@ export default function AdminBlogPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <button onClick={() => setModal(post)} className="p-2 border border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors" title="Edit">
+                  <Button variant="outline" size="icon" onClick={() => setModal(post)} className="h-auto w-auto p-2 text-muted-foreground hover:text-foreground hover:border-foreground" title="Edit">
                     <Edit2 size={13} />
-                  </button>
-                  <button onClick={() => setDeleteTarget(post)} className="p-2 border border-border text-muted-foreground hover:text-red-500 hover:border-red-500 transition-colors" title="Delete">
+                  </Button>
+                  <Button variant="outline" size="icon" onClick={() => setDeleteTarget(post)} className="h-auto w-auto p-2 text-muted-foreground hover:text-red-500 hover:border-red-500" title="Delete">
                     <Trash2 size={13} />
-                  </button>
+                  </Button>
                 </div>
               </div>
             )
@@ -382,12 +482,12 @@ export default function AdminBlogPage() {
               Permanently delete <strong>&ldquo;{deleteTarget.title}&rdquo;</strong>? This cannot be undone.
             </p>
             <div className="flex gap-3">
-              <button onClick={handleDelete} disabled={saving} className="flex-1 py-3 bg-red-600 text-white font-text text-sm font-semibold hover:bg-red-700 disabled:opacity-50 transition-colors">
+              <Button variant="destructive" onClick={handleDelete} disabled={saving} className="h-auto flex-1 py-3 font-text text-sm">
                 {saving ? 'Deleting…' : 'Delete post'}
-              </button>
-              <button onClick={() => setDeleteTarget(null)} disabled={saving} className="flex-1 py-3 border border-input text-foreground font-text text-sm hover:bg-border transition-colors">
+              </Button>
+              <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={saving} className="h-auto flex-1 border-input py-3 font-text text-sm text-foreground hover:bg-border">
                 Cancel
-              </button>
+              </Button>
             </div>
           </div>
         </Modal>
