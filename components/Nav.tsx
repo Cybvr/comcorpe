@@ -252,11 +252,7 @@ export default function Nav({ authState }: NavProps) {
                 <Link href="/book">Book a session call</Link>
               </Button>
             </>
-          ) : (
-            <Button asChild variant="outline" className="font-text">
-              <Link href="/login">Login</Link>
-            </Button>
-          )}
+          ) : null}
         </div>
 
         {/* Mobile actions */}
@@ -288,11 +284,7 @@ export default function Nav({ authState }: NavProps) {
                 <span className={`block w-5 h-px bg-foreground transition-all duration-[240ms] ${menuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
               </Button>
             </>
-          ) : (
-            <Button asChild variant="outline" size="sm" className="font-text">
-              <Link href="/login">Login</Link>
-            </Button>
-          )}
+          ) : null}
         </div>
       </nav>
 
