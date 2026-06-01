@@ -44,10 +44,10 @@ export default function Home() {
     <>
       <section
         id="top"
-        className="flex flex-col md:h-[calc(100vh-4rem)] md:[height:calc(100dvh-4rem)] border-b border-foreground overflow-hidden"
+        className="flex flex-col border-b border-foreground overflow-hidden"
       >
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-[1fr_42%] overflow-hidden">
-          <div className="px-6 md:px-24 pt-12 pb-14 md:my-auto">
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="px-6 md:px-24 pt-24 pb-24 md:pt-36 md:pb-32">
             <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-foreground inline-flex items-center gap-2.5 mb-8">
               <span className="w-6 h-px bg-foreground inline-block" />
               A Growth Systems Company
@@ -61,7 +61,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="hidden md:block relative border-l border-foreground">
+          <div className="relative w-full aspect-[4/3] md:aspect-[21/9] border-t border-foreground">
             <Image
               src="/images/site/Eagle in Motion _ Velocity Study 1.png"
               alt=""
