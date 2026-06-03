@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import Closing from '@/components/Closing'
 import TalentCarousel from '@/components/TalentCarousel'
 import HomeInsightsSection from '@/components/HomeInsightsSection'
+import ParallaxImage from '@/components/ParallaxImage'
 import Link from 'next/link'
-import Image from 'next/image'
 
 export const metadata: Metadata = {
   title: 'Comcorpᵉ — A Growth Systems Company',
@@ -61,12 +61,12 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="relative w-full aspect-[4/3] md:aspect-[21/9] border-t border-foreground">
-            <Image
+          <div className="relative w-full aspect-[4/3] md:aspect-[21/9] border-t border-foreground overflow-hidden">
+            <ParallaxImage
               src="/images/site/Eagle in Motion _ Velocity Study 1.png"
               alt=""
-              fill
-              className="object-cover grayscale"
+              imageClassName="grayscale"
+              strength={50}
               priority
             />
           </div>
@@ -102,11 +102,11 @@ export default function Home() {
               className="group bg-background hover:bg-primary/[0.03] transition-all duration-300 flex flex-col overflow-hidden"
             >
               <div className="relative aspect-[16/10] overflow-hidden border-b border-foreground">
-                <Image
+                <ParallaxImage
                   src={s.image}
                   alt=""
-                  fill
-                  className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                  imageClassName="grayscale group-hover:grayscale-0 transition-all duration-700"
+                  strength={25}
                 />
               </div>
               <div className="p-8 md:p-12 flex flex-col flex-1">
@@ -137,7 +137,12 @@ export default function Home() {
           '/images/site/Coiled Serpent _ Strategy 1.png',
         ].map((src, i) => (
           <div key={i} className="relative aspect-square overflow-hidden bg-background">
-            <Image src={src} alt="" fill className="object-cover grayscale hover:grayscale-0 transition-all duration-700" />
+            <ParallaxImage
+              src={src}
+              alt=""
+              imageClassName="grayscale hover:grayscale-0 transition-all duration-700"
+              strength={25}
+            />
           </div>
         ))}
       </section>
