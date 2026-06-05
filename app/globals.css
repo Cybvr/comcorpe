@@ -96,7 +96,7 @@
 }
 
 @theme inline {
-  --font-display: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-kode-mono), 'Kode Mono', ui-monospace, monospace;
   --font-text: var(--font-text-family);
   --font-mono: var(--font-mono-family);
 
@@ -218,6 +218,10 @@ body {
   font-family: var(--font-roboto-mono), 'Roboto Mono', ui-monospace, monospace;
 }
 
+.font-display {
+  font-family: var(--font-kode-mono), 'Kode Mono', ui-monospace, monospace;
+}
+
 /* Hide scrollbar for talent carousel */
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
@@ -233,6 +237,14 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-kode-mono), 'Kode Mono', ui-monospace, monospace;
   }
   html {
     @apply font-sans;

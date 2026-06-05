@@ -4,7 +4,7 @@ import './globals.css'
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
 import CookieConsent from '@/components/CookieConsent'
 import FloatingVideoAvatar from '@/components/FloatingVideoAvatar'
-import { Inter, Roboto_Mono } from 'next/font/google'
+import { Inter, Kode_Mono, Roboto_Mono } from 'next/font/google'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -16,6 +16,12 @@ const robotoMono = Roboto_Mono({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-roboto-mono',
+})
+
+const kodeMono = Kode_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-kode-mono',
 })
 
 export const metadata: Metadata = {
@@ -40,7 +46,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${robotoMono.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${robotoMono.variable} ${kodeMono.variable}`}>
       <body className="bg-background text-foreground font-text antialiased leading-body tracking-body">
         <ServiceWorkerRegistration />
         <div className="bg-black px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.24em] text-white">
