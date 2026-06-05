@@ -7,7 +7,6 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard,
-  CalendarDays,
   MoveRight,
   Zap, Landmark, ShoppingBag,
   Lightbulb, Network, Users, Target, BriefcaseBusiness, Brush, Microscope, Megaphone, Radio, BarChart3,
@@ -222,14 +221,11 @@ export default function Nav({ authState }: NavProps) {
 
         {/* Actions & Hamburger */}
         <div className="flex items-center gap-2 lg:gap-4 justify-self-end col-start-3">
-          <Button asChild size="icon" className="sm:hidden">
-            <Link href="/book" aria-label="Book a session call">
-              <CalendarDays size={15} strokeWidth={1.6} />
-            </Link>
-          </Button>
-          <Button asChild className="hidden font-text sm:inline-flex">
-            <Link href="/book">Book a session call</Link>
-          </Button>
+          {!isAuthenticated ? (
+            <Button asChild variant="outline" className="hidden font-text sm:inline-flex">
+              <Link href="/login">Early Access</Link>
+            </Button>
+          ) : null}
 
           <Button
             onClick={() => setMenuOpen(o => !o)}
