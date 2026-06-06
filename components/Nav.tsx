@@ -222,9 +222,12 @@ export default function Nav({ authState }: NavProps) {
         {/* Actions & Hamburger */}
         <div className="flex items-center gap-2 lg:gap-4 justify-self-end col-start-3">
           {!isAuthenticated ? (
-            <Button asChild variant="outline" className="hidden font-text sm:inline-flex">
-              <Link href="/login">Early Access</Link>
-            </Button>
+            <Link
+              href="/login"
+              className="inline-flex h-9 items-center justify-center rounded-sm border border-border bg-background px-3 font-text text-[11px] font-semibold uppercase tracking-[0.16em] ring-offset-background transition-colors duration-100 hover:bg-muted hover:border-input focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:h-10 sm:px-4 sm:text-sm sm:normal-case sm:tracking-normal"
+            >
+              Early Access
+            </Link>
           ) : null}
 
           <Button
