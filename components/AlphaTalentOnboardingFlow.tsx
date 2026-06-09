@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
@@ -47,6 +47,54 @@ function StepIndicator({ current, total }: { current: number; total: number }) {
       <span className="ml-1 shrink-0 font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/60">
         {current}/{total}
       </span>
+    </div>
+  )
+}
+
+function AlphaCursor() {
+  const [visible, setVisible] = useState(false)
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [enabled, setEnabled] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const mediaQuery = window.matchMedia('(pointer: fine)')
+    const updateEnabled = () => setEnabled(mediaQuery.matches)
+
+    updateEnabled()
+    mediaQuery.addEventListener('change', updateEnabled)
+
+    function handleMove(event: MouseEvent) {
+      setVisible(true)
+      setPosition({ x: event.clientX, y: event.clientY })
+    }
+
+    function handleLeave() {
+      setVisible(false)
+    }
+
+    window.addEventListener('mousemove', handleMove)
+    window.addEventListener('mouseout', handleLeave)
+
+    return () => {
+      mediaQuery.removeEventListener('change', updateEnabled)
+      window.removeEventListener('mousemove', handleMove)
+      window.removeEventListener('mouseout', handleLeave)
+    }
+  }, [])
+
+  if (!enabled || !visible) return null
+
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none fixed left-0 top-0 z-[999] hidden md:block"
+      style={{ transform: `translate3d(${position.x - 24}px, ${position.y - 24}px, 0)` }}
+    >
+      <div className="relative h-12 w-12 rounded-full border-[3px] border-white/65 bg-black/8 shadow-[0_0_0_1px_rgba(255,255,255,0.08)] backdrop-blur-[1px]">
+        <div className="absolute left-1/2 top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white" />
+      </div>
     </div>
   )
 }
@@ -138,7 +186,8 @@ export default function AlphaTalentOnboardingFlow() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-6 py-12">
+    <div className="flex min-h-screen cursor-auto items-center justify-center bg-background px-6 py-12 md:cursor-none">
+      <AlphaCursor />
       <div className="w-full max-w-[520px]">
         <div className="mb-12 flex justify-center">
           <Image src="/images/comcorpe.png" alt="Comcorpe" width={140} height={36} className="h-8 w-auto object-contain" priority />
