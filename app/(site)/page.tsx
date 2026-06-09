@@ -1,7 +1,4 @@
 import type { Metadata } from 'next'
-import Closing from '@/components/Closing'
-import TalentCarousel from '@/components/TalentCarousel'
-import HomeInsightsSection from '@/components/HomeInsightsSection'
 import ParallaxImage from '@/components/ParallaxImage'
 import Link from 'next/link'
 
@@ -83,71 +80,6 @@ export default function Home() {
         </div>
       </section>
 
-      <TalentCarousel />
-
-      {/* Foundation cards */}
-      <section className="py-24 md:py-40 px-6 md:px-24 bg-background">
-        <div className="flex items-baseline gap-6 mb-20">
-          <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-foreground inline-flex items-center gap-2.5">
-            <span className="w-6 h-px bg-foreground inline-block" />
-            The Foundation
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-foreground border border-foreground overflow-hidden rounded-sm">
-          {sections.map((s) => (
-            <Link
-              key={s.label}
-              href={s.href}
-              className="group bg-background hover:bg-primary/[0.03] transition-all duration-300 flex flex-col overflow-hidden"
-            >
-              <div className="relative aspect-[16/10] overflow-hidden border-b border-foreground">
-                <ParallaxImage
-                  src={s.image}
-                  alt=""
-                  imageClassName="grayscale group-hover:grayscale-0 transition-all duration-700"
-                  strength={25}
-                />
-              </div>
-              <div className="p-8 md:p-12 flex flex-col flex-1">
-                <div className="font-mono text-xs text-muted-foreground/70 uppercase tracking-widest mb-8">{s.label}</div>
-                <h2 className="font-display font-black text-[32px] md:text-[42px] leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors duration-300 mb-6">
-                  {s.title}
-                </h2>
-                <p className="font-text text-[16px] leading-relaxed text-muted-foreground m-0 mb-auto">
-                  {s.description}
-                </p>
-                <div className="mt-12 font-mono text-xs text-primary flex items-center gap-2 group-hover:gap-4 transition-all duration-300">
-                  Explore section <span>→</span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <HomeInsightsSection />
-
-      {/* Editorial image strip */}
-      <section className="border-t border-foreground grid grid-cols-2 md:grid-cols-4 gap-px bg-foreground overflow-hidden">
-        {[
-          '/images/site/Architectural Lattice _ Motion Study 1.png',
-          '/images/site/Woman in Profile _ Vision 1.png',
-          '/images/site/Panther Prowl _ Concentration 1.png',
-          '/images/site/Coiled Serpent _ Strategy 1.png',
-        ].map((src, i) => (
-          <div key={i} className="relative aspect-square overflow-hidden bg-background">
-            <ParallaxImage
-              src={src}
-              alt=""
-              imageClassName="grayscale hover:grayscale-0 transition-all duration-700"
-              strength={25}
-            />
-          </div>
-        ))}
-      </section>
-
-      <Closing />
     </>
   )
 }

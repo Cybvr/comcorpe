@@ -49,9 +49,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${robotoMono.variable} ${kodeMono.variable}`}>
       <body className="bg-background text-foreground font-text antialiased leading-body tracking-body">
         <ServiceWorkerRegistration />
-        <div className="bg-black px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.24em] text-white">
-          Comcorpe: Alpha Version V1.
-        </div>
         {children}
         <FloatingVideoAvatar />
         <CookieConsent />
