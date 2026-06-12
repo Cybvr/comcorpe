@@ -95,13 +95,13 @@ export default function BlogDetailPage({
             <article>
               {post.body.trimStart().startsWith('<') ? (
                 <div
-                  className="prose prose-lg max-w-none font-text text-muted-foreground prose-headings:font-display prose-headings:text-foreground prose-headings:font-black prose-a:text-primary prose-strong:text-foreground prose-blockquote:border-primary prose-blockquote:text-muted-foreground"
+                  className="prose max-w-none font-text text-foreground prose-headings:font-display prose-headings:text-foreground prose-headings:font-black prose-a:text-primary prose-strong:text-foreground prose-blockquote:border-primary prose-blockquote:text-muted-foreground"
                   dangerouslySetInnerHTML={{ __html: post.body }}
                 />
               ) : (
                 <div className="space-y-5">
                   {paragraphs.map((para, i) => (
-                    <p key={i} className="font-text text-[17px] leading-relaxed text-muted-foreground">
+                    <p key={i} className="font-text text-[15px] leading-relaxed text-foreground">
                       {para}
                     </p>
                   ))}
