@@ -28,15 +28,19 @@ export default function BlogPage() {
         </div>
 
         {loading && (
-          <div className="space-y-px border border-foreground">
+          <div className="grid gap-6 md:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="animate-pulse bg-background flex gap-6 px-8 py-10 border-b border-foreground last:border-b-0">
-                <div className="hidden md:block w-40 h-28 bg-muted rounded shrink-0" />
-                <div className="flex-1 space-y-3">
-                  <div className="h-3 w-20 bg-muted rounded" />
-                  <div className="h-7 w-2/3 bg-muted rounded" />
-                  <div className="h-4 w-full bg-muted rounded" />
-                  <div className="h-4 w-4/5 bg-muted rounded" />
+              <div key={i} className="animate-pulse bg-background border border-foreground flex flex-col gap-0 h-full">
+                <div className="w-full h-52 md:h-64 bg-muted shrink-0" />
+                <div className="flex flex-col flex-1 px-6 py-8 md:px-8 md:py-10 space-y-4 border-t border-foreground">
+                  <div className="flex items-center gap-3">
+                    <div className="h-3 w-16 bg-muted rounded" />
+                    <div className="h-3 w-16 bg-muted rounded" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="h-7 w-full bg-muted rounded" />
+                    <div className="h-7 w-2/3 bg-muted rounded" />
+                  </div>
                 </div>
               </div>
             ))}
@@ -48,15 +52,15 @@ export default function BlogPage() {
         )}
 
         {!loading && posts.length > 0 && (
-          <div className="grid gap-px bg-foreground border border-foreground overflow-hidden">
+          <div className="grid gap-6 md:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
               <Link
                 key={post.id}
                 href={getBlogHref(post.slug)}
-                className="group bg-background hover:bg-primary/[0.03] transition-colors flex flex-col md:flex-row gap-0"
+                className="group bg-background border border-foreground hover:bg-primary/[0.03] transition-colors flex flex-col gap-0 h-full"
               >
                 {/* Cover image */}
-                <div className="relative w-full md:w-56 md:shrink-0 h-52 md:h-auto bg-muted overflow-hidden">
+                <div className="relative w-full h-52 md:h-64 shrink-0 bg-muted overflow-hidden">
                   {post.coverImage ? (
                     <Image
                       src={post.coverImage}
@@ -70,7 +74,7 @@ export default function BlogPage() {
                 </div>
 
                 {/* Text */}
-                <div className="flex flex-col flex-1 px-8 py-10">
+                <div className="flex flex-col flex-1 px-6 py-8 md:px-8 md:py-10 border-t border-foreground">
                   <div className="flex items-center gap-3 mb-5">
                     {post.category && (
                       <span className="font-mono text-[10px] uppercase tracking-eyebrow text-muted-foreground/70">
@@ -84,15 +88,9 @@ export default function BlogPage() {
                       </span>
                     )}
                   </div>
-                  <h2 className="font-display font-black text-[26px] md:text-[32px] leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors mb-3">
+                  <h2 className="font-display font-black text-[24px] md:text-[28px] leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors">
                     {post.title}
                   </h2>
-                  <p className="font-text text-[15px] leading-relaxed text-muted-foreground max-w-[60ch] mb-auto">
-                    {post.excerpt}
-                  </p>
-                  <div className="mt-8 font-mono text-xs uppercase tracking-eyebrow text-primary flex items-center gap-2 group-hover:gap-4 transition-all">
-                    Read post <span>&rarr;</span>
-                  </div>
                 </div>
               </Link>
             ))}

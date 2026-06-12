@@ -2,265 +2,18 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
-import { useSearchParams } from 'next/navigation'
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
-import { getBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost, getSystemUsers } from '@/lib/admin/store'
-import { storage } from '@/lib/firebase'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { getBlogPosts, deleteBlogPost, getSystemUsers } from '@/lib/admin/store'
 import type { BlogPost } from '@/lib/blog'
 import type { User } from '@/lib/user'
 import Modal from '@/components/admin/Modal'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
-import { Plus, Search, Trash2, Edit2, Check, AlertCircle, FileText, UploadCloud, X } from 'lucide-react'
+import { Plus, Search, Trash2, Edit2, Check, AlertCircle, FileText } from 'lucide-react'
 import PostThumbnail from '@/components/ui/PostThumbnail'
 
-// Constants
-
-const CATEGORIES = [
-  'Blog',
-  'Insights',
-  'Events',
-  'Announcements',
-  'Strategy',
-  'Operations',
-  'Growth',
-  'Technology',
-  'Community',
-  'Other',
-]
-
-// Form
-
-const EMPTY_FORM = {
-  title: '',
-  slug: '',
-  excerpt: '',
-  body: '',
-  category: 'Blog',
-  author: '',
-  authorId: '',
-  publishedAt: '',
-  coverImage: '',
-  order: '',
-}
-
-type BlogFormData = typeof EMPTY_FORM
-
-function BlogForm({
-  initial,
-  onSave,
-  onCancel,
-  saving,
-  users,
-}: {
-  initial: BlogFormData
-  onSave: (data: BlogFormData) => void
-  onCancel: () => void
-  saving: boolean
-  users: User[]
-}) {
-  const [form, setForm] = useState<BlogFormData>({ ...EMPTY_FORM, ...initial })
-  const [coverUploading, setCoverUploading] = useState(false)
-  const [coverError, setCoverError] = useState('')
-
-  function set(field: keyof BlogFormData, value: string) {
-    setForm(f => {
-      const next = { ...f, [field]: value }
-      if (field === 'title' && !f.slug) {
-        next.slug = value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
-      }
-      return next
-    })
-  }
-
-  function handleAuthorSelect(userId: string) {
-    const user = users.find(u => u.id === userId)
-    setForm(f => ({
-      ...f,
-      authorId: userId,
-      author: user?.name ?? '',
-    }))
-  }
-
-  async function handleCoverFile(file?: File | null) {
-    if (!file) return
-
-    if (!file.type.startsWith('image/')) {
-      setCoverError('Please choose an image file.')
-      return
-    }
-
-    setCoverUploading(true)
-    setCoverError('')
-
-    try {
-      const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg'
-      const baseSlug = form.slug || form.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || 'blog-cover'
-      const imageRef = ref(storage, `blog-covers/${baseSlug}-${Date.now()}.${extension}`)
-      const uploadResult = await uploadBytes(imageRef, file)
-      const downloadUrl = await getDownloadURL(uploadResult.ref)
-      set('coverImage', downloadUrl)
-    } catch (error) {
-      console.error('Error uploading cover image:', error)
-      setCoverError('Upload failed. Please try again.')
-    } finally {
-      setCoverUploading(false)
-    }
-  }
-
-  return (
-    <form onSubmit={e => { e.preventDefault(); onSave(form) }} className="space-y-4">
-      <div>
-        <Label>Title *</Label>
-        <Input value={form.title} onChange={e => set('title', e.target.value)} required placeholder="Post title" />
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label>Slug *</Label>
-          <Input value={form.slug} onChange={e => set('slug', e.target.value)} required placeholder="my-post-slug" />
-        </div>
-        <div>
-          <Label>Category</Label>
-          <Select value={form.category} onValueChange={value => set('category', value)}>
-            <SelectTrigger className="rounded-none border-input px-4 py-3 text-foreground hover:border-foreground">
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent>
-              {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div>
-        <Label>Excerpt *</Label>
-        <Textarea rows={2} value={form.excerpt} onChange={e => set('excerpt', e.target.value)} required placeholder="One or two sentences summarising the post" />
-      </div>
-
-      <div>
-        <Label>Body *</Label>
-        <Textarea rows={10} value={form.body} onChange={e => set('body', e.target.value)} required placeholder={'Write the full post here.\n\nSeparate paragraphs with a blank line.'} />
-        <p className="font-mono text-[10px] text-muted-foreground/60 mt-1">Blank line = new paragraph on the site.</p>
-      </div>
-
-      {/* Author */}
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label>Home order <span className="font-mono text-[10px] text-muted-foreground/60 ml-1">(1 = first on home page)</span></Label>
-          <Input type="number" min="1" value={form.order} onChange={e => set('order', e.target.value)} placeholder="e.g. 1" />
-        </div>
-        <div>
-          <Label>Published date</Label>
-          <Input value={form.publishedAt} onChange={e => set('publishedAt', e.target.value)} placeholder="e.g. 22 May 2026" />
-        </div>
-      </div>
-
-      <div>
-        <Label>Author</Label>
-        <Select value={form.authorId || 'none'} onValueChange={value => handleAuthorSelect(value === 'none' ? '' : value)}>
-          <SelectTrigger className="rounded-none border-input px-4 py-3 text-foreground hover:border-foreground">
-            <SelectValue placeholder="Select user" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">— Select user —</SelectItem>
-            {users.map(u => (
-              <SelectItem key={u.id} value={u.id}>
-                {u.name}{u.role ? ` (${u.role})` : ''}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      {/* Author preview */}
-      {form.authorId && (() => {
-        const u = users.find(u => u.id === form.authorId)
-        if (!u) return null
-        return (
-          <div className="flex items-center gap-3 p-3 bg-muted/40 border border-border">
-            <div className={`w-8 h-8 rounded-sm shrink-0 flex items-center justify-center font-display font-black text-[10px] text-background overflow-hidden relative ${u.color || 'bg-foreground'}`}>
-              {u.image ? <Image src={u.image} alt={u.name} fill className="object-cover" /> : u.initials}
-            </div>
-            <div>
-              <p className="font-text text-sm font-semibold text-foreground leading-none">{u.name}</p>
-              {u.talentRole && <p className="font-mono text-[10px] text-muted-foreground/70 mt-0.5">{u.talentRole}</p>}
-            </div>
-          </div>
-        )
-      })()}
-
-      <div>
-        <Label>Cover image (optional)</Label>
-        <label
-          htmlFor="blog-cover-upload"
-          onDragOver={(event) => {
-            event.preventDefault()
-            event.currentTarget.classList.add('border-foreground', 'bg-muted/30')
-          }}
-          onDragLeave={(event) => {
-            event.currentTarget.classList.remove('border-foreground', 'bg-muted/30')
-          }}
-          onDrop={(event) => {
-            event.preventDefault()
-            event.currentTarget.classList.remove('border-foreground', 'bg-muted/30')
-            handleCoverFile(event.dataTransfer.files[0])
-          }}
-          className="flex min-h-32 cursor-pointer flex-col items-center justify-center border border-dashed border-input bg-background px-4 py-6 text-center transition-colors hover:border-foreground hover:bg-muted/20"
-        >
-          <input
-            id="blog-cover-upload"
-            type="file"
-            accept="image/*"
-            className="sr-only"
-            onChange={(event) => handleCoverFile(event.target.files?.[0])}
-            disabled={coverUploading}
-          />
-          <UploadCloud size={22} className="mb-2 text-muted-foreground/70" />
-          <span className="font-text text-sm font-semibold text-foreground">
-            {coverUploading ? 'Uploading cover…' : 'Drop an image here or click to upload'}
-          </span>
-          <span className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground/60">
-            PNG, JPG, or WebP
-          </span>
-        </label>
-        {coverError && (
-          <p className="font-mono text-[10px] text-red-600 mt-1">{coverError}</p>
-        )}
-        {form.coverImage && (
-          <div className="relative mt-2 h-32 w-full overflow-hidden border border-border bg-muted">
-            <Image src={form.coverImage} alt="Cover preview" fill className="object-cover" />
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              onClick={() => set('coverImage', '')}
-              className="absolute right-2 top-2 h-7 w-7 border-background/70 bg-background/90"
-              aria-label="Remove cover image"
-            >
-              <X size={13} />
-            </Button>
-          </div>
-        )}
-      </div>
-
-      <div className="flex gap-3 pt-2 border-t border-border">
-        <Button type="submit" disabled={saving || coverUploading} className="h-auto flex-1 py-3 font-text text-sm">
-          {saving ? 'Saving…' : coverUploading ? 'Uploading…' : 'Publish post'}
-        </Button>
-        <Button type="button" variant="outline" onClick={onCancel} disabled={saving} className="h-auto flex-1 border-input py-3 font-text text-sm text-foreground hover:bg-border">
-          Cancel
-        </Button>
-      </div>
-    </form>
-  )
-}
-
-// Page
-
 export default function AdminBlogPage() {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [users, setUsers] = useState<User[]>([])
@@ -268,7 +21,6 @@ export default function AdminBlogPage() {
   const [saving, setSaving] = useState(false)
   const [search, setSearch] = useState('')
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
-  const [modal, setModal] = useState<null | 'create' | BlogPost>(null)
   const [deleteTarget, setDeleteTarget] = useState<BlogPost | null>(null)
 
   const reload = useCallback(async () => {
@@ -287,52 +39,14 @@ export default function AdminBlogPage() {
   useEffect(() => { reload() }, [reload])
 
   useEffect(() => {
-    if (searchParams.get('new') === 'true') {
-      setModal('create')
+    if (searchParams.get('saved') === 'true') {
+      showMsg('Post saved.', 'success')
     }
   }, [searchParams])
 
   function showMsg(text: string, type: 'success' | 'error') {
     setMessage({ text, type })
     setTimeout(() => setMessage(null), 4000)
-  }
-
-  function postToForm(post: BlogPost): BlogFormData {
-    return {
-      title: post.title,
-      slug: post.slug,
-      excerpt: post.excerpt,
-      body: post.body,
-      category: post.category,
-      author: post.author,
-      authorId: (post as any).authorId ?? '',
-      publishedAt: post.publishedAt,
-      coverImage: post.coverImage ?? '',
-      order: post.order != null ? String(post.order) : '',
-    }
-  }
-
-  async function handleSave(data: BlogFormData) {
-    setSaving(true)
-    const payload = {
-      ...data,
-      order: data.order !== '' ? Number(data.order) : undefined,
-    }
-    try {
-      if (modal === 'create') {
-        await createBlogPost(payload as any)
-        showMsg(`"${data.title}" published.`, 'success')
-      } else if (modal && typeof modal === 'object') {
-        await updateBlogPost(modal.id, payload as any)
-        showMsg(`"${data.title}" updated.`, 'success')
-      }
-      setModal(null)
-      await reload()
-    } catch {
-      showMsg('Something went wrong.', 'error')
-    } finally {
-      setSaving(false)
-    }
   }
 
   async function handleDelete() {
@@ -365,7 +79,7 @@ export default function AdminBlogPage() {
           </p>
         </div>
         <Button
-          onClick={() => setModal('create')}
+          onClick={() => router.push('/admin/blog/new')}
           className="self-start sm:self-auto h-auto px-4 py-2.5 font-text text-xs shrink-0"
         >
           <Plus size={14} /> New post
@@ -441,10 +155,22 @@ export default function AdminBlogPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <Button variant="outline" size="icon" onClick={() => setModal(post)} className="h-auto w-auto p-2 text-muted-foreground hover:text-foreground hover:border-foreground" title="Edit">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => router.push(`/admin/blog/${encodeURIComponent(post.id)}/edit`)}
+                    className="h-auto w-auto p-2 text-muted-foreground hover:text-foreground hover:border-foreground"
+                    title="Edit"
+                  >
                     <Edit2 size={13} />
                   </Button>
-                  <Button variant="outline" size="icon" onClick={() => setDeleteTarget(post)} className="h-auto w-auto p-2 text-muted-foreground hover:text-red-500 hover:border-red-500" title="Delete">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setDeleteTarget(post)}
+                    className="h-auto w-auto p-2 text-muted-foreground hover:text-red-500 hover:border-red-500"
+                    title="Delete"
+                  >
                     <Trash2 size={13} />
                   </Button>
                 </div>
@@ -458,21 +184,6 @@ export default function AdminBlogPage() {
         <p className="font-mono text-[11px] text-muted-foreground/60 uppercase tracking-widest">
           {filtered.length} post{filtered.length !== 1 ? 's' : ''}{search ? ' matching' : ' total'}
         </p>
-      )}
-
-      {modal !== null && (
-        <Modal
-          title={modal === 'create' ? 'New post' : `Edit: ${(modal as BlogPost).title}`}
-          onClose={() => !saving && setModal(null)}
-        >
-          <BlogForm
-            initial={modal === 'create' ? EMPTY_FORM : postToForm(modal as BlogPost)}
-            onSave={handleSave}
-            onCancel={() => setModal(null)}
-            saving={saving}
-            users={users}
-          />
-        </Modal>
       )}
 
       {deleteTarget && (
