@@ -3,9 +3,13 @@
 import TalentJobsBoard from '@/components/dashboard/TalentJobsBoard'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useJobs } from '@/lib/jobs'
+import { useCurrentUser } from '@/lib/user'
 
 export default function TalentJobsPage() {
-  const { jobs, loading } = useJobs()
+  const { jobs, loading: jobsLoading } = useJobs()
+  const { user, loading: userLoading } = useCurrentUser()
+
+  const loading = jobsLoading || userLoading
 
   if (loading) {
     return (
@@ -59,13 +63,16 @@ export default function TalentJobsPage() {
     )
   }
 
+  const assignedSlugs = user?.assignedJobSlugs ?? []
+  const matchedJobs = jobs.filter(j => assignedSlugs.includes(j.slug))
+
   return (
     <TalentJobsBoard
-      title="Jobs"
-      jobs={jobs}
-      countLabel={`${jobs.length} matches`}
+      title="My matches"
+      jobs={matchedJobs}
+      countLabel={`${matchedJobs.length} match${matchedJobs.length !== 1 ? 'es' : ''}`}
       variant="discover"
-      searchPlaceholder="Search roles..."
+      searchPlaceholder="Search matches..."
       emptyLabel="matches"
     />
   )

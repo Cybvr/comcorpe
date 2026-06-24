@@ -1,85 +1,65 @@
 import type { Metadata } from 'next'
-import ParallaxImage from '@/components/ParallaxImage'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Comcorpᵉ — A Growth Systems Company',
+  title: 'Comcorpe - A Growth Systems Company',
 }
 
 export default function Home() {
-  const sections = [
-    {
-      label: 'Provocation',
-      title: 'Rewiring growth systems',
-      href: '/provocation',
-      description: 'Growth is the most mismanaged function in emerging markets. We treat growth as architecture, not effort.',
-      image: '/images/site/Koi Fish _ Flow 1.png',
-    },
-    {
-      label: 'Model',
-      title: 'Architect. Assemble. Operate.',
-      href: '/model',
-      description: 'We build growth engines that run by collapsing the gap between strategy and execution.',
-      image: '/images/site/Moth Wings _ Patterned Systems 1.png',
-    },
-    {
-      label: 'Arenas',
-      title: 'Concentration over coverage',
-      href: '/arenas',
-      description: 'Focusing on high-impact sectors across Pan-Africa: Fintech, Infrastructure, and Consumer Ecosystems.',
-      image: '/images/site/Protea Bloom _ Emergence 1.png',
-    },
-  ]
-
-  const tickerWords = [
-    'ARCHITECT', 'ASSEMBLE', 'OPERATE',
-    'TECHNOLOGY & FINTECH', 'PUBLIC INFRASTRUCTURE', 'CONSUMER & BRAND',
-    'GROWTH PLAYS', 'SPECIALIST PODS', 'INTERNATIONAL BOARD',
-  ]
-
   return (
-    <>
-      <section
-        id="top"
-        className="flex flex-col border-b border-foreground overflow-hidden"
-      >
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <div className="px-6 md:px-24 pt-24 pb-24 md:pt-36 md:pb-32">
-            <span className="font-text text-xs font-semibold tracking-eyebrow uppercase text-foreground inline-flex items-center gap-2.5 mb-8">
-              <span className="w-6 h-px bg-foreground inline-block" />
-              A Growth Systems Company
-            </span>
-            <h1 className="font-display text-[clamp(36px,6.5vw,96px)] leading-[0.92] tracking-[-0.04em] text-foreground m-0 mb-6">
-              The Operating Layer for High-Velocity Growth<span className="text-primary">.</span>
-            </h1>
-            <p className="font-text text-[17px] md:text-[20px] leading-lede text-muted-foreground m-0 max-w-[34ch]">
-              Comcorpᵉ orchestrates data, creativity, technology and strategy into unified growth systems —
-              built to perform in complex markets.
-            </p>
-          </div>
+    <main
+      className="flex h-screen flex-col overflow-hidden bg-black px-5 py-4 text-white md:px-12 md:py-5 lg:px-16"
+      style={{ fontFamily: '"Book Antiqua", Palatino, "Palatino Linotype", serif' }}
+    >
+      <header className="shrink-0 flex items-center justify-end text-[10px] uppercase tracking-[0.14em] md:text-[11px]">
+        <nav className="flex items-center gap-5">
+          <Link href="/provocation" className="transition-opacity duration-200 hover:opacity-70">
+            Manifesto
+          </Link>
+          <Link href="/pods" className="transition-opacity duration-200 hover:opacity-70">
+            The Pods
+          </Link>
+        </nav>
+      </header>
 
-          <div className="relative w-full aspect-[4/3] md:aspect-[21/9] border-t border-foreground overflow-hidden">
-            <ParallaxImage
-              src="/images/site/Eagle in Motion _ Velocity Study 1.png"
-              alt=""
-              imageClassName="grayscale"
-              strength={50}
-              priority
-            />
-          </div>
-        </div>
-
-        <div className="border-t border-foreground overflow-hidden py-3.5 whitespace-nowrap">
-          <div className="inline-block animate-ticker font-display font-black text-[32px] tracking-[-0.03em] text-foreground">
-            {[...tickerWords, ...tickerWords].map((w, i) => (
-              <span key={i} className="inline-block px-8">
-                {w}<span className="text-primary inline-block px-2">●</span>
-              </span>
-            ))}
-          </div>
+      <section className="flex min-h-0 flex-1 items-center py-6 md:py-8">
+        <div className="flex max-w-5xl flex-col items-start gap-5 md:gap-6">
+          <h1 className="font-display text-[clamp(2.1rem,5.8vw,5.4rem)] leading-[0.92] tracking-display">
+            We are building a small network of capable professionals to work with the largest companies in africa
+          </h1>
+          <Link
+            href="/talent"
+            className="border border-white px-4 py-2 text-[10px] uppercase tracking-[0.14em] transition-colors duration-200 hover:bg-white hover:text-black md:px-5 md:text-[11px]"
+          >
+            Join
+          </Link>
         </div>
       </section>
 
-    </>
+      <footer className="shrink-0 text-[10px] md:text-[11px]">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span>© 2026 Comcorpe</span>
+          <span>.</span>
+          <a
+            href="https://a16z.com/terms-of-use/"
+            target="_blank"
+            rel="noreferrer"
+            className="transition-opacity duration-200 hover:opacity-70"
+          >
+            Terms of Use
+          </a>
+          <span>.</span>
+          <a
+            href="https://a16z.com/privacy-policy/"
+            target="_blank"
+            rel="noreferrer"
+            className="transition-opacity duration-200 hover:opacity-70"
+          >
+            Privacy Policy
+          </a>
+          <span>.</span>
+        </div>
+      </footer>
+    </main>
   )
 }

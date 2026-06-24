@@ -18,7 +18,6 @@ import {
   LayoutDashboard,
   PanelLeftClose,
   PanelLeftOpen,
-  Search,
   Settings,
   Shield,
   Sparkles,
@@ -72,7 +71,6 @@ const dashboardConfig: Record<
     primaryItems: [
       { icon: Home, label: 'Home', href: '/client/dashboard' },
       { icon: Briefcase, label: 'My Jobs', href: '/client/dashboard/jobs' },
-      { icon: Search, label: 'Search', href: '/client/dashboard/search', badge: 3 },
       { icon: Sparkles, label: 'Analytics', href: '/client/dashboard/analytics' },
       { icon: BookOpen, label: 'Insights', href: '/client/dashboard/insights' },
     ],

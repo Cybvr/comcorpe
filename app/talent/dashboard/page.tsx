@@ -109,14 +109,14 @@ type HomeAction = {
 const homeActions: HomeAction[] = [
   {
     icon: Briefcase,
-    title: 'Find your next job',
-    cta: 'Browse jobs',
+    title: 'Your matched jobs',
+    cta: 'View matches',
     href: '/talent/dashboard/jobs',
   },
   {
     icon: MessageCircle,
     title: 'Get growth strategy help',
-    cta: 'Browse articles',
+    cta: 'Read articles',
     href: '/talent/dashboard/community',
   },
   {
