@@ -186,7 +186,7 @@ export default function Nav({ authState }: NavProps) {
         { label: 'Our Model', href: '/model', desc: 'How we architect, assemble, and operate growth systems.', icon: Network },
         { label: 'Team & Advisory', href: '/about', desc: 'The people and the global network behind Comcorpᵉ.', icon: Users },
         { label: 'Oversight', href: '/enterprise', desc: 'How Comcorpe pairs AI systems with strategic and human oversight.', icon: Microscope },
-        { label: 'Why Comcorpe', href: '/why', desc: 'Designed for complexity. Built for structural advantage.', icon: Target },
+        { label: 'Why Comcorpe', href: '/preview/why', desc: 'Designed for complexity. Built for structural advantage.', icon: Target },
       ],
     },
     { label: 'Talent', href: '/talent' },

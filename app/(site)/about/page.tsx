@@ -299,7 +299,7 @@ export default function AboutPage() {
               <p className="font-text text-[17px] leading-relaxed text-muted-foreground max-w-[40ch] mb-8">
                 Emerging markets don&apos;t reward standard playbooks. They reward systems that adapt, scale, and execute flawlessly under friction. Every decision we have made — structural, commercial, operational — is a response to that reality.
               </p>
-              <Link href="/why" className="font-mono text-xs text-primary inline-flex items-center gap-2 hover:gap-4 transition-all duration-200">
+              <Link href="/preview/why" className="font-mono text-xs text-primary inline-flex items-center gap-2 hover:gap-4 transition-all duration-200">
                 The full case <span>→</span>
               </Link>
             </div>
