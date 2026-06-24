@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import HomeVideoDemoButton from '@/components/HomeVideoDemoButton'
 
 export const metadata: Metadata = {
   title: 'Comcorpe - A Growth Systems Company',
@@ -13,7 +14,7 @@ export default function Home() {
     >
       <header className="shrink-0 flex items-center justify-end text-[10px] uppercase tracking-[0.14em] md:text-[11px]">
         <nav className="flex items-center gap-5">
-          <Link href="/provocation" className="transition-opacity duration-200 hover:opacity-70">
+          <Link href="/why" className="transition-opacity duration-200 hover:opacity-70">
             Manifesto
           </Link>
           <Link href="/pods" className="transition-opacity duration-200 hover:opacity-70">
@@ -27,12 +28,15 @@ export default function Home() {
           <h1 className="font-display text-[clamp(2.1rem,5.8vw,5.4rem)] leading-[0.92] tracking-display">
             We are building a small network of capable professionals to work with the largest companies in africa
           </h1>
-          <Link
-            href="/talent"
-            className="border border-white px-4 py-2 text-[10px] uppercase tracking-[0.14em] transition-colors duration-200 hover:bg-white hover:text-black md:px-5 md:text-[11px]"
-          >
-            Join
-          </Link>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              href="/talent"
+              className="border border-white px-4 py-2 text-[10px] uppercase tracking-[0.14em] transition-colors duration-200 hover:bg-white hover:text-black md:px-5 md:text-[11px]"
+            >
+              Join
+            </Link>
+            <HomeVideoDemoButton />
+          </div>
         </div>
       </section>
 
