@@ -2,9 +2,9 @@
 
 import React from 'react'
 import { usePathname } from 'next/navigation'
-import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import HomeEventBanner from '@/components/site/HomeEventPopup'
+import MarketingHeader from '@/components/site/MarketingHeader'
 import { useCurrentUser } from '@/lib/user'
 
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
@@ -15,7 +15,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
   return (
     <div className="site-shell">
       {!isHomePage && <HomeEventBanner />}
-      {!isHomePage && <Nav authState={authState} />}
+      {!isHomePage && <MarketingHeader />}
       {children}
       {!isHomePage && authState.isAuthenticated && <Footer />}
     </div>

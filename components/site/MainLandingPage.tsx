@@ -1,14 +1,6 @@
 import Link from 'next/link'
 import HomeVideoDemoButton from '@/components/HomeVideoDemoButton'
-
-const menuItems = [
-  { href: '/about', label: 'About' },
-  { href: '/services', label: 'Services' },
-  { href: '/case-studies', label: 'Case Studies' },
-  { href: '/insights', label: 'Insights' },
-  { href: '/preview/why', label: 'Manifesto' },
-  { href: '/preview/build', label: 'Build' },
-]
+import MarketingHeader from '@/components/site/MarketingHeader'
 
 export default function MainLandingPage() {
   return (
@@ -16,19 +8,7 @@ export default function MainLandingPage() {
       className="flex h-screen flex-col overflow-hidden bg-black px-5 py-4 text-white md:px-12 md:py-5 lg:px-16"
       style={{ fontFamily: '"Book Antiqua", Palatino, "Palatino Linotype", serif' }}
     >
-      <header className="shrink-0 flex items-center justify-end text-[10px] uppercase tracking-[0.14em] md:text-[11px]">
-        <nav className="flex flex-wrap items-center justify-end gap-x-5 gap-y-2">
-          {menuItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="transition-opacity duration-200 hover:opacity-70"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-      </header>
+      <MarketingHeader dark />
 
       <section className="flex min-h-0 flex-1 items-center py-6 md:py-8">
         <div className="flex max-w-5xl flex-col items-start gap-5 md:gap-6">
